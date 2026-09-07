@@ -31,6 +31,7 @@ export interface ScorecardRow {
   last90Days: number;
   lastFlight: Date | null;
   nextLaunch: Date | null;
+  nextLaunchPrecision: string | null;
   /** 'flying' = flew this year or has a next launch; 'quiet' = operational but
    *  nothing tracked either way; 'development' / 'retired' from the registry. */
   activity: 'flying' | 'quiet' | 'development' | 'retired';
@@ -78,6 +79,7 @@ export function buildScorecard(index: RocketIndexRow[], vehicles: LaunchVehicle[
       last90Days: r?.last90Days ?? 0,
       lastFlight: r?.lastFlight ?? null,
       nextLaunch: r?.nextLaunch ?? null,
+      nextLaunchPrecision: r?.nextLaunchPrecision ?? null,
       activity: activityOf(v, r),
     };
   });
@@ -113,4 +115,19 @@ export function fmtPrice(costMillions: number | null): string {
 }
 export function fmtPerKg(costPerKg: number | null): string {
   return costPerKg == null ? '—' : `~$${costPerKg.toLocaleString('en-US')}`;
+}
+
+/** Feed precisions coarser than a day. */
+const COARSE = /^(month|quarter|half|year|decade)$/i;
+
+/** "Sep 30, 2026" when the feed knows the day; "NET Dec 2026" / "NET 2026"
+ *  when it only knows the month or year — never a fabricated 31st. */
+export function fmtNextLaunch(date: Date | null, precision: string | null): string {
+  if (!date) return '—';
+  const p = (precision ?? '').toLowerCase();
+  if (!COARSE.test(p)) return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  if (p === 'month') return `NET ${date.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}`;
+  if (p === 'quarter') return `NET Q${Math.floor(date.getUTCMonth() / 3) + 1} ${date.getUTCFullYear()}`;
+  if (p === 'half') return `NET H${date.getUTCMonth() < 6 ? 1 : 2} ${date.getUTCFullYear()}`;
+  return `NET ${date.getUTCFullYear()}`;
 }

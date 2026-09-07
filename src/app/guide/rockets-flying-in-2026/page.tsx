@@ -8,7 +8,7 @@ import ReadingTime from '@/components/ui/ReadingTime';
 import RelatedModules from '@/components/ui/RelatedModules';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
-import { getRocketScorecard, summarizeScorecard, fmtPrice, fmtPerKg, type ScorecardRow } from '@/lib/rocket-scorecard';
+import { getRocketScorecard, summarizeScorecard, fmtPrice, fmtPerKg, type ScorecardRow, fmtNextLaunch } from '@/lib/rocket-scorecard';
 import { getLaunchCadence } from '@/lib/launch-cadence';
 import { getVehicleStatus } from '@/lib/vehicle-status';
 import { formatLaunchDate } from '@/components/launches/LaunchRow';
@@ -172,7 +172,7 @@ export default async function RocketsFlyingGuide() {
                           <td className="px-3 py-2.5 text-right text-white tabular-nums">{r.thisYear}{r.thisYearFailed > 0 ? <span className="text-red-300 text-xs"> ({r.thisYearFailed}✕)</span> : null}</td>
                           <td className="px-3 py-2.5 text-right text-slate-300 tabular-nums">{r.last90Days}</td>
                           <td className="px-3 py-2.5 text-slate-300 whitespace-nowrap">{r.lastFlight ? formatLaunchDate(r.lastFlight, false) : '—'}</td>
-                          <td className="px-3 py-2.5 text-slate-300 whitespace-nowrap">{r.nextLaunch ? formatLaunchDate(r.nextLaunch, false) : '—'}</td>
+                          <td className="px-3 py-2.5 text-slate-300 whitespace-nowrap">{r.nextLaunch ? fmtNextLaunch(r.nextLaunch, r.nextLaunchPrecision) : '—'}</td>
                           <td className="px-3 py-2.5 text-right text-slate-300 tabular-nums">{r.payloadLeoKg.toLocaleString('en-US')} kg</td>
                           <td className="px-3 py-2.5 text-right text-slate-300 tabular-nums">{fmtPrice(r.costMillions)}</td>
                           <td className="px-3 py-2.5 text-right text-slate-400 tabular-nums">{r.lifetimeLaunches > 0 ? `${r.lifetimeLaunches} · ${r.lifetimeSuccessRate}%` : '—'}</td>
@@ -204,7 +204,7 @@ export default async function RocketsFlyingGuide() {
                     {flying.map((r) => (
                       <li key={r.slug} className="flex items-start gap-3 text-slate-400 leading-relaxed">
                         <span className="mt-2 w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" aria-hidden="true" />
-                        <span><Link href={`/rockets/${r.slug}`} className="text-white font-medium hover:text-cyan-300">{r.name}</Link> — {r.thisYear} launch{r.thisYear === 1 ? '' : 'es'} this year{r.thisYearFailed > 0 ? ` (${r.thisYearFailed} failed)` : ''}{r.last90Days > 0 ? `, ${r.last90Days} in the last 90 days` : ''}{r.nextLaunch ? `; next on ${formatLaunchDate(r.nextLaunch, false)}` : ''}{r.thisYear === 0 && r.nextLaunch ? ' — first flight of the year' : ''}.</span>
+                        <span><Link href={`/rockets/${r.slug}`} className="text-white font-medium hover:text-cyan-300">{r.name}</Link> — {r.thisYear} launch{r.thisYear === 1 ? '' : 'es'} this year{r.thisYearFailed > 0 ? ` (${r.thisYearFailed} failed)` : ''}{r.last90Days > 0 ? `, ${r.last90Days} in the last 90 days` : ''}{r.nextLaunch ? `; next on ${fmtNextLaunch(r.nextLaunch, r.nextLaunchPrecision)}` : ''}{r.thisYear === 0 && r.nextLaunch ? ' — first flight of the year' : ''}.</span>
                       </li>
                     ))}
                   </ul>
@@ -235,7 +235,7 @@ export default async function RocketsFlyingGuide() {
                     {dev.map((r) => (
                       <li key={r.slug} className="flex items-start gap-3 text-slate-400 text-sm">
                         <span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" />
-                        <span><Link href={`/rockets/${r.slug}`} className="text-white hover:text-cyan-300">{r.name}</Link> · {r.manufacturer} · {r.payloadLeoKg.toLocaleString('en-US')} kg to LEO{r.nextLaunch ? ` · first flight on the manifest for ${formatLaunchDate(r.nextLaunch, false)}` : ' · no first flight on the manifest yet'}{getVehicleStatus(r.slug) ? <span className="block text-slate-300 mt-0.5">{getVehicleStatus(r.slug)!.headline}</span> : null}</span>
+                        <span><Link href={`/rockets/${r.slug}`} className="text-white hover:text-cyan-300">{r.name}</Link> · {r.manufacturer} · {r.payloadLeoKg.toLocaleString('en-US')} kg to LEO{r.nextLaunch ? ` · first flight on the manifest for ${fmtNextLaunch(r.nextLaunch, r.nextLaunchPrecision)}` : ' · no first flight on the manifest yet'}{getVehicleStatus(r.slug) ? <span className="block text-slate-300 mt-0.5">{getVehicleStatus(r.slug)!.headline}</span> : null}</span>
                       </li>
                     ))}
                   </ul>

@@ -11,7 +11,7 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 export const revalidate = 3600; // ISR: revalidate every hour
 
 export const metadata: Metadata = {
-  title: 'How Satellite Tracking Works: Technology, Methods & Tools | SpaceNexus Guide',
+  title: 'How Satellite Tracking Works: Technology, Methods & Tools',
   description:
     'Learn how satellite tracking works: radar, optical, TLE data, orbital mechanics, and real-time tools used to monitor 16,000+ active satellites.',
   keywords: [

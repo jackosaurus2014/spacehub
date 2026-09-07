@@ -5,7 +5,7 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: 'SpaceNexus vs Quilty Space Analytics — Space Industry Platform Comparison | SpaceNexus',
+  title: 'SpaceNexus vs Quilty Space Analytics — Space Industry Platform Comparison',
   description:
     'Comparing SpaceNexus (free-$19.99/mo) vs Quilty Space Analytics ($5,000-50,000/yr). Self-service real-time platform vs. premium analyst research reports for the space industry.',
   keywords: [

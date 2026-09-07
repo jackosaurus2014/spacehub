@@ -5,7 +5,7 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: 'SpaceNexus vs Payload Space — Space Industry Platform Comparison | SpaceNexus',
+  title: 'SpaceNexus vs Payload Space — Space Industry Platform Comparison',
   description:
     'Comparing SpaceNexus interactive intelligence platform vs Payload Space newsletter and media. Feature comparison, use cases, and why they complement each other.',
   keywords: [

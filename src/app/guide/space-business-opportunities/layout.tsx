@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Business Opportunities in 2026: Complete Industry Guide | SpaceNexus',
+  title: 'Space Business Opportunities in 2026: Complete Industry Guide',
   description: 'Discover the most lucrative space business opportunities in 2026. Covers government contracting, SBIR programs, satellite services, supply chain, space tourism, and how to break into the $626B+ space industry.',
   openGraph: {
     title: 'Space Business Opportunities Guide | SpaceNexus',
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
         url: '/api/og?title=Space+Business+Opportunities+Guide&subtitle=Government+contracts%2C+commercial+partnerships%2C+and+emerging+markets&type=guide',
         width: 1200,
         height: 630,
-        alt: 'Space Business Opportunities in 2026: Complete Industry Guide | SpaceNexus',
+        alt: 'Space Business Opportunities in 2026: Complete Industry Guide',
       },
     ],
   },

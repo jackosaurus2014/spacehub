@@ -10,7 +10,7 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 export const revalidate = 3600; // ISR: revalidate every hour
 
 export const metadata: Metadata = {
-  title: 'ITAR Compliance Guide for Space Companies | SpaceNexus Guide',
+  title: 'ITAR Compliance Guide for Space Companies',
   description:
     'Complete ITAR compliance guide for space companies. Understand USML categories, TAAs, licensing, penalties, and best practices for export control.',
   keywords: [

@@ -7,7 +7,7 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Learning Zone | SpaceNexus',
+  title: 'Learning Zone',
   description:
     'Interactive courses and lessons on orbital mechanics, propulsion, space law, supply chain, communications, and more. Learn by doing with built-in calculators and quizzes.',
   alternates: { canonical: 'https://spacenexus.us/learn' },

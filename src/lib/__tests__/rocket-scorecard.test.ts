@@ -7,7 +7,7 @@
  */
 jest.mock('@/lib/db', () => ({ __esModule: true, default: {} }));
 
-import { buildScorecard, rankScorecard, summarizeScorecard, activityOf, fmtPrice, fmtPerKg } from '../rocket-scorecard';
+import { buildScorecard, rankScorecard, summarizeScorecard, activityOf, fmtPrice, fmtPerKg, fmtNextLaunch } from '../rocket-scorecard';
 import type { LaunchVehicle } from '../launch-vehicles-data';
 import type { RocketIndexRow } from '../rockets';
 
@@ -21,7 +21,7 @@ const spec = (id: string, over: Partial<LaunchVehicle> = {}): LaunchVehicle => (
 } as LaunchVehicle);
 
 const row = (slug: string, over: Partial<RocketIndexRow> = {}): RocketIndexRow => ({
-  slug, spec: spec(slug), flown: 0, last90Days: 0, nextLaunch: null, thisYear: 0, thisYearFailed: 0, lastFlight: null, ...over,
+  slug, spec: spec(slug), flown: 0, last90Days: 0, nextLaunch: null, nextLaunchPrecision: null, thisYear: 0, thisYearFailed: 0, lastFlight: null, ...over,
 });
 
 describe('activity', () => {
@@ -84,5 +84,22 @@ describe('formatting', () => {
     expect(fmtPrice(74)).toBe('~$74M');
     expect(fmtPerKg(null)).toBe('—');
     expect(fmtPerKg(3246)).toBe('~$3,246');
+  });
+});
+
+describe('fmtNextLaunch', () => {
+  const d = new Date('2026-12-31T00:00:00Z');
+  it('prints the day when the feed knows it', () => {
+    expect(fmtNextLaunch(d, 'day')).toBe('Dec 31, 2026');
+    expect(fmtNextLaunch(d, 'exact')).toBe('Dec 31, 2026');
+    expect(fmtNextLaunch(d, null)).toBe('Dec 31, 2026');
+  });
+  it('never fabricates a day from a month/quarter/year placeholder', () => {
+    expect(fmtNextLaunch(d, 'month')).toBe('NET Dec 2026');
+    expect(fmtNextLaunch(new Date('2026-11-15T00:00:00Z'), 'quarter')).toBe('NET Q4 2026');
+    expect(fmtNextLaunch(d, 'year')).toBe('NET 2026');
+  });
+  it('handles no launch', () => {
+    expect(fmtNextLaunch(null, 'day')).toBe('—');
   });
 });

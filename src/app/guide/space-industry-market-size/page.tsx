@@ -10,7 +10,7 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 export const revalidate = 3600; // ISR: revalidate every hour
 
 export const metadata: Metadata = {
-  title: 'Space Industry Market Size 2026: Data, Trends & Forecasts | SpaceNexus Guide',
+  title: 'Space Industry Market Size 2026: Data, Trends & Forecasts',
   description:
     'The global space economy exceeded $626B in 2025. Explore detailed market size data, growth forecasts, and sector breakdowns for the space industry.',
   keywords: [

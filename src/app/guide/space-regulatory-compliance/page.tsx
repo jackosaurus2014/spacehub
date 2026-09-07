@@ -13,7 +13,7 @@ import { SITE_STATS } from '@/lib/site-stats';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Space Regulatory Compliance Guide: ITAR, FCC, FAA & More | SpaceNexus',
+  title: 'Space Regulatory Compliance Guide: ITAR, FCC, FAA & More',
   description:
     'Navigate the complex regulatory landscape for space companies. Covers ITAR export controls, FCC satellite licensing, FAA launch licensing, spectrum management, ITU coordination, Artemis Accords, and CMMC cybersecurity requirements.',
   keywords: [

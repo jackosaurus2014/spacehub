@@ -12,7 +12,7 @@ import NewsletterSignup from '@/components/NewsletterSignup';
 import { getLaunchCadence } from '@/lib/launch-cadence';
 import { getLaunchCalendar, launchDisplayName } from '@/lib/launch-calendar';
 import { getSlipData, RECORDING_SINCE } from '@/lib/launch-slips';
-import { getRocketScorecard } from '@/lib/rocket-scorecard';
+import { getRocketScorecard, fmtNextLaunch } from '@/lib/rocket-scorecard';
 import { formatLaunchDate } from '@/components/launches/LaunchRow';
 import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
 import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
@@ -359,7 +359,7 @@ export default async function SpaceLaunchSchedule2026Page() {
                             <td className="py-3 pr-4 text-white font-medium"><Link href={`/rockets/${r.slug}`} className="hover:text-cyan-300">{r.name}</Link><span className="text-slate-500 text-xs"> · {r.manufacturer}</span></td>
                             <td className="py-3 pr-4 text-right text-white tabular-nums">{r.thisYear}{r.thisYearFailed > 0 ? <span className="text-red-300 text-xs"> ({r.thisYearFailed} failed)</span> : null}</td>
                             <td className="py-3 pr-4 text-right text-slate-300 tabular-nums">{r.last90Days}</td>
-                            <td className="py-3 pr-4 text-slate-300">{r.nextLaunch ? formatLaunchDate(r.nextLaunch, false) : '—'}</td>
+                            <td className="py-3 pr-4 text-slate-300">{r.nextLaunch ? fmtNextLaunch(r.nextLaunch, r.nextLaunchPrecision) : '—'}</td>
                             <td className="py-3 text-right text-slate-400 tabular-nums">{r.payloadLeoKg.toLocaleString('en-US')} kg</td>
                           </tr>
                         ))}

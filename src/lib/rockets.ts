@@ -117,12 +117,16 @@ export interface RocketIndexRow {
   thisYear: number;
   thisYearFailed: number;
   lastFlight: Date | null;
+  /** Feed precision of `nextLaunch` ('day', 'month', 'quarter', 'exact', ...).
+   *  A "NET December" placeholder arrives dated Dec 31 with precision 'month';
+   *  pages must not print that as a day. */
+  nextLaunchPrecision: string | null;
 }
 
 export async function getRocketIndex(now: Date = new Date()): Promise<RocketIndexRow[]> {
   const rows = await prisma.spaceEvent.findMany({
     where: { rocket: { not: null }, type: { in: [...LAUNCH_EVENT_TYPES] } },
-    select: { rocket: true, launchDate: true, status: true },
+    select: { rocket: true, launchDate: true, status: true, launchDatePrecision: true },
   });
   const ninety = now.getTime() - 90 * 86_400_000;
   const startOfYear = Date.UTC(now.getUTCFullYear(), 0, 1);
@@ -138,6 +142,7 @@ export async function getRocketIndex(now: Date = new Date()): Promise<RocketInde
       flown: past.filter((r) => r.status === 'completed' || r.status === 'failed').length,
       last90Days: past.filter((r) => r.launchDate!.getTime() >= ninety && r.status !== 'scrubbed').length,
       nextLaunch: future[0]?.launchDate ?? null,
+      nextLaunchPrecision: future[0]?.launchDatePrecision ?? null,
       thisYear: past.filter((r) => r.launchDate!.getTime() >= startOfYear && (r.status === 'completed' || r.status === 'failed')).length,
       thisYearFailed: past.filter((r) => r.launchDate!.getTime() >= startOfYear && r.status === 'failed').length,
       lastFlight: past.filter((r) => r.status === 'completed' || r.status === 'failed').sort((a, b) => b.launchDate!.getTime() - a.launchDate!.getTime())[0]?.launchDate ?? null,

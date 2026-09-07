@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'SpaceNexus vs Bloomberg Terminal for Space Industry | SpaceNexus',
+  title: 'SpaceNexus vs Bloomberg Terminal for Space Industry',
   description: 'Comparing SpaceNexus (free-$19.99/mo) vs Bloomberg Terminal ($25,000/yr) for space industry professionals. Feature-by-feature comparison of data coverage, space-specific tools, pricing, and API access.',
   alternates: {
     canonical: 'https://spacenexus.us/compare/bloomberg-terminal',

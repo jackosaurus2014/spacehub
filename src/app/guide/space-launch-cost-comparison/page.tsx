@@ -8,7 +8,7 @@ import ReadingTime from '@/components/ui/ReadingTime';
 import RelatedModules from '@/components/ui/RelatedModules';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
-import { getRocketScorecard, fmtPrice, fmtPerKg } from '@/lib/rocket-scorecard';
+import { getRocketScorecard, fmtPrice, fmtPerKg, fmtNextLaunch } from '@/lib/rocket-scorecard';
 import { getLaunchCalendar, launchDisplayName } from '@/lib/launch-calendar';
 import { formatLaunchDate } from '@/components/launches/LaunchRow';
 import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
@@ -397,7 +397,7 @@ export default async function SpaceLaunchCostComparisonPage() {
                             <td className="px-3 py-2.5 text-right text-star-200 tabular-nums">{r.payloadLeoKg.toLocaleString('en-US')} kg</td>
                             <td className="px-3 py-2.5 text-right text-white tabular-nums">{r.thisYear}{r.thisYearFailed > 0 ? <span className="text-red-300 text-xs"> ({r.thisYearFailed} failed)</span> : null}</td>
                             <td className="px-3 py-2.5 text-right text-star-200 tabular-nums">{r.last90Days}</td>
-                            <td className="px-3 py-2.5 text-star-200">{r.nextLaunch ? formatLaunchDate(r.nextLaunch, false) : r.status === 'In Development' ? 'Not yet flown' : '—'}</td>
+                            <td className="px-3 py-2.5 text-star-200">{r.nextLaunch ? fmtNextLaunch(r.nextLaunch, r.nextLaunchPrecision) : r.status === 'In Development' ? 'Not yet flown' : '—'}</td>
                           </tr>
                         ))}
                       </tbody>

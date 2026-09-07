@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Commercial Space Economy Overview: Industries, Revenue & Opportunities | SpaceNexus Guide',
+  title: 'Commercial Space Economy Overview: Industries, Revenue & Opportunities',
   description: 'Explore the commercial space economy: satellite broadband, Earth observation, launch, in-space manufacturing, and emerging space industries.',
   alternates: {
     canonical: 'https://spacenexus.us/guide/commercial-space-economy',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
         url: '/api/og?title=Commercial+Space+Economy+Guide&subtitle=Market+dynamics%2C+key+players%2C+revenue+streams%2C+and+emerging+business+models&type=guide',
         width: 1200,
         height: 630,
-        alt: 'Commercial Space Economy Overview: Industries, Revenue & Opportunities | SpaceNexus Guide',
+        alt: 'Commercial Space Economy Overview: Industries, Revenue & Opportunities',
       },
     ],
   },

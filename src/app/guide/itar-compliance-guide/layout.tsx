@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'ITAR Compliance Guide for Space Companies | SpaceNexus Guide',
+  title: 'ITAR Compliance Guide for Space Companies',
   description: 'Complete ITAR compliance guide for space companies. Understand USML categories, TAAs, licensing, penalties, and best practices for export control.',
   openGraph: {
     title: 'ITAR Compliance Guide for Space Companies | SpaceNexus',
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
         url: '/api/og?title=ITAR+Compliance+Guide&subtitle=Export+control+requirements%2C+registration+process%2C+and+best+practices+for+aerospace&type=guide',
         width: 1200,
         height: 630,
-        alt: 'ITAR Compliance Guide for Space Companies | SpaceNexus Guide',
+        alt: 'ITAR Compliance Guide for Space Companies',
       },
     ],
   },

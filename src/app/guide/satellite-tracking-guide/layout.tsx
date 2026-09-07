@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'The Complete Satellite Tracking Guide: How to Track Any Object in Orbit | SpaceNexus',
+  title: 'The Complete Satellite Tracking Guide: How to Track Any Object in Orbit',
   description: 'Learn how to track satellites, the ISS, and space debris in real time. Covers TLE data, SGP4 propagation, orbit types, tracking sources, and conjunction assessments for beginners and professionals.',
   openGraph: {
     title: 'Satellite Tracking Guide | SpaceNexus',
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
         url: '/api/og?title=Satellite+Tracking+Guide&subtitle=TLE+data%2C+orbital+mechanics+basics%2C+and+real-time+tracking+tools&type=guide',
         width: 1200,
         height: 630,
-        alt: 'The Complete Satellite Tracking Guide: How to Track Any Object in Orbit | SpaceNexus',
+        alt: 'The Complete Satellite Tracking Guide: How to Track Any Object in Orbit',
       },
     ],
   },

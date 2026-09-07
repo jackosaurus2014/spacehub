@@ -12,7 +12,7 @@ import { SITE_STATS } from '@/lib/site-stats';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Space Business Opportunities in 2026: Complete Industry Guide | SpaceNexus',
+  title: 'Space Business Opportunities in 2026: Complete Industry Guide',
   description:
     'Discover the most lucrative space business opportunities in 2026. Covers government contracting, SBIR programs, satellite services, supply chain, space tourism, and how to break into the $626B+ space industry.',
   keywords: [

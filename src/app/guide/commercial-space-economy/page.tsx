@@ -9,7 +9,7 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 export const revalidate = 3600; // ISR: revalidate every hour
 
 export const metadata: Metadata = {
-  title: 'Commercial Space Economy Overview: Industries, Revenue & Opportunities | SpaceNexus Guide',
+  title: 'Commercial Space Economy Overview: Industries, Revenue & Opportunities',
   description:
     'Explore the commercial space economy: satellite broadband, Earth observation, launch, in-space manufacturing, and emerging space industries.',
   keywords: [

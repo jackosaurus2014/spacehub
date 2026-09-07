@@ -44,6 +44,36 @@ function staticTitle(src: string): string | null {
   return m[1] ?? m[2];
 }
 
+/** Sections whose layout sets `title.template` re-append the brand; a static
+ *  title that already ends in "| SpaceNexus" renders it twice. Seen live on
+ *  /guide/space-economy-investment ("... | SpaceNexus | SpaceNexus Guide"). */
+describe('static titles under a templated section carry no brand suffix', () => {
+  // Nested sections only. The root layout's '%s | SpaceNexus' template does
+  // not double a page title that already ends in the brand (verified live on
+  // /startups, /space-stocks, /jobs); the section templates do.
+  const templated = walk(APP).filter((d) => d !== APP && /template:\s*'%s/.test(readFileSync(join(d, 'layout.tsx'), 'utf-8')));
+  it('finds the templated sections (sanity)', () => {
+    expect(templated.length).toBeGreaterThan(2);
+  });
+  for (const section of templated) {
+    const files: string[] = [];
+    (function collect(dir: string) {
+      for (const name of readdirSync(dir)) {
+        const p = join(dir, name);
+        if (statSync(p).isDirectory()) collect(p);
+        else if (name === 'page.tsx' || name === 'layout.tsx') files.push(p);
+      }
+    })(section);
+    for (const f of files) {
+      const title = staticTitle(readFileSync(f, 'utf-8'));
+      if (title == null) continue;
+      it(relative(APP, f).replace(/\\/g, '/'), () => {
+        expect(title).not.toMatch(/\|\s*SpaceNexus(\s+\w+)?\s*$/);
+      });
+    }
+  }
+});
+
 describe('layout.tsx and page.tsx metadata agree', () => {
   const dirs = walk(APP).filter((d) => {
     const l = readFileSync(join(d, 'layout.tsx'), 'utf-8');

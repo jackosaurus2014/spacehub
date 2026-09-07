@@ -12,7 +12,7 @@ import { SITE_STATS } from '@/lib/site-stats';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Investing in the Space Economy: Complete 2026 Guide | SpaceNexus',
+  title: 'Investing in the Space Economy: Complete 2026 Guide',
   description:
     'Comprehensive guide to investing in the space economy. Covers public space stocks, ETFs, venture capital, SPAC lessons, company evaluation metrics, and emerging investment themes for 2026-2030.',
   keywords: [

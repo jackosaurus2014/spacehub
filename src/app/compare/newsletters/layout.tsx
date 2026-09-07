@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Industry Newsletters Compared | SpaceNexus',
+  title: 'Space Industry Newsletters Compared',
   description:
     'Compare the top space industry newsletters side-by-side: Payload Space, SpaceNexus Weekly Brief, Orbital Index, T-Minus, and Space Explored. Frequency, content focus, price, and audience analysis.',
   keywords: [
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     'aerospace newsletter',
   ],
   openGraph: {
-    title: 'Space Industry Newsletters Compared | SpaceNexus',
+    title: 'Space Industry Newsletters Compared',
     description:
       'Side-by-side comparison of the top space industry newsletters. Find the right newsletter for your role in the space economy.',
     type: 'website',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Space Industry Newsletters Compared | SpaceNexus',
+    title: 'Space Industry Newsletters Compared',
     description:
       'Compare the top space industry newsletters: frequency, content, pricing, and audience.',
   },

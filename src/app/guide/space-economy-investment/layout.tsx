@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Investing in the Space Economy: Complete 2026 Guide | SpaceNexus',
+  title: 'Investing in the Space Economy: Complete 2026 Guide',
   description: 'Comprehensive guide to investing in the space economy. Covers public space stocks, ETFs, venture capital, SPAC lessons, company evaluation metrics, and emerging investment themes for 2026-2030.',
   openGraph: {
     title: 'Space Economy Investment Guide | SpaceNexus',
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
         url: '/api/og?title=Space+Economy+Investment+Guide&subtitle=Venture+capital+trends%2C+public+space+companies%2C+and+emerging+opportunities&type=guide',
         width: 1200,
         height: 630,
-        alt: 'Investing in the Space Economy: Complete 2026 Guide | SpaceNexus',
+        alt: 'Investing in the Space Economy: Complete 2026 Guide',
       },
     ],
   },

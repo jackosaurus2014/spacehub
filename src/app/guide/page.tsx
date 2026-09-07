@@ -7,7 +7,7 @@ import { GUIDE_LIST } from '@/lib/guide-navigation';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Space Industry Guides | SpaceNexus',
+  title: 'Space Industry Guides',
   description:
     'In-depth guides to the space industry: market size and data, investing, launch costs, satellite tracking, regulatory compliance, and where to watch a launch.',
   keywords: [
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     canonical: 'https://spacenexus.us/guide',
   },
   openGraph: {
-    title: 'Space Industry Guides | SpaceNexus',
+    title: 'Space Industry Guides',
     description:
       'In-depth guides to the space industry: market size and data, investing, launch costs, satellite tracking, regulatory compliance, and where to watch a launch.',
     type: 'website',
