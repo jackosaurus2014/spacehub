@@ -10,6 +10,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { getRocketScorecard, summarizeScorecard, fmtPrice, fmtPerKg, type ScorecardRow } from '@/lib/rocket-scorecard';
 import { getLaunchCadence } from '@/lib/launch-cadence';
+import { getVehicleStatus } from '@/lib/vehicle-status';
 import { formatLaunchDate } from '@/components/launches/LaunchRow';
 import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
 
@@ -220,7 +221,7 @@ export default async function RocketsFlyingGuide() {
                     {quiet.map((r) => (
                       <li key={r.slug} className="flex items-start gap-3 text-slate-400 text-sm">
                         <span className="mt-2 w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" aria-hidden="true" />
-                        <span><Link href={`/rockets/${r.slug}`} className="text-white hover:text-cyan-300">{r.name}</Link> · {r.manufacturer}{r.lastFlight ? ` · last tracked flight ${formatLaunchDate(r.lastFlight, false)}` : ''} · lifetime {r.lifetimeLaunches} at {r.lifetimeSuccessRate}%</span>
+                        <span><Link href={`/rockets/${r.slug}`} className="text-white hover:text-cyan-300">{r.name}</Link> · {r.manufacturer}{r.lastFlight ? ` · last tracked flight ${formatLaunchDate(r.lastFlight, false)}` : ''} · lifetime {r.lifetimeLaunches} at {r.lifetimeSuccessRate}%{getVehicleStatus(r.slug) ? <span className="block text-slate-300 mt-0.5">{getVehicleStatus(r.slug)!.headline} <span className="text-slate-500">(as of {getVehicleStatus(r.slug)!.asOf})</span></span> : null}</span>
                       </li>
                     ))}
                   </ul>
@@ -234,7 +235,7 @@ export default async function RocketsFlyingGuide() {
                     {dev.map((r) => (
                       <li key={r.slug} className="flex items-start gap-3 text-slate-400 text-sm">
                         <span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" />
-                        <span><Link href={`/rockets/${r.slug}`} className="text-white hover:text-cyan-300">{r.name}</Link> · {r.manufacturer} · {r.payloadLeoKg.toLocaleString('en-US')} kg to LEO{r.nextLaunch ? ` · first flight on the manifest for ${formatLaunchDate(r.nextLaunch, false)}` : ' · no first flight on the manifest yet'}</span>
+                        <span><Link href={`/rockets/${r.slug}`} className="text-white hover:text-cyan-300">{r.name}</Link> · {r.manufacturer} · {r.payloadLeoKg.toLocaleString('en-US')} kg to LEO{r.nextLaunch ? ` · first flight on the manifest for ${formatLaunchDate(r.nextLaunch, false)}` : ' · no first flight on the manifest yet'}{getVehicleStatus(r.slug) ? <span className="block text-slate-300 mt-0.5">{getVehicleStatus(r.slug)!.headline}</span> : null}</span>
                       </li>
                     ))}
                   </ul>

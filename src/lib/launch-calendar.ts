@@ -20,9 +20,18 @@ export interface CalendarMonth {
   flown: number;
   failed: number;
   scheduled: number; // future rows only; 0 for past months
+  /** Of `scheduled`, how many carry a real date (feed precision finer than a
+   *  month) versus a "NET December"-style placeholder. The feed parks undated
+   *  launches at month or quarter granularity, which made one month look like
+   *  a surge until this split existed (2026-09-07). */
+  scheduledDated: number;
+  scheduledCoarse: number;
   isPast: boolean;
   isCurrent: boolean;
 }
+
+/** Feed precisions that mean "we know roughly when", not "we know when". */
+const COARSE_PRECISION = /^(month|quarter|half|year|decade)$/i;
 
 export interface CalendarLaunch {
   id: string;
@@ -73,12 +82,12 @@ export const getLaunchCalendar = unstable_cache(async (): Promise<LaunchCalendar
 
     const rows = await prisma.spaceEvent.findMany({
       where: { rocket: { not: null }, launchDate: { gte: startOfYear, lt: endOfYear } },
-      select: { id: true, name: true, mission: true, launchDate: true, status: true, rocket: true, agency: true, location: true },
+      select: { id: true, name: true, mission: true, launchDate: true, launchDatePrecision: true, status: true, rocket: true, agency: true, location: true },
       orderBy: { launchDate: 'asc' },
     });
 
     const months: CalendarMonth[] = MONTH_LABELS.map((label, i) => ({
-      month: i + 1, label, flown: 0, failed: 0, scheduled: 0,
+      month: i + 1, label, flown: 0, failed: 0, scheduled: 0, scheduledDated: 0, scheduledCoarse: 0,
       isPast: i < now.getUTCMonth(), isCurrent: i === now.getUTCMonth(),
     }));
     const next30: CalendarLaunch[] = [];
@@ -93,6 +102,7 @@ export const getLaunchCalendar = unstable_cache(async (): Promise<LaunchCalendar
         if (flown) { m.flown++; flownYtd++; if (r.status === 'failed') m.failed++; }
       } else if (r.status !== 'scrubbed') {
         m.scheduled++; scheduledRest++;
+        if (COARSE_PRECISION.test(r.launchDatePrecision ?? '')) m.scheduledCoarse++; else m.scheduledDated++;
         if (d.getTime() <= in30.getTime()) {
           next30.push({
             id: r.id, name: r.name, mission: r.mission, launchDate: d.toISOString(), status: r.status,

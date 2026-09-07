@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  description: 'See what\'s coming next on SpaceNexus. Our public product roadmap and upcoming features.',
+  description: 'See what\'s next for SpaceNexus. Our public roadmap covers upcoming features, integrations, and platform improvements for 2026 and beyond.',
   alternates: {
     canonical: 'https://spacenexus.us/roadmap',
   },

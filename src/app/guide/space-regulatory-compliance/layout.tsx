@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Regulatory Compliance Guide',
-  description: 'Navigate space regulatory compliance with this guide. FCC licensing, FAA launch permits, ITU spectrum coordination, ITAR/EAR export controls, and international treaties.',
+  title: 'Space Regulatory Compliance Guide: ITAR, FCC, FAA & More | SpaceNexus',
+  description: 'Navigate the complex regulatory landscape for space companies. Covers ITAR export controls, FCC satellite licensing, FAA launch licensing, spectrum management, ITU coordination, Artemis Accords, and CMMC cybersecurity requirements.',
   openGraph: {
     title: 'Space Regulatory Compliance Guide | SpaceNexus',
     description: 'Navigate space regulatory compliance. FCC licensing, FAA launch permits, ITU spectrum coordination, and export controls.',
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
         url: '/api/og?title=Space+Regulatory+Compliance+Guide&subtitle=FCC+licensing%2C+FAA+launch+permits%2C+ITU+spectrum+coordination%2C+and+export+controls&type=guide',
         width: 1200,
         height: 630,
-        alt: 'Space Regulatory Compliance Guide',
+        alt: 'Space Regulatory Compliance Guide: ITAR, FCC, FAA & More | SpaceNexus',
       },
     ],
   },

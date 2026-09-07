@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'SpaceNexus vs Payload Space',
-  description: 'Compare SpaceNexus with Payload Space for space industry news and intelligence. Feature comparison, real-time data, and platform capabilities.',
+  title: 'SpaceNexus vs Payload Space — Space Industry Platform Comparison | SpaceNexus',
+  description: 'Comparing SpaceNexus interactive intelligence platform vs Payload Space newsletter and media. Feature comparison, use cases, and why they complement each other.',
   alternates: {
     canonical: 'https://spacenexus.us/compare/payload-space',
   },

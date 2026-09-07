@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Community Guidelines',
-  description: 'Community guidelines and code of conduct for SpaceNexus. Includes ITAR/EAR export control obligations, content policies, and professional standards.',
+  title: 'Community Guidelines | SpaceNexus',
+  description: 'Community guidelines and code of conduct for SpaceNexus, the space industry intelligence platform. Includes ITAR/EAR export control obligations and content policies.',
   openGraph: {
     title: 'Community Guidelines | SpaceNexus',
-    description: 'Community guidelines and code of conduct for SpaceNexus. Includes ITAR/EAR export control obligations, content policies, and professional standards.',
+    description: 'Community guidelines and code of conduct for SpaceNexus, the space industry intelligence platform. Includes ITAR/EAR export control obligations and content policies.',
   },
   alternates: {
     canonical: 'https://spacenexus.us/community/guidelines',

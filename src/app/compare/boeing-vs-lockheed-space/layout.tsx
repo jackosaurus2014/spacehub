@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Boeing vs Lockheed Martin Space: Industry Comparison | SpaceNexus',
+  title: 'Boeing Space vs Lockheed Martin Space: Complete Comparison 2026',
   description:
-    'Compare Boeing and Lockheed Martin space divisions side-by-side: Starliner vs Orion, satellite manufacturing, defense contracts, SLS contributions, and government space programs.',
+    'Compare Boeing Space and Lockheed Martin Space divisions — defense contracts, revenue, programs, satellites, human spaceflight, and strategic direction.',
   keywords: [
     'Boeing vs Lockheed Martin space',
     'Starliner vs Orion',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     'prime space contractors comparison',
   ],
   openGraph: {
-    title: 'Boeing vs Lockheed Martin Space: Industry Comparison | SpaceNexus',
+    title: 'Boeing Space vs Lockheed Martin Space: Complete Comparison 2026',
     description:
       'Compare Boeing and Lockheed Martin space divisions side-by-side: Starliner vs Orion, satellite manufacturing, defense contracts, and government space programs.',
     type: 'website',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Boeing vs Lockheed Martin Space: Industry Comparison | SpaceNexus',
+    title: 'Boeing Space vs Lockheed Martin Space: Complete Comparison 2026',
     description:
       'Compare Boeing and Lockheed Martin space divisions side-by-side: Starliner vs Orion, satellite manufacturing, defense contracts, and government space programs.',
     images: ['/api/og?title=Boeing+vs+Lockheed+Space&type=compare'],

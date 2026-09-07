@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Iridium vs Globalstar: Satellite Communications Comparison | SpaceNexus',
+  title: 'Iridium vs Globalstar: Complete Comparison 2026',
   description:
-    'Compare Iridium and Globalstar side-by-side: constellation architecture, global coverage, IoT services, voice and data capabilities, and satellite phone performance.',
+    'Compare Iridium and Globalstar satellite communication constellations — coverage, voice/data services, subscribers, satellite count, and use cases including emergency messaging and IoT.',
   keywords: [
     'Iridium vs Globalstar',
     'satellite phone comparison',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     'MSS provider comparison',
   ],
   openGraph: {
-    title: 'Iridium vs Globalstar: Satellite Communications Comparison | SpaceNexus',
+    title: 'Iridium vs Globalstar: Complete Comparison 2026',
     description:
       'Compare Iridium and Globalstar side-by-side: constellation architecture, global coverage, IoT services, voice and data capabilities.',
     type: 'website',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Iridium vs Globalstar: Satellite Communications Comparison | SpaceNexus',
+    title: 'Iridium vs Globalstar: Complete Comparison 2026',
     description:
       'Compare Iridium and Globalstar side-by-side: constellation architecture, global coverage, IoT services, voice and data capabilities.',
     images: ['/api/og?title=Iridium+vs+Globalstar&type=compare'],

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  description: 'Your guide to observing the night sky. See satellites, the ISS, planets, and astronomical events visible tonight.',
+  description: 'Your guide to observing the night sky. Learn what\'s visible tonight — planets, satellites, meteor showers, and ISS passes. Tips for beginners.',
   alternates: {
     canonical: 'https://spacenexus.us/night-sky-guide',
   },

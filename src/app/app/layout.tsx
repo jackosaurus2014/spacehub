@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Download the App',
-  description: 'Download the SpaceNexus app. Space industry intelligence on your phone — available on Google Play.',
+  title: 'Get the App - SpaceNexus on Google Play',
+  description: 'Download SpaceNexus for Android on Google Play. Track rocket launches, satellite orbits, market data, and space weather on the go. Free to install.',
   alternates: {
     canonical: 'https://spacenexus.us/app',
   },

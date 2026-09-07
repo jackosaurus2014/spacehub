@@ -246,7 +246,7 @@ export default async function SpaceLaunchSchedule2026Page() {
               <section id="monthly">
                 <h2 className="text-2xl font-bold text-white mb-4">Month-by-Month Launch Schedule</h2>
                 <p className="text-slate-400 leading-relaxed mb-4">
-                  Launches that flew each month this year, and what is on the manifest for the months ahead. Manifests move constantly — the changes we record are further down — so the scheduled counts are a snapshot, not a promise, and our feed only carries the next few months. For countdowns and streams, use{' '}
+                  Launches that flew each month this year, and what is on the manifest for the months ahead. Manifests move constantly — the changes we record are further down — so the scheduled counts are a snapshot, not a promise, and a launch the feed only knows to the month is counted as “month-only” rather than as a date. For countdowns and streams, use{' '}
                   <Link href="/mission-control" className="text-slate-300 hover:underline">Mission Control</Link>.
                 </p>
                 {calendar ? (
@@ -267,7 +267,7 @@ export default async function SpaceLaunchSchedule2026Page() {
                         ) : (
                           <>
                             <div className="text-lg font-bold text-slate-300 mt-1 tabular-nums">{m.scheduled}</div>
-                            <div className="text-xs text-slate-400">on the manifest</div>
+                            <div className="text-xs text-slate-400">{m.scheduledCoarse > 0 ? `${m.scheduledDated} dated · ${m.scheduledCoarse} month-only` : 'on the manifest'}</div>
                           </>
                         )}
                       </div>

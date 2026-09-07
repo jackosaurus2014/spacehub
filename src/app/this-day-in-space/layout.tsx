@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  description: 'What happened in space on this day? Historical space events, launches, and milestones throughout history.',
+  description: 'Discover what happened in space history on this day. Major launches, discoveries, milestones, and achievements throughout the history of spaceflight.',
   alternates: {
     canonical: 'https://spacenexus.us/this-day-in-space',
   },

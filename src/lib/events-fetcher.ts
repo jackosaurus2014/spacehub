@@ -1,6 +1,14 @@
 import prisma from './db';
 import { SpaceEventType, SpaceEventStatus } from '@/types';
 import { createCircuitBreaker } from './circuit-breaker';
+
+/** The feed's date precision, lower-cased ('day', 'month', 'quarter', ...).
+ *  Falls back to 'exact' when the feed says nothing, which is what every row
+ *  carried before 2026-09-07. */
+function launchDatePrecisionOf(launch: { net_precision?: { name?: string | null } | null }): string {
+  const name = launch.net_precision?.name?.trim().toLowerCase();
+  return name || 'exact';
+}
 import { logger } from './logger';
 
 const launchLibraryBreaker = createCircuitBreaker('launch-library', {
@@ -9,6 +17,7 @@ const launchLibraryBreaker = createCircuitBreaker('launch-library', {
 });
 
 interface LaunchLibraryLaunch {
+  net_precision?: { name?: string | null } | null;
   id: string;
   name: string;
   slug?: string;
@@ -179,7 +188,13 @@ export function launchToEventData(launch: LaunchLibraryLaunch) {
     type: eventType,
     status,
     launchDate: launch.net ? new Date(launch.net) : null,
-    launchDatePrecision: 'exact',
+    // 2026-09-07: keep the feed's own precision (LL2 net_precision: Second,
+    // Minute, Hour, Day, Week, Month, Quarter, Half, Year, ...) instead of
+    // stamping every row 'exact'. A "NET December" placeholder and a launch
+    // with a T-0 must not count the same on a calendar; the schedule guide
+    // splits dated from month-only on this field. Lower-cased, so consumers
+    // compare against 'month' / 'quarter' / 'year' without caring about case.
+    launchDatePrecision: launchDatePrecisionOf(launch),
     windowStart: launch.window_start ? new Date(launch.window_start) : null,
     windowEnd: launch.window_end ? new Date(launch.window_end) : null,
     location: launch.pad?.location?.name || launch.pad?.name || null,

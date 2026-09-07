@@ -6,6 +6,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import LaunchRow, { formatLaunchDate, missionTitle } from '@/components/launches/LaunchRow';
 import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
 import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
+import { getVehicleStatus, statusAgeDays } from '@/lib/vehicle-status';
 import { allRocketSlugs, getRocketEntry, getRocketLiveStats, getRocketSpec } from '@/lib/rockets';
 import { VEHICLE_RECORDS_AS_OF } from '@/lib/launch-vehicles-data';
 import { LAUNCH_SITES } from '@/lib/launch-sites';
@@ -54,6 +55,9 @@ export default async function RocketPage(props: { params: Promise<{ slug: string
   if (!spec || !entry) notFound();
   const now = new Date();
   const live = await getRocketLiveStats(params.slug, now);
+  // Hand-maintained, dated fact sheet (vehicle-status.ts): what the tracker
+  // cannot know — why a rocket is grounded, what the next milestone is.
+  const vstatus = getVehicleStatus(params.slug);
   const siteLinks = live.sites
     .map((s) => ({ ...s, site: LAUNCH_SITES.find((x) => x.matcher.test(s.location)) }))
     .filter((s) => s.site);
@@ -179,6 +183,28 @@ export default async function RocketPage(props: { params: Promise<{ slug: string
             ))}
           </div>
         </section>
+
+        {vstatus && (
+          <section className="mb-10" aria-labelledby="vehicle-status-heading">
+            <h2 id="vehicle-status-heading" className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Status</h2>
+            <div className={`rounded-xl border p-4 ${vstatus.standing === 'flying' ? 'border-emerald-500/30 bg-emerald-500/5' : vstatus.standing === 'grounded' || vstatus.standing === 'paused' ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/[0.08] bg-white/[0.02]'}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[10px] uppercase tracking-wider border rounded px-2 py-0.5 border-white/15 text-slate-200">{vstatus.standing}</span>
+                <span className="text-xs text-slate-500">as of {vstatus.asOf}{statusAgeDays(vstatus, now) > 45 ? ' · may be out of date' : ''}</span>
+              </div>
+              <p className="text-slate-200 leading-relaxed">{vstatus.headline}</p>
+              {vstatus.events.length > 0 && (
+                <ul className="mt-3 space-y-1.5 text-sm text-slate-400">
+                  {vstatus.events.slice(-4).map((e) => (
+                    <li key={e.date + e.text.slice(0, 20)} className="flex gap-3"><span className="text-slate-500 tabular-nums whitespace-nowrap">{e.date}</span><span>{e.text}</span></li>
+                  ))}
+                </ul>
+              )}
+              {vstatus.nextMilestone && <p className="mt-3 text-sm text-slate-300"><strong className="text-slate-200">Next:</strong> {vstatus.nextMilestone}</p>}
+              <p className="mt-2 text-[11px] text-slate-500">Sources: {vstatus.sources.join(' · ')}</p>
+            </div>
+          </section>
+        )}
 
         <section className="mb-10">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">What&apos;s next</h2>

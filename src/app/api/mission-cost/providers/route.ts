@@ -379,7 +379,7 @@ const LAUNCH_PROVIDERS: LaunchProviderDetails[] = [
     liftoffMass: 1300000,
 
     description: 'Blue Origin\'s heavy-lift orbital rocket with reusable first stage. Designed for high reliability.',
-    keyCustomers: ['NASA', 'Amazon Kuiper', 'Telesat'],
+    keyCustomers: ['NASA', 'Amazon Leo (formerly Kuiper)', 'Telesat'],
     upcomingEnhancements: ['New Glenn Heavy', 'Crew capability'],
   },
   {

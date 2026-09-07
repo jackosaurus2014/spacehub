@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     default: 'Space Industry Learning Center',
   },
   description:
-    'Comprehensive guides, data, and analysis on the space industry. Learn about satellite launch costs, market sizing, satellite tracking, and leading space companies.',
+    'Interactive courses and lessons on orbital mechanics, propulsion, space law, supply chain, communications, and more. Learn by doing with built-in calculators and quizzes.',
   keywords: [
     'space industry guide',
     'space industry education',

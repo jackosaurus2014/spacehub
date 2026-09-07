@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Relativity Space vs Firefly Aerospace: Comparison | SpaceNexus',
+  title: 'Relativity Space vs Firefly Aerospace: Complete Comparison 2026',
   description:
-    'Compare Relativity Space and Firefly Aerospace side-by-side: 3D-printed rockets vs traditional manufacturing, Terran R vs Alpha and MLV, launch capabilities, and funding.',
+    'Compare Relativity Space and Firefly Aerospace — two small-to-medium launch startups with different technical approaches, funding, vehicles, and orbital success records.',
   keywords: [
     'Relativity Space vs Firefly',
     'Relativity Space vs Firefly Aerospace',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     'emerging launch providers',
   ],
   openGraph: {
-    title: 'Relativity Space vs Firefly Aerospace: Comparison | SpaceNexus',
+    title: 'Relativity Space vs Firefly Aerospace: Complete Comparison 2026',
     description:
       'Compare Relativity Space and Firefly Aerospace side-by-side: 3D-printed rockets vs traditional manufacturing, launch capabilities, and future roadmaps.',
     type: 'website',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Relativity Space vs Firefly Aerospace: Comparison | SpaceNexus',
+    title: 'Relativity Space vs Firefly Aerospace: Complete Comparison 2026',
     description:
       'Compare Relativity Space and Firefly Aerospace side-by-side: 3D-printed rockets vs traditional manufacturing, launch capabilities, and future roadmaps.',
     images: ['/api/og?title=Relativity+Space+vs+Firefly&type=compare'],

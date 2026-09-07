@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 export const metadata: Metadata = {
-  description: 'SpaceNexus solutions for investors, analysts, engineers, and executives in the space industry.',
+  description: 'Discover SpaceNexus solutions tailored for space investors, analysts, engineers, and executives. Data-driven intelligence tools for every role in the space industry.',
   alternates: {
     canonical: 'https://spacenexus.us/solutions',
   },

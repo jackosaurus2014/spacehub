@@ -51,7 +51,7 @@ const MARKET_SEGMENTS = [
     revenue: 197,
     share: 32.8,
     growth: 4.2,
-    description: 'Direct-to-home TV, satellite radio, broadband (Starlink, OneWeb, Kuiper), managed services, remote sensing data, direct-to-device',
+    description: 'Direct-to-home TV, satellite radio, broadband (Starlink, OneWeb, Amazon Leo), managed services, remote sensing data, direct-to-device',
   },
   {
     name: 'Ground Equipment',

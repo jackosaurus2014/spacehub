@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Launch Cost 2026: From $3,246/kg',
-  description: 'Falcon 9 lands near $3,246/kg to LEO, the cheapest ride to orbit in 2026. Compare cost per kilogram across Starship, Electron, Ariane 6, New Glenn, and more.',
+  title: 'How Much Does It Cost to Launch a Satellite? 2026 Prices by Rocket',
+  description: 'A Falcon 9 lists at ~$74M (about $3,246/kg), rideshare starts at $350k for 50 kg, and an Electron runs ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
   alternates: {
     canonical: 'https://spacenexus.us/guide/space-launch-cost-comparison',
   },
   openGraph: {
     title: 'Space Launch Cost 2026: From $3,246/kg | SpaceNexus',
-    description: 'Falcon 9 lands near $3,246/kg to LEO, the cheapest ride to orbit in 2026. Compare cost per kilogram across Starship, Electron, Ariane 6, New Glenn, and more.',
+    description: 'A Falcon 9 lists at ~$74M (about $3,246/kg), rideshare starts at $350k for 50 kg, and an Electron runs ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
     images: [
       {
         url: '/api/og?title=Space+Launch+Cost+Comparison&subtitle=Cost+per+kilogram+data+for+SpaceX%2C+ULA%2C+Arianespace%2C+Rocket+Lab%2C+and+more&type=guide',

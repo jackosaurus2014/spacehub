@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  description: 'New to the space industry? Start here with beginner-friendly guides, tutorials, and resources from SpaceNexus.',
+  description: 'New to space? Start here. Learn the basics of satellites, rockets, orbits, and the space industry — with links to deeper content on SpaceNexus.',
   alternates: {
     canonical: 'https://spacenexus.us/beginners',
   },

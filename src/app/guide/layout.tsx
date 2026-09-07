@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     default: 'Space Industry Guides & Resources',
   },
   description:
-    'In-depth guides on the space industry covering satellite tracking, ITAR compliance, launch costs, market sizing, regulatory compliance, and business opportunities.',
+    'In-depth guides to the space industry: market size and data, investing, launch costs, satellite tracking, regulatory compliance, and where to watch a launch.',
   keywords: [
     'space industry guide',
     'satellite tracking guide',
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Space Industry Guides & Resources | SpaceNexus',
     description:
-      'In-depth guides on the space industry covering satellite tracking, ITAR compliance, launch costs, market sizing, regulatory compliance, and business opportunities.',
+      'In-depth guides to the space industry: market size and data, investing, launch costs, satellite tracking, regulatory compliance, and where to watch a launch.',
     type: 'website',
     url: 'https://spacenexus.us/guide',
     siteName: 'SpaceNexus',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Space Industry Guides & Resources | SpaceNexus',
     description:
-      'In-depth guides on the space industry covering satellite tracking, ITAR compliance, launch costs, market sizing, regulatory compliance, and business opportunities.',
+      'In-depth guides to the space industry: market size and data, investing, launch costs, satellite tracking, regulatory compliance, and where to watch a launch.',
     images: ['/api/og?title=Space+Industry+Guides+%26+Resources&subtitle=In-depth+guides+on+satellite+tracking%2C+ITAR+compliance%2C+launch+costs%2C+and+more&type=guide'],
   },
   alternates: {

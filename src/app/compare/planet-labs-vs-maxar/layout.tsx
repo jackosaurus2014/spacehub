@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Planet Labs vs Maxar: Earth Observation Comparison | SpaceNexus',
+  title: 'Planet Labs vs Maxar (Vantor / Lanteris): Complete Comparison 2026',
   description:
-    'Compare Planet Labs and Maxar side-by-side: satellite fleets, imaging resolution, revisit rates, data products, government contracts, and geospatial intelligence capabilities.',
+    'Compare Planet Labs (PL) and the former Maxar Technologies — now split into Vantor (Earth observation/intelligence) and Lanteris Space Systems (satellite manufacturing) — side by side: constellation size, resolution, revenue, customers, data products, and business model.',
   keywords: [
     'Planet Labs vs Maxar',
     'earth observation comparison',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     'earth imaging satellites',
   ],
   openGraph: {
-    title: 'Planet Labs vs Maxar: Earth Observation Comparison | SpaceNexus',
+    title: 'Planet Labs vs Maxar (Vantor / Lanteris): Complete Comparison 2026',
     description:
       'Compare Planet Labs and Maxar side-by-side: satellite fleets, imaging resolution, revisit rates, data products, and geospatial intelligence capabilities.',
     type: 'website',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Planet Labs vs Maxar: Earth Observation Comparison | SpaceNexus',
+    title: 'Planet Labs vs Maxar (Vantor / Lanteris): Complete Comparison 2026',
     description:
       'Compare Planet Labs and Maxar side-by-side: satellite fleets, imaging resolution, revisit rates, data products, and geospatial intelligence capabilities.',
     images: ['/api/og?title=Planet+Labs+vs+Maxar&type=compare'],

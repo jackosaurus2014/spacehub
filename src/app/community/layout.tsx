@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Community Hub',
-  description: 'Connect with space industry professionals. Browse forums, join discussions, and network with experts across the commercial space ecosystem.',
+  title: 'Community Hub | SpaceNexus',
+  description: 'Where the SpaceNexus community gathers today — Space Tycoon corporations, the M/Th Digest, and the feedback line — and what is staged for launch as the community grows.',
   alternates: {
     canonical: 'https://spacenexus.us/community',
   },

@@ -2,10 +2,10 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Space Industry Tools',
-  description: 'Professional tools for space industry analysis including calculators, comparison tools, and planning resources.',
+  description: 'The complete directory of SpaceNexus: launch trackers and rocket pages, news and analysis, market data, business and compliance tools, courses, engineering calculators, and reference data — searchable.',
   openGraph: {
     title: 'Space Industry Tools | SpaceNexus',
-    description: 'Professional tools for space industry analysis including calculators, comparison tools, and planning resources.',
+    description: 'The complete directory of SpaceNexus: launch trackers and rocket pages, news and analysis, market data, business and compliance tools, courses, engineering calculators, and reference data — searchable.',
     images: [
       {
         url: '/api/og?title=Space+Engineering+Tools&subtitle=Professional+calculators%2C+comparison+tools%2C+and+planning+resources&type=tools',
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Space Industry Tools | SpaceNexus',
-    description: 'Professional tools for space industry analysis including calculators, comparison tools, and planning resources.',
+    description: 'The complete directory of SpaceNexus: launch trackers and rocket pages, news and analysis, market data, business and compliance tools, courses, engineering calculators, and reference data — searchable.',
     images: ['/api/og?title=Space+Engineering+Tools&subtitle=Professional+calculators%2C+comparison+tools%2C+and+planning+resources&type=tools'],
   },
   alternates: {
