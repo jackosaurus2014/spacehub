@@ -49,6 +49,7 @@ Chosen from live search demand rather than the original list: the largest new qu
 - `/guide/rockets-flying-in-2026` — **SHIPPED 2026-09-06**: every registry vehicle ranked live (flying / quiet / not yet flown), shared derivation with the carrier guides (`src/lib/rocket-scorecard.ts`).
 - `/guide/space-tourism-cost` — **SHIPPED 2026-09-06**: the March blog post (ranking #3) promoted with every price dated + sourced; the post 301s here. Fact-check found the post a year stale: Virgin Galactic $750k (Apr 2026), New Shepard paused ≥2 years (Jan 30, 2026), dearMoon cancelled.
 - Still on the list from the same pass, not built: an ISS-retirement explainer.
+- **2026-09-07 follow-through on `docs/IDEAS_2026-09-06.md`** (SHIPPED): per-vehicle status fact sheet (`src/lib/vehicle-status.ts`) read by rocket pages + the scorecard; metadata-precedence guard test (36 dead layout titles synced; 24 doubled "| SpaceNexus" suffixes fixed); feed `net_precision` stored, calendar splits dated vs month-only, "NET Dec 2026" instead of a fake Dec 31; Kuiper → Amazon Leo on seeds. Dropped: rocket-page alert form (exists), blog `redirectedTo` field (301 + delete is the pattern).
 
 ## Tier 3 — October (M/L, authority)
 
