@@ -6,6 +6,9 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { COST_TO_LAUNCH, getCostToLaunch } from '@/lib/cost-to-launch';
 import { LAUNCH_COST_AS_OF } from '@/lib/launch-cost-constants';
 
+/** Last time the prose changed (the file's commit date when this was introduced, 2026-09-08). Bump by hand on edits; never now(). */
+const LAST_EDITED = '2026-09-01T00:00:00Z';
+
 // Static registry (src/lib/cost-to-launch.ts): every slug is enumerated and
 // dynamicParams=false makes the router 404 anything else at the routing
 // layer — the pattern src/app/blog/[slug] documents. No DB, so it can
@@ -119,7 +122,7 @@ export default async function CostToLaunchPage(props: { params: Promise<{ thing:
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
           '@context': 'https://schema.org', '@type': 'Article', headline: c.title, description: c.description,
           author: { '@type': 'Organization', name: 'SpaceNexus' }, publisher: { '@type': 'Organization', name: 'SpaceNexus', logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' } },
-          datePublished: '2026-08-28T00:00:00Z', dateModified: new Date().toISOString(), mainEntityOfPage: { '@type': 'WebPage', '@id': `https://spacenexus.us/guide/cost-to-launch/${c.slug}` },
+          datePublished: '2026-08-28T00:00:00Z', dateModified: LAST_EDITED, mainEntityOfPage: { '@type': 'WebPage', '@id': `https://spacenexus.us/guide/cost-to-launch/${c.slug}` },
         }).replace(/</g, '\\u003c') }} />
         <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guide' }, { name: 'Cost to launch', href: '/guide/cost-to-launch' }, { name: c.title }]} />
       </div>

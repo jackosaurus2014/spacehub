@@ -7,6 +7,9 @@ import { LAUNCH_VEHICLES, type LaunchVehicle } from '@/lib/launch-vehicles-data'
 import { getRocketLiveStats, type RocketLiveStats } from '@/lib/rockets';
 import { LAUNCH_COST_AS_OF, LAUNCH_COST_SOURCE } from '@/lib/launch-cost-constants';
 
+/** Last time the prose changed (the file's commit date when this was introduced, 2026-09-08). Bump by hand on edits; never now(). */
+const LAST_EDITED = '2026-09-01T00:00:00Z';
+
 // Head-to-head for the two US medium/heavy workhorses. Every catalogue
 // number is read from LAUNCH_VEHICLES at render time (never retyped), and
 // the cadence block comes from the live SpaceEvent table, which is why the
@@ -311,7 +314,7 @@ export default async function VulcanVsFalcon9Page() {
         description: 'ULA Vulcan Centaur vs SpaceX Falcon 9 side by side: price, cost per kilogram, payload, reliability and live cadence.',
         author: { '@type': 'Organization', name: 'SpaceNexus' },
         publisher: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
-        datePublished: '2026-09-01', dateModified: new Date().toISOString().slice(0, 10),
+        datePublished: '2026-09-01', dateModified: LAST_EDITED.slice(0, 10),
         url: CANONICAL,
       }).replace(/</g, '\\u003c') }} />
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Vulcan Centaur vs Falcon 9' }]} />

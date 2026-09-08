@@ -5,6 +5,9 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
+/** Last time the prose changed (the file's commit date when this was introduced, 2026-09-08). Bump by hand on edits; never now(). */
+const LAST_EDITED = '2026-09-07T00:00:00Z';
+
 export const metadata: Metadata = {
   title: 'SpaceNexus vs Bloomberg Terminal for Space Industry',
   description:
@@ -351,7 +354,7 @@ export default function BloombergComparisonPage() {
               logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
             },
             datePublished: '2026-02-17T00:00:00Z',
-            dateModified: new Date().toISOString(),
+            dateModified: LAST_EDITED,
             mainEntityOfPage: {
               '@type': 'WebPage',
               '@id': 'https://spacenexus.us/compare/bloomberg-terminal',

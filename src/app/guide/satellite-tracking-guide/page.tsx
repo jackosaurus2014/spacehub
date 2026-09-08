@@ -9,6 +9,9 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import HowToSchema from '@/components/seo/HowToSchema';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
+/** Last time the prose changed (the file's commit date when this was introduced, 2026-09-08). Bump by hand on edits; never now(). */
+const LAST_EDITED = '2026-09-07T00:00:00Z';
+
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
@@ -638,7 +641,7 @@ export default function SatelliteTrackingGuidePage() {
                 author: { '@type': 'Organization', name: 'SpaceNexus' },
                 publisher: { '@type': 'Organization', name: 'SpaceNexus', logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' } },
                 datePublished: '2026-02-14T00:00:00Z',
-                dateModified: new Date().toISOString(),
+                dateModified: LAST_EDITED,
                 mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://spacenexus.us/guide/satellite-tracking-guide' },
               }).replace(/</g, '\\u003c'),
             }}

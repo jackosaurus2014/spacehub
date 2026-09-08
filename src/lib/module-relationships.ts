@@ -349,6 +349,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'solutions/investors': [MODULES.companyProfiles, MODULES.fundingTracker, MODULES.spaceCapital, MODULES.dealFlow],
   'solutions/analysts': [MODULES.marketIntel, MODULES.industryTrends, MODULES.satellites, MODULES.spaceDefense, MODULES.news],
   'solutions/engineers': [MODULES.satellites, MODULES.constellationDesigner, MODULES.orbitalCalc, MODULES.linkBudget, MODULES.tools],
+  'solutions/educators': [MODULES.learn, MODULES.satellites, MODULES.launchManifest, MODULES.launchVehicles],
   'solutions/executives': [MODULES.marketIntel, MODULES.executiveMoves, MODULES.marketMap, MODULES.contractAwards, MODULES.intelligenceBrief],
   'use-cases': [MODULES.companyProfiles, MODULES.satellites, MODULES.marketIntel, MODULES.tools, MODULES.spaceCapital],
   'report/state-of-space-2026': [MODULES.marketIntel, MODULES.spaceEconomy, MODULES.industryTrends, MODULES.fundingTracker, MODULES.marketSizing],

@@ -33,8 +33,8 @@ import Provenance from '@/components/ui/Provenance';
 
 const PRICING_FAQ = [
   { question: 'What is SpaceNexus?', answer: `SpaceNexus is a comprehensive space industry intelligence platform that provides real-time data on satellite tracking, launch schedules, space stocks, regulatory compliance, and ${SITE_STATS.companies} company profiles across ${SITE_STATS.modules} modules.` },
-  { question: 'Is there a free plan?', answer: 'Yes! Our Explorer plan is completely free and includes access to mission countdowns, basic news feeds, satellite tracking for 50 satellites, and community features.' },
-  { question: "What's included in the Professional plan?", answer: 'Professional ($19.99/month) unlocks everything: unlimited news, full satellite tracking, market intelligence, deal flow, daily AI market insights, regulatory and compliance suite, patent and procurement intelligence, full API access, custom dashboards, CSV data export, and an ad-free experience. One plan, the entire platform.' },
+  { question: 'Is there a free plan?', answer: 'Yes! Our Explorer plan is completely free and includes access to mission countdowns, basic news feeds, the full satellite catalog, launch tracking, the Space Tycoon game, and up to 15 articles a day.' },
+  { question: "What's included in the Professional plan?", answer: 'Professional ($19.99/month) unlocks everything: unlimited news, full satellite tracking, market intelligence, deal flow, daily AI market insights, regulatory and compliance suite, patent and procurement intelligence, API access (5,000 requests a month), satellite pass alerts and webhooks, saved watchlists, CSV data export, and an ad-free experience. One plan, the entire platform.' },
   { question: 'Can I cancel anytime?', answer: 'Absolutely. All plans are month-to-month with no long-term commitment. You can cancel anytime and retain access until the end of your billing period.' },
   { question: 'What payment methods do you accept?', answer: 'We accept all major credit cards (Visa, Mastercard, American Express), Apple Pay, and Google Pay through our secure Stripe payment processor.' },
   { question: 'How does SpaceNexus compare to building this in-house?', answer: 'Companies typically spend $50K–$200K/year aggregating the same data from NASA, NOAA, SEC, SAM.gov, and 40+ other sources. SpaceNexus gives you all of it for $19.99/month — with AI analysis included.' },
@@ -284,8 +284,8 @@ const FEATURE_CATEGORIES = [
   {
     name: 'Content & Data',
     features: [
-      { label: 'News articles', free: '10/day', pro: 'Unlimited' },
-      { label: 'Company profiles', free: '10/month', pro: 'Unlimited' },
+      { label: 'News articles', free: '15/day', pro: 'Unlimited' },
+      { label: 'Company profiles', free: 'Full directory', pro: 'Full directory + watchlists' },
       { label: 'Market intelligence', free: 'Preview', pro: 'Full dashboard + export' },
       { label: 'Space Score access', free: 'Top 10', pro: 'Full rankings' },
       { label: 'Jobs, gigs & salary data', free: true, pro: true },
@@ -296,7 +296,7 @@ const FEATURE_CATEGORIES = [
   {
     name: 'Tracking & Tools',
     features: [
-      { label: 'Satellite tracking', free: '50 satellites', pro: 'Full catalog + alerts' },
+      { label: 'Satellite tracking', free: 'Full catalog', pro: 'Full catalog + 25 pass alerts' },
       { label: 'Launch tracking', free: 'Basic', pro: 'Full + calculator + API' },
       { label: 'Orbital calculator', free: true, pro: true },
       { label: 'Resource exchange', free: false, pro: true },
@@ -308,7 +308,7 @@ const FEATURE_CATEGORIES = [
     name: 'Intelligence & Analytics',
     features: [
       { label: 'AI insights', free: false, pro: 'Unlimited' },
-      { label: 'Deal flow database', free: false, pro: '113+ deals' },
+      { label: 'Funding-round database', free: false, pro: 'Every tracked round' },
       { label: 'Supply chain intel', free: false, pro: true },
       { label: 'Regulatory calendar & compliance', free: false, pro: 'Full suite' },
       { label: 'Patent intelligence', free: false, pro: true },
@@ -318,11 +318,11 @@ const FEATURE_CATEGORIES = [
   {
     name: 'Export & Integration',
     features: [
-      { label: 'Data export', free: false, pro: 'CSV, JSON, PDF' },
-      { label: 'Custom alerts', free: false, pro: '50 active' },
-      { label: 'API access', free: false, pro: '10,000 req/month' },
+      { label: 'Data export', free: false, pro: 'CSV downloads + JSON via API' },
+      { label: 'Custom alerts', free: false, pro: '25 satellite alerts + 10 webhooks' },
+      { label: 'API access', free: false, pro: '5,000 req/month, 60/min, 3 keys' },
       { label: 'Webhook integrations', free: false, pro: true },
-      { label: 'Custom dashboards', free: false, pro: true },
+      { label: 'Saved watchlists', free: false, pro: true },
     ],
   },
   {

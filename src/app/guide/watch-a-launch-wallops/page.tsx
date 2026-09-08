@@ -9,6 +9,9 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
+/** Last time the prose changed (the file's commit date when this was introduced, 2026-09-08). Bump by hand on edits; never now(). */
+const LAST_EDITED = '2026-09-01T00:00:00Z';
+
 export const revalidate = 3600;
 
 const OG = '/api/og?title=Watch+a+Launch+at+Wallops&subtitle=Chincoteague%2C+Assateague+and+the+Delmarva+coast&type=guide';
@@ -366,7 +369,7 @@ export default function WatchALaunchWallopsPage() {
                   logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
                 },
                 datePublished: '2026-09-01T00:00:00Z',
-                dateModified: new Date().toISOString(),
+                dateModified: LAST_EDITED,
                 mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://spacenexus.us/guide/watch-a-launch-wallops' },
               }).replace(/</g, '\\u003c'),
             }}

@@ -6,6 +6,9 @@ import ReadingTime from '@/components/ui/ReadingTime';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
+/** Last time the prose changed (the file's commit date when this was introduced, 2026-09-08). Bump by hand on edits; never now(). */
+const LAST_EDITED = '2026-09-07T00:00:00Z';
+
 export const revalidate = 3600; // ISR: revalidate every hour
 
 export const metadata: Metadata = {
@@ -94,7 +97,7 @@ function buildStructuredData() {
       logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
-    dateModified: new Date().toISOString(),
+    dateModified: LAST_EDITED,
     mainEntityOfPage: 'https://spacenexus.us/guide/commercial-space-economy',
     image: 'https://spacenexus.us/og-image.png',
   };
