@@ -29,7 +29,7 @@ const COMPARISON_DATA = [
   { metric: 'Research Capabilities', a: 'Dedicated science bay, open-rack research platform', b: 'Multiple lab modules, microgravity manufacturing' },
   { metric: 'Launch Vehicle', a: 'SpaceX Starship (single launch to orbit)', b: 'New Glenn (core) + Falcon Heavy / Vulcan (additional modules)' },
   { metric: 'Starship Compatibility', a: 'Designed for single Starship launch deployment', b: 'Not Starship-dependent; uses New Glenn + commercial launchers' },
-  { metric: 'Target Launch Date', a: '2028 (announced)', b: 'Late 2020s (first module)' },
+  { metric: 'Target Launch Date', a: '2029 (on a single Starship)', b: '2030 (core on New Glenn, which is grounded until LC-36 is rebuilt)' },
   { metric: 'Space Tourism', a: 'Planned — Hilton partnership for hospitality design', b: 'Planned — visitor accommodations and tourism modules' },
   { metric: 'Artificial Gravity', a: 'Not announced', b: 'Not in baseline design' },
   { metric: 'Total Estimated Cost', a: 'Not publicly disclosed', b: 'Estimated $3-4B+ total program' },

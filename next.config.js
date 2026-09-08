@@ -332,6 +332,7 @@ const nextConfig = {
       { source: '/lunar-gateway', destination: '/cislunar?tab=gateway', permanent: true },
       // 2026-09-06: the space-tourism blog post promoted to a fact-checked guide.
       { source: '/blog/space-tourism-2026-who-can-fly-costs', destination: '/guide/space-tourism-cost', permanent: true },
+      { source: '/blog/iss-decommission-what-happens-space-station-retires', destination: '/guide/when-does-the-iss-retire', permanent: true },
       { source: '/spectrum-auctions', destination: '/spectrum?tab=auctions', permanent: true },
       { source: '/space-jobs', destination: '/space-talent?tab=jobs', permanent: true },
       { source: '/workforce', destination: '/space-talent?tab=workforce', permanent: true },

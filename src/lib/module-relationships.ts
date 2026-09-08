@@ -186,6 +186,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'guide/when-is-artemis-3': [MODULES.launchManifest, MODULES.learn, MODULES.companyProfiles, MODULES.launchVehicles],
   'guide/rockets-flying-in-2026': [MODULES.launchVehicles, MODULES.launchManifest, MODULES.launchCostCalc, MODULES.companyProfiles],
   'guide/space-tourism-cost': [MODULES.companyProfiles, MODULES.launchManifest, MODULES.spaceStocks, MODULES.learn],
+  'guide/when-does-the-iss-retire': [MODULES.companyProfiles, MODULES.launchManifest, MODULES.learn, MODULES.startupTracker],
   'space-capital': [MODULES.fundingTracker, MODULES.investors, MODULES.dealFlow, MODULES.spaceEconomy],
   'market-sizing': [MODULES.marketIntel, MODULES.industryTrends, MODULES.spaceEconomy, MODULES.marketMap],
   'funding-tracker': [MODULES.spaceCapital, MODULES.investors, MODULES.dealFlow, MODULES.fundingRounds, MODULES.startupTracker],

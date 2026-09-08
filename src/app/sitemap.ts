@@ -198,6 +198,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/guide/when-is-artemis-3`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/guide/rockets-flying-in-2026`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/guide/space-tourism-cost`, changeFrequency: 'weekly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/guide/when-does-the-iss-retire`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/guide/space-debris-and-traffic-management`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/guide/space-weather-risk-for-operators`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/guide/satellite-companies`, changeFrequency: 'monthly' as const, priority: 0.7 },

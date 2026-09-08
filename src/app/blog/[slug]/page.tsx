@@ -96,7 +96,6 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'how-many-satellites-in-space-2026': { tool: 'Satellite Tracker', path: '/satellites' },
   'spacex-starlink-everything-you-need-to-know-2026': { tool: 'Constellation Tracker', path: '/constellations' },
   'top-50-space-companies-to-watch-2026': { tool: 'Company Profiles', path: '/company-profiles' },
-  'iss-decommission-what-happens-space-station-retires': { tool: 'Space Stations', path: '/space-stations' },
   'space-weather-explained-solar-flares-cmes': { tool: 'Space Weather', path: '/space-weather' },
   'every-space-agency-world-complete-directory': { tool: 'Space Agencies', path: '/space-agencies' },
   'falcon-9-workhorse-rocket-changed-spaceflight': { tool: 'Launch Vehicles', path: '/launch-vehicles' },

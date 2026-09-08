@@ -148,6 +148,11 @@ export const GUIDE_LIST: GuideEntry[] = [
     title: 'How Much Does It Cost to Go to Space? (2026)',
     shortTitle: 'Space Tourism Cost',
   },
+  {
+    slug: 'when-does-the-iss-retire',
+    title: 'When Does the ISS Retire? (2026)',
+    shortTitle: 'ISS Retirement',
+  },
 ];
 
 export function getGuideNavigation(currentSlug: string): {
