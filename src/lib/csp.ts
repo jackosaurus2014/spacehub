@@ -267,6 +267,7 @@ export const NONCE_ELIGIBLE_ROUTES: readonly string[] = [
   '/embed/chart/[slug]',
   '/embed/countdown/[slug]',
   '/embed/launch-cadence',
+  '/embed/launch-calendar',
   '/embed/space-weather',
   '/export-compliance-qa',
   '/gallery',

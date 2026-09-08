@@ -34,7 +34,14 @@ interface JobsPreviewData {
   atPrivateCompanies: string;
 }
 
-type PreviewData = MarketPreviewData | LaunchPreviewData | WeatherPreviewData | JobsPreviewData;
+interface StatsPreviewData {
+  type: 'stats';
+  label: string;
+  stats: { value: string; caption: string }[];
+  footer?: string;
+}
+
+type PreviewData = MarketPreviewData | LaunchPreviewData | WeatherPreviewData | JobsPreviewData | StatsPreviewData;
 
 interface WidgetConfig {
   name: string;
@@ -103,6 +110,41 @@ const widgets: WidgetConfig[] = [
       label: 'Space Industry Jobs',
       totalActive: '6,300+',
       atPrivateCompanies: '4,800+',
+    },
+  },
+  {
+    name: 'Launch Calendar',
+    slug: 'launch-calendar',
+    href: '/guide/space-launch-schedule-2026',
+    displayUrl: 'spacenexus.us/embed/launch-calendar',
+    description: 'Orbital launches flown each month this year, what is scheduled for the months ahead, and the next launch on the manifest — live from the SpaceNexus tracker. For space blogs, club sites and classroom pages.',
+    embedCode: '<iframe src="https://spacenexus.us/embed/launch-calendar" width="420" height="330" frameborder="0" title="SpaceNexus live launch calendar" style="border-radius:12px;overflow:hidden;"></iframe>',
+    preview: {
+      type: 'stats',
+      label: 'SpaceNexus · Launch Calendar',
+      stats: [
+        { value: '219', caption: 'launches flown this year' },
+        { value: '22', caption: 'on the manifest, next 30 days' },
+      ],
+      footer: 'Jan 25 · Feb 19 · Mar 30 · Apr 34 · May 23 · Jun 29 · Jul 27 · Aug 26 …',
+    },
+  },
+  {
+    name: 'Launch Cadence Index',
+    slug: 'launch-cadence',
+    href: '/launch-cadence',
+    displayUrl: 'spacenexus.us/embed/launch-cadence',
+    description: 'This year\'s orbital launch pace against the same date last year, projected full-year total, success rate, and the top providers — the live index behind our cadence page.',
+    embedCode: '<iframe src="https://spacenexus.us/embed/launch-cadence" width="420" height="300" frameborder="0" title="SpaceNexus launch cadence index" style="border-radius:12px;overflow:hidden;"></iframe>',
+    preview: {
+      type: 'stats',
+      label: 'SpaceNexus · Launch Cadence Index',
+      stats: [
+        { value: '219', caption: '2026 to date' },
+        { value: '216', caption: 'same date 2025' },
+        { value: '~322', caption: 'projected full year' },
+      ],
+      footer: 'SpaceX 107 · CASC · Rocket Lab · Roscosmos · ULA …',
     },
   },
   {
@@ -255,6 +297,17 @@ function WidgetPreview({ widget }: { widget: WidgetConfig }) {
     case 'launch': return <LaunchPreview data={data} />;
     case 'weather': return <WeatherPreview data={data} />;
     case 'jobs': return <JobsPreview data={data} />;
+    case 'stats': return (
+      <div className="p-4 text-left">
+        <p className="text-[10px] uppercase tracking-[0.12em] text-white/50 mb-3">{data.label}</p>
+        <div className="flex flex-wrap gap-5">
+          {data.stats.map((st) => (
+            <div key={st.caption}><div className="text-2xl font-bold text-white tabular-nums">{st.value}</div><div className="text-[11px] text-white/50">{st.caption}</div></div>
+          ))}
+        </div>
+        {data.footer && <p className="text-[11px] text-white/60 mt-3">{data.footer}</p>}
+      </div>
+    );
     default: return null;
   }
 }
