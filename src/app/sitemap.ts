@@ -28,8 +28,11 @@ export async function generateSitemaps() {
   return [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }];
 }
 
-export default async function sitemap({ id }: { id: number }): Promise<MetadataRoute.Sitemap> {
-  switch (id) {
+export default async function sitemap({ id }: { id: number | string }): Promise<MetadataRoute.Sitemap> {
+  // Next 15 hands generateSitemaps ids back as STRINGS on dynamic render, so a
+  // numeric switch matched nothing and every part served an empty <urlset>
+  // from the 15.5 upgrade (2026-09-02) until 2026-09-09.
+  switch (Number(id)) {
     case 0:
       return getStaticRoutes();
     case 1:
