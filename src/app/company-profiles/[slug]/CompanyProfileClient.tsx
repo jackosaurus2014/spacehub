@@ -1,0 +1,2672 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams, useRouter, usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import Console from '@/components/ui/Console';
+import Telemetry from '@/components/ui/Telemetry';
+import EmptyState from '@/components/ui/EmptyState';
+import DataTable, { type DataTableColumn } from '@/components/ui/DataTable';
+import CompanyWatchForm from '@/components/company/CompanyWatchForm';
+import WatchButton from '@/components/watchlist/WatchButton';
+import { clientLogger } from '@/lib/client-logger';
+import OrganizationProfileSchema from '@/components/seo/OrganizationProfileSchema';
+import { toast } from '@/lib/toast';
+import SponsorBadge from '@/components/company/SponsorBadge';
+import CompanyAvatar from '@/components/company/CompanyAvatar';
+import SponsorBanner from '@/components/company/SponsorBanner';
+import LeadCaptureForm from '@/components/company/LeadCaptureForm';
+import SimilarCompanies from '@/components/company/SimilarCompanies';
+import HiringTrend from '@/components/company/HiringTrend';
+import RevenueTrend from '@/components/company/RevenueTrend';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import ShareButton from '@/components/ui/ShareButton';
+import SocialShare from '@/components/ui/SocialShare';
+import ExportPDFButton from '@/components/ui/ExportPDFButton';
+import { SpaceNexusScoreInline } from '@/components/company/SpaceNexusScore';
+import { calculateSpaceNexusScore, getScoreColor as snxScoreColor, getScoreGrade } from '@/lib/spacenexus-score';
+import { getEntityLinks } from '@/lib/entity-linker';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { trackGA4Event } from '@/lib/analytics';
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+interface FundingRound {
+  id: string; date: string; amount: number | null; seriesLabel: string | null;
+  roundType: string | null; leadInvestor: string | null; investors: string[];
+  postValuation: number | null; source: string | null;
+}
+interface RevenueEstimate {
+  id: string; year: number; quarter: number | null; revenue: number | null;
+  revenueRange: string | null; source: string | null; confidenceLevel: string;
+}
+interface Product {
+  id: string; name: string; category: string | null; description: string | null;
+  status: string; specs: Record<string, unknown> | null;
+}
+interface Person {
+  id: string; name: string; title: string; role: string | null;
+  linkedinUrl: string | null; bio: string | null; previousCompanies: string[];
+}
+interface Contract {
+  id: string; agency: string; title: string; description: string | null;
+  awardDate: string | null; value: number | null; ceiling: number | null;
+  type: string | null;
+}
+interface CompanyEvent {
+  id: string; date: string; type: string; title: string;
+  description: string | null; importance: number;
+}
+interface Satellite {
+  id: string; satelliteName: string; orbitType: string | null; status: string;
+  missionType: string | null; launchDate: string | null; constellation: string | null;
+}
+interface Facility {
+  id: string; name: string; type: string; city: string | null;
+  country: string; description: string | null;
+}
+interface Acquisition {
+  id: string; targetName: string; date: string | null; price: number | null;
+  dealType: string | null; status: string;
+}
+interface Partnership {
+  id: string; partnerName: string; type: string | null;
+  description: string | null; announcedDate: string | null;
+}
+interface Score {
+  id: string; scoreType: string; score: number; breakdown: Record<string, unknown> | null;
+}
+interface Competitor {
+  id: string; slug: string; name: string; logoUrl: string | null; sector: string | null;
+}
+
+export interface CompanyDetail {
+  id: string; slug: string; name: string; legalName: string | null;
+  ticker: string | null; exchange: string | null; headquarters: string | null;
+  country: string | null; foundedYear: number | null; employeeCount: number | null;
+  employeeRange: string | null; website: string | null; description: string | null;
+  longDescription: string | null; logoUrl: string | null; ceo: string | null;
+  analystNote?: string | null;
+  cto: string | null; linkedinUrl: string | null; twitterUrl: string | null;
+  isPublic: boolean; marketCap: number | null; stockPrice: number | null;
+  priceChange24h: number | null;
+  stockDataSource?: 'live' | 'db';
+  stockDataAsOf?: string | null;
+  status: string; sector: string | null; subsector: string | null;
+  tags: string[]; tier: number; totalFunding: number | null;
+  lastFundingRound: string | null; valuation: number | null;
+  revenueEstimate: number | null; ownershipType: string | null;
+  parentCompany: string | null; dataCompleteness: number;
+  sponsorTier: string | null;
+  sponsorTagline: string | null;
+  sponsorBanner: string | null;
+  completenessBreakdown?: {
+    total: number;
+    basicInfo: number;
+    financialData: number;
+    productsOperations: number;
+    businessIntelligence: number;
+    externalData: number;
+  };
+  fundingRounds: FundingRound[]; revenueEstimates: RevenueEstimate[];
+  products: Product[]; keyPersonnel: Person[];
+  acquisitions: Acquisition[]; partnerships: Partnership[];
+  contracts: Contract[]; events: CompanyEvent[];
+  satelliteAssets: Satellite[]; facilities: Facility[];
+  scores: Score[];
+  jobPostingsCount: number;
+  /** Terminal wave (2026-08-31): API has always sent these (RELATION_SELECT
+   *  take 10) — the client type just never declared them. Optional because
+   *  the API's fallback query path can omit relations. */
+  secFilings?: { filingType: string; filingDate: string | null; edgarUrl: string | null }[];
+  /** G9 (2026-09-01): leadership moves matched by companySlug or name. */
+  executiveMoves?: { id: string; personName: string; fromCompany: string | null; fromTitle: string | null; toCompany: string | null; toTitle: string | null; moveType: string; date: string }[];
+  summary: {
+    totalContractValue: number; activeSatellites: number;
+    totalSatellites: number; totalFundingRounds: number;
+    totalProducts: number; totalPersonnel: number;
+    totalFacilities: number; totalEvents: number;
+    competitors: Competitor[];
+  };
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function fmt(value: number | null, opts?: { compact?: boolean }): string {
+  if (!value) return '—';
+  if (opts?.compact !== false) {
+    if (value >= 1e12) return `$${(value / 1e12).toFixed(1)}T`;
+    if (value >= 1e9) return `$${(value / 1e9).toFixed(1)}B`;
+    if (value >= 1e6) return `$${(value / 1e6).toFixed(0)}M`;
+    if (value >= 1e3) return `$${(value / 1e3).toFixed(0)}K`;
+  }
+  return `$${value.toLocaleString()}`;
+}
+
+function fmtDate(d: string | null): string {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
+}
+
+function getSectorIcon(s: string | null): string {
+  const m: Record<string, string> = {
+    launch: '🚀', satellite: '🛰️', defense: '🛡️', infrastructure: '🏗️',
+    'ground-segment': '📡', manufacturing: '⚙️', analytics: '📊',
+    agency: '🏛️', exploration: '🔭',
+  };
+  return m[s || ''] || '🏢';
+}
+
+function getEventIcon(type: string): string {
+  const m: Record<string, string> = {
+    founding: '🏁', first_launch: '🚀', ipo: '📈', acquisition: '🤝',
+    contract_win: '📜', milestone: '⭐', product_launch: '🎯',
+    funding: '💰', partnership: '🔗', regulatory: '⚖️',
+  };
+  return m[type] || '📌';
+}
+
+function getScoreColor(score: number): string {
+  if (score >= 80) return 'text-emerald-400';
+  if (score >= 60) return 'text-slate-300';
+  if (score >= 40) return 'text-amber-400';
+  return 'text-red-400';
+}
+
+function getScoreBarColor(score: number): string {
+  if (score >= 80) return 'bg-emerald-500';
+  if (score >= 60) return 'bg-white';
+  if (score >= 40) return 'bg-amber-500';
+  return 'bg-red-500';
+}
+
+// ─── Marketplace Actions ─────────────────────────────────────────────────────
+
+function MarketplaceActions({ companySlug, companyId, companyName, verificationLevel, contactEmail: initialContactEmail, claimedByUserId, jobPostingsCount }: { companySlug: string; companyId: string; companyName: string; verificationLevel?: string | null; contactEmail?: string | null; claimedByUserId?: string | null; jobPostingsCount?: number }) {
+  const { data: session, status: sessionStatus } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [claiming, setClaiming] = useState(false);
+  const [claimed, setClaimed] = useState(!!verificationLevel);
+  const [claimEmail, setClaimEmail] = useState('');
+  const [showClaimForm, setShowClaimForm] = useState(false);
+  const [verLevel, setVerLevel] = useState<string | null>(verificationLevel || null);
+  const [contactEmail, setContactEmail] = useState<string | null>(initialContactEmail || null);
+
+  // Meeting request state
+  const [showMeetingForm, setShowMeetingForm] = useState(false);
+  const [meetingForm, setMeetingForm] = useState({ visitorName: '', visitorEmail: '', visitorCompany: '', message: '', preferredDate: '' });
+  const [meetingSubmitting, setMeetingSubmitting] = useState(false);
+
+  const handleMeetingSubmit = async () => {
+    if (!meetingForm.visitorName || !meetingForm.visitorEmail || meetingForm.message.length < 10) return;
+    setMeetingSubmitting(true);
+    try {
+      const res = await fetch(`/api/company-profiles/${companySlug}/meeting-requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          visitorName: meetingForm.visitorName,
+          visitorEmail: meetingForm.visitorEmail,
+          visitorCompany: meetingForm.visitorCompany || null,
+          message: meetingForm.message,
+          preferredDate: meetingForm.preferredDate || null,
+        }),
+      });
+      if (res.ok) {
+        toast.success('Meeting request sent! The company will review your request.');
+        setShowMeetingForm(false);
+        setMeetingForm({ visitorName: '', visitorEmail: '', visitorCompany: '', message: '', preferredDate: '' });
+      } else {
+        const err = await res.json();
+        toast.error(err.error?.message || err.error || 'Failed to send meeting request');
+      }
+    } catch {
+      toast.error('Failed to send meeting request. Please try again.');
+    } finally {
+      setMeetingSubmitting(false);
+    }
+  };
+
+  const handleClaim = async () => {
+    if (!claimEmail) return;
+    setClaiming(true);
+    try {
+      const res = await fetch(`/api/company-profiles/${companySlug}/claim`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactEmail: claimEmail }),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setClaimed(true);
+        setVerLevel(result.company?.verificationLevel || 'pending');
+        setContactEmail(claimEmail);
+        setShowClaimForm(false);
+        toast.success(result.message || 'Profile claimed successfully!');
+      } else if (res.status === 401) {
+        toast.error('Please sign in to claim a company profile.');
+        router.push(`/login?returnTo=${encodeURIComponent(pathname)}`);
+      } else if (res.status === 403) {
+        const err = await res.json().catch(() => ({ error: 'Upgrade required' }));
+        trackGA4Event('company_claim_blocked', { reason: 'free_tier' });
+        toast.error(err.error || 'Upgrade to Pro to claim this profile');
+      } else {
+        const err = await res.json();
+        toast.error(err.error || 'Failed to claim profile');
+      }
+    } catch {
+      toast.error('Failed to claim profile. Please try again.');
+    } finally {
+      setClaiming(false);
+    }
+  };
+
+  return (
+    <div className="mt-4 pt-4 border-t border-white/[0.06] flex flex-wrap items-center gap-3">
+      {claimed && verLevel && (
+        <span className={`text-xs font-bold px-2 py-1 rounded ${
+          verLevel === 'performance' ? 'bg-yellow-500/20 text-yellow-400' :
+          verLevel === 'capability' ? 'bg-green-500/20 text-green-400' :
+          'bg-blue-500/20 text-blue-400'
+        }`}>
+          {verLevel === 'performance' ? '★ Performance Verified' :
+           verLevel === 'capability' ? '✓✓ Capability Verified' :
+           '✓ Identity Verified'}
+        </span>
+      )}
+      {claimed && contactEmail && (
+        <a
+          href={`mailto:${contactEmail}`}
+          className="text-xs px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg font-medium transition-colors"
+        >
+          Contact Provider
+        </a>
+      )}
+      {claimed && session?.user?.id === claimedByUserId && (
+        <>
+          <Link
+            href="/provider-dashboard"
+            className="text-xs px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 rounded-lg font-medium transition-colors"
+          >
+            Manage Dashboard
+          </Link>
+          <Link
+            href="/provider-dashboard/new-listing"
+            className="text-xs px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg font-semibold transition-colors"
+          >
+            + Add Listing
+          </Link>
+        </>
+      )}
+      <Link href={`/marketplace/search?category=&companyId=${companyId}`} className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors">
+        View Service Listings
+      </Link>
+      <Link
+        href={jobPostingsCount && jobPostingsCount > 0 ? `/company-profiles/${companySlug}?tab=jobs` : `/space-talent?tab=jobs&search=${encodeURIComponent(companyName)}`}
+        className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors"
+      >
+        Jobs at {companyName}
+      </Link>
+      <WatchButton companyProfileId={companyId} companyName={companyName} size="md" />
+      <Link
+        href={`/compare/companies?companies=${companySlug}`}
+        className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors flex items-center gap-1.5"
+      >
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        Compare
+      </Link>
+      {claimed && claimedByUserId && session?.user?.id !== claimedByUserId && !showMeetingForm && (
+        <button
+          onClick={() => setShowMeetingForm(true)}
+          className="text-xs px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded-lg font-medium transition-colors flex items-center gap-1.5"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Request a Meeting
+        </button>
+      )}
+      {showMeetingForm && (
+        <div className="w-full mt-3 bg-white/[0.04] border border-white/[0.08] rounded-xl p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-semibold text-white">Request a Meeting with {companyName}</h4>
+            <button onClick={() => setShowMeetingForm(false)} className="text-xs text-slate-400 hover:text-white">Cancel</button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Your Name *</label>
+              <input
+                required
+                value={meetingForm.visitorName}
+                onChange={e => setMeetingForm(p => ({ ...p, visitorName: e.target.value }))}
+                placeholder="Full name"
+                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Your Email *</label>
+              <input
+                required
+                type="email"
+                value={meetingForm.visitorEmail}
+                onChange={e => setMeetingForm(p => ({ ...p, visitorEmail: e.target.value }))}
+                placeholder="you@company.com"
+                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Your Company</label>
+              <input
+                value={meetingForm.visitorCompany}
+                onChange={e => setMeetingForm(p => ({ ...p, visitorCompany: e.target.value }))}
+                placeholder="Company name (optional)"
+                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Preferred Date</label>
+              <input
+                type="date"
+                value={meetingForm.preferredDate}
+                onChange={e => setMeetingForm(p => ({ ...p, preferredDate: e.target.value }))}
+                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-slate-400 mb-1">Message * (min 10 chars)</label>
+              <textarea
+                required
+                minLength={10}
+                maxLength={2000}
+                rows={3}
+                value={meetingForm.message}
+                onChange={e => setMeetingForm(p => ({ ...p, message: e.target.value }))}
+                placeholder="What would you like to discuss? Share context about your needs..."
+                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+              />
+            </div>
+          </div>
+          <button
+            onClick={handleMeetingSubmit}
+            disabled={meetingSubmitting || !meetingForm.visitorName || !meetingForm.visitorEmail || meetingForm.message.length < 10}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:bg-white/[0.08] disabled:text-slate-500 text-white rounded-lg text-xs font-semibold transition-colors"
+          >
+            {meetingSubmitting ? 'Sending...' : 'Send Meeting Request'}
+          </button>
+        </div>
+      )}
+      {!claimed && !showClaimForm && (
+        <button
+          onClick={() => {
+            if (sessionStatus !== 'authenticated') {
+              toast.error('Please sign in to claim a company profile.');
+              router.push(`/login?returnTo=${encodeURIComponent(pathname)}`);
+              return;
+            }
+            setShowClaimForm(true);
+          }}
+          className="text-xs px-3 py-1.5 bg-gradient-to-r from-slate-200 to-blue-600 hover:from-white hover:to-blue-500 text-white rounded-lg font-medium transition-all"
+        >
+          {sessionStatus === 'authenticated' ? 'Claim This Profile' : 'Sign In to Claim'}
+        </button>
+      )}
+      {showClaimForm && !claimed && (
+        <div className="flex items-center gap-2">
+          <input
+            type="email"
+            value={claimEmail}
+            onChange={(e) => setClaimEmail(e.target.value)}
+            placeholder="Your business email"
+            className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-1.5 text-xs text-white w-48"
+          />
+          <button
+            onClick={handleClaim}
+            disabled={claiming || !claimEmail}
+            className="text-xs px-3 py-1.5 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] text-slate-900 rounded-lg font-medium transition-colors"
+          >
+            {claiming ? 'Claiming...' : 'Confirm'}
+          </button>
+          <button
+            onClick={() => setShowClaimForm(false)}
+            className="text-xs text-slate-400 hover:text-white"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Tab Definitions ─────────────────────────────────────────────────────────
+
+const TABS = [
+  { id: 'overview', label: 'Overview', icon: '📋' },
+  { id: 'financials', label: 'Financials', icon: '💰' },
+  { id: 'products', label: 'Products', icon: '🎯' },
+  { id: 'people', label: 'People', icon: '👥' },
+  { id: 'contracts', label: 'Contracts', icon: '📜' },
+  { id: 'space-assets', label: 'Space Assets', icon: '🛰️' },
+  { id: 'timeline', label: 'Timeline', icon: '📅' },
+  { id: 'news', label: 'News', icon: '📰' },
+  { id: 'jobs', label: 'Jobs', icon: '💼' },
+  { id: 'digest', label: 'Weekly Digest', icon: '📊' },
+  { id: 'intelligence', label: 'Intelligence', icon: '🧠' },
+  { id: 'relationships', label: 'Relationships', icon: '🔗' },
+  { id: 'pitch-deck', label: 'Pitch Deck', icon: '📈' },
+  { id: 'data-room', label: 'Data Room', icon: '🗂️' },
+  { id: 'mission-debriefs', label: 'Mission Debriefs', icon: '🚀' },
+  { id: 'contact', label: 'Contact', icon: '✉️' },
+] as const;
+
+type TabId = typeof TABS[number]['id'];
+
+// ─── Sub-Components ──────────────────────────────────────────────────────────
+
+function ScoreRing({ score, label, size = 64 }: { score: number; label: string; size?: number }) {
+  const radius = (size - 8) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const progress = (score / 100) * circumference;
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="transform -rotate-90">
+          <circle cx={size/2} cy={size/2} r={radius} fill="none" stroke="rgb(30 41 59 / 0.5)" strokeWidth="4" />
+          <motion.circle
+            cx={size/2} cy={size/2} r={radius} fill="none"
+            stroke={score >= 80 ? '#10b981' : score >= 60 ? '#06b6d4' : score >= 40 ? '#f59e0b' : '#ef4444'}
+            strokeWidth="4" strokeLinecap="round"
+            strokeDasharray={circumference}
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset: circumference - progress }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+          />
+        </svg>
+        <div className={`absolute inset-0 flex items-center justify-center text-sm font-bold ${getScoreColor(score)}`}>
+          {score}
+        </div>
+      </div>
+      <span className="text-xs text-slate-500 capitalize">{label}</span>
+    </div>
+  );
+}
+
+function SectionCard({ title, children, count }: { title: string; children: React.ReactNode; count?: number }) {
+  return (
+    <div className="card p-5 mb-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        {count !== undefined && (
+          <span className="text-xs bg-white/[0.04] text-slate-400 px-2 py-0.5 rounded-full">{count}</span>
+        )}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ─── Tab Content Components ──────────────────────────────────────────────────
+
+const FACILITY_COLUMNS: DataTableColumn<Facility>[] = [
+  { key: 'name', header: 'Facility' },
+  {
+    key: 'type',
+    header: 'Type',
+    render: (f) => <span className="capitalize">{f.type.replace(/_/g, ' ')}</span>,
+  },
+  {
+    key: 'city',
+    header: 'Location',
+    render: (f) => [f.city, f.country].filter(Boolean).join(', ') || '—',
+  },
+];
+
+function OverviewTab({ company }: { company: CompanyDetail }) {
+  return (
+    <div className="space-y-4">
+      {/* Description */}
+      <SectionCard title="About">
+        <p className="text-slate-300 leading-relaxed whitespace-pre-line">
+          {company.longDescription || company.description || 'No description available.'}
+        </p>
+      </SectionCard>
+
+      {/* SpaceNexus Score — Proprietary Company Rating */}
+      <SectionCard title="SpaceNexus Score">
+        <CompanyScoreSection company={company} />
+      </SectionCard>
+
+      {/* Legacy Scores */}
+      {company.scores.length > 0 && (
+        <SectionCard title="Legacy scoring model (pre-2026) — superseded by the SpaceNexus Score above">
+          <div className="flex flex-wrap gap-6 justify-center py-2">
+            {company.scores.map(s => (
+              <ScoreRing key={s.id} score={s.score} label={s.scoreType.replace('_', ' ')} />
+            ))}
+          </div>
+        </SectionCard>
+      )}
+
+      {/* Quick Facts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <SectionCard title="Company Info">
+          <div className="space-y-2 text-sm">
+            {[
+              ['Founded', company.foundedYear?.toString()],
+              ['Headquarters', company.headquarters],
+              ['Country', company.country],
+              ['Employees', company.employeeRange || company.employeeCount?.toLocaleString()],
+              ['Status', company.status],
+              ['Ownership', company.ownershipType],
+              ['Parent', company.parentCompany],
+              ['Sector', company.sector],
+              ['Subsector', company.subsector],
+            ].filter(([, v]) => v).map(([label, value]) => (
+              <div key={label} className="flex justify-between">
+                <span className="text-slate-500">{label}</span>
+                <span className="text-slate-300 capitalize">{value}</span>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Financial Snapshot">
+          <div className="space-y-2 text-sm">
+            {([
+              ['Total Funding', fmt(company.totalFunding)],
+              ['Last Round', company.lastFundingRound],
+              ['Valuation', fmt(company.valuation)],
+              ['Revenue (Est.)', fmt(company.revenueEstimate)],
+              company.isPublic ? ['Market Cap', fmt(company.marketCap)] : null,
+              company.isPublic && company.ticker ? ['Ticker', `${company.ticker} (${company.exchange || 'N/A'})`] : null,
+              company.isPublic ? ['Stock Price', company.stockPrice ? `$${company.stockPrice.toFixed(2)}` : null] : null,
+            ] as (string[] | null)[]).filter((row): row is string[] => row !== null && row[1] != null && row[1] !== '—').map(([label, value]) => (
+              <div key={label} className="flex justify-between">
+                <span className="text-slate-500">{label}</span>
+                <span className="text-slate-300">{value}</span>
+              </div>
+            ))}
+            {company.isPublic && company.ticker && company.stockDataSource === 'db' && company.stockDataAsOf && (
+              <div className="pt-1 text-xs text-amber-500/80">
+                Live quote unavailable — showing last verified price as of {fmtDate(company.stockDataAsOf)}
+              </div>
+            )}
+          </div>
+          <RevenueTrend estimates={company.revenueEstimates} />
+        </SectionCard>
+      </div>
+
+      {/* Terminal wave (2026-08-31): the "what's happening NOW" strip — the
+          latest signal from each live feed, on Overview where a first-time
+          visitor lands, deep-linking into the full tabs via ?tab=. */}
+      {(company.jobPostingsCount > 0 || company.contracts.length > 0 || (company.secFilings?.length ?? 0) > 0 || company.fundingRounds.length > 0) && (
+        <SectionCard title="Live Signals">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            {company.jobPostingsCount > 0 && (
+              <Link href={`/company-profiles/${company.slug}?tab=jobs`} className="block bg-white/[0.03] border border-white/[0.06] rounded-lg p-3 hover:border-cyan-500/30 transition-colors">
+                <p className="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Hiring</p>
+                <p className="text-white"><span className="font-mono text-cyan-300">{company.jobPostingsCount}</span> open roles right now →</p>
+              </Link>
+            )}
+            {company.contracts.length > 0 && (
+              <Link href={`/company-profiles/${company.slug}?tab=contracts`} className="block bg-white/[0.03] border border-white/[0.06] rounded-lg p-3 hover:border-cyan-500/30 transition-colors">
+                <p className="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Latest government contract</p>
+                <p className="text-white line-clamp-1">{company.contracts[0].title}</p>
+                <p className="text-slate-500 text-xs mt-0.5">{company.contracts[0].agency} · {fmt(company.contracts[0].value)} · {fmtDate(company.contracts[0].awardDate)}</p>
+              </Link>
+            )}
+            {company.fundingRounds.length > 0 && (
+              <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+                <p className="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Latest funding round</p>
+                <p className="text-white">{company.fundingRounds[0].seriesLabel || company.fundingRounds[0].roundType || 'Round'} · {fmt(company.fundingRounds[0].amount)}</p>
+                <p className="text-slate-500 text-xs mt-0.5">{fmtDate(company.fundingRounds[0].date)}{company.fundingRounds[0].leadInvestor ? ` · led by ${company.fundingRounds[0].leadInvestor}` : ''}</p>
+              </div>
+            )}
+            {(company.secFilings?.length ?? 0) > 0 && (
+              <a href={company.secFilings![0].edgarUrl || '#'} target="_blank" rel="noopener noreferrer" className="block bg-white/[0.03] border border-white/[0.06] rounded-lg p-3 hover:border-cyan-500/30 transition-colors">
+                <p className="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Latest SEC filing</p>
+                <p className="text-white">{company.secFilings![0].filingType} <span className="text-slate-500 text-xs">· {fmtDate(company.secFilings![0].filingDate)} · EDGAR ↗</span></p>
+              </a>
+            )}
+          </div>
+        </SectionCard>
+      )}
+
+      {/* G9: Leadership moves — renders only when this company has rows
+          (ExecutiveMove volume is naturally low; extractor live since 8/24). */}
+      {(company.executiveMoves?.length ?? 0) > 0 && (
+        <SectionCard title="Leadership Moves" count={company.executiveMoves!.length}>
+          <ul className="space-y-2 text-sm">
+            {company.executiveMoves!.map(m => (
+              <li key={m.id} className="flex items-start justify-between gap-3 bg-white/[0.02] border border-white/[0.05] rounded-lg p-3">
+                <div>
+                  <span className="text-white font-medium">{m.personName}</span>
+                  <span className="text-slate-400"> — {m.moveType.replace(/_/g, ' ')}</span>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {m.fromTitle && m.fromCompany ? `${m.fromTitle}, ${m.fromCompany}` : m.fromCompany || ''}
+                    {(m.fromCompany || m.fromTitle) && (m.toCompany || m.toTitle) ? ' → ' : ''}
+                    {m.toTitle && m.toCompany ? `${m.toTitle}, ${m.toCompany}` : m.toCompany || ''}
+                  </p>
+                </div>
+                <span className="text-xs text-slate-500 whitespace-nowrap">{fmtDate(m.date)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="text-[11px] text-slate-600 mt-2">From <Link href="/executive-moves" className="text-cyan-400 hover:underline">Executive Moves</Link> — recorded since Aug 2026.</p>
+        </SectionCard>
+      )}
+
+      {/* Products Preview */}
+      {company.products.length > 0 && (
+        <SectionCard title="Key Products" count={company.products.length}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {company.products.slice(0, 4).map((p, i) => (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3"
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${
+                    p.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
+                    p.status === 'development' ? 'bg-amber-500/20 text-amber-400' :
+                    'bg-slate-600/20 text-slate-400'
+                  }`}>{p.status}</span>
+                  <span className="text-xs text-slate-500">{p.category}</span>
+                </div>
+                <h4 className="font-medium text-white text-sm">{p.name}</h4>
+                {p.description && (
+                  <p className="text-xs text-slate-400 mt-1 line-clamp-2">{p.description}</p>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </SectionCard>
+      )}
+
+      {/* Facilities */}
+      {company.facilities.length > 0 && (
+        <SectionCard title="Facilities" count={company.facilities.length}>
+          <DataTable<Facility>
+            columns={FACILITY_COLUMNS}
+            rows={company.facilities}
+            caption={`${company.name} facilities — name, type and location`}
+            filterable={company.facilities.length > 10}
+            filterPlaceholder="Filter facilities..."
+            emptyLabel="No facilities match this filter."
+          />
+        </SectionCard>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Funding-history columns. Amount and post-money are `numeric`, so DataTable
+ * right-aligns them, renders them in tabular-nums and sorts them numerically
+ * off the raw row value rather than off the formatted string.
+ */
+const FUNDING_COLUMNS: DataTableColumn<FundingRound>[] = [
+  { key: 'date', header: 'Date', render: (r) => fmtDate(r.date) },
+  {
+    key: 'seriesLabel',
+    header: 'Round',
+    render: (r) => (
+      <span className="inline-flex flex-wrap items-center gap-1.5">
+        <span>{r.seriesLabel || r.roundType || 'Unknown'}</span>
+        {r.source === 'self_reported' ? (
+          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
+            Self-reported
+          </span>
+        ) : r.source ? (
+          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            Verified
+          </span>
+        ) : null}
+      </span>
+    ),
+  },
+  { key: 'amount', header: 'Amount', numeric: true, render: (r) => fmt(r.amount) },
+  { key: 'leadInvestor', header: 'Lead Investor', render: (r) => r.leadInvestor || '—' },
+  { key: 'postValuation', header: 'Post-Val', numeric: true, render: (r) => fmt(r.postValuation) },
+];
+
+const REVENUE_COLUMNS: DataTableColumn<RevenueEstimate>[] = [
+  { key: 'year', header: 'Period', render: (r) => `${r.year}${r.quarter ? ` Q${r.quarter}` : ''}` },
+  {
+    key: 'revenue',
+    header: 'Revenue',
+    numeric: true,
+    render: (r) => (r.revenue ? fmt(r.revenue) : r.revenueRange || '—'),
+  },
+  {
+    key: 'confidenceLevel',
+    header: 'Confidence',
+    render: (r) => (
+      <span className={`text-xs px-2 py-0.5 rounded ${
+        r.confidenceLevel === 'reported' ? 'bg-emerald-500/20 text-emerald-400' :
+        r.confidenceLevel === 'estimate' ? 'bg-amber-500/20 text-amber-400' :
+        'bg-red-500/20 text-red-400'
+      }`}>{r.confidenceLevel}</span>
+    ),
+  },
+  { key: 'source', header: 'Source', render: (r) => r.source || '—' },
+];
+
+function FinancialsTab({ company }: { company: CompanyDetail }) {
+  return (
+    <div className="space-y-4">
+      {/* Funding Rounds */}
+      {company.fundingRounds.length === 0 ? (
+        <EmptyState
+          icon={<span className="text-2xl" aria-hidden="true">💰</span>}
+          title="No funding rounds on record"
+          description={`We have not recorded a priced round for ${company.name}.`}
+          reason="Rounds are added from SEC filings, verified press coverage and self-reported submissions on claimed profiles. This section fills in the next time a round is announced, or when the company claims this profile and files one."
+          suggestions={[
+            { label: 'Funding across the industry', href: '/startups' },
+            { label: 'Company directory', href: '/company-profiles' },
+          ]}
+        />
+      ) : (
+        <SectionCard title="Funding History" count={company.fundingRounds.length}>
+          <div className="space-y-3">
+            {/* Cumulative funding bar */}
+            <div className="flex gap-1 h-8 mb-4">
+              {company.fundingRounds.slice().reverse().map((r, i) => {
+                const total = company.totalFunding || 1;
+                const pct = ((r.amount || 0) / total) * 100;
+                const colors = ['bg-white', 'bg-emerald-500', 'bg-purple-500', 'bg-amber-500', 'bg-blue-500', 'bg-pink-500', 'bg-indigo-500'];
+                return (
+                  <motion.div
+                    key={r.id}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.max(pct, 3)}%` }}
+                    transition={{ delay: i * 0.15, duration: 0.5 }}
+                    className={`${colors[i % colors.length]} rounded-sm relative group cursor-pointer`}
+                    title={`${r.seriesLabel || r.roundType}: ${fmt(r.amount)}`}
+                  >
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                      {r.seriesLabel || r.roundType}: {fmt(r.amount)}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Rounds table */}
+            <DataTable<FundingRound>
+              columns={FUNDING_COLUMNS}
+              rows={company.fundingRounds}
+              caption={`${company.name} funding rounds — date, round, amount, lead investor and post-money valuation`}
+              initialSort={{ key: 'date', dir: 'desc' }}
+              emptyLabel="No funding rounds match this filter."
+            />
+          </div>
+        </SectionCard>
+      )}
+
+      {/* Revenue Estimates */}
+      {company.revenueEstimates.length > 0 && (
+        <SectionCard title="Revenue Estimates" count={company.revenueEstimates.length}>
+          <DataTable<RevenueEstimate>
+            columns={REVENUE_COLUMNS}
+            rows={company.revenueEstimates}
+            caption={`${company.name} revenue estimates — period, revenue, confidence and source`}
+            emptyLabel="No revenue estimates match this filter."
+          />
+        </SectionCard>
+      )}
+    </div>
+  );
+}
+
+const SPEC_LABELS: Record<string, string> = {
+  payload_leo_kg: 'Payload (LEO)',
+  payload_gto_kg: 'Payload (GTO)',
+  payload_sso_kg: 'Payload (SSO)',
+  payload_tli_kg: 'Payload (TLI)',
+  height_m: 'Height',
+  diameter_m: 'Diameter',
+  mass_kg: 'Mass',
+  stages: 'Stages',
+  reusable: 'Reusable',
+  satellites_deployed: 'Satellites',
+  orbit_km: 'Orbit',
+  users_millions: 'Users',
+  cost_millions: 'Cost',
+  cost_per_kg_leo: 'Cost/kg (LEO)',
+};
+
+function formatSpecLabel(key: string): string {
+  return SPEC_LABELS[key] || key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function formatSpecValue(key: string, val: unknown): string {
+  const num = Number(val);
+  if (isNaN(num)) return String(val);
+  if (key.includes('_kg')) return `${num.toLocaleString()} kg`;
+  if (key.includes('_m') && !key.includes('_millions')) return `${num.toLocaleString()} m`;
+  if (key.includes('_km')) return `${num.toLocaleString()} km`;
+  if (key.includes('millions') || key.includes('cost')) return `$${num.toLocaleString()}M`;
+  if (key.includes('per_kg')) return `$${num.toLocaleString()}/kg`;
+  return num.toLocaleString();
+}
+
+function ProductsTab({ company }: { company: CompanyDetail }) {
+  if (company.products.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">🚀</span>}
+        title="No products or vehicles on record"
+        description={`No product, launch vehicle or service line has been catalogued for ${company.name}.`}
+        reason="Product rows are entered by our research desk from company documentation, and by claimed profiles submitting their own catalogue. This section fills in when the company is next researched or when it claims this profile."
+        suggestions={[
+          { label: 'Launch vehicle database', href: '/launch-vehicles' },
+          { label: 'Company directory', href: '/company-profiles' },
+        ]}
+      />
+    );
+  }
+
+  return (
+    <SectionCard title="Products & Services" count={company.products.length}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {company.products.map((p, i) => (
+          <motion.div
+            key={p.id}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.08 }}
+            className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/10 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="font-semibold text-white text-lg">{p.name}</h4>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ml-2 ${
+                p.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
+                p.status === 'development' ? 'bg-amber-500/20 text-amber-400' :
+                'bg-slate-600/20 text-slate-400'
+              }`}>{p.status.toUpperCase()}</span>
+            </div>
+            {p.category && (
+              <div className="text-xs text-slate-300 mb-3 capitalize">{p.category.replace(/_/g, ' ')}</div>
+            )}
+            {p.description && (
+              <p className="text-sm text-slate-400 leading-relaxed mb-3">{p.description}</p>
+            )}
+            {p.specs && Object.keys(p.specs).length > 0 && (
+              <div className="mt-3 pt-3 border-t border-white/[0.06]">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
+                  {Object.entries(p.specs).map(([key, val]) => (
+                    <div key={key}>
+                      <div className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">{formatSpecLabel(key)}</div>
+                      <div className="text-sm font-semibold text-white">{formatSpecValue(key, val)}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {p.category === 'launch_vehicle' && (
+              <div className="mt-3 pt-3 border-t border-white/[0.06]">
+                <Link
+                  href="/launch-vehicles"
+                  className="inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-white transition-colors"
+                >
+                  <span>View full specs in Launch Vehicles</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              </div>
+            )}
+          </motion.div>
+        ))}
+      </div>
+    </SectionCard>
+  );
+}
+
+function PeopleTab({ company }: { company: CompanyDetail }) {
+  if (company.keyPersonnel.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">👥</span>}
+        title="No leadership on record"
+        description={`We have not catalogued named executives for ${company.name}.`}
+        reason="Leadership rows come from our executive-moves extractor, which reads appointment announcements and company pages. This section fills in the next time an appointment for this company is published, or when the company claims this profile."
+        suggestions={[
+          { label: 'Executive moves', href: '/executive-moves' },
+          { label: 'Company directory', href: '/company-profiles' },
+        ]}
+      />
+    );
+  }
+
+  return (
+    <SectionCard title="Key Personnel" count={company.keyPersonnel.length}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {company.keyPersonnel.map((p, i) => (
+          <motion.div
+            key={p.id}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.06 }}
+            className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/30 to-purple-500/30 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                {p.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+              </div>
+              <div className="min-w-0">
+                <h4 className="font-semibold text-white text-sm">{p.name}</h4>
+                <div className="text-xs text-slate-300">{p.title}</div>
+                {p.role && <div className="text-xs text-slate-500 capitalize mt-0.5">{p.role}</div>}
+              </div>
+            </div>
+            {p.bio && (
+              <p className="text-xs text-slate-400 mt-3 line-clamp-3 leading-relaxed">{p.bio}</p>
+            )}
+            {p.previousCompanies.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {p.previousCompanies.slice(0, 3).map(c => (
+                  <span key={c} className="text-xs px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400">{c}</span>
+                ))}
+              </div>
+            )}
+            {p.linkedinUrl && (
+              <a href={p.linkedinUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300">
+                LinkedIn →
+              </a>
+            )}
+          </motion.div>
+        ))}
+      </div>
+    </SectionCard>
+  );
+}
+
+const CONTRACT_COLUMNS: DataTableColumn<Contract>[] = [
+  {
+    key: 'title',
+    header: 'Contract',
+    render: (c) => (
+      <span className="block max-w-[42ch]">
+        <span className="block font-medium">{c.title}</span>
+        {c.description && (
+          <span className="mt-0.5 block text-xs text-slate-400 line-clamp-2">{c.description}</span>
+        )}
+      </span>
+    ),
+  },
+  {
+    key: 'agency',
+    header: 'Agency',
+    render: (c) => (
+      <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-400">{c.agency}</span>
+    ),
+  },
+  { key: 'awardDate', header: 'Awarded', render: (c) => fmtDate(c.awardDate) },
+  { key: 'value', header: 'Value', numeric: true, render: (c) => fmt(c.value) },
+  { key: 'ceiling', header: 'Ceiling', numeric: true, render: (c) => fmt(c.ceiling) },
+];
+
+function ContractsTab({ company }: { company: CompanyDetail }) {
+  if (company.contracts.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">📜</span>}
+        title="No government contracts on record"
+        description={`No federal award has been matched to ${company.name}.`}
+        reason="Contract rows are matched from federal award feeds by awardee name. Either this company holds no prime awards, or it works as a subcontractor, whose awards are published under the prime. The tab fills in on the next award-feed sync."
+        suggestions={[
+          { label: 'Contract awards', href: '/procurement' },
+          { label: 'Company directory', href: '/company-profiles' },
+        ]}
+      />
+    );
+  }
+
+  return (
+    <SectionCard title="Government Contracts" count={company.contracts.length}>
+      <DataTable<Contract>
+        columns={CONTRACT_COLUMNS}
+        rows={company.contracts}
+        caption={`${company.name} government contracts — title, awarding agency, award date, obligated value and ceiling`}
+        initialSort={{ key: 'awardDate', dir: 'desc' }}
+        filterable={company.contracts.length > 10}
+        filterPlaceholder="Filter contracts..."
+        emptyLabel="No contracts match this filter."
+      />
+    </SectionCard>
+  );
+}
+
+const SATELLITE_COLUMNS: DataTableColumn<Satellite>[] = [
+  { key: 'satelliteName', header: 'Satellite' },
+  { key: 'orbitType', header: 'Orbit', render: (s) => s.orbitType || '—' },
+  {
+    key: 'missionType',
+    header: 'Mission',
+    render: (s) => (
+      <span className="capitalize">{s.missionType?.replace(/-/g, ' ') || '—'}</span>
+    ),
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    render: (s) => (
+      <span className={`text-xs px-1.5 py-0.5 rounded ${
+        s.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
+        s.status === 'planned' ? 'bg-blue-500/20 text-blue-400' :
+        'bg-slate-600/20 text-slate-400'
+      }`}>{s.status}</span>
+    ),
+  },
+  { key: 'constellation', header: 'Constellation', render: (s) => s.constellation || '—' },
+  { key: 'launchDate', header: 'Launch', render: (s) => fmtDate(s.launchDate) },
+];
+
+function SpaceAssetsTab({ company }: { company: CompanyDetail }) {
+  const active = company.satelliteAssets.filter(s => s.status === 'active');
+  const byOrbit = active.reduce((acc, s) => {
+    const o = s.orbitType || 'Unknown';
+    acc[o] = (acc[o] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  return (
+    <div className="space-y-4">
+      {/* Orbit Summary */}
+      {Object.keys(byOrbit).length > 0 && (
+        <SectionCard title="Orbital Assets Summary">
+          <div className="flex flex-wrap gap-4">
+            {Object.entries(byOrbit).map(([orbit, count]) => (
+              <div key={orbit} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center min-w-[100px]">
+                <div className="text-2xl font-bold text-slate-300">{count}</div>
+                <div className="text-xs text-slate-500">{orbit}</div>
+              </div>
+            ))}
+            <div className="bg-white/[0.04] border border-white/10 rounded-lg p-3 text-center min-w-[100px]">
+              <div className="text-2xl font-bold text-white">{company.summary.totalSatellites}</div>
+              <div className="text-xs text-slate-500">Total</div>
+            </div>
+          </div>
+        </SectionCard>
+      )}
+
+      {company.satelliteAssets.length === 0 ? (
+        <EmptyState
+          icon={<span className="text-2xl" aria-hidden="true">🛰️</span>}
+          title="No orbital assets on record"
+          description={`No satellites are currently attributed to ${company.name}.`}
+          reason="Fleet rows come from the public satellite catalogue and operator filings, matched to companies by operator name. Either this company operates no spacecraft, or the catalogue attributes its spacecraft to a subsidiary we have not yet linked. It fills in on the next catalogue sync."
+          suggestions={[
+            { label: 'Satellite tracker', href: '/satellites' },
+            { label: 'Company directory', href: '/company-profiles' },
+          ]}
+        />
+      ) : (
+        <SectionCard title="Satellite Fleet" count={company.satelliteAssets.length}>
+          <DataTable<Satellite>
+            columns={SATELLITE_COLUMNS}
+            rows={company.satelliteAssets.slice(0, 50)}
+            caption={`${company.name} satellite fleet — name, orbit, mission, status, constellation and launch date`}
+            filterable={company.satelliteAssets.length > 10}
+            filterPlaceholder="Filter satellites..."
+            emptyLabel="No satellites match this filter."
+          />
+          {company.satelliteAssets.length > 50 && (
+            <p className="text-xs text-slate-500 mt-2">Showing 50 of {company.satelliteAssets.length} satellites</p>
+          )}
+        </SectionCard>
+      )}
+    </div>
+  );
+}
+
+function TimelineTab({ company }: { company: CompanyDetail }) {
+  if (company.events.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">🗓️</span>}
+        title="No timeline events on record"
+        description={`No founding, funding, contract or milestone event has been logged for ${company.name}.`}
+        reason="Timeline entries are written by the research desk from dated, sourced events. A company with no entries has not yet been through a timeline pass. It fills in on the next research pass for this sector."
+        suggestions={[
+          { label: 'Industry news', href: '/news' },
+          { label: 'Company directory', href: '/company-profiles' },
+        ]}
+      />
+    );
+  }
+
+  return (
+    <SectionCard title="Company Timeline" count={company.events.length}>
+      <div className="relative pl-6">
+        {/* Timeline line */}
+        <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-white via-purple-500 to-slate-700" />
+
+        {company.events.map((e, i) => (
+          <motion.div
+            key={e.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.05 }}
+            className="relative mb-4 last:mb-0"
+          >
+            {/* Dot */}
+            <div className="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-black border-2 border-white/15 z-10" />
+
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/10 transition-colors ml-2">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm">{getEventIcon(e.type)}</span>
+                <span className="text-xs text-slate-500">{fmtDate(e.date)}</span>
+                <span className="text-xs px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400 capitalize">
+                  {e.type.replace(/_/g, ' ')}
+                </span>
+                {e.importance >= 8 && (
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">HIGH IMPACT</span>
+                )}
+              </div>
+              <h4 className="font-medium text-white text-sm">{e.title}</h4>
+              {e.description && (
+                <p className="text-xs text-slate-400 mt-1">{e.description}</p>
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </SectionCard>
+  );
+}
+
+interface NewsItem {
+  id: string; title: string; summary: string | null; source: string;
+  category: string; url: string; publishedAt: string; imageUrl: string | null;
+}
+
+interface CompanyJobPosting {
+  id: string;
+  title: string;
+  location: string;
+  remoteOk: boolean;
+  employmentType: string | null;
+  seniorityLevel: string;
+  postedDate: string;
+  sourceUrl: string | null;
+}
+
+function JobsTab({ companySlug, companyName }: { companySlug: string; companyName: string }) {
+  const [jobs, setJobs] = useState<CompanyJobPosting[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchJobs() {
+      try {
+        const res = await fetch(`/api/company-profiles/${companySlug}/jobs`);
+        const data = await res.json();
+        setJobs(data.jobs || []);
+      } catch {
+        setJobs([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchJobs();
+  }, [companySlug]);
+
+  if (loading) return <div className="flex justify-center py-12"><LoadingSpinner size="lg" /></div>;
+
+  if (jobs.length === 0) {
+    return (
+      <div className="space-y-4">
+        <SectionCard title="Hiring Trend">
+          <HiringTrend companySlug={companySlug} />
+        </SectionCard>
+        <EmptyState
+          icon={<span className="text-2xl" aria-hidden="true">💼</span>}
+          title="No open positions right now"
+          description={`${companyName} has no live listings on our board.`}
+          reason="Our crawler re-reads 16 applicant-tracking boards every morning at 06:30 UTC. Either this company has nothing posted today, or it hires on a board we do not yet crawl. This tab refreshes with the next morning crawl."
+          suggestions={[
+            { label: 'All space jobs', href: '/jobs' },
+            { label: 'Company directory', href: '/company-profiles' },
+          ]}
+        />
+      </div>
+    );
+  }
+
+  const employmentLabels: Record<string, string> = {
+    full_time: 'Full-time', part_time: 'Part-time', contract: 'Contract', internship: 'Internship',
+  };
+
+  return (
+    <SectionCard title="Open Positions" count={jobs.length}>
+      <HiringTrend companySlug={companySlug} className="mb-4" />
+      <p className="text-[11px] text-slate-500 mb-3">
+        Listings mirror this company&apos;s own careers page, synced daily. Roles posted in multiple locations appear once per location.
+      </p>
+      <div className="space-y-3">
+        {jobs.map((job, i) => {
+          const inner = (
+            <>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-medium text-white group-hover:text-white transition-colors">
+                  {job.title}
+                </h4>
+                <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-400">
+                  <span>{job.location}</span>
+                  {job.remoteOk && <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/90">Remote</span>}
+                  {job.employmentType && <span>{employmentLabels[job.employmentType] || job.employmentType}</span>}
+                  <span>{fmtDate(job.postedDate)}</span>
+                </div>
+              </div>
+              {job.sourceUrl && (
+                <svg className="w-4 h-4 text-slate-500 group-hover:text-white mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              )}
+            </>
+          );
+
+          const className = 'flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group';
+
+          return job.sourceUrl ? (
+            <motion.a
+              key={job.id}
+              href={job.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.03 }}
+              className={className}
+            >
+              {inner}
+            </motion.a>
+          ) : (
+            <motion.div
+              key={job.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.03 }}
+              className={className}
+            >
+              {inner}
+            </motion.div>
+          );
+        })}
+      </div>
+    </SectionCard>
+  );
+}
+
+function NewsTab({ companySlug, companyName }: { companySlug: string; companyName: string }) {
+  const [articles, setArticles] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    async function fetchNews() {
+      try {
+        const res = await fetch(`/api/news?company=${companySlug}&limit=20`);
+        const data = await res.json();
+        setArticles(data.articles || []);
+        setTotal(data.total || 0);
+      } catch {
+        setArticles([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchNews();
+  }, [companySlug]);
+
+  if (loading) return <div className="flex justify-center py-12"><LoadingSpinner size="lg" /></div>;
+
+  if (articles.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">📰</span>}
+        title="No linked coverage yet"
+        description={`No article in our feed has been tagged to ${companyName}.`}
+        reason="Articles are tagged to companies automatically as the news pipeline ingests each feed. This tab fills in the moment a story naming this company is picked up — the pipeline runs continuously through the day."
+        suggestions={[
+          { label: 'Space news', href: '/news' },
+          { label: 'Company directory', href: '/company-profiles' },
+        ]}
+      />
+    );
+  }
+
+  const categoryColors: Record<string, string> = {
+    launches: 'bg-orange-500/20 text-orange-300', missions: 'bg-purple-500/20 text-purple-300',
+    companies: 'bg-blue-500/20 text-blue-300', satellites: 'bg-white/10 text-slate-200',
+    defense: 'bg-slate-500/20 text-slate-300', earnings: 'bg-green-500/20 text-green-300',
+    mergers: 'bg-fuchsia-500/20 text-fuchsia-300', development: 'bg-yellow-500/20 text-yellow-300',
+    policy: 'bg-red-500/20 text-red-300', debris: 'bg-amber-500/20 text-amber-300',
+  };
+
+  return (
+    <>
+      <SectionCard title={`Related News (${total})`}>
+        <div className="space-y-3">
+          {articles.map((article, i) => (
+            <motion.a
+              key={article.id}
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.03 }}
+              className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
+            >
+              {article.imageUrl && (
+                <Image src={article.imageUrl} alt={article.title} width={64} height={48} sizes="64px" className="w-16 h-12 rounded object-cover flex-shrink-0" unoptimized />
+              )}
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-medium text-white group-hover:text-white transition-colors line-clamp-1">
+                  {article.title}
+                </h4>
+                {article.summary && (
+                  <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{article.summary}</p>
+                )}
+                <div className="flex items-center gap-2 mt-1">
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${categoryColors[article.category] || 'bg-slate-500/20 text-slate-300'}`}>
+                    {article.category}
+                  </span>
+                  <span className="text-xs text-slate-500">{article.source}</span>
+                  <span className="text-xs text-slate-500">
+                    {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}
+                  </span>
+                </div>
+              </div>
+              <svg className="w-4 h-4 text-slate-500 group-hover:text-white mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </motion.a>
+          ))}
+        </div>
+      </SectionCard>
+      <div className="mt-4 text-center">
+        <Link href="/news" className="text-sm text-slate-400 hover:text-white transition-colors">
+          See all space news on SpaceNexus &rarr;
+        </Link>
+      </div>
+    </>
+  );
+}
+
+function DigestTab({ companyId, companyName }: { companyId: string; companyName: string }) {
+  const [digests, setDigests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchDigests() {
+      try {
+        const res = await fetch(`/api/company-digests?companyProfileId=${companyId}&limit=10`);
+        if (res.ok) {
+          const data = await res.json();
+          setDigests(data.digests || []);
+        }
+      } catch {
+        // silent
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDigests();
+  }, [companyId]);
+
+  if (loading) return <div className="flex justify-center py-10"><LoadingSpinner /></div>;
+
+  if (digests.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">📊</span>}
+        title="No weekly digests yet"
+        description={`We have not published a digest for ${companyName}.`}
+        reason="Digests are generated once a week, and only for companies with news activity in that week. A quiet week produces no digest. This tab fills in after the next weekly run that finds coverage of this company."
+        suggestions={[
+          { label: 'M/Th Digest', href: '/newsletter' },
+          { label: 'Space news', href: '/news' },
+        ]}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {digests.map((digest: any) => {
+        let highlights: string[] = [];
+        try { highlights = Array.isArray(digest.highlights) ? digest.highlights : JSON.parse(digest.highlights || '[]'); } catch {}
+
+        return (
+          <div key={digest.id} className="card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-white font-semibold text-sm">{digest.title}</h3>
+              <span className="text-xs text-slate-500">
+                {new Date(digest.periodStart).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })} – {new Date(digest.periodEnd).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
+              </span>
+            </div>
+            <p className="text-slate-300 text-sm mb-4">{digest.summary}</p>
+
+            {highlights.length > 0 && (
+              <div className="mb-4">
+                <h4 className="text-xs font-semibold text-slate-400 uppercase mb-2">Key Highlights</h4>
+                <ul className="space-y-1">
+                  {highlights.map((h: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
+                      <span className="text-slate-300 mt-0.5">•</span>
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="text-slate-400 text-xs leading-relaxed whitespace-pre-line">
+              {digest.content}
+            </div>
+
+            <div className="flex items-center gap-3 text-xs text-slate-500 mt-3 pt-2 border-t border-white/[0.06]">
+              <span>{digest.newsCount} articles analyzed</span>
+              <span>Generated {new Date(digest.generatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function CompanyScoreSection({ company }: { company: CompanyDetail }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const scoreResult = calculateSpaceNexusScore(company as any);
+
+  return (
+    <div className="space-y-4">
+      {/* Score Header */}
+      <div className="flex items-center gap-4">
+        <div className="relative w-20 h-20">
+          <svg width={80} height={80} className="transform -rotate-90">
+            <circle cx={40} cy={40} r={34} fill="none" stroke="rgb(30 41 59 / 0.5)" strokeWidth="5" />
+            <circle
+              cx={40} cy={40} r={34} fill="none"
+              stroke={scoreResult.overall >= 80 ? '#10b981' : scoreResult.overall >= 60 ? '#06b6d4' : scoreResult.overall >= 40 ? '#f59e0b' : '#ef4444'}
+              strokeWidth="5" strokeLinecap="round"
+              strokeDasharray={2 * Math.PI * 34}
+              strokeDashoffset={2 * Math.PI * 34 * (1 - scoreResult.overall / 100)}
+              style={{ transition: 'stroke-dashoffset 1.2s ease-out' }}
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className={`text-lg font-bold ${snxScoreColor(scoreResult.overall)}`}>{scoreResult.overall}</span>
+            <span className="text-[10px] text-slate-500">{scoreResult.grade}</span>
+          </div>
+        </div>
+        <div>
+          <div className="text-lg font-semibold text-white">{scoreResult.label}</div>
+          <div className="text-sm text-slate-400">Data confidence: {Math.round(scoreResult.dataConfidence * 100)}%</div>
+        </div>
+      </div>
+
+      {/* Dimension Breakdown */}
+      <div className="grid grid-cols-2 gap-3">
+        {Object.entries(scoreResult.dimensions).map(([key, dim]) => {
+          const s = dim.score;
+          return (
+            <div key={key} className="bg-white/[0.04] rounded-lg p-2.5">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs text-slate-400 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                <span className={`text-xs font-bold ${getScoreColor(s)}`}>{s}</span>
+              </div>
+              <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-1000 ease-out ${getScoreBarColor(s)}`}
+                  style={{ width: `${s}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Key Insights */}
+      {scoreResult.insights.length > 0 && (
+        <div className="space-y-1.5">
+          <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">Key Insights</div>
+          {scoreResult.insights.slice(0, 4).map((insight, i) => (
+            <div key={i} className="flex items-start gap-2 text-xs text-slate-400">
+              <span className="text-slate-300 mt-0.5">•</span>
+              <span>{insight}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Pitch Deck / Data Room helpers ──────────────────────────────────────────
+
+function isPdfUrl(url: string): boolean {
+  if (!url) return false;
+  try {
+    const u = new URL(url);
+    const path = u.pathname.toLowerCase();
+    return path.endsWith('.pdf');
+  } catch {
+    return false;
+  }
+}
+
+function PitchDeckTab({ companyId, companyName }: { companyId: string; companyName: string }) {
+  const { status } = useSession();
+  const [decks, setDecks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [openDeckId, setOpenDeckId] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        setErrorMsg(null);
+        const res = await fetch(`/api/pitch-decks?companyId=${encodeURIComponent(companyId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setDecks(data.pitchDecks || []);
+        } else {
+          setDecks([]);
+        }
+      } catch (err) {
+        clientLogger.error('Pitch deck load error', { error: err instanceof Error ? err.message : String(err) });
+        setDecks([]);
+        setErrorMsg('Failed to load pitch decks.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [companyId]);
+
+  const handleOpen = async (deckId: string) => {
+    setOpenDeckId(deckId);
+    // Fire-and-forget view log
+    try {
+      await fetch(`/api/pitch-decks/${deckId}/view`, { method: 'POST' });
+    } catch (err) {
+      clientLogger.warn('Pitch deck view log failed', { error: err instanceof Error ? err.message : String(err) });
+    }
+  };
+
+  if (loading) return <div className="flex justify-center py-12"><LoadingSpinner size="lg" /></div>;
+
+  if (errorMsg) {
+    return (
+      <SectionCard title="Pitch Deck">
+        <p className="text-sm text-red-400 text-center py-6">{errorMsg}</p>
+      </SectionCard>
+    );
+  }
+
+  if (decks.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">📈</span>}
+        title="No pitch decks shared"
+        description={`${companyName} has not published a deck here.`}
+        reason={
+          status === 'unauthenticated'
+            ? 'Decks are uploaded by the company itself on a claimed profile, and some are visible only to signed-in users. Sign in to see any restricted decks, or check back after the company claims this profile.'
+            : 'Decks are uploaded by the company itself on a claimed profile. This section fills in when the company claims this profile and publishes one.'
+        }
+        action={
+          status === 'unauthenticated' ? (
+            <Link href="/login" className="text-sm text-white hover:underline">Sign in →</Link>
+          ) : undefined
+        }
+      />
+    );
+  }
+
+  return (
+    <SectionCard title={`Pitch Decks (${decks.length})`}>
+      <div className="space-y-4">
+        {decks.map(deck => {
+          const isOpen = openDeckId === deck.id;
+          const pdf = isPdfUrl(deck.fileUrl);
+          return (
+            <div key={deck.id} className="rounded-lg border border-white/[0.08] bg-white/[0.02] p-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="text-sm font-semibold text-white truncate">{deck.title}</h4>
+                    {deck.roundType && (
+                      <span className="text-xs px-2 py-0.5 bg-white/[0.08] rounded text-slate-300">{String(deck.roundType).replace(/_/g, ' ')}</span>
+                    )}
+                    <span className="text-xs px-2 py-0.5 bg-white/[0.05] rounded text-slate-400">{String(deck.visibility).replace(/_/g, ' ')}</span>
+                  </div>
+                  {deck.description && <p className="text-xs text-slate-400 mt-1">{deck.description}</p>}
+                  {deck.amountRaising && (
+                    <p className="text-xs text-slate-500 mt-1">Raising: {deck.currency || 'USD'} {Number(deck.amountRaising).toLocaleString()}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleOpen(deck.id)}
+                    className="px-3 py-1.5 text-xs bg-white hover:bg-slate-100 text-slate-900 rounded-lg font-medium transition-colors"
+                  >
+                    {isOpen ? 'Viewing' : 'View'}
+                  </button>
+                  <a
+                    href={deck.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      // Also count opening externally as a view
+                      fetch(`/api/pitch-decks/${deck.id}/view`, { method: 'POST' }).catch(() => {});
+                    }}
+                    className="px-3 py-1.5 text-xs bg-white/[0.08] hover:bg-white/[0.15] text-white rounded-lg transition-colors"
+                  >
+                    Open Link ↗
+                  </a>
+                </div>
+              </div>
+              {isOpen && pdf && (
+                <div className="mt-4 rounded overflow-hidden border border-white/[0.08] bg-black">
+                  <iframe
+                    src={deck.fileUrl}
+                    className="w-full h-[600px]"
+                    title={deck.title}
+                  />
+                </div>
+              )}
+              {isOpen && !pdf && (
+                <div className="mt-4 rounded border border-white/[0.08] bg-white/[0.02] p-4 text-xs text-slate-400">
+                  This link doesn&rsquo;t look like a PDF. Use the &ldquo;Open Link&rdquo; button to view it in a new tab.
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </SectionCard>
+  );
+}
+
+function DataRoomTab({ companyId, companyName }: { companyId: string; companyName: string }) {
+  const { status } = useSession();
+  const [docs, setDocs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [openDocId, setOpenDocId] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        setErrorMsg(null);
+        const res = await fetch(`/api/data-room?companyId=${encodeURIComponent(companyId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setDocs(data.documents || []);
+        } else {
+          setDocs([]);
+        }
+      } catch (err) {
+        clientLogger.error('Data room load error', { error: err instanceof Error ? err.message : String(err) });
+        setDocs([]);
+        setErrorMsg('Failed to load data room documents.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [companyId]);
+
+  const handleOpen = async (docId: string) => {
+    setOpenDocId(docId);
+    try {
+      await fetch(`/api/data-room/${docId}/view`, { method: 'POST' });
+    } catch (err) {
+      clientLogger.warn('Data room view log failed', { error: err instanceof Error ? err.message : String(err) });
+    }
+  };
+
+  if (loading) return <div className="flex justify-center py-12"><LoadingSpinner size="lg" /></div>;
+
+  if (errorMsg) {
+    return (
+      <SectionCard title="Data Room">
+        <p className="text-sm text-red-400 text-center py-6">{errorMsg}</p>
+      </SectionCard>
+    );
+  }
+
+  if (docs.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">🗂️</span>}
+        title="No data room documents"
+        description={`${companyName} has not published documents here.`}
+        reason={
+          status === 'unauthenticated'
+            ? 'Data room documents are uploaded by the company itself on a claimed profile, and access is often restricted to signed-in users. Sign in to see any restricted documents, or check back after the company claims this profile.'
+            : 'Data room documents are uploaded by the company itself on a claimed profile. This section fills in when the company claims this profile and publishes one.'
+        }
+        action={
+          status === 'unauthenticated' ? (
+            <Link href="/login" className="text-sm text-white hover:underline">Sign in →</Link>
+          ) : undefined
+        }
+      />
+    );
+  }
+
+  return (
+    <SectionCard title={`Data Room (${docs.length})`}>
+      <div className="space-y-4">
+        {docs.map(doc => {
+          const isOpen = openDocId === doc.id;
+          const pdf = isPdfUrl(doc.fileUrl);
+          return (
+            <div key={doc.id} className="rounded-lg border border-white/[0.08] bg-white/[0.02] p-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="text-sm font-semibold text-white truncate">{doc.title}</h4>
+                    {doc.docType && (
+                      <span className="text-xs px-2 py-0.5 bg-white/[0.08] rounded text-slate-300">{String(doc.docType).replace(/_/g, ' ')}</span>
+                    )}
+                    <span className="text-xs px-2 py-0.5 bg-white/[0.05] rounded text-slate-400">{String(doc.visibility).replace(/_/g, ' ')}</span>
+                  </div>
+                  {doc.description && <p className="text-xs text-slate-400 mt-1">{doc.description}</p>}
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleOpen(doc.id)}
+                    className="px-3 py-1.5 text-xs bg-white hover:bg-slate-100 text-slate-900 rounded-lg font-medium transition-colors"
+                  >
+                    {isOpen ? 'Viewing' : 'View'}
+                  </button>
+                  <a
+                    href={doc.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => { fetch(`/api/data-room/${doc.id}/view`, { method: 'POST' }).catch(() => {}); }}
+                    className="px-3 py-1.5 text-xs bg-white/[0.08] hover:bg-white/[0.15] text-white rounded-lg transition-colors"
+                  >
+                    Open Link ↗
+                  </a>
+                </div>
+              </div>
+              {isOpen && pdf && (
+                <div className="mt-4 rounded overflow-hidden border border-white/[0.08] bg-black">
+                  <iframe
+                    src={doc.fileUrl}
+                    className="w-full h-[600px]"
+                    title={doc.title}
+                  />
+                </div>
+              )}
+              {isOpen && !pdf && (
+                <div className="mt-4 rounded border border-white/[0.08] bg-white/[0.02] p-4 text-xs text-slate-400">
+                  This link doesn&rsquo;t look like a PDF. Use the &ldquo;Open Link&rdquo; button to view it in a new tab.
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </SectionCard>
+  );
+}
+
+function MissionDebriefsTab({ companyId, companyName }: { companyId: string; companyName: string }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [debriefs, setDebriefs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        setErrorMsg(null);
+        const res = await fetch(`/api/mission-debriefs?companyId=${encodeURIComponent(companyId)}&limit=20`);
+        if (!res.ok) {
+          if (!cancelled) {
+            setDebriefs([]);
+            setErrorMsg(`Failed to load (${res.status}).`);
+          }
+          return;
+        }
+        const data = await res.json();
+        if (!cancelled) setDebriefs(data.debriefs || []);
+      } catch (err) {
+        clientLogger.error('Mission debriefs tab load error', {
+          error: err instanceof Error ? err.message : String(err),
+        });
+        if (!cancelled) {
+          setDebriefs([]);
+          setErrorMsg('Failed to load mission debriefs.');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [companyId]);
+
+  if (loading) return <div className="flex justify-center py-12"><LoadingSpinner size="lg" /></div>;
+
+  if (errorMsg) {
+    return (
+      <SectionCard title="Mission Debriefs">
+        <div className="text-sm text-red-300">{errorMsg}</div>
+      </SectionCard>
+    );
+  }
+
+  if (debriefs.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">🚀</span>}
+        title="No mission debriefs reference this company"
+        description={`No published debrief names ${companyName}.`}
+        reason="Debriefs are written after a flown mission and auto-published once they clear the quality gate; they name only the companies involved in that mission. This tab fills in after the next mission this company takes part in."
+        suggestions={[{ label: 'Browse all debriefs', href: '/mission-debriefs' }]}
+      />
+    );
+  }
+
+  return (
+    <SectionCard title="Mission Debriefs" count={debriefs.length}>
+      <div className="space-y-2">
+        {debriefs.map((d) => (
+          <Link
+            key={d.id}
+            href={`/mission-debriefs/${d.slug}`}
+            className="block p-3 rounded border border-white/10 hover:border-white/30 transition-colors"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span
+                    className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${
+                      d.status === 'success'
+                        ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                        : d.status === 'partial'
+                          ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                          : d.status === 'failure'
+                            ? 'bg-red-500/15 text-red-300 border-red-500/30'
+                            : 'bg-slate-500/15 text-slate-300 border-slate-500/30'
+                    }`}
+                  >
+                    {d.status}
+                  </span>
+                  <span className="text-xs text-slate-500">{fmtDate(d.missionDate)}</span>
+                </div>
+                <div className="text-sm text-white truncate">{d.missionName}</div>
+                <p className="text-xs text-slate-400 line-clamp-2 mt-1">{d.executiveSummary}</p>
+              </div>
+              <span className="text-xs text-slate-300 hover:text-white shrink-0">View →</span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </SectionCard>
+  );
+}
+
+function IntelligenceTab({ company }: { company: CompanyDetail }) {
+  const entityLinks = getEntityLinks(company.slug);
+  const links = [
+    { label: 'Related News', description: 'News articles mentioning this company', href: entityLinks.relatedNews, icon: '📰', color: 'border-white/10 hover:border-white/15' },
+    { label: 'Patent Filings', description: 'Patents and IP associated with this company', href: entityLinks.relatedPatents, icon: '📋', color: 'border-amber-500/30 hover:border-amber-500/50' },
+    { label: 'Job Postings', description: 'Open positions at this company', href: entityLinks.relatedJobs, icon: '💼', color: 'border-emerald-500/30 hover:border-emerald-500/50' },
+    { label: 'Launch History', description: 'Launches associated with this company', href: entityLinks.relatedLaunches, icon: '🚀', color: 'border-purple-500/30 hover:border-purple-500/50' },
+    { label: 'Contract Awards', description: 'Government contracts awarded', href: entityLinks.relatedContracts, icon: '📜', color: 'border-blue-500/30 hover:border-blue-500/50' },
+    { label: 'SEC Filings', description: 'Securities and financial disclosures', href: entityLinks.relatedSECFilings, icon: '📊', color: 'border-rose-500/30 hover:border-rose-500/50' },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <SectionCard title="Cross-Module Intelligence">
+        <p className="text-sm text-slate-400 mb-4">
+          Explore all intelligence about {company.name} across SpaceNexus modules.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {links.map(link => (
+            <Link key={link.label} href={link.href}>
+              <div className={`bg-white/[0.04] border ${link.color} rounded-lg p-4 transition-all duration-200 hover:bg-white/[0.06]`}>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{link.icon}</span>
+                  <div>
+                    <div className="text-sm font-medium text-white">{link.label}</div>
+                    <div className="text-xs text-slate-500">{link.description}</div>
+                  </div>
+                  <svg className="w-4 h-4 text-slate-600 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </SectionCard>
+
+      {/* SpaceNexus Score */}
+      <SectionCard title="SpaceNexus Score Analysis">
+        <CompanyScoreSection company={company} />
+      </SectionCard>
+
+      {/* Industry Context */}
+      <SectionCard title="Industry Context">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { label: 'Sector', value: company.sector || 'Unknown', icon: '🏭' },
+            { label: 'Subsector', value: company.subsector || 'N/A', icon: '🔬' },
+            { label: 'Company Tier', value: `Tier ${company.tier}`, icon: '⭐' },
+            { label: 'Data Quality', value: `${company.dataCompleteness}%`, icon: '📊' },
+          ].map(item => (
+            <div key={item.label} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center">
+              <div className="text-lg mb-1">{item.icon}</div>
+              <div className="text-sm font-medium text-white">{item.value}</div>
+              <div className="text-xs text-slate-500">{item.label}</div>
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+    </div>
+  );
+}
+
+function RelationshipsTab({ company }: { company: CompanyDetail }) {
+  if (company.summary.competitors.length === 0) {
+    return (
+      <EmptyState
+        icon={<span className="text-2xl" aria-hidden="true">🔗</span>}
+        title="No relationships on record"
+        description={`No competitor, partner or acquisition has been linked to ${company.name}.`}
+        reason="Competitor and partner edges are drawn by hand as our research desk covers a sector, so coverage is deepest in launch, satellite and defence. This section fills in when this company's sector next gets a research pass."
+        suggestions={[{ label: 'Browse the directory', href: '/company-profiles' }]}
+      />
+    );
+  }
+  return (
+    <div className="space-y-4">
+      {/* Competitors */}
+      {company.summary.competitors.length > 0 && (
+        <SectionCard title="Competitors" count={company.summary.competitors.length}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {company.summary.competitors.map(c => (
+              <Link key={c.id} href={`/company-profiles/${c.slug}`}>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 flex items-center gap-3 cursor-pointer hover:border-white/10 transition-colors"
+                >
+                  {c.logoUrl ? (
+                    <div className="w-8 h-8 rounded-lg bg-white/[0.08] flex items-center justify-center text-sm">
+                      <Image src={c.logoUrl} alt={`${c.name} logo`} width={20} height={20} sizes="20px" className="w-5 h-5 rounded" unoptimized />
+                    </div>
+                  ) : (
+                    <CompanyAvatar name={c.name} size={32} />
+                  )}
+                  <div>
+                    <div className="text-sm font-medium text-white">{c.name}</div>
+                    <div className="text-xs text-slate-500 capitalize">{c.sector}</div>
+                  </div>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        </SectionCard>
+      )}
+
+      {/* Acquisitions */}
+      {company.acquisitions.length > 0 && (
+        <SectionCard title="Acquisitions Made" count={company.acquisitions.length}>
+          <div className="space-y-2">
+            {company.acquisitions.map(a => (
+              <div key={a.id} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium text-white">{a.targetName}</div>
+                  <div className="text-xs text-slate-500">{fmtDate(a.date)} · {a.dealType}</div>
+                </div>
+                {a.price && <div className="font-semibold text-emerald-400">{fmt(a.price)}</div>}
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+      )}
+
+      {/* Partnerships */}
+      {company.partnerships.length > 0 && (
+        <SectionCard title="Partnerships" count={company.partnerships.length}>
+          <div className="space-y-2">
+            {company.partnerships.map(p => (
+              <div key={p.id} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-medium text-white">{p.partnerName}</span>
+                  {p.type && (
+                    <span className="text-xs px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 capitalize">
+                      {p.type.replace(/_/g, ' ')}
+                    </span>
+                  )}
+                </div>
+                {p.description && <p className="text-xs text-slate-400">{p.description}</p>}
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+      )}
+    </div>
+  );
+}
+
+// ─── Quick Stats Section ────────────────────────────────────────────
+
+/**
+ * The profile's one telemetry console (SYNTHESIS.md §2.4, roadmap item 29).
+ *
+ * Replaces two separate rows of ad-hoc tiles — the MetricCard grid that sat in
+ * the hero and the six-up emoji/SVG tile row beneath it — with a single
+ * `Console` carrying ONE provenance line (`source · updated HH:MMZ`) plus a
+ * `StatusBadge`: `verified` when the stock quote came back live this request,
+ * `stale` otherwise (the figures are then the last verified snapshot).
+ *
+ * Every metric that either row used to show is still here.
+ */
+function QuickStatsSection({ company }: { company: CompanyDetail }) {
+  const readouts: { label: string; value: string; unit?: string; sub?: string }[] = [];
+
+  if (company.foundedYear) {
+    readouts.push({ label: 'Founded', value: String(company.foundedYear) });
+  }
+
+  if (company.employeeRange || company.employeeCount) {
+    readouts.push({
+      label: 'Employees',
+      value: company.employeeRange || (company.employeeCount ? company.employeeCount.toLocaleString() : '—'),
+    });
+  }
+
+  if (company.totalFunding) {
+    readouts.push({ label: 'Total funding', value: fmt(company.totalFunding) });
+  }
+
+  if (company.isPublic && company.marketCap) {
+    readouts.push({ label: 'Market cap', value: fmt(company.marketCap) });
+  } else if (company.valuation) {
+    readouts.push({ label: 'Valuation', value: fmt(company.valuation) });
+  }
+
+  if (company.revenueEstimate) {
+    readouts.push({ label: 'Est. revenue', value: fmt(company.revenueEstimate) });
+  }
+
+  if (company.summary.totalSatellites > 0) {
+    readouts.push({
+      label: 'Satellites',
+      value: String(company.summary.activeSatellites),
+      unit: `/ ${company.summary.totalSatellites}`,
+      sub: 'active / on record',
+    });
+  }
+
+  if (company.summary.totalContractValue > 0) {
+    readouts.push({ label: 'Contract value', value: fmt(company.summary.totalContractValue) });
+  }
+
+  readouts.push({ label: 'Tier', value: String(company.tier) });
+
+  if (readouts.length === 0) return null;
+
+  const quoteIsLive = company.stockDataSource === 'live';
+
+  return (
+    <Console
+      title="Key metrics"
+      source="SpaceNexus"
+      asOf={company.stockDataAsOf}
+      status={quoteIsLive ? 'verified' : 'stale'}
+      className="mb-8"
+    >
+      <div className="grid grid-cols-2 gap-x-6 gap-y-5 md:grid-cols-3 lg:grid-cols-5">
+        {readouts.map((r) => (
+          <Telemetry key={r.label} label={r.label} value={r.value} unit={r.unit} sub={r.sub} />
+        ))}
+      </div>
+    </Console>
+  );
+}
+
+// ─── Recent News Snippet ─────────────────────────────────────────────────────
+
+function RecentNewsSnippet({ companySlug, companyName }: { companySlug: string; companyName: string }) {
+  const [articles, setArticles] = useState<{ id: string; title: string; source: string; publishedAt: string; url: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchNews() {
+      try {
+        const res = await fetch(`/api/news?company=${companySlug}&limit=3`);
+        if (res.ok) {
+          const data = await res.json();
+          setArticles((data.articles || []).slice(0, 3));
+        }
+      } catch {
+        // Silently fail - supplementary feature
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchNews();
+  }, [companySlug]);
+
+  if (loading) {
+    return (
+      <div className="card p-5">
+        <h3 className="text-lg font-semibold text-white mb-4">Recent News</h3>
+        <div className="space-y-3">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="animate-pulse flex items-center gap-3">
+              <div className="h-4 bg-white/[0.08] rounded w-3/4" />
+              <div className="h-3 bg-white/[0.04] rounded w-1/4" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (articles.length === 0) return null;
+
+  return (
+    <div className="card p-5">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+          <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+          </svg>
+          Recent News
+        </h3>
+        <Link
+          href={`/news?search=${encodeURIComponent(companyName)}`}
+          className="text-xs text-slate-300 hover:text-white transition-colors"
+        >
+          View all &rarr;
+        </Link>
+      </div>
+      <div className="space-y-3">
+        {articles.map((article, i) => (
+          <motion.a
+            key={article.id}
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.08 }}
+            className="flex items-center justify-between gap-4 p-3 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:border-white/10 transition-colors group"
+          >
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-medium text-white group-hover:text-white transition-colors line-clamp-1">
+                {article.title}
+              </h4>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-slate-500">{article.source}</span>
+                <span className="text-xs text-slate-600">|</span>
+                <span className="text-xs text-slate-500">
+                  {new Date(article.publishedAt).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC',
+                  })}
+                </span>
+              </div>
+            </div>
+            <svg className="w-4 h-4 text-slate-600 group-hover:text-white flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </motion.a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Page ───────────────────────────────────────────────────────────────
+
+export default function CompanyProfileDetailPage({ initialCompany = null }: { initialCompany?: CompanyDetail | null }) {
+  const params = useParams();
+  const router = useRouter();
+  // Server-rendered when the page passes the profile in; the client fetch
+  // below is the fallback for a slug the server could not load.
+  const [company, setCompany] = useState<CompanyDetail | null>(initialCompany);
+  const [loading, setLoading] = useState(!initialCompany);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const [showCompletenessDetails, setShowCompletenessDetails] = useState(false);
+
+  useEffect(() => {
+    const tabParam = new URLSearchParams(window.location.search).get('tab');
+    if (tabParam && TABS.some(t => t.id === tabParam)) {
+      setActiveTab(tabParam as TabId);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (initialCompany && initialCompany.slug === params.slug) {
+      // Track view for sponsored profiles (the server render skipped the fetch)
+      if (initialCompany.sponsorTier) {
+        fetch(`/api/company-profiles/${params.slug}/analytics`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ event: 'view' }),
+        }).catch(() => {});
+      }
+      return;
+    }
+    async function load() {
+      try {
+        setError(null);
+        const res = await fetch(`/api/company-profiles/${params.slug}`);
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          // Handle both { error: "string" } and { error: { code, message } } formats
+          const errMsg = typeof errData.error === 'string'
+            ? errData.error
+            : errData.error?.message || errData.message || `HTTP ${res.status}`;
+          throw new Error(errMsg);
+        }
+        const data = await res.json();
+        setCompany(data);
+        // Track view for sponsored profiles
+        if (data.sponsorTier) {
+          fetch(`/api/company-profiles/${params.slug}/analytics`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ event: 'view' }),
+          }).catch(() => {}); // fire and forget
+        }
+      } catch (err) {
+        clientLogger.error('Company profile load error', { error: err instanceof Error ? err.message : String(err) });
+        setError(err instanceof Error ? err.message : 'Failed to load company profile');
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (params.slug) load();
+  }, [params.slug, initialCompany]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error || !company) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <div className="text-5xl mb-4">🏢</div>
+          <h2 className="text-xl font-bold text-white mb-2">Failed to load data</h2>
+          <p className="text-sm text-slate-400 mb-2">
+            Could not load this company profile.
+          </p>
+          {error && (
+            <p className="text-xs text-red-400/80 mb-6 font-mono bg-red-500/10 rounded px-3 py-2">
+              {error}
+            </p>
+          )}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => { setLoading(true); setError(null); setCompany(null); window.location.reload(); }}
+              className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm rounded-lg font-medium transition-colors"
+            >
+              Try Again
+            </button>
+            <Link
+              href="/company-profiles"
+              className="px-5 py-2.5 bg-white/[0.08] hover:bg-white/[0.12] text-white text-sm rounded-lg font-medium transition-colors"
+            >
+              Company Directory
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen p-4 lg:p-8 max-w-[1400px] mx-auto">
+      <OrganizationProfileSchema
+        name={company.name}
+        description={company.description || `${company.name} - Space industry company profile`}
+        url={`/company-profiles/${company.slug}`}
+        logo={company.logoUrl || undefined}
+        foundingDate={company.foundedYear ? String(company.foundedYear) : undefined}
+        location={company.headquarters || undefined}
+        employeeCount={company.employeeRange || (company.employeeCount ? String(company.employeeCount) : undefined)}
+        industry={company.sector || undefined}
+        parentOrganization={company.parentCompany || undefined}
+        websiteUrl={company.website || undefined}
+        linkedinUrl={company.linkedinUrl || undefined}
+        twitterUrl={company.twitterUrl || undefined}
+        ticker={company.ticker || undefined}
+        exchange={company.exchange || undefined}
+      />
+      {/* Breadcrumb Navigation */}
+      <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
+        <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
+        <span>/</span>
+        <Link href="/company-profiles" className="hover:text-slate-300 transition-colors">Company Profiles</Link>
+        <span>/</span>
+        <span className="text-slate-400 truncate">{company.name}</span>
+      </nav>
+
+      {/* Hero Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="card p-6 mb-6 relative overflow-hidden"
+      >
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-purple-500/5 to-slate-200/5" />
+
+        <div className="relative z-10">
+          {company.sponsorTier === 'premium' && company.sponsorBanner && (
+            <div className="-mx-6 -mt-6 mb-6">
+              <SponsorBanner
+                companyName={company.name}
+                companySlug={company.slug}
+                tagline={company.sponsorTagline || undefined}
+                bannerUrl={company.sponsorBanner}
+              />
+            </div>
+          )}
+          <div className="flex flex-col lg:flex-row lg:items-start gap-6">
+            {/* Logo + Name */}
+            <div className="flex items-start gap-4 flex-1">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+              >
+                {company.logoUrl ? (
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-3xl flex-shrink-0 border border-white/[0.1]">
+                    <Image src={company.logoUrl} alt={`${company.name} logo`} width={48} height={48} sizes="48px" className="w-12 h-12 rounded-xl object-contain" unoptimized />
+                  </div>
+                ) : (
+                  <CompanyAvatar name={company.name} tier={company.tier} size={64} className="rounded-2xl" />
+                )}
+              </motion.div>
+              <div>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-white">{company.name}</h1>
+                  {company.analystNote && <p className="mt-1 text-[15px] italic text-[var(--ink-2)] max-w-[68ch]">{company.analystNote}</p>}
+                  {company.ticker && (
+                    <span className="font-mono text-slate-300 text-lg">{company.ticker}</span>
+                  )}
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                    company.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
+                    company.status === 'acquired' ? 'bg-amber-500/20 text-amber-400' :
+                    company.status === 'pre-revenue' ? 'bg-blue-500/20 text-blue-400' :
+                    'bg-slate-600/20 text-slate-400'
+                  }`}>{company.status.toUpperCase()}</span>
+                  {company.sponsorTier && (
+                    <SponsorBadge tier={company.sponsorTier as 'verified' | 'premium'} />
+                  )}
+                  <ShareButton title={`${company.name} - SpaceNexus Company Profile`} />
+                  <SocialShare
+                    title={`${company.name} - SpaceNexus Company Profile`}
+                    description={company.description || undefined}
+                  />
+                  <ExportPDFButton className="no-print" />
+                </div>
+                <p className="text-slate-400 mt-1 max-w-2xl line-clamp-2">{company.description}</p>
+                <div className="flex items-center gap-4 mt-3 flex-wrap">
+                  {company.headquarters && (
+                    <span className="text-xs text-slate-500 flex items-center gap-1">📍 {company.headquarters}</span>
+                  )}
+                  {company.foundedYear && (
+                    <span className="text-xs text-slate-500 flex items-center gap-1">📅 Founded {company.foundedYear}</span>
+                  )}
+                  {company.employeeRange && (
+                    <span className="text-xs text-slate-500 flex items-center gap-1">👥 {company.employeeRange} employees</span>
+                  )}
+                  {company.website && (
+                    <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-300 hover:text-white flex items-center gap-1">
+                      🌐 Website →
+                    </a>
+                  )}
+                  {company.linkedinUrl && (
+                    <a href={company.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:text-blue-300">LinkedIn</a>
+                  )}
+                  {company.twitterUrl && (
+                    <a href={company.twitterUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-400 hover:text-slate-300">X/Twitter</a>
+                  )}
+                </div>
+                {/* Tags */}
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {company.sector && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/5 text-slate-300 border border-white/10">
+                      {getSectorIcon(company.sector)} {company.sector}
+                    </span>
+                  )}
+                  {company.tags?.map(tag => (
+                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-400 border border-white/[0.06]">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Data Completeness Bar */}
+          <div className="mt-4 pt-4 border-t border-white/[0.06]">
+            {(() => {
+              const overallScore = company.completenessBreakdown?.total ?? company.dataCompleteness;
+              return (
+                <>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-500">Profile Completeness</span>
+                    <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${overallScore}%` }}
+                        transition={{ duration: 1, ease: 'easeOut' }}
+                        className={`h-full rounded-full ${
+                          overallScore >= 75 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' :
+                          overallScore >= 50 ? 'bg-gradient-to-r from-amber-500 to-amber-400' :
+                          'bg-gradient-to-r from-red-500 to-red-400'
+                        }`}
+                      />
+                    </div>
+                    <span className={`text-xs font-semibold ${
+                      overallScore >= 75 ? 'text-emerald-400' :
+                      overallScore >= 50 ? 'text-amber-400' : 'text-red-400'
+                    }`}>{overallScore}%</span>
+                  </div>
+                  {company.completenessBreakdown && (
+                    <>
+                      <button
+                        onClick={() => setShowCompletenessDetails(prev => !prev)}
+                        className="mt-1.5 text-[11px] text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+                      >
+                        {showCompletenessDetails ? '▾ Hide details' : '▸ Details'}
+                      </button>
+                      <AnimatePresence>
+                        {showCompletenessDetails && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: 'easeInOut' }}
+                            className="overflow-hidden"
+                          >
+                            <div className="mt-2 space-y-2 pl-1">
+                              {([
+                                { label: 'Basic Info', key: 'basicInfo' as const, max: 30 },
+                                { label: 'Financial', key: 'financialData' as const, max: 25 },
+                                { label: 'Products & Ops', key: 'productsOperations' as const, max: 20 },
+                                { label: 'Business Intel', key: 'businessIntelligence' as const, max: 15 },
+                                { label: 'External Data', key: 'externalData' as const, max: 10 },
+                              ] as const).map(({ label, key, max }) => {
+                                const value = company.completenessBreakdown![key];
+                                const pct = max > 0 ? (value / max) * 100 : 0;
+                                const barColor = pct > 75
+                                  ? 'bg-emerald-500'
+                                  : pct > 50
+                                    ? 'bg-amber-500'
+                                    : 'bg-red-500';
+                                const textColor = pct > 75
+                                  ? 'text-emerald-400'
+                                  : pct > 50
+                                    ? 'text-amber-400'
+                                    : 'text-red-400';
+                                return (
+                                  <div key={key} className="flex items-center gap-2">
+                                    <span className="text-[11px] text-slate-400 w-24 shrink-0">{label}</span>
+                                    <div className="flex-1 h-1 bg-white/[0.06] rounded-full overflow-hidden">
+                                      <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${pct}%` }}
+                                        transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
+                                        className={`h-full rounded-full ${barColor}`}
+                                      />
+                                    </div>
+                                    <span className={`text-[11px] font-medium w-12 text-right shrink-0 ${textColor}`}>
+                                      {value}/{max}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </>
+                  )}
+                </>
+              );
+            })()}
+          </div>
+
+          {/* Marketplace Actions */}
+          <MarketplaceActions companySlug={params.slug as string} companyId={company.id} companyName={company.name} verificationLevel={(company as any).verificationLevel} contactEmail={(company as any).contactEmail} claimedByUserId={(company as any).claimedByUserId} jobPostingsCount={company.jobPostingsCount} />
+          {/* Terminal wave (2026-08-31): follow this company — weekly email
+              brief (news + jobs + contracts + filings), no account needed. */}
+          <div className="mt-3">
+            <CompanyWatchForm companyProfileId={company.id} companyName={company.name} compact />
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Quick Stats */}
+      <QuickStatsSection company={company} />
+
+      {/* Tab Navigation */}
+      <div className="card mb-6 overflow-hidden">
+        <div className="flex overflow-x-auto scrollbar-hide">
+          {TABS.filter(tab => tab.id !== 'jobs' || company.jobPostingsCount > 0).map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                activeTab === tab.id ? 'text-slate-300' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+              {tab.id === 'jobs' && company.jobPostingsCount > 0 && (
+                <span className="text-xs bg-white/[0.08] text-slate-300 px-1.5 py-0.5 rounded-full">{company.jobPostingsCount}</span>
+              )}
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="tab-indicator-company"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+        >
+          {activeTab === 'overview' && <OverviewTab company={company} />}
+          {activeTab === 'financials' && <FinancialsTab company={company} />}
+          {activeTab === 'products' && <ProductsTab company={company} />}
+          {activeTab === 'people' && <PeopleTab company={company} />}
+          {activeTab === 'contracts' && <ContractsTab company={company} />}
+          {activeTab === 'space-assets' && <SpaceAssetsTab company={company} />}
+          {activeTab === 'timeline' && <TimelineTab company={company} />}
+          {activeTab === 'news' && <NewsTab companySlug={company.slug} companyName={company.name} />}
+          {activeTab === 'jobs' && <JobsTab companySlug={company.slug} companyName={company.name} />}
+          {activeTab === 'digest' && <DigestTab companyId={company.id} companyName={company.name} />}
+          {activeTab === 'intelligence' && <IntelligenceTab company={company} />}
+          {activeTab === 'relationships' && <RelationshipsTab company={company} />}
+          {activeTab === 'pitch-deck' && <PitchDeckTab companyId={company.id} companyName={company.name} />}
+          {activeTab === 'data-room' && <DataRoomTab companyId={company.id} companyName={company.name} />}
+          {activeTab === 'mission-debriefs' && <MissionDebriefsTab companyId={company.id} companyName={company.name} />}
+          {activeTab === 'contact' && company.sponsorTier && (
+            <SectionCard title={`Contact ${company.name}`}>
+              <LeadCaptureForm companySlug={company.slug} companyName={company.name} />
+            </SectionCard>
+          )}
+          {activeTab === 'contact' && !company.sponsorTier && (
+            <EmptyState
+              icon={<span className="text-2xl" aria-hidden="true">✉️</span>}
+              title="No direct contact channel"
+              description={`${company.name} does not accept enquiries through SpaceNexus.`}
+              reason="The contact form is switched on for verified and premium sponsor profiles only, so that enquiries reach a person who has agreed to answer them. It appears here if this company takes a sponsorship."
+              suggestions={[{ label: 'Learn about sponsorship', href: '/company-profiles/sponsor' }]}
+            />
+          )}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Recent News Snippet */}
+      <ScrollReveal delay={0.1} className="mt-8">
+        <RecentNewsSnippet companySlug={company.slug} companyName={company.name} />
+      </ScrollReveal>
+
+      {/* Similar Companies Section */}
+      <ScrollReveal delay={0.2} className="mt-6">
+        <SimilarCompanies companySlug={company.slug} companyName={company.name} />
+      </ScrollReveal>
+
+      <div className="mt-8">
+        <RelatedModules modules={PAGE_RELATIONS['company-profiles']} />
+      </div>
+    </div>
+  );
+}

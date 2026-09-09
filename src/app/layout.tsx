@@ -260,7 +260,11 @@ export default function RootLayout({
         />
         {/* Preload critical fonts for LCP */}
       </head>
-      <body className={`${dmSans.variable} ${jetbrainsMono.variable} ${orbitron.variable} ${dmSans.className}`}>
+      {/* google-anno-skip on <body> turns off AdSense "ad intents" (inline
+          ad-links/chips Google injects into editorial sentences, e.g. a
+          "📡 Access Satellite Data" tail on a guide's lede — seen 2026-09-09).
+          Regular auto ads are unaffected; the AdSense loader is tier/route gated. */}
+      <body className={`${dmSans.variable} ${jetbrainsMono.variable} ${orbitron.variable} ${dmSans.className} google-anno-skip`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none">
           Skip to main content
         </a>

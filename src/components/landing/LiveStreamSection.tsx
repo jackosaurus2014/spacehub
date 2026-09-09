@@ -58,6 +58,12 @@ const EMBED_PROBE_DELAY_MS = 2_000;
 
 function YouTubeEmbed({ stream }: { stream: ActiveLiveStream }) {
   const [embedBlocked, setEmbedBlocked] = useState(false);
+  // Facade (2026-09-09): the YouTube player is ~3.4 MB of script, more than
+  // the rest of the homepage combined, and it loaded for every visitor
+  // whether or not they watched. Ordinary live streams now show the poster
+  // with a play button and mount the player on click (which also lets it
+  // start with sound); flagship moments keep the autoplay promotion.
+  const [activated, setActivated] = useState<boolean>(stream.isMajorEvent === true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const aliveRef = useRef(false);
 
@@ -74,6 +80,7 @@ function YouTubeEmbed({ stream }: { stream: ActiveLiveStream }) {
   //     arrives by the deadline the player is not there, and the fallback card
   //     (with its working watch link) takes over.
   useEffect(() => {
+    if (!activated) return;
     setEmbedBlocked(false);
     aliveRef.current = false;
 
@@ -131,7 +138,7 @@ function YouTubeEmbed({ stream }: { stream: ActiveLiveStream }) {
       window.removeEventListener('message', handleMessage);
       window.clearTimeout(probe);
     };
-  }, [stream.videoId]);
+  }, [stream.videoId, activated]);
 
   if (embedBlocked) {
     return (
@@ -166,6 +173,35 @@ function YouTubeEmbed({ stream }: { stream: ActiveLiveStream }) {
     );
   }
 
+  if (!activated) {
+    return (
+      <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+        <button
+          type="button"
+          onClick={() => setActivated(true)}
+          className="group absolute inset-0 w-full h-full bg-black text-left"
+          aria-label={`Play live stream: ${stream.title}`}
+        >
+          {stream.thumbnailUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={stream.thumbnailUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" loading="eager" />
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
+          <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-600 text-white text-xs font-semibold uppercase tracking-wide">
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" aria-hidden="true" />
+            Live
+          </span>
+          <span className="absolute inset-0 flex items-center justify-center">
+            <span className="w-20 h-14 rounded-2xl bg-red-600 group-hover:bg-red-500 flex items-center justify-center shadow-2xl transition-colors">
+              <svg className="w-8 h-8 text-white ml-1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+            </span>
+          </span>
+          <span className="absolute bottom-3 left-3 right-3 text-white text-sm font-medium line-clamp-2 drop-shadow">{stream.title}</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
       <iframe
@@ -175,7 +211,7 @@ function YouTubeEmbed({ stream }: { stream: ActiveLiveStream }) {
         // network level generally leave youtube-nocookie.com alone. A viewer
         // hit exactly that — the watch page worked while our embed failed with
         // a browser-level load error. Same player, no viewer tracking cookies.
-        src={`https://www.youtube-nocookie.com/embed/${stream.videoId}?autoplay=1&mute=1&enablejsapi=1`}
+        src={`https://www.youtube-nocookie.com/embed/${stream.videoId}?autoplay=1&mute=${stream.isMajorEvent ? 1 : 0}&enablejsapi=1`}
         title={stream.title}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
