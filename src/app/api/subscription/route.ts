@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { isTrialActive, normalizeTier } from '@/lib/subscription';
+import { isTrialActive, normalizeTier, TRIAL_DAYS } from '@/lib/subscription';
 import { validateBody, subscriptionActionSchema } from '@/lib/validations';
 import { validationError, internalError, notFoundError } from '@/lib/errors';
 
@@ -76,15 +76,17 @@ export async function GET() {
           dailyArticleViews: isNewDay ? 0 : user.dailyArticleViews,
           isTrialing: true,
           trialEndsAt: user.trialEndDate,
+          hasHadTrial: true,
           hasPaymentMethod: !!user.stripeCustomerId,
         });
       } else {
-        // Trial has expired — clear trial fields (auto-downgrade)
+        // Trial has expired — clear the active-trial fields (auto-downgrade).
+        // trialStartDate stays: it is the one-trial-per-account marker that
+        // the start-trial action and Stripe checkout both read.
         await prisma.user.update({
           where: { email: session.user.email },
           data: {
             trialTier: null,
-            trialStartDate: null,
             trialEndDate: null,
           },
         });
@@ -99,6 +101,7 @@ export async function GET() {
       dailyArticleViews: isNewDay ? 0 : user.dailyArticleViews,
       isTrialing: false,
       trialEndsAt: null,
+      hasHadTrial: !!user.trialStartDate,
       hasPaymentMethod: !!user.stripeCustomerId,
     });
   } catch (error) {
@@ -193,7 +196,7 @@ export async function POST(request: Request) {
 
       // Start the 14-day trial
       const now = new Date();
-      const trialEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+      const trialEnd = new Date(now.getTime() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
 
       await prisma.user.update({
         where: { email: session.user.email },

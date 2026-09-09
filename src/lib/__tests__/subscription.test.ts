@@ -5,7 +5,9 @@ import {
   isTrialActive,
   normalizeTier,
   TIER_ACCESS,
+  TRIAL_DAYS,
 } from '../subscription';
+import { SUBSCRIPTION_PLANS } from '@/types';
 
 // ---------------------------------------------------------------------------
 // TIER_ACCESS configuration
@@ -19,8 +21,8 @@ describe('TIER_ACCESS', () => {
     expect(TIER_ACCESS.pro.maxDailyArticles).toBe(-1);
   });
 
-  it('free tier does not have stock tracking', () => {
-    expect(TIER_ACCESS.free.hasStockTracking).toBe(false);
+  it('free tier has stock tracking (/space-stocks is public)', () => {
+    expect(TIER_ACCESS.free.hasStockTracking).toBe(true);
   });
 
   it('pro tier has stock tracking', () => {
@@ -97,8 +99,8 @@ describe('normalizeTier', () => {
 // canAccessFeature
 // ---------------------------------------------------------------------------
 describe('canAccessFeature', () => {
-  it('free users cannot access stock tracking', () => {
-    expect(canAccessFeature('free', 'hasStockTracking')).toBe(false);
+  it('free users cannot access the API', () => {
+    expect(canAccessFeature('free', 'hasAPIAccess')).toBe(false);
   });
 
   it('pro users can access stock tracking', () => {
@@ -120,8 +122,8 @@ describe('canAccessFeature', () => {
     expect(canAccessFeature('free', 'hasMarketIntel')).toBe(true);
   });
 
-  it('free users cannot access AI opportunities', () => {
-    expect(canAccessFeature('free', 'hasAIOpportunities')).toBe(false);
+  it('free users cannot access the supply-chain map', () => {
+    expect(canAccessFeature('free', 'hasSupplyChainMap')).toBe(false);
   });
 });
 
@@ -133,12 +135,15 @@ describe('canAccessModule', () => {
     expect(canAccessModule('free', 'news-feed')).toBe(true);
   });
 
-  it('free users cannot access pro modules (resource-exchange)', () => {
-    expect(canAccessModule('free', 'resource-exchange')).toBe(false);
+  it('free users cannot access pro modules (supply-chain, customer-discovery)', () => {
+    expect(canAccessModule('free', 'supply-chain')).toBe(false);
+    expect(canAccessModule('free', 'customer-discovery')).toBe(false);
   });
 
-  it('free users cannot access pro modules (business-opportunities)', () => {
-    expect(canAccessModule('free', 'business-opportunities')).toBe(false);
+  it('modules whose routes are open are not gated on the homepage either', () => {
+    for (const id of ['resource-exchange', 'business-opportunities', 'funding-tracker', 'patent-tracker', 'space-insurance', 'spectrum-tracker']) {
+      expect(canAccessModule('free', id)).toBe(true);
+    }
   });
 
   it('pro users can access all premium modules', () => {
@@ -170,16 +175,17 @@ describe('canAccessModule', () => {
 // getRequiredTierForModule
 // ---------------------------------------------------------------------------
 describe('getRequiredTierForModule', () => {
-  it('returns "pro" for resource-exchange', () => {
-    expect(getRequiredTierForModule('resource-exchange')).toBe('pro');
+  it('returns "pro" for supply-chain', () => {
+    expect(getRequiredTierForModule('supply-chain')).toBe('pro');
   });
 
-  it('returns "pro" for business-opportunities', () => {
-    expect(getRequiredTierForModule('business-opportunities')).toBe('pro');
+  it('returns "pro" for regulatory-calendar', () => {
+    expect(getRequiredTierForModule('regulatory-calendar')).toBe('pro');
   });
 
-  it('returns "pro" for spectrum-tracker', () => {
-    expect(getRequiredTierForModule('spectrum-tracker')).toBe('pro');
+  it('returns null for modules whose routes are open (resource-exchange, spectrum-tracker)', () => {
+    expect(getRequiredTierForModule('resource-exchange')).toBeNull();
+    expect(getRequiredTierForModule('spectrum-tracker')).toBeNull();
   });
 
   it('returns null for a free module', () => {
@@ -212,5 +218,15 @@ describe('isTrialActive', () => {
 
   it('returns false when trial end date is null', () => {
     expect(isTrialActive(null)).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Trial length: registration, the pricing-page trial and the plan card agree
+// ---------------------------------------------------------------------------
+describe('TRIAL_DAYS', () => {
+  it('matches the trial advertised on the Pro plan card', () => {
+    const pro = SUBSCRIPTION_PLANS.find((plan) => plan.id === 'pro');
+    expect(pro?.trialDays).toBe(TRIAL_DAYS);
   });
 });

@@ -161,7 +161,7 @@ function generateTrialWelcomeEmail(params: TrialDripParams): { html: string; pla
 
   const plain = `Welcome aboard, ${userName}!
 
-Your space command center is ready. You have 14 days of full Professional access — unlimited articles, smart alerts, deal flow, executive moves, and more.
+Your space command center is ready. You have 14 days of full Professional access — unlimited articles, the supply-chain map, the compliance suite, smart alerts, and more.
 
 3 quick actions to start with:
 

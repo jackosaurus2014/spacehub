@@ -131,7 +131,7 @@ export default function TrialCountdownBanner() {
             </p>
             {(urgency === 'urgent' || urgency === 'critical') && (
               <p className="text-xs text-slate-400 mt-0.5">
-                You&apos;ll lose access to deal flow, executive moves, and unlimited articles
+                You&apos;ll lose the supply-chain map, the compliance suite, alerts and unlimited articles
               </p>
             )}
           </div>

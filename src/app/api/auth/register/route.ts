@@ -7,6 +7,7 @@ import { logger } from '@/lib/logger';
 import { serverRegisterSchema, validateBody } from '@/lib/validations';
 import { generateVerificationEmail } from '@/lib/newsletter/email-templates';
 import { TRIAL_DRIP_SEQUENCE } from '@/lib/newsletter/trial-drip-templates';
+import { TRIAL_DAYS } from '@/lib/subscription';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,10 +39,10 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Auto-start 3-day Pro trial for every new user — lets them experience
+    // Auto-start a Pro trial for every new user — lets them experience
     // the full platform immediately, driving conversions
     const trialEnd = new Date();
-    trialEnd.setDate(trialEnd.getDate() + 3);
+    trialEnd.setDate(trialEnd.getDate() + TRIAL_DAYS);
 
     const user = await prisma.user.create({
       data: {

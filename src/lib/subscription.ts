@@ -37,14 +37,14 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
 }> = {
   free: {
     maxDailyArticles: 15,
-    hasStockTracking: false,
+    hasStockTracking: true, // /space-stocks is public
     hasMarketIntel: true,
-    hasResourceExchange: false,
-    hasAIOpportunities: false,
+    hasResourceExchange: true,
+    hasAIOpportunities: true,
     hasAlerts: false,
     hasAPIAccess: false,
     adFree: false,
-    hasDealFlow: false,
+    hasDealFlow: true, // funding rounds are open (founder ruling 2026-08-29)
     hasSupplyChainMap: false,
     hasExecutiveMoves: true, // free teaser (limited)
     hasRegulatoryCalendar: false,
@@ -85,6 +85,15 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
   },
 };
 
+/**
+ * Length of the Professional trial. Registration auto-starts one and the
+ * pricing page can start one for accounts that never had it; both must
+ * agree with the "14-day" copy on /pricing and in the trial drip emails
+ * (2026-09-08: registration silently granted 3 days while every email and
+ * the pricing page promised 14).
+ */
+export const TRIAL_DAYS = 14;
+
 export function isTrialActive(trialEndDate: Date | null): boolean {
   if (!trialEndDate) return false;
   return new Date() < new Date(trialEndDate);
@@ -101,23 +110,18 @@ export function canAccessFeature(
 // Every premium module requires the single paid tier (Pro).
 // NOTE: recruitment-relevant modules (jobs, workforce, salary, executive-moves)
 // are intentionally NOT listed here — they are fully public.
+// Only surfaces whose own route is gated belong here. Funding rounds, patents,
+// insurance, resource exchange, spectrum, orbital services, business
+// opportunities and the economy dashboards are open at their URLs (founder
+// ruling 2026-08-29, "information over profit"), so gating their homepage
+// module while the same data is free one click away only misled people.
 const PREMIUM_MODULES: Record<string, SubscriptionTier> = {
-  'resource-exchange': 'pro',
   'supply-chain': 'pro',
-  'space-capital': 'pro',
-  'space-economy': 'pro',
-  'deal-flow': 'pro',
   'supply-chain-map': 'pro',
   'regulatory-calendar': 'pro',
-  'business-opportunities': 'pro',
-  'spectrum-tracker': 'pro',
-  'space-insurance': 'pro',
   'compliance': 'pro',
-  'orbital-services': 'pro',
-  'patent-tracker': 'pro',
   'api-docs': 'pro',
   'deal-rooms': 'pro',
-  'funding-tracker': 'pro',
   'customer-discovery': 'pro',
 };
 

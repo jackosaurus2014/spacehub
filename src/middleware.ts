@@ -62,6 +62,18 @@ function getRateLimitConfig(pathname: string, method: string): RateLimitConfig {
   if (method === 'POST' && pathname.startsWith('/api/compliance/questions')) {
     return { maxRequests: 5, windowMs: 60 * 60 * 1000 };
   }
+  // next-auth's session/csrf/providers reads are fired by every SessionProvider
+  // mount and refetch; under the generic 200/min budget a fast multi-tab
+  // session returned 429, next-auth logged CLIENT_FETCH_ERROR and the user was
+  // bounced to /login (seen 2026-09-08 on a 17-page walkthrough). These are
+  // cheap, read-only and already cookie-scoped — give them their own budget.
+  if (
+    pathname === '/api/auth/session' ||
+    pathname === '/api/auth/csrf' ||
+    pathname === '/api/auth/providers'
+  ) {
+    return { maxRequests: 600, windowMs: 60 * 1000 };
+  }
   if (pathname.startsWith('/api/auth/register')) {
     return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 req/hour
   }

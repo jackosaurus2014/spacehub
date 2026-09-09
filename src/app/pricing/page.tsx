@@ -1,5 +1,7 @@
 'use client';
 
+import { TRIAL_DAYS } from '@/lib/subscription';
+
 import { useState, useEffect, Suspense, Fragment, useCallback } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -50,9 +52,9 @@ function TrialDaysLeft(trialEndsAt: Date | null): number {
 
 const TRIAL_FEATURES = [
   'Unlimited news access',
-  'Full satellite tracking',
-  'Market intelligence dashboard',
-  'CSV data export',
+  'Supply-chain map and customer-discovery database',
+  'Regulatory calendar and compliance suite',
+  'Satellite pass alerts, webhooks and API access',
   'Ad-free experience',
 ];
 
@@ -520,11 +522,12 @@ function PricingPageContent() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [hasPaymentMethod, setHasPaymentMethod] = useState(false);
+  const [hasHadTrial, setHasHadTrial] = useState(false);
 
   // A/B test: pricing CTA wording
   const { variant: ctaVariant, trackConversion: trackCtaConversion } = useABTest(PRICING_CTA_TEST);
   const trialCtaLabel = ctaVariant === 'reassuring'
-    ? 'Start Your 14-Day Free Trial — No Credit Card'
+    ? `Start Your ${TRIAL_DAYS}-Day Free Trial — No Credit Card`
     : undefined; // undefined = use PricingCardV3 default
 
   // Track pricing page view for conversion funnel
@@ -555,6 +558,7 @@ function PricingPageContent() {
         const res = await fetch('/api/subscription');
         const data = await res.json();
         setHasPaymentMethod(data.hasPaymentMethod || false);
+        setHasHadTrial(!!data.hasHadTrial);
       } catch {
         // Silently fail
       }
@@ -585,7 +589,7 @@ function PricingPageContent() {
         return;
       }
 
-      toast.success('Your 14-day Professional trial has started!');
+      toast.success(`Your ${TRIAL_DAYS}-day Professional trial has started!`);
       trackGA4Event('trial_started', { plan: planTier, location: 'pricing_page' });
       refreshSubscription();
     } catch {
@@ -813,7 +817,7 @@ function PricingPageContent() {
                   features={plan.features}
                   highlighted={plan.highlighted}
                   savings={savings}
-                  trialDays={plan.trialDays}
+                  trialDays={hasHadTrial ? undefined : plan.trialDays}
                   isCurrentPlan={plan.id === tier}
                   isTrialing={isTrialing}
                   daysLeft={daysLeft}
@@ -823,7 +827,7 @@ function PricingPageContent() {
                   onStartTrial={handleStartTrial}
                   onSubscribe={handleSubscribe}
                   isYearly={isYearly}
-                  trialCtaLabel={plan.trialDays ? trialCtaLabel : undefined}
+                  trialCtaLabel={plan.trialDays && !hasHadTrial ? trialCtaLabel : undefined}
                   onTrialCtaClick={trackCtaConversion}
                 />
               </StaggerItem>
@@ -866,7 +870,7 @@ function PricingPageContent() {
             {[
               { icon: '🔒', title: 'Secure Payments', desc: 'Powered by Stripe with bank-level encryption' },
               { icon: '⚡', title: 'Instant Access', desc: 'Start exploring modules immediately after signup' },
-              { icon: '🛡️', title: '14-Day Free Trial', desc: 'Full access, no credit card required, cancel anytime' },
+              { icon: '🛡️', title: `${TRIAL_DAYS}-Day Free Trial`, desc: 'Full access, no credit card required, cancel anytime' },
             ].map((item) => (
               <div key={item.title} className="text-center p-4">
                 <span className="text-2xl mb-2 block">{item.icon}</span>

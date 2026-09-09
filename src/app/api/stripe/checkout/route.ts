@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { getStripe, getPriceIds } from '@/lib/stripe';
+import { TRIAL_DAYS } from '@/lib/subscription';
 import { stripeCheckoutSchema, validateBody } from '@/lib/validations';
 import { unauthorizedError, validationError, internalError, createSuccessResponse } from '@/lib/errors';
 import { logger } from '@/lib/logger';
@@ -48,6 +49,7 @@ export async function POST(req: Request) {
         stripeCustomerId: true,
         trialTier: true,
         trialEndDate: true,
+        trialStartDate: true,
       },
     });
 
@@ -81,10 +83,28 @@ export async function POST(req: Request) {
       });
     }
 
-    // Determine if the user should get a trial period
-    // Only grant trial if user hasn't had a trial before
-    const hasHadTrial = user.trialTier !== null || user.trialEndDate !== null;
-    const trialPeriodDays = hasHadTrial ? undefined : 14;
+    // Carry the site trial into Stripe. Registration auto-starts a TRIAL_DAYS
+    // Pro trial with no card on file; a member who subscribes while it is
+    // running must not be charged before it ends, and an account that never
+    // had one gets the advertised trial at checkout. Stripe wants trial_end at
+    // least 48h out, so a trial in its last two days rounds up to whole days.
+    // (2026-09-08: this used to grant Stripe's trial only to accounts with no
+    // trial fields at all, which after auto-trials at signup was nobody.)
+    const nowMs = Date.now();
+    const trialEndMs = user.trialEndDate ? new Date(user.trialEndDate).getTime() : 0;
+    const hasHadTrial =
+      user.trialStartDate !== null || user.trialTier !== null || user.trialEndDate !== null;
+    let trialData: { trial_end: number } | { trial_period_days: number } | Record<string, never> = {};
+    if (trialEndMs > nowMs) {
+      const remainingMs = trialEndMs - nowMs;
+      trialData =
+        remainingMs >= 48 * 60 * 60 * 1000
+          ? { trial_end: Math.floor(trialEndMs / 1000) }
+          : { trial_period_days: Math.max(1, Math.ceil(remainingMs / (24 * 60 * 60 * 1000))) };
+    } else if (!hasHadTrial) {
+      trialData = { trial_period_days: TRIAL_DAYS };
+    }
+    const hasTrialDays = Object.keys(trialData).length > 0;
 
     // Create Stripe Checkout Session
     const checkoutSession = await getStripe().checkout.sessions.create({
@@ -99,7 +119,7 @@ export async function POST(req: Request) {
       success_url: `${APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${APP_URL}/pricing?canceled=true`,
       subscription_data: {
-        ...(trialPeriodDays ? { trial_period_days: trialPeriodDays } : {}),
+        ...trialData,
         metadata: {
           userId: user.id,
           tier,
@@ -117,7 +137,8 @@ export async function POST(req: Request) {
       tier,
       interval,
       sessionId: checkoutSession.id,
-      hasTrialDays: !!trialPeriodDays,
+      hasTrialDays,
+      trialData,
     });
 
     return createSuccessResponse({ url: checkoutSession.url });
