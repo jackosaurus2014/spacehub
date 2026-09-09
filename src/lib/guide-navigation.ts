@@ -139,6 +139,11 @@ export const GUIDE_LIST: GuideEntry[] = [
     shortTitle: 'When Is Artemis III?',
   },
   {
+    slug: 'space-force-academy',
+    title: 'The U.S. Space Academy Explained: The Order, the Models, the Bids',
+    shortTitle: 'U.S. Space Academy',
+  },
+  {
     slug: 'rockets-flying-in-2026',
     title: 'Which Rockets Are Flying in 2026? Live Scorecard',
     shortTitle: 'Rockets Flying in 2026',
