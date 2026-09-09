@@ -641,7 +641,9 @@ function SupplyChainContent() {
     setError(null);
     try {
       const res = await fetch('/api/supply-chain?type=stats');
+      if (!res.ok) return; // an error body ({ error }) rendered NaN tier counts (2026-09-09)
       const data = await res.json();
+      if (typeof data?.totalCompanies !== 'number') return;
       setStats(data);
     } catch (error) {
       clientLogger.error('Failed to fetch stats', { error: error instanceof Error ? error.message : String(error) });

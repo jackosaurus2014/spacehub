@@ -161,7 +161,7 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
                 </span>
               )}
               <div className="min-w-0">
-                <h1 className="text-white font-bold text-lg truncate">{event.name}</h1>
+                <h2 className="text-white font-bold text-lg truncate">{event.name}</h2>
                 <div className="flex items-center gap-2 text-xs text-slate-400">
                   {event.agency && <span>{event.agency}</span>}
                   {event.rocket && <span className="text-white/70">{event.rocket}</span>}

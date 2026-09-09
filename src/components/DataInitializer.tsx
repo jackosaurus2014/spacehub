@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
 import { clientLogger } from '@/lib/client-logger';
 
 const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
@@ -8,8 +9,13 @@ const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
 export default function DataInitializer() {
   const [status, setStatus] = useState<'checking' | 'initializing' | 'done' | 'error'>('checking');
   const [message, setMessage] = useState('');
+  // /api/init answers only admins; for everyone else this component has
+  // nothing to do (2026-09-09: it 401'd on every anonymous page view).
+  const { data: session, status: sessionStatus } = useSession();
+  const isAdmin = !!(session?.user as { isAdmin?: boolean } | undefined)?.isAdmin;
 
   const checkAndRefreshData = useCallback(async (isInitial: boolean) => {
+    if (!isAdmin) return;
     try {
       // Check if data needs initialization
       const checkRes = await fetch('/api/init');
@@ -46,9 +52,10 @@ export default function DataInitializer() {
         setMessage(String(error));
       }
     }
-  }, []);
+  }, [isAdmin]);
 
   useEffect(() => {
+    if (sessionStatus === 'loading' || !isAdmin) return;
     // Initial check
     checkAndRefreshData(true);
 
@@ -58,7 +65,7 @@ export default function DataInitializer() {
     }, REFRESH_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [checkAndRefreshData]);
+  }, [checkAndRefreshData, sessionStatus, isAdmin]);
 
   // Don't render anything once done
   if (status === 'done' || status === 'checking') {

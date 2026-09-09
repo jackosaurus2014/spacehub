@@ -96,6 +96,10 @@ export default function SpaceQuizPage() {
   return (
     <div className="min-h-screen bg-space-900 flex items-center justify-center px-4">
       <div className="w-full max-w-lg">
+        <div className="mb-8">
+          <h1 className="text-2xl font-display font-bold text-white">Space Quiz</h1>
+          <p className="text-slate-400 text-sm mt-1">Ten questions on rockets, orbits and the business of space. No account needed.</p>
+        </div>
         {/* Progress */}
         <div className="flex items-center justify-between mb-6">
           <span className="text-slate-500 text-sm">Question {current + 1}/{questions.length}</span>

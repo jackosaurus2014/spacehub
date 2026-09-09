@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import {
   formatRelativeTime,
@@ -116,7 +117,10 @@ export default function NotificationCenter() {
   // Load notifications on mount — merge AlertDelivery rows (same source as
   // /alerts?tab=notifications, includes both alert-rule and watchlist-sourced
   // deliveries) + community notifications.
+  const { status: sessionStatus } = useSession();
   useEffect(() => {
+    // Both feeds need a session; skip the two guaranteed 401s for visitors.
+    if (sessionStatus !== 'authenticated') return;
     const loadNotifications = async () => {
       // Fetch alert deliveries (if authenticated) — canonical source, matches
       // the /alerts hub's Notifications tab so unread counts stay in sync.
@@ -180,7 +184,7 @@ export default function NotificationCenter() {
     return () => {
       clearInterval(pollInterval);
     };
-  }, []);
+  }, [sessionStatus]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

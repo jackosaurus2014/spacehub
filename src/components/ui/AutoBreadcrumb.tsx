@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSelectedLayoutSegments } from 'next/navigation';
 import { buildBreadcrumbTrail } from '@/lib/breadcrumb-config';
 
 // ─── Routes where breadcrumbs should NOT render ──────────────────────────────
@@ -28,6 +28,11 @@ const HIDDEN_PREFIXES = ['/widgets/', '/rockets', '/launches', '/chart', '/guide
  */
 export default function AutoBreadcrumb() {
   const pathname = usePathname();
+  const segments = useSelectedLayoutSegments();
+  // The 404 shell is prerendered once with pathname "/_not-found" and served
+  // for every unknown URL, so a trail built from the request path could never
+  // match on hydration (React #418 on every 404, 2026-09-09). Skip it there.
+  if (pathname === '/_not-found' || segments.some((seg) => seg === '/_not-found' || seg === '_not-found')) return null;
 
   // Skip rendering on certain routes
   if (HIDDEN_ROUTES.has(pathname)) return null;

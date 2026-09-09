@@ -12,7 +12,13 @@ export default function LiveEconomyStrip({ compact = false }: { compact?: boolea
   const [data, setData] = useState<{ prices: Price[]; hardwareListed: number | null; asOf: string | null } | null>(null);
   const [failed, setFailed] = useState(false);
   useEffect(() => {
-    fetch('/api/game/spot-prices').then((r) => r.json()).then(setData).catch(() => setFailed(true));
+    // A 429/500 body ({ error }) has no `prices`; reading its length threw
+    // inside render and sent the whole game page to the Mission Failure
+    // boundary -- whose button offers to clear the save (2026-09-09).
+    fetch('/api/game/spot-prices')
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((d) => (Array.isArray(d?.prices) ? setData(d) : setFailed(true)))
+      .catch(() => setFailed(true));
   }, []);
   if (failed || (data && data.prices.length === 0)) return null;
   const rows = data ? data.prices.slice(0, compact ? 4 : 8) : [];

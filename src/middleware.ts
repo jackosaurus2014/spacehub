@@ -143,7 +143,9 @@ function getRateLimitConfig(pathname: string, method: string): RateLimitConfig {
     return { maxRequests: 60, windowMs: 60 * 1000 };
   }
   // All other /api/* routes
-  return { maxRequests: 200, windowMs: 60 * 1000 }; // 200 req/minute
+  // Reads get more room than writes: a page can fire 5-10 GETs and a member
+  // with a few tabs open was reaching this ceiling (2026-09-09 audit).
+  return { maxRequests: method === 'GET' ? 400 : 200, windowMs: 60 * 1000 };
 }
 
 /**

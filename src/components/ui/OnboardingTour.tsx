@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { setPersona } from '@/lib/user-preferences';
 import type { Persona } from '@/lib/user-preferences';
 import { PERSONA_MODULE_PRESETS, saveHomeModulePreset } from '@/lib/module-presets';
@@ -108,10 +109,14 @@ export default function OnboardingTour() {
   const [selectedPersona, setSelectedPersona] = useState<UserPersona | null>(null);
   const syncedFromServer = useRef(false);
 
-  // On mount: sync persona from server if user is authenticated and localStorage is empty
+  const { status: sessionStatus } = useSession();
+
+  // Once the session resolves: sync persona from server if the user is
+  // authenticated and localStorage is empty (visitors used to 401 here).
   useEffect(() => {
-    if (syncedFromServer.current) return;
+    if (sessionStatus === 'loading' || syncedFromServer.current) return;
     syncedFromServer.current = true;
+    if (sessionStatus !== 'authenticated') return;
 
     const existingPersona = localStorage.getItem(PERSONA_KEY);
     if (!existingPersona) {
@@ -133,7 +138,7 @@ export default function OnboardingTour() {
           // Not authenticated or network error — ignore
         });
     }
-  }, []);
+  }, [sessionStatus]);
 
   useEffect(() => {
     // The game has its own first-touch flow (GameStartMenu); never stack this modal on it.

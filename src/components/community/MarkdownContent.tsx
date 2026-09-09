@@ -110,8 +110,9 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
               {children}
             </ol>
           ),
+          // The page already owns the <h1>; a "# Title" in the body renders as h2.
           h1: ({ children }) => (
-            <h1 className="text-xl font-bold text-slate-100 mt-4 mb-2">{children}</h1>
+            <h2 className="text-xl font-bold text-slate-100 mt-4 mb-2">{children}</h2>
           ),
           h2: ({ children }) => (
             <h2 className="text-lg font-semibold text-slate-100 mt-3 mb-2">{children}</h2>

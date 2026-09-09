@@ -25,6 +25,16 @@ desktop menus and the mobile menu were opened and their links recorded
 | 11 | `/pricing`, `/my-watchlists` (signed out) | No `<h1>` | First section heading promoted |
 | 12 | `/mission-control`, `/startups` | Two `<h1>`s | Secondary headings demoted to `<h2>` |
 | 13 | `/api/auth/session` | 429 under the generic 200/min API budget bounced fast multi-tab sessions to /login | Own 600/min budget (807264a5) |
+| 14 | `/space-tycoon` (any viewport) | Landing crashed to the "Mission Failure" boundary — whose button offers to clear the save — when `/api/game/spot-prices` returned an error body (`.prices.length` of `{ error }`); reproduced with an injected 429 | `LiveEconomyStrip` checks `res.ok` and the array; failure hides the strip |
+| 15 | Every anonymous page | Four requests that can only 401 per view (`/api/init` admin-only, two notification feeds, persona sync) | Gated on `useSession` |
+| 16 | Generic `/api/*` budget | 200/min per IP; a page fires 5–10 GETs, so a member with a few tabs — and the crawl itself — hit "Too many requests" (company profiles rendered the error card) | GET 400/min, writes 200/min |
+| 17 | Every 404 URL | React #418: the 404 shell is prerendered once with pathname `/_not-found` and served for all unknown URLs, so the breadcrumb trail never matched | `AutoBreadcrumb` skips the not-found shell |
+| 18 | `/launch-vehicles` (again) | After the status default, crashed on a missing numeric field from live refresher rows | Live rows accepted only when shaped like the curated rows (same keys, same types) |
+| 19 | `/supply-chain` (signed in) | "NaN" tier counts from an error body | Stats ignore non-OK / malformed responses |
+| 20 | `/launch/[id]`, `/space-tycoon/balance-reports/[slug]`, community posts | Second `<h1>` (dashboard header; markdown `# Title`) | Demoted to `<h2>` |
+| 21 | `/space-quiz` | Bare question block, no heading | H1 + one-line intro |
+
+Structural note: company-profile bodies are client-fetched (`/api/company-profiles/...`), so a rate-limited or slow API leaves a titled page with an error card, and Google gets the shell. Worth server-rendering the profile body (331 pages in the sitemap).
 
 ## Open / by design (not changed)
 

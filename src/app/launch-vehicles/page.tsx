@@ -217,14 +217,24 @@ export default function LaunchVehiclesPage() {
         if (data.data && data.data.length > 0) {
           // API returns [{ vehicles: [...] }] — unwrap nested structure
           const first = data.data[0];
-          if (first?.vehicles && Array.isArray(first.vehicles)) {
-            setVehicles(first.vehicles);
-          } else if (first?.name) {
-            // Already flat vehicle objects
-            setVehicles(data.data);
-          } else {
-            setVehicles(VEHICLES);
-          }
+          const candidate: unknown[] =
+            first?.vehicles && Array.isArray(first.vehicles) ? first.vehicles : first?.name ? data.data : [];
+          // Only accept rows shaped like the curated ones: same keys, same
+          // primitive types. Free-form refresher output crashed the page
+          // twice (undefined.bg, undefined.toLocaleString — 2026-09-09).
+          const shape = VEHICLES[0] as unknown as Record<string, unknown>;
+          const wellFormed =
+            candidate.length > 0 &&
+            candidate.every((row) => {
+              if (!row || typeof row !== 'object') return false;
+              const r = row as Record<string, unknown>;
+              return Object.keys(shape).every((k) => {
+                const want = typeof shape[k];
+                if (shape[k] === null || shape[k] === undefined) return true;
+                return want === 'object' ? typeof r[k] === 'object' : typeof r[k] === want;
+              });
+            });
+          setVehicles(wellFormed ? (candidate as LaunchVehicle[]) : VEHICLES);
         } else {
           setVehicles(VEHICLES);
         }
