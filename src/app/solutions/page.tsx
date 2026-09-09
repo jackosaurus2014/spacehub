@@ -63,7 +63,7 @@ const PERSONAS = [
     title: 'For Engineers',
     description:
       'Mission simulators, orbital calculators, constellation designers, and technical reference tools built by engineers for engineers working on real space missions.',
-    featureCount: 18,
+    featureCount: 6,
     icon: (
       <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17l-5.66-5.66a7.002 7.002 0 019.9-9.9l5.66 5.66a7.002 7.002 0 01-9.9 9.9zM8.75 4.75L4.75 8.75" />
