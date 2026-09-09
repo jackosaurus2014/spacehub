@@ -12,6 +12,10 @@ import type { IconName } from '@/lib/game/icons';
 
 const STORAGE_KEY = 'spacenexus-onboarding-complete';
 const PERSONA_KEY = 'spacenexus-user-persona';
+const TOUR_EXCLUDED_PREFIXES = [
+  '/space-tycoon', '/login', '/register', '/forgot-password', '/reset-password', '/verify-email',
+  '/checkout', '/pricing', '/embed', '/widgets', '/unsubscribe', '/account', '/admin', '/api',
+];
 
 export type UserPersona = 'enthusiast' | 'investor' | 'entrepreneur' | 'mission-planner' | 'executive' | 'supply-chain' | 'legal';
 
@@ -142,7 +146,12 @@ export default function OnboardingTour() {
 
   useEffect(() => {
     // The game has its own first-touch flow (GameStartMenu); never stack this modal on it.
-    if (pathname?.startsWith('/space-tycoon')) return;
+    // Never interrupt sign-in, checkout, embeds or account pages — the tour
+    // covered the login form on a visitor's fifth page view (2026-09-09).
+    if (
+      !pathname ||
+      TOUR_EXCLUDED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(prefix + '/') || pathname.startsWith(prefix + '?'))
+    ) return;
     const completed = localStorage.getItem(STORAGE_KEY);
     if (completed) return;
     // Overlay budget: one (SYNTHESIS.md §3). Never on the very first pageview

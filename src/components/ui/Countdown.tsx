@@ -102,6 +102,7 @@ export default function Countdown({ to, size = 'lg', className = '' }: Countdown
     <time
       dateTime={typeof to === 'string' ? to : to instanceof Date ? to.toISOString() : undefined}
       aria-live="off"
+      role="timer"
       aria-label={parts.words}
       suppressHydrationWarning
       className={`inline-block font-mono tabular-nums ${SIZE[size]} ${className}`}

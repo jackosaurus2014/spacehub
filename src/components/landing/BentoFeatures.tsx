@@ -204,11 +204,11 @@ export default function BentoFeatures() {
                 Platform Modules
               </h2>
             </div>
-            <span className="text-[9px] uppercase tracking-[0.15em] text-slate-600 font-medium">
+            <span className="text-[9px] uppercase tracking-[0.15em] text-slate-400 font-medium">
               {SITE_STATS.pagesAndTools} tools
             </span>
           </div>
-          <p className="text-sm text-slate-500 ml-4">
+          <p className="text-sm text-slate-400 ml-4">
             From satellite tracking to market intelligence — the tools space professionals rely on daily.
           </p>
         </div>

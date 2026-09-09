@@ -714,7 +714,7 @@ function PricingPageContent() {
                 <div key={s.label} className="text-center p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
                   <span className="text-lg block mb-1">{s.icon}</span>
                   <span className="text-white font-bold text-lg block">{s.value}</span>
-                  <span className="text-slate-500 text-xs">{s.label}</span>
+                  <span className="text-slate-400 text-xs">{s.label}</span>
                 </div>
               ))}
             </div>

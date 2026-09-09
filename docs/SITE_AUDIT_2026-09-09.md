@@ -34,6 +34,12 @@ desktop menus and the mobile menu were opened and their links recorded
 | 20 | `/launch/[id]`, `/space-tycoon/balance-reports/[slug]`, community posts | Second `<h1>` (dashboard header; markdown `# Title`) | Demoted to `<h2>` |
 | 21 | `/space-quiz` | Bare question block, no heading | H1 + one-line intro |
 
+| 22 | Every page, every member | AdSense script loaded unconditionally from the root layout: Google's page-level units reached Pro/trial members (promised "Ad-free" on /pricing) and the Space Tycoon command deck, where an anchor bar sat over the outliner | `AdSenseLoader` gated on tier and route; `AdBanner` renders nothing on an ad-free tier; `adsense-gating-guard.test.ts` |
+| 23 | `/login` (and any page) | The onboarding "Welcome to SpaceNexus" modal fired on a visitor's fifth page view even on the login form, covering it | Tour excluded on auth, checkout, pricing, embed, account and admin routes |
+| 24 | Global chrome (14/14 pages) | axe-core WCAG AA: ~9 colour-contrast failures per page from the nav search hint and footer meta (slate/zinc-500/600 on black, 2.7–4.4:1); pricing CTA white on the orange accent (2.6:1); `<time aria-label>` without a role; a link distinguishable only by colour | Lightened to 400-weights; CTA text dark on the accent; `role="timer"`; underline |
+
+Verified working (no change): desktop menus and mobile menu; search palette (Ctrl+K → 7 results for "starship"); newsletter signup rejects a bad address; wrong password shows "Invalid credentials"; contact form validation; no-account launch alert form on launch pages; **Space Tycoon signed-in join** (New Game → Cape Heritage → dashboard live at $75.0M, `POST /api/space-tycoon/sync` 200, map hotkey `2` selects LEO, zero page errors).
+
 Structural note: company-profile bodies are client-fetched (`/api/company-profiles/...`), so a rate-limited or slow API leaves a titled page with an error card, and Google gets the shell. Worth server-rendering the profile body (331 pages in the sitemap).
 
 ## Open / by design (not changed)

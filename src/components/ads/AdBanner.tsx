@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useSubscription } from '@/components/SubscriptionProvider';
 
 interface AdBannerProps {
   slot?: string;
@@ -15,6 +16,8 @@ const ADSENSE_ENABLED = !!ADSENSE_CLIENT_ID;
 export default function AdBanner({ slot, format = 'responsive', className = '' }: AdBannerProps) {
   const adRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
+  const { tier, isLoading } = useSubscription();
+  const adFree = isLoading || tier !== 'free';
 
   // Determine ad dimensions based on format
   const getAdStyle = () => {
@@ -42,7 +45,7 @@ export default function AdBanner({ slot, format = 'responsive', className = '' }
   };
 
   useEffect(() => {
-    if (!ADSENSE_ENABLED || initialized.current) return;
+    if (!ADSENSE_ENABLED || initialized.current || adFree) return;
 
     try {
       // Push ad to AdSense
@@ -53,10 +56,11 @@ export default function AdBanner({ slot, format = 'responsive', className = '' }
     } catch (error) {
       // Silently fail — ads should never break the page
     }
-  }, []);
+  }, [adFree]);
 
-  // When AdSense is not configured, render nothing
-  if (!ADSENSE_ENABLED || !slot) {
+  // When AdSense is not configured, or the member is on an ad-free tier
+  // (Pro, or an active trial), render nothing — /pricing promises "Ad-free".
+  if (!ADSENSE_ENABLED || !slot || adFree) {
     return null;
   }
 

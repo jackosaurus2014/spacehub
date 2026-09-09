@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from 'next';
 import { DM_Sans, JetBrains_Mono, Orbitron } from 'next/font/google';
-import Script from 'next/script';
 import './globals.css';
 import Navigation from '@/components/Navigation';
 import AuthProvider from '@/components/AuthProvider';
 import SubscriptionProvider from '@/components/SubscriptionProvider';
 import DataInitializer from '@/components/DataInitializer';
+import AdSenseLoader from '@/components/ads/AdSenseLoader';
 import MobileTabBar from '@/components/mobile/MobileTabBar';
 import StructuredData from '@/components/StructuredData';
 import {
@@ -261,14 +261,6 @@ export default function RootLayout({
         {/* Preload critical fonts for LCP */}
       </head>
       <body className={`${dmSans.variable} ${jetbrainsMono.variable} ${orbitron.variable} ${dmSans.className}`}>
-        {/* Google AdSense — lazyOnload prevents blocking LCP/INP */}
-        {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
-          <Script
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
-            strategy="lazyOnload"
-            crossOrigin="anonymous"
-          />
-        )}
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none">
           Skip to main content
         </a>
@@ -276,6 +268,8 @@ export default function RootLayout({
         <OfflineIndicator />
         <AuthProvider>
           <SubscriptionProvider>
+            {/* Google AdSense — gated on tier and route (never for Pro/trial, never in the game) */}
+            <AdSenseLoader />
             <DataInitializer />
             <div className="relative z-10 min-h-screen flex flex-col">
               <LiveNowBanner />

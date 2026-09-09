@@ -112,7 +112,7 @@ export default async function HomePage() {
                     ))}
                   </div>
                   <div className="flex justify-between font-mono text-[10.5px] text-[var(--ink-3)]"><span>{data.slipSeries.labels[0]}</span><span>this week</span></div>
-                  <p className="text-[12px] text-[var(--ink-3)] mt-3">Scheduled launches that moved by more than a minute. Nobody else records this — <Link href="/chart/launch-slips-by-week" className="text-[var(--ember)]">see the chart &rarr;</Link></p>
+                  <p className="text-[12px] text-[var(--ink-3)] mt-3">Scheduled launches that moved by more than a minute. Nobody else records this — <Link href="/chart/launch-slips-by-week" className="text-[var(--ember)] underline underline-offset-2">see the chart &rarr;</Link></p>
                 </>
               ) : (
                 <p className="text-[13px] text-[var(--ink-3)]">Slip history is accumulating — every manifest change since 29 August is recorded; the weekly chart appears once there are a few weeks of it. <Link href="/chart" className="text-[var(--ember)]">Charts &rarr;</Link></p>

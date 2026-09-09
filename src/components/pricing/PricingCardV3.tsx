@@ -177,10 +177,10 @@ export default function PricingCardV3({
                 onStartTrial(planId as SubscriptionTier);
               }}
               disabled={isStartingTrial}
-              className={`w-full py-3 px-4 rounded text-sm font-semibold text-white transition-all disabled:opacity-50 ${
+              className={`w-full py-3 px-4 rounded text-sm font-semibold transition-all disabled:opacity-50 ${
                 highlighted ? 'hover:shadow-lg hover:shadow-indigo-500/20' : ''
               }`}
-              style={{ background: highlighted ? 'var(--accent-primary)' : 'var(--bg-hover)', color: highlighted ? '#fff' : 'var(--text-primary)', border: highlighted ? 'none' : '1px solid var(--border-default)' }}>
+              style={{ background: highlighted ? 'var(--accent-primary)' : 'var(--bg-hover)', color: highlighted ? '#0b0a09' : 'var(--text-primary)', border: highlighted ? 'none' : '1px solid var(--border-default)' }}>
               {isStartingTrial ? 'Starting Trial...' : (trialCtaLabel || `Start ${trialDays}-Day Free Trial`)}
             </button>
             <button
@@ -201,7 +201,7 @@ export default function PricingCardV3({
             className={`w-full py-3 px-4 rounded text-sm font-semibold transition-all disabled:opacity-50 ${
               highlighted ? 'hover:shadow-lg hover:shadow-indigo-500/20' : ''
             }`}
-            style={{ background: highlighted ? 'var(--accent-primary)' : 'var(--bg-hover)', color: highlighted ? '#fff' : 'var(--text-primary)', border: highlighted ? 'none' : '1px solid var(--border-default)' }}>
+            style={{ background: highlighted ? 'var(--accent-primary)' : 'var(--bg-hover)', color: highlighted ? '#0b0a09' : 'var(--text-primary)', border: highlighted ? 'none' : '1px solid var(--border-default)' }}>
             {isCheckingOut ? 'Redirecting...' : isLoggedIn ? 'Subscribe Now' : 'Sign In to Subscribe'}
           </button>
         )}
