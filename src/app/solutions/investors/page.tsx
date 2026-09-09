@@ -62,8 +62,8 @@ const PAIN_POINTS = [
 ];
 
 const FEATURES = [
-  { name: 'Company Profiles', desc: '200+ detailed space company profiles with financials, leadership, and competitive positioning.', href: '/companies' },
-  { name: 'SpaceNexus Score', desc: 'Proprietary scoring system rating companies across technology readiness, market position, and financial health.', href: '/companies' },
+  { name: 'Company Profiles', desc: '200+ detailed space company profiles with financials, leadership, and competitive positioning.', href: '/company-profiles' },
+  { name: 'SpaceNexus Score', desc: 'Proprietary scoring system rating companies across technology readiness, market position, and financial health.', href: '/company-profiles' },
   { name: 'Funding Tracker', desc: 'Real-time tracking of every space industry funding round, acquisition, and IPO.', href: '/market-intel' },
   { name: 'Deal Flow Pipeline', desc: 'Curated pipeline of emerging space startups and investment opportunities.', href: '/market-intel' },
   { name: 'Portfolio Tracker', desc: 'Monitor your space portfolio holdings with market data and performance analytics.', href: '/dashboard' },

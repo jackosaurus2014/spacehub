@@ -116,7 +116,7 @@ export default function SpaceProfessionalsPage() {
               </span>
             </h1>
             <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-10">
-              SpaceNexus aggregates 200+ sources into one platform — so you can focus on strategy, not data collection.
+              SpaceNexus aggregates 50+ automated sources into one platform — so you can focus on strategy, not data collection.
             </p>
             <Link
               href="/register?utm_source=linkedin&utm_campaign=professionals"
@@ -168,7 +168,7 @@ export default function SpaceProfessionalsPage() {
             One platform. Every data point you need.
           </h2>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-            SpaceNexus aggregates 200+ sources into one platform — market data, satellite tracking, regulatory filings, company intelligence, and more — updated every 5 minutes.
+            SpaceNexus aggregates 50+ automated sources into one platform — market data, satellite tracking, regulatory filings, company intelligence, and more — updated every 5 minutes.
           </p>
         </div>
       </section>
