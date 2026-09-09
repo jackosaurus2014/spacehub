@@ -165,7 +165,7 @@ export default function FeedbackWidget() {
                   </button>
                 ))}
               </div>
-              <div className="flex justify-between text-[10px] text-slate-500">
+              <div className="flex justify-between text-[10px] text-slate-400">
                 <span>Not likely</span>
                 <span>Very likely</span>
               </div>

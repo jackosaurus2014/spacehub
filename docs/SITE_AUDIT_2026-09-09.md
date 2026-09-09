@@ -38,6 +38,10 @@ desktop menus and the mobile menu were opened and their links recorded
 | 23 | `/login` (and any page) | The onboarding "Welcome to SpaceNexus" modal fired on a visitor's fifth page view even on the login form, covering it | Tour excluded on auth, checkout, pricing, embed, account and admin routes |
 | 24 | Global chrome (14/14 pages) | axe-core WCAG AA: ~9 colour-contrast failures per page from the nav search hint and footer meta (slate/zinc-500/600 on black, 2.7–4.4:1); pricing CTA white on the orange accent (2.6:1); `<time aria-label>` without a role; a link distinguishable only by colour | Lightened to 400-weights; CTA text dark on the accent; `role="timer"`; underline |
 
+| 25 | Feedback (NPS) widget | Scale labels "Not likely / Very likely" at 10px slate-500 (the last two contrast failures on /pricing after batch 3) | slate-400 |
+
+All three batches were re-verified in the browser after deploy: titles single-suffixed, /launch-vehicles renders, quiz/stations hydrate clean, the game landing survives injected 429s, 404 pages hydrate clean, zero anonymous 401s, AdSense absent for a trial member and on `/space-tycoon` (present for anonymous visitors on `/news`), tour absent on `/login` after five page views. The QA account used for signed-in checks was deleted through `/api/account/delete` afterwards and its Stripe test customer removed.
+
 Verified working (no change): desktop menus and mobile menu; search palette (Ctrl+K → 7 results for "starship"); newsletter signup rejects a bad address; wrong password shows "Invalid credentials"; contact form validation; no-account launch alert form on launch pages; **Space Tycoon signed-in join** (New Game → Cape Heritage → dashboard live at $75.0M, `POST /api/space-tycoon/sync` 200, map hotkey `2` selects LEO, zero page errors).
 
 Structural note: company-profile bodies are client-fetched (`/api/company-profiles/...`), so a rate-limited or slow API leaves a titled page with an error card, and Google gets the shell. Worth server-rendering the profile body (331 pages in the sitemap).
