@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Why SpaceNexus? - Space Industry Intelligence Platform Comparison | SpaceNexus',
+  title: 'Why SpaceNexus? - Space Industry Intelligence Platform Comparison',
   description:
     'See why SpaceNexus is the best value in space industry intelligence. Compare SpaceNexus ($19.99/mo) vs Quilty Space ($10K+/yr) vs SpaceNews ($250/yr) vs free tools. Real-time data, satellite tracking, company profiles, and more.',
   keywords: [

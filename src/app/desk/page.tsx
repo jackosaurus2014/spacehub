@@ -17,7 +17,7 @@ import Provenance from '@/components/ui/Provenance';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'My Desk | SpaceNexus',
+  title: 'My Desk',
   description: 'Your companies, launches, alerts and saved searches in one screen.',
   robots: { index: false },
 };

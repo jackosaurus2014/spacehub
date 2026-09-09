@@ -48,10 +48,12 @@ function staticTitle(src: string): string | null {
  *  title that already ends in "| SpaceNexus" renders it twice. Seen live on
  *  /guide/space-economy-investment ("... | SpaceNexus | SpaceNexus Guide"). */
 describe('static titles under a templated section carry no brand suffix', () => {
-  // Nested sections only. The root layout's '%s | SpaceNexus' template does
-  // not double a page title that already ends in the brand (verified live on
-  // /startups, /space-stocks, /jobs); the section templates do.
-  const templated = walk(APP).filter((d) => d !== APP && /template:\s*'%s/.test(readFileSync(join(d, 'layout.tsx'), 'utf-8')));
+  // Every section including the root: the root layout's '%s | SpaceNexus'
+  // template doubles a page title that already ends in the brand too (seen
+  // live 2026-09-09 on /artemis, /starship, /countdown, /regulatory-radar and
+  // 14 more: "... | SpaceNexus | SpaceNexus"). An earlier note here claimed
+  // the root does not double; the crawl proved otherwise.
+  const templated = walk(APP).filter((d) => /template:\s*'%s/.test(readFileSync(join(d, 'layout.tsx'), 'utf-8')));
   it('finds the templated sections (sanity)', () => {
     expect(templated.length).toBeGreaterThan(2);
   });

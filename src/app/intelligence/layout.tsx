@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 export const metadata = {
-  title: 'Intelligence | SpaceNexus',
+  title: 'Intelligence',
   description: 'Contract intelligence, proposal analytics, and pricing insights for the space industry.',
 };
 

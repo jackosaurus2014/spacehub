@@ -1659,7 +1659,7 @@ export default function SpaceStationTrackerPage() {
                 <div className="text-white font-bold text-lg capitalize">{issPosition.visibility || '--'}</div>
               </div>
             </div>
-            <div className="text-star-500 text-xs mt-3 text-right">
+            <div className="text-star-500 text-xs mt-3 text-right" suppressHydrationWarning>
               Last updated: {issPosition.timestamp ? new Date(issPosition.timestamp * 1000).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'UTC' }) : '--'}
             </div>
           </div>

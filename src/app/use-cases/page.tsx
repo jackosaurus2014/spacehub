@@ -7,7 +7,7 @@ import { getRelatedModules } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: 'Space Intelligence Use Cases | SpaceNexus',
+  title: 'Space Intelligence Use Cases',
   description:
     'See how VCs, defense analysts, aerospace engineers, and startup CEOs use SpaceNexus to gain a competitive edge in the space industry.',
   keywords: [

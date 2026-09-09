@@ -2893,7 +2893,7 @@ export async function fetchAndStoreSentryImpactRisk(): Promise<number> {
       impactProbability: obj.ip,
       palermoCumulative: parseFloat(obj.ps_cum),
       palermoMaximum: parseFloat(obj.ps_max),
-      torinoScale: parseInt(obj.ts_max, 10),
+      torinoScale: obj.ts_max == null ? null : parseInt(obj.ts_max, 10),
       velocityInfKmS: parseFloat(obj.v_inf),
       impactDateRange: obj.range,
       diameter: obj.diameter || null,

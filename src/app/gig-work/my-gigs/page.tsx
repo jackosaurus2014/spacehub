@@ -9,7 +9,7 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'My gigs | SpaceNexus',
+  title: 'My gigs',
   description: 'Gigs you have posted and gigs you have applied to.',
 };
 

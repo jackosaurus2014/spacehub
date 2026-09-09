@@ -562,7 +562,7 @@ export default function NewsAggregatorPage() {
                 <span>{SAMPLE_ARTICLES.length} total articles</span>
               </div>
             </div>
-            <div className="text-xs text-slate-500">
+            <div suppressHydrationWarning className="text-xs text-slate-500">
               Updated {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>

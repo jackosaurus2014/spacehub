@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Starship Program Tracker — Live Flight History & News | SpaceNexus',
+  title: 'Starship Program Tracker — Live Flight History & News',
   description:
     "SpaceX Starship, tracked live: flight history through Flight 13 (Jul 24, 2026 — first operational Starlink V3 deployment), program roles (Starlink V3, Artemis HLS, propellant transfer, Mars), and a self-updating live news feed refreshed continuously as new coverage publishes.",
   keywords: [

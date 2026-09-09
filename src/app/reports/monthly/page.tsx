@@ -3,7 +3,7 @@ import { generateMonthlyReport } from '@/lib/monthly-report-generator';
 import StateOfSpaceReport from '@/components/report/StateOfSpaceReport';
 
 export const metadata: Metadata = {
-  title: 'State of Space — Monthly Industry Report | SpaceNexus',
+  title: 'State of Space — Monthly Industry Report',
   description: 'The monthly State of Space report: launch activity, funding trends, market movers, regulatory developments, technology milestones, and the month ahead. Data-driven intelligence for the space industry.',
   keywords: ['state of space', 'space industry report', 'monthly space report', 'space economy analysis', 'launch activity', 'space funding', 'space market intelligence'],
   alternates: { canonical: 'https://spacenexus.us/reports/monthly' },

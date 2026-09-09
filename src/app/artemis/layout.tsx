@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Artemis Program Tracker — Live Mission Timeline & News | SpaceNexus',
+  title: 'Artemis Program Tracker — Live Mission Timeline & News',
   description:
     "The living tracker for NASA's Artemis Moon program: mission timeline (Artemis I-V+), Artemis III status (restructured, NET late 2027), hardware milestones, and a self-updating live news feed refreshed continuously as new coverage publishes.",
   keywords: [

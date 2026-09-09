@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import '../globals.css';
 
 export const metadata: Metadata = {
-  title: 'Embeddable Space Widgets - Free Real-Time Space Data for Your Website | SpaceNexus',
+  title: 'Embeddable Space Widgets - Free Real-Time Space Data for Your Website',
   description:
     'Add real-time space data to your website with free embeddable widgets. Market snapshot, launch countdown, and space weather widgets. Just copy and paste the iframe code.',
   keywords: [

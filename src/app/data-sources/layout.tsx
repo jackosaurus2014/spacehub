@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Data Sources | SpaceNexus',
+  title: 'Data Sources',
   description:
     'Explore the 30+ data sources SpaceNexus uses to deliver real-time space industry intelligence, including NASA APIs, NOAA, CelesTrak, Finnhub, and 50+ curated RSS feeds.',
   openGraph: {

@@ -266,7 +266,7 @@ export default function BarChart({
               const isActive = activeIndex === i;
 
               if (orientation === 'vertical') {
-                const barWidth = (chartWidth / totalBars) * (1 - barSpacing);
+                const barWidth = Math.max(0, (chartWidth / totalBars) * (1 - barSpacing));
                 const barX = (i / totalBars) * chartWidth + (chartWidth / totalBars) * (barSpacing / 2);
                 const barHeight = isAnimated ? (d.value / maxValue) * chartHeight : 0;
                 const barY = chartHeight - barHeight;
@@ -328,7 +328,7 @@ export default function BarChart({
                 // Horizontal bars
                 const barHeight = (chartHeight / totalBars) * (1 - barSpacing);
                 const barY = (i / totalBars) * chartHeight + (chartHeight / totalBars) * (barSpacing / 2);
-                const barWidth = isAnimated ? (d.value / maxValue) * chartWidth : 0;
+                const barWidth = isAnimated && maxValue > 0 ? Math.max(0, (d.value / maxValue) * chartWidth) : 0;
 
                 return (
                   <g key={`bar-${i}`}>

@@ -7,7 +7,7 @@ import { getRelatedModules } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: 'State of the Space Industry 2026 | Free Report | SpaceNexus',
+  title: 'State of the Space Industry 2026 | Free Report',
   description: 'Read our comprehensive analysis of the $626B+ space economy, projected to reach $1.8 trillion by 2035. Market sizing, funding trends, launch data, satellite deployments, and forecasts across every segment.',
   openGraph: {
     title: 'State of the Space Industry 2026 | Free Report',

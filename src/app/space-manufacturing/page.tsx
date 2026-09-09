@@ -1564,7 +1564,18 @@ function ManufacturingAndImageryContent() {
         if (responses[0]?.data?.length) newData.COMPANIES = responses[0].data;
         if (responses[1]?.data?.length) newData.ISS_EXPERIMENT_CATEGORIES = responses[1].data;
         if (responses[2]?.data?.length) newData.PRODUCT_CATEGORIES = responses[2].data;
-        if (responses[3]?.data?.length) newData.MARKET_PROJECTIONS = responses[3].data;
+        // The refresher sometimes stores free-form analyst notes here ({"2024": "~$3-4B ..."})
+        // instead of MarketProjection rows; those rendered as "$NaNM - $NaNM" (2026-09-09).
+        if (
+          Array.isArray(responses[3]?.data) &&
+          responses[3].data.length &&
+          responses[3].data.every(
+            (p: Partial<MarketProjection>) =>
+              typeof p.low === 'number' && typeof p.high === 'number' && typeof p.mid === 'number'
+          )
+        ) {
+          newData.MARKET_PROJECTIONS = responses[3].data;
+        }
         if (responses[4]?.data?.length) newData.IMG_PROVIDERS = responses[4].data;
         if (responses[5]?.data?.length) newData.IMG_USE_CASES = responses[5].data;
         if (responses[6]?.data?.length) newData.IMG_MARKET_TRENDS = responses[6].data;

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 
 export const metadata = {
-  title: 'DMCA & Copyright Policy | SpaceNexus',
+  title: 'DMCA & Copyright Policy',
   description: 'SpaceNexus DMCA and copyright policy. Learn how to file a takedown notice, counter-notice, and our compliance with the TAKE IT DOWN Act.',
 };
 

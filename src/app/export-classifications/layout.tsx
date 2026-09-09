@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Industry Export Control Classifications | SpaceNexus',
+  title: 'Space Industry Export Control Classifications',
   description:
     'Searchable reference of ITAR USML categories and EAR ECCN codes for the space industry. Find export classifications for spacecraft, launch vehicles, satellite components, and space technology.',
   keywords: [

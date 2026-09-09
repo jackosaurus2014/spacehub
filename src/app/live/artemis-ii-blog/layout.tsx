@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Artemis II Live Blog — Real-Time Launch Updates | SpaceNexus',
+  title: 'Artemis II Live Blog — Real-Time Launch Updates',
   description:
     "Follow NASA's Artemis II Moon mission live. Real-time updates on the launch, crew status, mission milestones, and more. Updated every 15 seconds.",
   keywords: [

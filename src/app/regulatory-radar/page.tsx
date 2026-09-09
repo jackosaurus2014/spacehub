@@ -15,7 +15,7 @@ import { collectRegulatoryDeadlines, getClosingCommentWindows, getRadarTimeline,
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Regulatory Radar — Space Industry Regulatory Actions | SpaceNexus',
+  title: 'Regulatory Radar — Space Industry Regulatory Actions',
   description:
     'Live timeline of space industry regulatory actions: congressional bills, Federal Register rules and proposed rules, ITAR/EAR export-control changes, enforcement actions and penalties, FAA launch licensing, FCC spectrum actions, open comment windows, and upcoming regulatory deadlines.',
   alternates: { canonical: '/regulatory-radar' },

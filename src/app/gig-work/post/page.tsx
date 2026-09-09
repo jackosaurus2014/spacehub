@@ -8,7 +8,7 @@ import PostGigForm from './PostGigForm';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Post a gig | SpaceNexus',
+  title: 'Post a gig',
   description:
     'Post a freelance or contract gig to the SpaceNexus gig board. Free for all members.',
 };

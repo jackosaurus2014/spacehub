@@ -7,7 +7,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
-  title: 'Space Market Analytics Platform for Analysts | SpaceNexus',
+  title: 'Space Market Analytics Platform for Analysts',
   description:
     'Space market intelligence at your fingertips. Real-time industry tracking, export-ready datasets, satellite monitoring, and launch data for defense and market analysts.',
   keywords: [

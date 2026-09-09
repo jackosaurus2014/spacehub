@@ -726,7 +726,7 @@ function PricingPageContent() {
           <div className="section-header">
             <div className="flex items-center">
               <div className="section-header__bar bg-gradient-to-b from-indigo-400 to-indigo-600" />
-              <h2 className="section-header__title">Select Your Clearance Level</h2>
+              <h1 className="section-header__title">Select Your Clearance Level</h1>
             </div>
             <span className="section-header__meta">2 tiers</span>
           </div>

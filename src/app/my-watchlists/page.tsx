@@ -231,7 +231,7 @@ function WatchlistsContent() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-3">
           <div className="text-4xl">🔒</div>
-          <h2 className="text-lg font-semibold text-white">Sign in Required</h2>
+          <h1 className="text-lg font-semibold text-white">My Watchlists — sign in required</h1>
           <p className="text-sm text-slate-400">Please sign in to manage your watchlists and saved searches.</p>
           <Link href="/login" className="text-white/70 hover:text-white text-sm font-medium">
             Sign In →

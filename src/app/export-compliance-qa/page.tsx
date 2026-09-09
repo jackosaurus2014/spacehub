@@ -9,7 +9,7 @@ import { buildFaqJsonLd, getPublishedComplianceQA } from '@/lib/compliance-qa';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Export Compliance Q&A — ITAR, EAR & Space Export Controls | SpaceNexus',
+  title: 'Export Compliance Q&A — ITAR, EAR & Space Export Controls',
   description:
     'Ask questions about ITAR, EAR, sanctions, and space-industry export controls — answered by the SpaceNexus team and published as a free public Q&A. General information, not legal advice.',
   alternates: { canonical: '/export-compliance-qa' },

@@ -4,7 +4,7 @@ import prisma from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Mission Countdowns | SpaceNexus',
+  title: 'Mission Countdowns',
   description:
     'Browse community-created mission countdown timers and embed them on your own site.',
 };

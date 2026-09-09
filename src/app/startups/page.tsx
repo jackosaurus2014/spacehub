@@ -227,9 +227,9 @@ export default function StartupHubPage() {
           {/* ── Pre-IPO Watchlist ── */}
           <section className="mb-12" aria-labelledby="watchlist-heading">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-              <h1 id="watchlist-heading" className="text-lg font-semibold text-white">
+              <h2 id="watchlist-heading" className="text-lg font-semibold text-white">
                 Pre-IPO Watchlist
-              </h1>
+              </h2>
               <label className="flex items-center gap-2 text-xs text-slate-400">
                 <span className="sr-only">Sort watchlist</span>
                 <select

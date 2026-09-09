@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 
 const QUESTIONS = [
@@ -28,11 +28,14 @@ export default function SpaceQuizPage() {
   const [showResult, setShowResult] = useState(false);
   const [finished, setFinished] = useState(false);
 
-  // Shuffle and pick 10 questions on mount
-  const [questions] = useState(() => {
+  // Render the first ten on the server and shuffle after mount: shuffling in
+  // the state initializer gave the server and the client different questions
+  // and a hydration error on every load (2026-09-09).
+  const [questions, setQuestions] = useState(() => QUESTIONS.slice(0, 10));
+  useEffect(() => {
     const shuffled = [...QUESTIONS].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 10);
-  });
+    setQuestions(shuffled.slice(0, 10));
+  }, []);
 
   const handleSelect = useCallback((idx: number) => {
     if (selected !== null) return;

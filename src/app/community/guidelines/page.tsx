@@ -3,7 +3,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export const metadata = {
-  title: 'Community Guidelines | SpaceNexus',
+  title: 'Community Guidelines',
   description: 'Community guidelines and code of conduct for SpaceNexus, the space industry intelligence platform. Includes ITAR/EAR export control obligations and content policies.',
 };
 

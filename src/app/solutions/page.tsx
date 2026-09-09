@@ -7,7 +7,7 @@ import { getRelatedModules } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: 'Solutions for Every Space Professional | SpaceNexus',
+  title: 'Solutions for Every Space Professional',
   description:
     'Discover SpaceNexus solutions tailored for space investors, analysts, engineers, and executives. Data-driven intelligence tools for every role in the space industry.',
   keywords: [

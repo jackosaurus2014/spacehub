@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Free Report: The State of the Space Economy 2026 | SpaceNexus',
+  title: 'Free Report: The State of the Space Economy 2026',
   description:
     'Download our comprehensive analysis of the $626 billion space industry. Market sizing, top companies, investment trends, regulatory landscape, and growth projections.',
   keywords: [

@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'DIY Space Build Guides | SpaceNexus',
+  title: 'DIY Space Build Guides',
   description:
     'Step-by-step DIY build guides: CanSats, high-altitude balloons, amateur radio ISS receivers, weather stations, and more. Materials lists, tools, and detailed instructions.',
   alternates: { canonical: 'https://spacenexus.us/build-guides' },

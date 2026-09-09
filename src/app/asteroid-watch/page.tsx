@@ -924,13 +924,13 @@ function mapLiveImpactRisk(payload: unknown): ImpactRiskObject[] | null {
     des: o.designation,
     fullname: o.fullName,
     ip: o.impactProbability,
-    ps_cum: String(o.palermoCumulative),
-    ps_max: String(o.palermoMaximum),
-    v_inf: String(o.velocityInfKmS),
+    ps_cum: Number.isFinite(o.palermoCumulative) ? String(o.palermoCumulative) : 'n/a',
+    ps_max: Number.isFinite(o.palermoMaximum) ? String(o.palermoMaximum) : 'n/a',
+    v_inf: Number.isFinite(o.velocityInfKmS) ? String(o.velocityInfKmS) : 'n/a',
     last_obs: o.lastObserved,
     n_imp: o.numberOfImpacts,
     range: o.impactDateRange,
-    ts_max: String(o.torinoScale),
+    ts_max: Number.isFinite(o.torinoScale) ? String(o.torinoScale) : 'n/a',
     diameter: o.diameter || 'Unknown',
   }));
 }

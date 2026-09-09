@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Licensing Requirements Checker | SpaceNexus',
+  title: 'Space Licensing Requirements Checker',
   description:
     'Find out what licenses and permits you need for space activities. Interactive tool covering FAA launch licenses, FCC satellite authorizations, NOAA remote sensing, ITAR/EAR export controls, and more.',
   keywords: [

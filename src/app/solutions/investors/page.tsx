@@ -8,7 +8,7 @@ import { getRelatedModules } from '@/lib/module-relationships';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 
 export const metadata: Metadata = {
-  title: 'Space Investment Intelligence for Investors | SpaceNexus',
+  title: 'Space Investment Intelligence for Investors',
   description:
     'Make smarter space investments with data-driven intelligence. Company profiles, proprietary SpaceNexus Scores, funding trackers, and deal flow tools built for space investors and VCs.',
   keywords: [

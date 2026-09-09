@@ -7,7 +7,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
-  title: 'Space Engineering Tools & Satellite Tracking | SpaceNexus',
+  title: 'Space Engineering Tools & Satellite Tracking',
   description:
     'Free space engineering tools for professionals. Satellite tracker, constellation designer, orbital calculator, link budget, thermal analysis, and mission planning in one platform.',
   keywords: [

@@ -7,7 +7,7 @@ import GigFilterBar from './GigFilterBar';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Gig Work | SpaceNexus',
+  title: 'Gig Work',
   description:
     'Freelance and contract gig opportunities in the space industry — engineering, operations, policy, manufacturing, and more.',
 };

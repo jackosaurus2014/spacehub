@@ -166,7 +166,7 @@ export default function AppDownloadPage() {
                 Screenshots
               </h2>
               <div className="flex gap-4 overflow-x-auto pb-4 -mx-2 px-2 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                {[1, 2, 3, 4, 5, 6].map((n) => (
+                {[1, 2, 3, 4, 6].map((n) => (
                   <div
                     key={n}
                     className="shrink-0 w-48 h-[400px] rounded-2xl bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/[0.06] flex items-center justify-center snap-start overflow-hidden"

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Ignition Tracker — NASA\'s $20B Moon Base Program | SpaceNexus',
+  title: 'Ignition Tracker — NASA\'s $20B Moon Base Program',
   description: 'Track NASA Project Ignition, the $20 billion program to build a permanent lunar base. Contracts, timeline, companies, and milestones.',
   keywords: [
     'NASA ignition',

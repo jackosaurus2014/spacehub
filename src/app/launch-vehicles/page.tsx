@@ -54,6 +54,10 @@ function getStatusColor(status: VehicleStatus): { bg: string; text: string; bord
       return { bg: 'bg-white/[0.04]', text: 'text-slate-300', border: 'border-white/10' };
     case 'Retired':
       return { bg: 'bg-white/[0.04]', text: 'text-slate-400', border: 'border-white/[0.08]' };
+    default:
+      // Live data has carried statuses outside the three literals; an
+      // undefined style took the whole page down (2026-09-09).
+      return { bg: 'bg-white/[0.04]', text: 'text-slate-300', border: 'border-white/10' };
   }
 }
 
