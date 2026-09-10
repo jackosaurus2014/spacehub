@@ -14,7 +14,7 @@ import { SALARY_ROLES, LOCATION_MODIFIERS, SALARY_DATA_AS_OF, type SalaryCategor
 import { JOB_CATEGORIES, SENIORITY_LEVELS } from '@/types';
 
 // "Space industry salary" / "aerospace engineer salary space" (2026-09-10).
-// Two sources, both shown with their provenance: the curated 59-role
+// Two sources, both shown with their provenance: the curated multi-role
 // benchmark dataset (src/lib/salary-data.ts, dated) and the ranges employers
 // actually state in live postings (computed at request time). The same
 // estimator labels the salary band on every job card, so this page is also
@@ -24,7 +24,7 @@ export const dynamic = 'force-dynamic';
 const SLUG = 'space-industry-salaries';
 const CANONICAL = `https://spacenexus.us/guide/${SLUG}`;
 const DESCRIPTION =
-  'What space industry jobs pay in 2026: salary ranges for 59 roles from propulsion engineer to mission director, by seniority and by city, plus the ranges employers state in live postings. How to read an estimate, what clearance adds, and how to negotiate.';
+  `What space industry jobs pay in 2026: salary ranges for ${SALARY_ROLES.length} roles from propulsion engineer to mission director, by seniority and by city, plus the ranges employers state in live postings. How to read an estimate, what clearance adds, and how to negotiate.`;
 /** Bumped by hand when the prose changes; the figures are live or dated. */
 const LAST_EDITED = '2026-09-10T00:00:00Z';
 
@@ -44,7 +44,7 @@ const CATEGORY_ORDER: SalaryCategory[] = ['engineering', 'mission-operations', '
 
 const TOC = [
   { id: 'verdict', label: 'The short answer' },
-  { id: 'roles', label: 'What 59 roles pay' },
+  { id: 'roles', label: `What ${SALARY_ROLES.length} roles pay` },
   { id: 'live', label: 'What postings actually state (live)' },
   { id: 'level', label: 'By seniority' },
   { id: 'city', label: 'By city' },

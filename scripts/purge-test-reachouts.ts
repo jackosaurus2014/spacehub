@@ -13,7 +13,8 @@
 import prisma from '../src/lib/db';
 
 const APPLY = process.argv.includes('--apply');
-const LIST = process.argv.includes('--list'); // print every open row (emails masked), delete nothing
+const LIST = process.argv.includes('--list');
+const MESSAGES = process.argv.includes('--messages'); // with --list: also print the first 400 chars of each message // print every open row (emails masked), delete nothing
 const mask = (v: unknown) => (typeof v === 'string' ? v.replace(/^(.{2}).*(@.*)$/, '$1***$2') : '');
 const TEST_RE = /(^|\b)(test|qa|dummy|sample|example|asdf|foo|bar|lorem)(\b|$)|@example\.(com|org)|@test\.|@spacenexus\.internal|@mailinator\./i;
 
@@ -52,6 +53,7 @@ async function main() {
     });
     console.log(`- ${ch.label}: ${rows.length} rows, ${candidates.length} test candidates`);
     if (LIST) for (const r of rows) console.log(`    ${String(r.createdAt).slice(0, 10)}  ${String(r.status ?? '')}  ${ch.fields.filter((f) => !/message|description|details/.test(f)).map((f) => (/mail/i.test(f) ? mask(r[f]) : typeof r[f] === 'string' ? (r[f] as string).slice(0, 40) : '')).filter(Boolean).join(' | ')}`);
+    if (LIST && MESSAGES) for (const r of rows) { const body = ch.fields.filter((f) => /message|description|details/.test(f)).map((f) => (typeof r[f] === 'string' ? r[f] : '')).join(' ').replace(/s+/g, ' ').trim(); console.log(`    [${String(r.id).slice(0, 8)}] ${String(r.name ?? r.visitorName ?? r.companyName ?? '').slice(0, 30)}: ${body.slice(0, 400)}`); }
     for (const c of candidates) console.log(`    ${String(c.id).slice(0, 12)}  ${String(c.createdAt).slice(0, 10)}  ${pick(c, ch.fields).slice(0, 110)}`);
     if (APPLY && candidates.length) {
       const res = await delegate.deleteMany({ where: { id: { in: candidates.map((c) => c.id) } } });

@@ -1,3 +1,4 @@
+import { SALARY_ROLES } from '@/lib/salary-data';
 // Ordered list of all guides for prev/next navigation
 // Order is thematic: overview -> markets -> sectors -> operations -> regulation -> opportunities
 
@@ -130,7 +131,7 @@ export const GUIDE_LIST: GuideEntry[] = [
   },
   {
     slug: 'space-industry-salaries',
-    title: 'Space Industry Salaries (2026): What 59 Roles Pay, by Level and City',
+    title: `Space Industry Salaries (2026): What ${SALARY_ROLES.length} Roles Pay, by Level and City`,
     shortTitle: 'Space Salaries',
   },
   {
