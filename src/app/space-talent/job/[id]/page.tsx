@@ -7,6 +7,8 @@ import { APP_URL } from '@/lib/constants';
 import { CATEGORY_COLORS, SENIORITY_LABELS } from '../../data';
 import { JOB_CATEGORIES } from '@/types';
 import type { JobCategory, SeniorityLevel } from '@/types';
+import JobActions from '@/components/jobs/JobActions';
+import { salaryBandFor, formatBand } from '@/lib/salary-estimate';
 
 export const revalidate = 3600;
 
@@ -347,6 +349,8 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
   const catLabel = JOB_CATEGORIES.find((c) => c.value === job.category);
   const senLabel = SENIORITY_LABELS[job.seniorityLevel as SeniorityLevel] || job.seniorityLevel;
   const salaryRange = formatSalaryRange(job.salaryMin, job.salaryMax);
+  const band = salaryBandFor(job);
+  void salaryRange;
   const jsonLd = buildJobPostingJsonLd(job);
 
   return (
@@ -357,8 +361,8 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
       />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <Link href="/space-talent" className="text-sm text-slate-400 hover:text-cyan-400 transition-colors">
-          &larr; Back to Space Talent
+        <Link href="/jobs#board" className="text-sm text-slate-400 hover:text-cyan-400 transition-colors">
+          &larr; Back to all space jobs
         </Link>
 
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -412,10 +416,13 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
                     <div className="mt-1">{EMPLOYMENT_TYPE_LABELS[job.employmentType] || job.employmentType}</div>
                   </div>
                 )}
-                {salaryRange && (
+                {band && (
                   <div>
-                    <div className="text-xs text-slate-400">Salary</div>
-                    <div className="mt-1 text-cyan-400 font-medium">{salaryRange}/yr</div>
+                    <div className="text-xs text-slate-400">{band.source === 'posting' ? 'Salary (stated in posting)' : 'Salary (SpaceNexus estimate)'}</div>
+                    <div className={`mt-1 font-medium ${band.source === 'posting' ? 'text-cyan-400' : 'text-slate-200'}`}>{formatBand(band)}/yr</div>
+                    {band.source === 'estimate' && (
+                      <div className="text-[11px] text-slate-500 mt-0.5">Based on {band.basis} benchmarks, adjusted for level and location. Guidance, not an offer.</div>
+                    )}
                   </div>
                 )}
                 {job.yearsExperience != null && (
@@ -444,18 +451,9 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
                 </div>
               </div>
 
-              {job.sourceUrl && (
-                <div className="mt-6">
-                  <a
-                    href={job.sourceUrl}
-                    target="_blank"
-                    rel="nofollow noopener"
-                    className="inline-flex items-center gap-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-5 py-2.5 transition-colors"
-                  >
-                    Apply on company site &rarr;
-                  </a>
-                </div>
-              )}
+              <div className="mt-6">
+                <JobActions job={{ id: job.id, title: job.title, company: job.company, location: job.location }} applyUrl={job.sourceUrl ?? null} />
+              </div>
             </div>
 
             <div className="card p-6">

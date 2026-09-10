@@ -49,6 +49,8 @@ interface JobAlertFilters {
   category?: string;
   seniorityLevel?: string;
   remoteOk?: boolean;
+  company?: string;
+  location?: string;
   lastAlertRunAt: string | null;
 }
 
@@ -59,6 +61,8 @@ function readJobAlertFilters(filters: unknown): JobAlertFilters {
     seniorityLevel:
       typeof blob.seniorityLevel === 'string' && blob.seniorityLevel ? blob.seniorityLevel : undefined,
     remoteOk: typeof blob.remoteOk === 'boolean' ? blob.remoteOk : undefined,
+    company: typeof blob.company === 'string' && blob.company ? blob.company : undefined,
+    location: typeof blob.location === 'string' && blob.location ? blob.location : undefined,
     lastAlertRunAt: typeof blob.lastAlertRunAt === 'string' ? blob.lastAlertRunAt : null,
   };
 }
@@ -128,6 +132,8 @@ export async function processJobAlerts(options?: { dryRun?: boolean }): Promise<
       if (meta.category) where.category = meta.category;
       if (meta.seniorityLevel) where.seniorityLevel = meta.seniorityLevel;
       if (meta.remoteOk) where.remoteOk = true;
+      if (meta.company) where.company = { equals: meta.company, mode: 'insensitive' };
+      if (meta.location) where.location = { contains: meta.location, mode: 'insensitive' };
       if (search.query && search.query.trim()) {
         const q = search.query.trim();
         where.OR = [

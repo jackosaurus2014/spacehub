@@ -127,13 +127,15 @@ export async function generateWeeklyHiringPost(now = new Date()): Promise<Weekly
         AND: [
           {
             OR: [
+              // Employer-featured listings (2026-09-10) ride in the notable-roles block
+              { featured: true, featuredUntil: { gt: new Date() } },
               { seniorityLevel: { in: Array.from(NOTABLE_SENIORITY) } },
               { title: { contains: 'principal', mode: 'insensitive' } },
             ],
           },
         ],
       },
-      orderBy: { postedDate: 'desc' },
+      orderBy: [{ featured: 'desc' }, { postedDate: 'desc' }],
       take: 5,
       select: { id: true, title: true, company: true, seniorityLevel: true, postedDate: true },
     }),

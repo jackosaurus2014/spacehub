@@ -7,6 +7,7 @@ import { generatePaymentFailedEmail, generateSubscriptionConfirmEmail } from '@/
 import { AD_CAMPAIGN_PAYMENT_KIND, AD_SPONSORSHIP_PAYMENT_KIND } from '@/lib/ads/ad-billing';
 import { Resend } from 'resend';
 import { createNotification } from '@/lib/notifications/create';
+import { JOB_POSTING_PAYMENT_KIND, getJobPostingPlan } from '@/lib/job-posting-plans';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Allow up to 60s for webhook processing (DB + email)
@@ -119,6 +120,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Event ticket purchase flow — short-circuit before subscription / sponsor logic
   if (session.metadata?.kind === 'event_ticket') {
     await handleEventTicketCompleted(session);
+    return;
+  }
+
+  // Employer job posting (2026-09-10) — activate the row, set expiry/featured
+  if (session.metadata?.kind === JOB_POSTING_PAYMENT_KIND) {
+    await handleJobPostingCompleted(session);
     return;
   }
 
@@ -964,4 +971,36 @@ async function handleAdPaymentCompleted(session: Stripe.Checkout.Session) {
       error: err instanceof Error ? err.message : String(err),
     });
   }
+}
+
+/**
+ * Employer job posting paid (2026-09-10): the row was created inactive by
+ * POST /api/jobs/post; turn it on for the plan's duration and pin it when
+ * the plan is featured. Idempotent on paidAt.
+ */
+async function handleJobPostingCompleted(session: Stripe.Checkout.Session) {
+  const jobId = session.metadata?.jobId;
+  const plan = getJobPostingPlan(session.metadata?.planId);
+  if (!jobId || !plan) {
+    logger.warn('Job posting webhook missing metadata', { sessionId: session.id, jobId, planId: session.metadata?.planId });
+    return;
+  }
+  const existing = await prisma.spaceJobPosting.findUnique({ where: { id: jobId }, select: { paidAt: true } });
+  if (!existing) { logger.warn('Job posting webhook: row not found', { jobId }); return; }
+  if (existing.paidAt) return;
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + plan.days * 86_400_000);
+  await prisma.spaceJobPosting.update({
+    where: { id: jobId },
+    data: {
+      isActive: true,
+      postedDate: now,
+      paidAt: now,
+      expiresAt,
+      featured: plan.featured,
+      featuredUntil: plan.featured ? expiresAt : null,
+      stripeSessionId: session.id,
+    },
+  });
+  logger.info('Job posting activated', { jobId, planId: plan.id, expiresAt: expiresAt.toISOString() });
 }

@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
@@ -11,6 +12,7 @@ import { latestEditionMonthKey } from '@/lib/hiring-index';
 import { CATEGORY_COLORS } from '@/app/space-talent/data';
 import type { JobCategory } from '@/types';
 import JobAlertSignup from './JobAlertSignup';
+import JobBoard from './JobBoard';
 
 // Server-rendered jobs hub (2026-09-01). Until now /jobs was a permanent
 // redirect into the client-rendered Space Talent board, so the site's hottest
@@ -122,7 +124,7 @@ export default async function JobsHubPage() {
           <div className="card p-6">
             <p className="text-slate-400 text-sm">
               The jobs feed is temporarily unavailable — the daily sync will restore it shortly. You can still{' '}
-              <Link href="/space-talent?tab=jobs" className="text-cyan-300 hover:underline">open the full board</Link>.
+              <a href="#board" className="text-cyan-300 hover:underline">search the board below</a>.
             </p>
           </div>
         ) : (
@@ -142,6 +144,11 @@ export default async function JobsHubPage() {
                 <Telemetry label="Remote-friendly" value={nf.format(data.remoteCount)} sub="roles flagged remote OK" />
               </div>
             </section>
+
+            {/* The board (2026-09-10): search, filters, sort and paging, URL-addressable. */}
+            <Suspense fallback={<div className="card p-6 h-40 animate-pulse" />}>
+              <JobBoard initialTotal={data.activeCount} />
+            </Suspense>
 
             <Console title="Browse by category" source="SpaceNexus ATS sync" asOf={data.asOf} as="section">
               <ul className="grid grid-cols-2 md:grid-cols-3 gap-3 list-none m-0 p-0">

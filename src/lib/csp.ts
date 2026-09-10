@@ -285,6 +285,7 @@ export const NONCE_ELIGIBLE_ROUTES: readonly string[] = [
   '/guide/space-debris-and-traffic-management',
   '/guide/watch-a-launch/[city]',
   '/hire',
+  '/hire/dashboard',
   '/hiring-index',
   '/hiring-index/[month]',
   '/hiring-trends',

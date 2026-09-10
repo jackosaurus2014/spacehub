@@ -7,6 +7,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import HireInterestForm from './HireInterestForm';
+import PostJobForm from '@/components/jobs/PostJobForm';
+import { JOB_POSTING_PLANS } from '@/lib/job-posting-plans';
 
 export const dynamic = 'force-dynamic';
 
@@ -95,6 +97,29 @@ export default async function HirePage() {
         </StaggerContainer>
 
         {/* How it works */}
+        {/* Employer product (2026-09-10): priced placement on the board. */}
+        <section aria-labelledby="hire-plans-heading" className="mb-12">
+          <h2 id="hire-plans-heading" className="text-2xl md:text-3xl font-display font-bold text-white mb-2 text-center">Post a job on the board</h2>
+          <p className="text-slate-400 text-center max-w-2xl mx-auto mb-6">Your role next to 8,600+ synced listings, with a salary band, your company profile, job alerts and the RSS feed. Pay once; no subscription.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto mb-8">
+            {JOB_POSTING_PLANS.map((plan) => (
+              <div key={plan.id} className={`card p-6 ${plan.featured ? 'border-cyan-500/40' : ''}`}>
+                <div className="flex items-baseline justify-between mb-1">
+                  <h3 className="text-lg font-semibold text-white">{plan.name}</h3>
+                  <span className="text-2xl font-bold text-white">${plan.priceUsd}</span>
+                </div>
+                <p className="text-sm text-slate-400 mb-4">{plan.days} days · {plan.blurb}</p>
+                <ul className="space-y-1.5 text-sm text-slate-300">
+                  {plan.includes.map((line) => <li key={line} className="flex gap-2"><span className="text-cyan-400" aria-hidden="true">✓</span><span>{line}</span></li>)}
+                </ul>
+                <a href="#post-a-job" className={`mt-5 inline-flex items-center justify-center w-full min-h-[44px] rounded-lg text-sm font-semibold ${plan.featured ? 'btn-primary' : 'border border-white/15 text-white hover:border-white/30'}`}>Post a {plan.name.toLowerCase()}</a>
+              </div>
+            ))}
+          </div>
+          <div className="max-w-4xl mx-auto"><PostJobForm /></div>
+          <p className="text-xs text-slate-500 text-center mt-3">Already posted? <Link href="/hire/dashboard" className="underline">Open your employer dashboard</Link> for views and apply clicks.</p>
+        </section>
+
         <ScrollReveal className="mb-4">
           <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-2 text-center">
             How it works
