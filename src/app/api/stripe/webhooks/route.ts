@@ -985,9 +985,11 @@ async function handleJobPostingCompleted(session: Stripe.Checkout.Session) {
     logger.warn('Job posting webhook missing metadata', { sessionId: session.id, jobId, planId: session.metadata?.planId });
     return;
   }
-  const existing = await prisma.spaceJobPosting.findUnique({ where: { id: jobId }, select: { paidAt: true } });
+  const existing = await prisma.spaceJobPosting.findUnique({ where: { id: jobId }, select: { paidAt: true, stripeSessionId: true } });
   if (!existing) { logger.warn('Job posting webhook: row not found', { jobId }); return; }
-  if (existing.paidAt) return;
+  // Idempotent per checkout session: a replayed event is a no-op, a renewal
+  // (new session for an already-paid row) re-activates with a fresh expiry.
+  if (existing.paidAt && existing.stripeSessionId === session.id) return;
   const now = new Date();
   const expiresAt = new Date(now.getTime() + plan.days * 86_400_000);
   await prisma.spaceJobPosting.update({

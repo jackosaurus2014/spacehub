@@ -61,3 +61,18 @@ describe('employer postings', () => {
     expect(actions).toMatch(/event: 'apply'/);
   });
 });
+
+describe('employer portal', () => {
+  it('owner-only edit/remove routes and the pay-now/renew checkout exist', () => {
+    const edit = read('src/app/api/jobs/[id]/route.ts');
+    expect(edit).toMatch(/export async function PATCH/);
+    expect(edit).toMatch(/export async function DELETE/);
+    expect(edit).toMatch(/row\.source !== 'direct' \|\| row\.postedByUserId !== userId/);
+    const checkout = read('src/app/api/jobs/[id]/checkout/route.ts');
+    expect(checkout).toMatch(/renewal: row\.paidAt \? '1' : '0'/);
+    const wh = read('src/app/api/stripe/webhooks/route.ts');
+    expect(wh).toMatch(/existing\.paidAt && existing\.stripeSessionId === session\.id\) return;/);
+    const portal = read('src/app/hire/dashboard/EmployerPortal.tsx');
+    for (const action of ['Pause', 'Resume', 'Pay now', 'Renew as', 'Delete draft', 'Save changes']) expect(portal).toContain(action);
+  });
+});

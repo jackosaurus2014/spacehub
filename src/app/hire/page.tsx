@@ -117,7 +117,7 @@ export default async function HirePage() {
             ))}
           </div>
           <div className="max-w-4xl mx-auto"><PostJobForm /></div>
-          <p className="text-xs text-slate-500 text-center mt-3">Already posted? <Link href="/hire/dashboard" className="underline">Open your employer dashboard</Link> for views and apply clicks.</p>
+          <p className="text-sm text-slate-400 text-center mt-4">Your account is your employer portal: <Link href="/register?callbackUrl=%2Fhire%23post-a-job" className="text-cyan-300 hover:underline">create a free account</Link> to post, then <Link href="/hire/dashboard" className="text-cyan-300 hover:underline">edit, pause, renew or remove</Link> your listings and see views and apply clicks any time.</p>
         </section>
 
         <ScrollReveal className="mb-4">
