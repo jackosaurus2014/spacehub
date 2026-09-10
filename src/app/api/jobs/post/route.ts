@@ -24,8 +24,12 @@ const bodySchema = z.object({
   seniorityLevel: z.enum(LEVELS),
   employmentType: z.string().trim().max(40).optional(),
   description: z.string().trim().min(80).max(12000),
-  applyUrl: z.string().trim().url().max(500),
+  applyUrl: z.string().trim().url().max(500).optional().or(z.literal('')),
+  /** 'link' sends candidates to applyUrl; 'spacenexus' collects applications in the portal. */
+  applyMode: z.enum(['link', 'spacenexus']).default('link'),
   contactEmail: z.string().trim().email().max(200),
+  /** Save as an unpaid draft in the portal instead of opening checkout now. */
+  draft: z.boolean().default(false),
   salaryMin: z.number().int().min(10000).max(2000000).optional(),
   salaryMax: z.number().int().min(10000).max(2000000).optional(),
   clearanceRequired: z.boolean().default(false),
@@ -49,6 +53,7 @@ export async function POST(request: NextRequest) {
   if (b.salaryMin && b.salaryMax && b.salaryMax < b.salaryMin) return validationError('Salary max must be at least salary min');
   const plan = getJobPostingPlan(b.planId);
   if (!plan) return validationError('Unknown plan');
+  if (b.applyMode === 'link' && !b.applyUrl) return validationError('Add an application link, or collect applications on SpaceNexus');
 
   try {
     const profile = b.companyProfileSlug
@@ -65,7 +70,8 @@ export async function POST(request: NextRequest) {
         seniorityLevel: b.seniorityLevel,
         employmentType: b.employmentType || 'full-time',
         description: b.description,
-        sourceUrl: b.applyUrl,
+        sourceUrl: b.applyUrl || null,
+        applyMode: b.applyMode,
         contactEmail: b.contactEmail,
         salaryMin: b.salaryMin ?? null,
         salaryMax: b.salaryMax ?? null,
@@ -82,6 +88,10 @@ export async function POST(request: NextRequest) {
       },
       select: { id: true },
     });
+    if (b.draft) {
+      logger.info('Job posting saved as draft', { jobId: posting.id, userId: session.user.id });
+      return NextResponse.json({ success: true, data: { jobId: posting.id, draft: true, url: `/hire/dashboard?draft=` } });
+    }
 
     const checkout = await getStripe().checkout.sessions.create({
       mode: 'payment',

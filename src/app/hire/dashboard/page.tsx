@@ -19,10 +19,10 @@ export const metadata: Metadata = {
  * thin shell around the client portal so the list can update in place after
  * every action.
  */
-export default async function EmployerDashboardPage({ searchParams }: { searchParams: Promise<{ posted?: string; canceled?: string }> }) {
+export default async function EmployerDashboardPage({ searchParams }: { searchParams: Promise<{ posted?: string; canceled?: string; draft?: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect('/login?callbackUrl=%2Fhire%2Fdashboard');
-  const { posted, canceled } = await searchParams;
+  const { posted, canceled, draft } = await searchParams;
   return (
     <div className="min-h-screen bg-black">
       <div className="container mx-auto px-4 py-10 max-w-4xl">
@@ -30,11 +30,11 @@ export default async function EmployerDashboardPage({ searchParams }: { searchPa
         <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
           <div>
             <h1 className="text-3xl font-bold text-white">Your job postings</h1>
-            <p className="text-slate-400 text-sm mt-1">Edit, pause, renew or remove any listing. Views count job-page opens; apply clicks count people who followed your application link.</p>
+            <p className="text-slate-400 text-sm mt-1">Edit, pause, renew or remove any listing. Views count job-page opens; apply clicks count people who followed your link or applied here.</p>
           </div>
           <Link href="/hire#post-a-job" className="btn-primary px-4 py-2 rounded-lg text-sm font-semibold min-h-[44px] inline-flex items-center">Post a job</Link>
         </div>
-        <EmployerPortal posted={posted} canceled={canceled} />
+        <EmployerPortal posted={posted} canceled={canceled} draft={draft} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 text-sm">
           <div className="card p-5">
             <h2 className="text-white font-semibold mb-1">Your company profile</h2>

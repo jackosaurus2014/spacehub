@@ -985,13 +985,16 @@ async function handleJobPostingCompleted(session: Stripe.Checkout.Session) {
     logger.warn('Job posting webhook missing metadata', { sessionId: session.id, jobId, planId: session.metadata?.planId });
     return;
   }
-  const existing = await prisma.spaceJobPosting.findUnique({ where: { id: jobId }, select: { paidAt: true, stripeSessionId: true } });
+  const existing = await prisma.spaceJobPosting.findUnique({ where: { id: jobId }, select: { paidAt: true, stripeSessionId: true, expiresAt: true } });
   if (!existing) { logger.warn('Job posting webhook: row not found', { jobId }); return; }
   // Idempotent per checkout session: a replayed event is a no-op, a renewal
   // (new session for an already-paid row) re-activates with a fresh expiry.
   if (existing.paidAt && existing.stripeSessionId === session.id) return;
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + plan.days * 86_400_000);
+  // A featured upgrade of a live listing keeps whichever expiry is later.
+  const fresh = new Date(now.getTime() + plan.days * 86_400_000);
+  const upgrade = session.metadata?.upgrade === '1' && existing.expiresAt && existing.expiresAt.getTime() > fresh.getTime();
+  const expiresAt = upgrade ? existing.expiresAt! : fresh;
   await prisma.spaceJobPosting.update({
     where: { id: jobId },
     data: {
@@ -999,8 +1002,10 @@ async function handleJobPostingCompleted(session: Stripe.Checkout.Session) {
       postedDate: now,
       paidAt: now,
       expiresAt,
+      expiryNoticeAt: null,
+      expiredNoticeAt: null,
       featured: plan.featured,
-      featuredUntil: plan.featured ? expiresAt : null,
+      featuredUntil: plan.featured ? fresh : null,
       stripeSessionId: session.id,
     },
   });

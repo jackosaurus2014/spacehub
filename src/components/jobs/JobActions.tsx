@@ -5,7 +5,7 @@ import { trackGA4Event } from '@/lib/analytics';
 import SaveJobButton from '@/components/jobs/SaveJobButton';
 
 /** Save / share / apply-tracking row for a job page (2026-09-10). */
-export default function JobActions({ job, applyUrl }: { job: { id: string; title: string; company: string; location: string }; applyUrl: string | null }) {
+export default function JobActions({ job, applyUrl, onSite = false }: { job: { id: string; title: string; company: string; location: string }; applyUrl: string | null; /** Employer collects applications on SpaceNexus: the button scrolls to the form. */ onSite?: boolean }) {
   const [copied, setCopied] = useState(false);
   // Employer dashboard counters (direct postings only; the API ignores synced rows).
   useEffect(() => {
@@ -22,7 +22,10 @@ export default function JobActions({ job, applyUrl }: { job: { id: string; title
   };
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {applyUrl && (
+      {onSite && (
+        <a href="#apply" onClick={() => trackGA4Event('job_apply_click', { job_id: job.id, company: job.company, onsite: 1 })} className="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold min-h-[44px]">Apply on SpaceNexus ↓</a>
+      )}
+      {!onSite && applyUrl && (
         <a
           href={applyUrl}
           target="_blank"

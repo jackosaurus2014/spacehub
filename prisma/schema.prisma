@@ -125,7 +125,7 @@ model User {
   onboardingStep      Int     @default(0)
 
   // Login tracking (for winback emails)
-  lastLoginAt DateTime?
+  lastLoginAt     DateTime?
   // My Desk (G6, 2026-09-01): read-then-write watermark — read the old value
   // when composing the desk, write now() after, so a refresh never eats its
   // own "since your last visit" delta.
@@ -175,8 +175,8 @@ model GameProfile {
   locationsUnlocked Int   @default(0)
   gameYear          Int   @default(2025)
 
-  resources    Json     @default("{}")
-  achievements String[] @default([])
+  resources       Json     @default("{}")
+  achievements    String[] @default([])
   // Server-authoritative inventory, phase 2 (docs/SECURITY_AUDIT_2026-09.md
   // "Phase 2"): the SERVER-OWNED per-resource stock. `resources` above stays
   // the client's reconciled view; this map is what the escrow-backed paths
@@ -190,8 +190,8 @@ model GameProfile {
   updatedAt  DateTime @updatedAt
 
   marketOrders       MarketOrder[]
-  postedBounties     ResourceBounty[]  @relation("postedBounties")
-  filledBounties     ResourceBounty[]  @relation("filledBounties")
+  postedBounties     ResourceBounty[]   @relation("postedBounties")
+  filledBounties     ResourceBounty[]   @relation("filledBounties")
   globalMilestones   GlobalMilestone[]
   allianceMembership AllianceMember?
   activityLogs       PlayerActivity[]
@@ -205,9 +205,9 @@ model GameProfile {
   // or after clearing storage. The multiplayer-visibility columns below stay
   // the authoritative summary; this is the restore blob, nothing reads it
   // server-side.
-  cloudSave             Json?
-  cloudSaveVersion      Int?
-  cloudSavedAt          DateTime?
+  cloudSave        Json?
+  cloudSaveVersion Int?
+  cloudSavedAt     DateTime?
 
   // Full game state for multiplayer visibility
   buildingsData         Json     @default("[]")
@@ -273,17 +273,17 @@ model GameProfile {
   // a mentor (browsable by prospective mentees); GameMentorship rows record
   // accepted mentor<->mentee pairs (see below). CLAUDE.md "mentorship
   // rewards" onramp commitment, additive column.
-  mentorOptIn         Boolean          @default(false)
+  mentorOptIn         Boolean            @default(false)
   // Weekly corp report email opt-in (2026-09-01). Ledger: TycoonWeeklySend.
-  weeklyReportEmail   Boolean          @default(false)
+  weeklyReportEmail   Boolean            @default(false)
   weeklySends         TycoonWeeklySend[]
   // Referral attribution (2026-08-28): the corporation whose invite link this
   // player joined through. The invite auto-creates a GameMentorship, so the
   // referrer's reward is the existing mentor revenue bonus tied to the
   // mentee's success — recruiting is rewarded only when the recruit thrives.
   referredByProfileId String?
-  mentorshipsAsMentor GameMentorship[] @relation("mentorOf")
-  mentorshipsAsMentee GameMentorship[] @relation("menteeOf")
+  mentorshipsAsMentor GameMentorship[]   @relation("mentorOf")
+  mentorshipsAsMentee GameMentorship[]   @relation("menteeOf")
 
   // Live-Service Wave LS5 (docs/LIVE_SERVICE_2026-08.md §LS5): alliance
   // season charter pledges + real-ledger NPC science co-fund stakes.
@@ -310,10 +310,10 @@ model GameProfile {
   // binding corp-to-corp supply contracts, pacts, and the server-side
   // reputation deltas they produce (see CorpContract/CorpPact/
   // CorpReputationEvent below).
-  corpContractsIssued   CorpContract[] @relation("corpContractIssuer")
-  corpContractsAccepted CorpContract[] @relation("corpContractCounterparty")
-  corpPactsProposed     CorpPact[]     @relation("corpPactProposer")
-  corpPactsReceived     CorpPact[]     @relation("corpPactCounterparty")
+  corpContractsIssued   CorpContract[]        @relation("corpContractIssuer")
+  corpContractsAccepted CorpContract[]        @relation("corpContractCounterparty")
+  corpPactsProposed     CorpPact[]            @relation("corpPactProposer")
+  corpPactsReceived     CorpPact[]            @relation("corpPactCounterparty")
   corpReputationEvents  CorpReputationEvent[]
 
   @@index([netWorth])
@@ -476,7 +476,6 @@ model ServerAsset {
   @@index([profileId, kind, status])
   @@index([kind, status, completesAt])
 }
-
 
 model MarketResource {
   id           String   @id @default(cuid())
@@ -1625,6 +1624,13 @@ model SpaceJobPosting {
   stripeSessionId String?   @unique
   viewCount       Int       @default(0)
   applyClicks     Int       @default(0)
+
+  // Applicant tracking (2026-09-10): 'link' sends candidates to sourceUrl;
+  // 'spacenexus' collects applications here and emails the employer.
+  applyMode       String           @default("link")
+  expiryNoticeAt  DateTime?
+  expiredNoticeAt DateTime?
+  applications    JobApplication[]
 
   @@unique([source, externalId])
   @@index([company])
@@ -7348,22 +7354,22 @@ model AlliancePledge {
 // MarketLimitOrder.profileId: corps use ids prefixed "__NPC_CORP_" the way
 // the market maker uses "__NPC_MARKET_MAKER__". See src/lib/game/npc-industry.ts.
 model NpcIndustrialCorp {
-  id           String   @id
+  id           String    @id
   name         String
   factionId    String
   // Highest recipe tier the corp can run (1-4).
-  capacityTier Int      @default(2)
+  capacityTier Int       @default(2)
   // Ask = unit cost x (1 + marginPct).
-  marginPct    Float    @default(0.25)
-  treasury     Float    @default(0)
-  inventory    Json     @default("{}")
+  marginPct    Float     @default(0.25)
+  treasury     Float     @default(0)
+  inventory    Json      @default("{}")
   // Rolling stats: units built, units sold, revenue.
-  unitsBuilt   Int      @default(0)
-  unitsSold    Int      @default(0)
-  revenue      Float    @default(0)
+  unitsBuilt   Int       @default(0)
+  unitsSold    Int       @default(0)
+  revenue      Float     @default(0)
   lastTickAt   DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model NpcProgramStake {
@@ -8006,4 +8012,26 @@ model SystemicCrisisPledge {
 
   @@unique([cycleIndex, profileId])
   @@index([cycleIndex])
+}
+
+/// A candidate's application submitted on SpaceNexus for an employer-posted
+/// role (applyMode 'spacenexus'). Résumés are links, not files. (2026-09-10)
+model JobApplication {
+  id           String          @id @default(cuid())
+  jobId        String
+  job          SpaceJobPosting @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  name         String
+  email        String
+  phone        String?
+  linkedinUrl  String?
+  resumeUrl    String?
+  message      String?
+  status       String          @default("new") // new | reviewed | contacted | rejected
+  employerNote String?
+  ipHash       String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([jobId, createdAt])
+  @@index([email])
 }

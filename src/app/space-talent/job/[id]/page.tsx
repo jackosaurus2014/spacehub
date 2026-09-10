@@ -8,6 +8,7 @@ import { CATEGORY_COLORS, SENIORITY_LABELS } from '../../data';
 import { JOB_CATEGORIES } from '@/types';
 import type { JobCategory, SeniorityLevel } from '@/types';
 import JobActions from '@/components/jobs/JobActions';
+import ApplyForm from '@/components/jobs/ApplyForm';
 import { salaryBandFor, formatBand } from '@/lib/salary-estimate';
 
 export const revalidate = 3600;
@@ -36,6 +37,8 @@ const JOB_SELECT = {
   isActive: true,
   postedDate: true,
   sourceUrl: true,
+  source: true,
+  applyMode: true,
   companyProfileId: true,
   companyProfile: { select: { slug: true, name: true } },
 } as const;
@@ -339,6 +342,7 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
   const params = await props.params;
   const job = await fetchJob(params.id);
   if (!job || !job.isActive) notFound();
+  const onSite = job.source === 'direct' && job.applyMode === 'spacenexus';
 
   const [moreAtCompany, similarRoles] = await Promise.all([
     fetchMoreAtCompany(job),
@@ -452,7 +456,7 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
               </div>
 
               <div className="mt-6">
-                <JobActions job={{ id: job.id, title: job.title, company: job.company, location: job.location }} applyUrl={job.sourceUrl ?? null} />
+                <JobActions job={{ id: job.id, title: job.title, company: job.company, location: job.location }} applyUrl={job.sourceUrl ?? null} onSite={onSite} />
               </div>
             </div>
 
@@ -468,6 +472,8 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
                 </p>
               )}
             </div>
+
+            {onSite && <ApplyForm jobId={job.id} company={job.company} />}
           </div>
 
           {/* Sidebar */}

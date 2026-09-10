@@ -340,6 +340,7 @@ const CRON_JOBS: CronJobDef[] = [
   // edition) at 14:00 UTC, Launch Slip Report an hour later.
   { schedule: '0 14 3 * *',   path: '/api/cron/email-programs?program=hiring-index',  label: 'hiring-index-email',         maxStaleMinutes: 46080 },
   { schedule: '0 15 3 * *',   path: '/api/cron/email-programs?program=slip-report',   label: 'slip-report-email',          maxStaleMinutes: 46080 },
+  { schedule: '30 13 * * *',  path: '/api/cron/job-posting-expiry',                label: 'job-posting-expiry',             maxStaleMinutes: 2880 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

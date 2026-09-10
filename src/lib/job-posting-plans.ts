@@ -32,7 +32,7 @@ export const JOB_POSTING_PLANS: JobPostingPlan[] = [
       '30 days on the board, searchable by title, category, level, location and remote',
       'Salary band shown (yours, or our estimate if you leave it blank)',
       'Linked to your company profile and its hiring page',
-      'Applicants go straight to your own application link',
+      'Send applicants to your site, or collect them on SpaceNexus with CSV export',
       'Included in job alerts and the jobs RSS feed',
     ],
   },

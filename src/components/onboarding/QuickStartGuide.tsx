@@ -145,7 +145,7 @@ export default function QuickStartGuide() {
 
   // The command deck has its own first-hour guide; a second floating
   // checklist on top of it was one of five overlays a new player saw at once.
-  if (pathname && (pathname === '/space-tycoon' || pathname.startsWith('/space-tycoon/'))) return null;
+  if (pathname && (pathname === '/space-tycoon' || pathname.startsWith('/space-tycoon/') || pathname.startsWith('/hire/dashboard'))) return null;
   if (!mounted || dismissed || completed.length >= STEPS.length) return null;
 
   const completedCount = completed.length;

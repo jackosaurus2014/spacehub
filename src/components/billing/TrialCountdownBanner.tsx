@@ -90,7 +90,7 @@ export default function TrialCountdownBanner() {
 
   // Don't render on server or if not trialing
   if (!mounted) return null;
-  if (pathname && (pathname === '/space-tycoon' || pathname.startsWith('/space-tycoon/'))) return null;
+  if (pathname && (pathname === '/space-tycoon' || pathname.startsWith('/space-tycoon/') || pathname.startsWith('/hire/dashboard'))) return null;
   if (!isTrialing || !trialEndsAt) return null;
   if (dismissed) return null;
 
