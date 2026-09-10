@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'How Much Does It Cost to Launch a Satellite? 2026 Prices by Rocket',
+  title: "How Much Does It Cost to Launch a Satellite? Falcon 9 $74M, $3,246/kg — Every Rocket's 2026 Price",
   description: 'A Falcon 9 lists at ~$74M (about $3,246/kg), rideshare starts at $350k for 50 kg, and an Electron runs ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
   alternates: {
     canonical: 'https://spacenexus.us/guide/space-launch-cost-comparison',

@@ -22,7 +22,7 @@ export const dynamic = 'force-dynamic';
 const LAST_EDITED = '2026-09-06T00:00:00Z';
 
 export const metadata: Metadata = {
-  title: 'How Much Does It Cost to Launch a Satellite? 2026 Prices by Rocket',
+  title: "How Much Does It Cost to Launch a Satellite? Falcon 9 $74M, $3,246/kg — Every Rocket's 2026 Price",
   description:
     'A Falcon 9 lists at ~$74M (about $3,246/kg), rideshare starts at $350k for 50 kg, and an Electron runs ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
   keywords: [
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     'launch price 2026',
   ],
   openGraph: {
-    title: 'How Much Does It Cost to Launch a Satellite? 2026 Prices by Rocket',
+    title: "How Much Does It Cost to Launch a Satellite? Falcon 9 $74M, $3,246/kg — Every Rocket's 2026 Price",
     description:
       'Falcon 9 ~$74M (about $3,246/kg), rideshare from $350k for 50 kg, Electron ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
     type: 'article',
@@ -179,7 +179,7 @@ export default async function SpaceLaunchCostComparisonPage() {
             </nav>
             <HeroArt src="/art/hero-launch-cost.webp" className="mb-6" />
             <h1 className="text-display-lg md:text-display-xl font-display font-bold text-white mb-6 leading-tight">
-              Space Launch Cost Comparison 2026
+              How Much Does It Cost to Launch a Satellite? Falcon 9 at $74M, Every Rocket&apos;s 2026 Price
             </h1>
             <p className="text-xl md:text-2xl text-star-200 leading-relaxed max-w-3xl mx-auto">
               Prices, Payload Capacity &amp; Cost Per Kilogram for Every Major Vehicle

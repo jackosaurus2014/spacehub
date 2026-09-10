@@ -122,6 +122,8 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <TycoonBand topCorps={data.topCorps} />
+
       {/* The industry today */}
       <section className="pb-10 md:pb-16">
         <div className="container mx-auto px-4">
@@ -166,7 +168,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <TycoonBand topCorps={data.topCorps} />
 
       {/* Digest */}
       <section className="py-10 md:py-16">
