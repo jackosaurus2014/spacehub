@@ -101,6 +101,16 @@ describe('employer portal', () => {
   });
 });
 
+describe('founder notifications', () => {
+  it('paid/upgraded/renewed postings and first applicants email the founder without blocking', () => {
+    const wh = read('src/app/api/stripe/webhooks/route.ts');
+    expect(wh).toMatch(/void notifyFounderOfPostingEvent\(\{ event: session\.metadata\?\.upgrade === '1' \? 'upgraded' : session\.metadata\?\.renewal === '1' \? 'renewed' : 'paid'/);
+    const apply = read('src/app/api/jobs/[id]/apply/route.ts');
+    expect(apply).toMatch(/if \(priorCount === 1\) void notifyFounderOfPostingEvent\(\{ event: 'first_applicant'/);
+    expect(read('src/lib/employer-email.ts')).toMatch(/send\(FOUNDER_EMAIL, subject, html/);
+  });
+});
+
 describe('applicant tracking', () => {
   it('schema, apply route, applicants route and job page are wired', () => {
     const schema = read('prisma/schema.prisma');

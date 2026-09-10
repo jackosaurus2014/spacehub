@@ -281,6 +281,7 @@ export const NONCE_ELIGIBLE_ROUTES: readonly string[] = [
   '/guide/space-launch-schedule-2026',
   '/guide/1000-launches-a-year',
   '/guide/how-to-get-a-job-in-the-space-industry',
+  '/guide/space-industry-salaries',
   '/guide/spacex-stock-explained',
   '/guide/space-debris-and-traffic-management',
   '/guide/watch-a-launch/[city]',

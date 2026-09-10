@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getStripe, priceIdToTier, priceIdToSponsorTier, mapSubscriptionStatus } from '@/lib/stripe';
 import prisma from '@/lib/db';
+import { notifyFounderOfPostingEvent } from '@/lib/employer-email';
 import { logger } from '@/lib/logger';
 import { generatePaymentFailedEmail, generateSubscriptionConfirmEmail } from '@/lib/stripe-helpers';
 import { AD_CAMPAIGN_PAYMENT_KIND, AD_SPONSORSHIP_PAYMENT_KIND } from '@/lib/ads/ad-billing';
@@ -985,7 +986,7 @@ async function handleJobPostingCompleted(session: Stripe.Checkout.Session) {
     logger.warn('Job posting webhook missing metadata', { sessionId: session.id, jobId, planId: session.metadata?.planId });
     return;
   }
-  const existing = await prisma.spaceJobPosting.findUnique({ where: { id: jobId }, select: { paidAt: true, stripeSessionId: true, expiresAt: true } });
+  const existing = await prisma.spaceJobPosting.findUnique({ where: { id: jobId }, select: { paidAt: true, stripeSessionId: true, expiresAt: true, title: true, company: true } });
   if (!existing) { logger.warn('Job posting webhook: row not found', { jobId }); return; }
   // Idempotent per checkout session: a replayed event is a no-op, a renewal
   // (new session for an already-paid row) re-activates with a fresh expiry.
@@ -1010,4 +1011,5 @@ async function handleJobPostingCompleted(session: Stripe.Checkout.Session) {
     },
   });
   logger.info('Job posting activated', { jobId, planId: plan.id, expiresAt: expiresAt.toISOString() });
+  void notifyFounderOfPostingEvent({ event: session.metadata?.upgrade === '1' ? 'upgraded' : session.metadata?.renewal === '1' ? 'renewed' : 'paid', jobId, jobTitle: existing.title, company: existing.company, planId: plan.id, amountUsd: plan.priceUsd });
 }

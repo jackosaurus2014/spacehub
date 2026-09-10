@@ -129,6 +129,11 @@ export const GUIDE_LIST: GuideEntry[] = [
     shortTitle: 'Get a Space Job',
   },
   {
+    slug: 'space-industry-salaries',
+    title: 'Space Industry Salaries (2026): What 59 Roles Pay, by Level and City',
+    shortTitle: 'Space Salaries',
+  },
+  {
     slug: 'spacex-stock-explained',
     title: 'SpaceX Stock (SPCX) Explained',
     shortTitle: 'SpaceX Stock Explained',

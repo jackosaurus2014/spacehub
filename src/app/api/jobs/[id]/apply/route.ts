@@ -4,7 +4,7 @@ import { z } from 'zod';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { notFoundError, validationError, internalError, rateLimitedError } from '@/lib/errors';
-import { sendNewApplicationEmail } from '@/lib/employer-email';
+import { sendNewApplicationEmail, notifyFounderOfPostingEvent } from '@/lib/employer-email';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,6 +64,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       void sendNewApplicationEmail({ to: job.contactEmail, jobId: id, jobTitle: job.title, applicant: b });
     }
     logger.info('Job application received', { jobId: id, applicationId: app.id });
+    const priorCount = await prisma.jobApplication.count({ where: { jobId: id } }).catch(() => 0);
+    if (priorCount === 1) void notifyFounderOfPostingEvent({ event: 'first_applicant', jobId: id, jobTitle: job.title, company: job.company });
     return NextResponse.json({ success: true, data: { received: true, company: job.company } });
   } catch (error) {
     logger.error('Job application failed', { jobId: id, error: error instanceof Error ? error.message : String(error) });

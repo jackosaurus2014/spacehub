@@ -182,6 +182,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'guide/commercial-space-economy': [MODULES.marketIntel, MODULES.spaceCapital, MODULES.industryTrends, MODULES.companyProfiles, MODULES.govBudgets],
   'guide/blue-origin-vs-spacex': [MODULES.spaceStocks, MODULES.companyProfiles, MODULES.launchManifest, MODULES.launchVehicles],
   'guide/how-to-get-a-job-in-the-space-industry': [MODULES.jobs, MODULES.salaryBenchmarks, MODULES.workforceAnalytics, MODULES.careerGuide, MODULES.companyProfiles],
+  'guide/space-industry-salaries': [MODULES.salaryBenchmarks, MODULES.jobs, MODULES.workforceAnalytics, MODULES.careerGuide],
   'guide/spacex-stock-explained': [MODULES.spaceStocks, MODULES.startupTracker, MODULES.companyProfiles, MODULES.launchManifest],
   'guide/when-is-artemis-3': [MODULES.launchManifest, MODULES.learn, MODULES.companyProfiles, MODULES.launchVehicles],
   'guide/rockets-flying-in-2026': [MODULES.launchVehicles, MODULES.launchManifest, MODULES.launchCostCalc, MODULES.companyProfiles],
