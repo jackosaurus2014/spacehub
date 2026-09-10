@@ -57,6 +57,9 @@ interface SyncStatus {
  * @param intervalMs Sync interval in milliseconds (default 60s)
  * @param onServerData Optional callback to receive server data (pricing, milestones, etc.)
  */
+/** How often the full client state rides along with the sync (cloud save). */
+export const CLOUD_SAVE_INTERVAL_MS = 5 * 60_000;
+
 export function useGameSync(
   state: GameState | null,
   intervalMs: number = 60_000,
@@ -101,6 +104,8 @@ export function useGameSync(
   });
 
   const lastSyncRef = useRef(0);
+
+  const lastCloudPushRef = useRef<number>(0);
   const retryCount = useRef(0);
 
   // The engine replaces `state` on every 2s tick. If doSync closed over it,
@@ -122,6 +127,10 @@ export function useGameSync(
 
     // Rate limit: don't sync more than once per 30 seconds
     if (Date.now() - lastSyncRef.current < 30_000) return;
+    // Cloud save (2026-09-09): ride the full client state along with the
+    // sync every CLOUD_SAVE_INTERVAL_MS (and on the first sync of a session)
+    // so a signed-in player can continue on another device.
+    const cloudDue = Date.now() - lastCloudPushRef.current >= CLOUD_SAVE_INTERVAL_MS;
 
     setStatus(prev => ({ ...prev, syncing: true, error: null }));
 
@@ -156,6 +165,7 @@ export function useGameSync(
       }
 
       const payload = {
+        ...(cloudDue ? { cloudSave: state, cloudSavedAt: Date.now() } : {}),
         money: state.money,
         totalEarned: state.totalEarned,
         totalSpent: state.totalSpent,
@@ -266,6 +276,7 @@ export function useGameSync(
       });
 
       if (res.ok) {
+        if (cloudDue) lastCloudPushRef.current = Date.now();
         const data = await res.json();
         lastSyncRef.current = Date.now();
         retryCount.current = 0;

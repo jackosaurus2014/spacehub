@@ -200,6 +200,15 @@ model GameProfile {
   serverAssets       ServerAsset[]
   economicSnapshots  EconomicSnapshot[]
 
+  // Cloud save (2026-09-09): the player's full client GameState, pushed with
+  // the periodic sync so a signed-in player can continue on another device
+  // or after clearing storage. The multiplayer-visibility columns below stay
+  // the authoritative summary; this is the restore blob, nothing reads it
+  // server-side.
+  cloudSave             Json?
+  cloudSaveVersion      Int?
+  cloudSavedAt          DateTime?
+
   // Full game state for multiplayer visibility
   buildingsData         Json     @default("[]")
   activeServicesData    Json     @default("[]")

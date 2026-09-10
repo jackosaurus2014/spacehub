@@ -10,10 +10,13 @@ import { BG_ASSETS } from '@/lib/game/assets';
 interface GameStartMenuProps {
   onNewGame: () => void;
   onContinue: () => void;
+  /** A save held on the player's account (cloud), when it is newer than — or instead of — the local one. */
+  cloudSave?: { companyName: string; savedAt: string } | null;
+  onContinueCloud?: () => void;
 }
 
 /** Cinematic start screen with animated background */
-export default function GameStartMenu({ onNewGame, onContinue }: GameStartMenuProps) {
+export default function GameStartMenu({ onNewGame, onContinue, cloudSave = null, onContinueCloud }: GameStartMenuProps) {
   const [hasSave, setHasSave] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -142,6 +145,17 @@ export default function GameStartMenu({ onNewGame, onContinue }: GameStartMenuPr
             </span>
           </button>
 
+          {cloudSave && onContinueCloud && (
+            <button
+              onClick={onContinueCloud}
+              aria-label={`Continue ${cloudSave.companyName} from your account's cloud save`}
+              className="w-full py-3 text-sm font-semibold text-white border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 rounded-xl transition-colors"
+            >
+              Continue from cloud — {cloudSave.companyName}
+              <span className="block text-[11px] font-normal text-cyan-200/70 mt-0.5">saved {new Date(cloudSave.savedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+            </button>
+          )}
+
           {hasSave && (
             <button
               onClick={onContinue}
@@ -167,7 +181,7 @@ export default function GameStartMenu({ onNewGame, onContinue }: GameStartMenuPr
           <span>•</span>
           <span>Free to play</span>
           <span>•</span>
-          <span>Saves locally</span>
+          <span>{cloudSave ? 'Saved to your account' : 'Saves locally — sign in to save to your account'}</span>
         </div>
       </div>
 

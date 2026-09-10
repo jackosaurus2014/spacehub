@@ -290,6 +290,22 @@ export function loadGame(): GameState | null {
       localStorage.removeItem(SAVE_KEY);
       return null;
     }
+    return migrateLoadedState(state);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Bring a parsed save up to the current format. Shared by loadGame (local
+ * storage) and the cloud restore (2026-09-09), so a save that round-trips
+ * through the server gets exactly the same backwards-compatibility fixes.
+ * Returns null for a save from a previous world epoch.
+ */
+export function migrateLoadedState(state: GameState): GameState | null {
+  try {
+    if (!state || typeof state.version !== 'number') return null;
+    if ((state.worldEpoch ?? 1) < WORLD_EPOCH) return null;
 
     // Restore NPCs from save, or create fresh if missing/corrupt
     if (!Array.isArray(state.npcCompanies) || state.npcCompanies.length === 0) {

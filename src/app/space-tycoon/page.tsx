@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback, useRef, useMemo, type HTMLAttributes } from 'react';
 import type { GameState, GameTab } from '@/lib/game/types';
 import { processFullTick } from '@/lib/game/game-engine';
-import { getNewGameState, saveGame, loadGame, deleteSave } from '@/lib/game/save-load';
+import { getNewGameState, saveGame, loadGame, deleteSave, migrateLoadedState } from '@/lib/game/save-load';
+import { useSession } from 'next-auth/react';
 import { TICK_INTERVALS, AUTO_SAVE_INTERVAL_MS } from '@/lib/game/constants';
 import { formatMoney, formatGameDate, formatDuration, formatCountdown, advanceDate, generateId, scaledBuildingCost, scaledResearchTime } from '@/lib/game/formulas';
 import { BUILDINGS, BUILDING_MAP, scaledBuildTime, checkBuildingCap } from '@/lib/game/buildings';
@@ -998,6 +999,31 @@ export default function SpaceTycoonPage() {
   const [density, setDensityState] = useState<GameDensity>('comfortable');
   useEffect(() => { setDensityState(getGameDensity()); }, []);
   const [showMenu, setShowMenu] = useState(false);
+  // Cloud save offer (2026-09-09): fetched once per mount for signed-in
+  // players; offered when there is no local save or the cloud copy is newer.
+  const { status: sessionStatus } = useSession();
+  const [cloudOffer, setCloudOffer] = useState<{ state: GameState; companyName: string; savedAt: string } | null>(null);
+  useEffect(() => {
+    if (sessionStatus !== 'authenticated') return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/space-tycoon/cloud-save');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled || !data?.save) return;
+        const migrated = migrateLoadedState(data.save as GameState);
+        if (!migrated) return;
+        const local = loadGame();
+        const cloudMs = Date.parse(data.savedAt);
+        const localMs = local?.lastTickAt ?? 0;
+        if (!local || cloudMs > localMs + 60_000) {
+          setCloudOffer({ state: migrated, companyName: migrated.companyName || data.companyName || 'Your corporation', savedAt: data.savedAt });
+        }
+      } catch { /* offline or schema not pushed yet: the menu just shows local options */ }
+    })();
+    return () => { cancelled = true; };
+  }, [sessionStatus]);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   // Live-Service Wave LS2: replaces the old AwayLedger-only offlineEarnings
   // state with the fully-assembled OperationsDebrief (debrief.ts) — see the
@@ -2445,6 +2471,8 @@ export default function SpaceTycoonPage() {
         <WorldResetNotice />
         <EconomyCalibrationNotice />
         <GameStartMenu
+          cloudSave={cloudOffer ? { companyName: cloudOffer.companyName, savedAt: cloudOffer.savedAt } : null}
+          onContinueCloud={cloudOffer ? () => { const s = cloudOffer.state; saveGame(s); setState(s); navigateToTab(pickInitialTab(s)); setShowMenu(false); setCloudOffer(null); } : undefined}
           onNewGame={handleNewGame}
           onContinue={() => { const saved = loadGame(); if (saved) { setState(saved); navigateToTab(pickInitialTab(saved)); setShowMenu(false); } }}
         />
