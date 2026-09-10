@@ -9,6 +9,8 @@ import { JOB_CATEGORIES } from '@/types';
 import type { JobCategory, SeniorityLevel } from '@/types';
 import JobActions from '@/components/jobs/JobActions';
 import ApplyForm from '@/components/jobs/ApplyForm';
+import JobDescription from '@/components/jobs/JobDescription';
+import { markdownToPlainText } from '@/lib/markdown-plain';
 import { salaryBandFor, formatBand } from '@/lib/salary-estimate';
 
 export const revalidate = 3600;
@@ -237,7 +239,7 @@ export async function generateMetadata(
   }
 
   const description = job.description
-    ? job.description.replace(/\s+/g, ' ').trim().slice(0, 160)
+    ? markdownToPlainText(job.description).slice(0, 160)
     : `${job.title} at ${job.company} in ${job.location}. Apply directly through SpaceNexus's space industry jobs board.`;
 
   const url = `${APP_URL}/space-talent/job/${job.id}`;
@@ -267,7 +269,7 @@ export async function generateMetadata(
 
 function buildJobPostingJsonLd(job: NonNullable<Awaited<ReturnType<typeof fetchJob>>>) {
   const description = job.description
-    ? job.description
+    ? (job.source === 'direct' ? markdownToPlainText(job.description) : job.description)
     : `${job.title} at ${job.company}. Located in ${job.location}.${job.remoteOk ? ' Remote-friendly.' : ''} View full details and apply on the official ${job.company} careers page.`;
 
   const postedDate = new Date(job.postedDate);
@@ -462,7 +464,9 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
 
             <div className="card p-6">
               <h2 className="text-lg font-semibold mb-3">Job description</h2>
-              {job.description ? (
+              {job.description && job.source === 'direct' ? (
+                <JobDescription markdown={job.description} />
+              ) : job.description ? (
                 <p className="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">{job.description}</p>
               ) : (
                 <p className="text-sm text-slate-400 leading-relaxed">

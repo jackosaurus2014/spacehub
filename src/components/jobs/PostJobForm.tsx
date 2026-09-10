@@ -6,6 +6,8 @@ import { useSession } from 'next-auth/react';
 import { JOB_CATEGORIES } from '@/types';
 import { JOB_POSTING_PLANS } from '@/lib/job-posting-plans';
 import { trackGA4Event } from '@/lib/analytics';
+import { salaryBandFor, formatBand } from '@/lib/salary-estimate';
+import JobDescription from '@/components/jobs/JobDescription';
 
 const LEVELS = [['entry', 'Entry'], ['mid', 'Mid'], ['senior', 'Senior'], ['lead', 'Lead'], ['director', 'Director'], ['vp', 'VP'], ['c_suite', 'C-suite']] as const;
 const TYPES = ['full-time', 'part-time', 'contract', 'internship'];
@@ -22,6 +24,7 @@ export default function PostJobForm({ defaultPlan = 'featured' }: { defaultPlan?
   const [f, setF] = useState({ title: '', company: '', location: '', remoteOk: false, category: 'engineering', seniorityLevel: 'mid', employmentType: 'full-time', description: '', applyMode: 'link' as 'link' | 'spacenexus', applyUrl: '', contactEmail: '', salaryMin: '', salaryMax: '', clearanceRequired: false });
   const [busy, setBusy] = useState<'pay' | 'draft' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [preview, setPreview] = useState(false);
   const set = (k: keyof typeof f, v: string | boolean) => setF((p) => ({ ...p, [k]: v }));
   const plan = JOB_POSTING_PLANS.find((p) => p.id === planId)!;
 
@@ -77,7 +80,10 @@ export default function PostJobForm({ defaultPlan = 'featured' }: { defaultPlan?
         </div>
         <div><label className={label} htmlFor="pj-smin">Salary min (USD/yr, optional)</label><input id="pj-smin" type="number" min={10000} max={2000000} step={1000} value={f.salaryMin} onChange={(e) => set('salaryMin', e.target.value)} className={input} placeholder="120000" /></div>
         <div><label className={label} htmlFor="pj-smax">Salary max (USD/yr, optional)</label><input id="pj-smax" type="number" min={10000} max={2000000} step={1000} value={f.salaryMax} onChange={(e) => set('salaryMax', e.target.value)} className={input} placeholder="165000" /></div>
-        <div className="md:col-span-2"><label className={label} htmlFor="pj-desc">Description (80+ characters; plain text or simple paragraphs)</label><textarea id="pj-desc" required minLength={80} maxLength={12000} rows={8} value={f.description} onChange={(e) => set('description', e.target.value)} className={input} placeholder="What the role does, what you're looking for, what you offer." /></div>
+        <div className="md:col-span-2">
+          <label className={label} htmlFor="pj-desc">Description (80+ characters). Markdown works: **bold**, - bullets, ## headings, [links](https://…)</label>
+          <textarea id="pj-desc" required minLength={80} maxLength={12000} rows={10} value={f.description} onChange={(e) => set('description', e.target.value)} className={`${input} font-mono text-[13px]`} placeholder={"## About the role\nWhat the team builds and what this person owns.\n\n## What you'll do\n- First responsibility\n- Second responsibility\n\n## What we're looking for\n- Must-have\n- Nice-to-have\n\n## What we offer\n- Compensation, equity, benefits, relocation"} />
+        </div>
         <fieldset className="md:col-span-2">
           <legend className={label}>How candidates apply</legend>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -96,10 +102,26 @@ export default function PostJobForm({ defaultPlan = 'featured' }: { defaultPlan?
       <p className="text-xs text-slate-500">Leave salary blank and the listing shows a SpaceNexus estimate labelled as such. Postings that are not space-industry roles are refunded and removed.</p>
       {error && <p className="text-sm text-red-400" role="alert">{error}</p>}
 
+      {preview && (
+        <div className="rounded-xl border border-cyan-500/30 bg-black/40 p-5" aria-label="Listing preview">
+          <div className="text-[11px] uppercase tracking-wide text-cyan-300 mb-3">Preview — how the listing reads on the board</div>
+          <h3 className="text-xl font-semibold text-white">{f.title || 'Job title'}</h3>
+          <div className="text-sm text-slate-400 mt-1">{f.company || 'Company'} · {f.location || 'Location'}{f.remoteOk ? ' · Remote OK' : ''} · {f.employmentType}{f.clearanceRequired ? ' · Clearance required' : ''}</div>
+          {(() => { const band = salaryBandFor({ title: f.title, category: f.category, seniorityLevel: f.seniorityLevel, location: f.location, salaryMin: f.salaryMin ? Number(f.salaryMin) : null, salaryMax: f.salaryMax ? Number(f.salaryMax) : null }); return band ? <div className="text-sm text-white mt-2">{formatBand(band)} <span className="text-xs text-slate-500">{band.source === 'estimate' ? 'SpaceNexus estimate' : 'stated by employer'}</span></div> : null; })()}
+          <div className="mt-4 border-t border-white/[0.06] pt-4">
+            {f.description.trim() ? <JobDescription markdown={f.description} /> : <p className="text-sm text-slate-500">Description appears here.</p>}
+          </div>
+          <div className="mt-3"><span className="btn-primary inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold opacity-80">{f.applyMode === 'spacenexus' ? 'Apply on SpaceNexus ↓' : 'Apply on company site ↗'}</span></div>
+        </div>
+      )}
+
       {status === 'authenticated' ? (
         <div className="flex flex-wrap items-center gap-3">
           <button type="submit" disabled={busy !== null} className="btn-primary px-5 py-2.5 rounded-lg text-sm font-semibold min-h-[44px] disabled:opacity-50">
             {busy === 'pay' ? 'Starting checkout…' : `Continue to payment — $${plan.priceUsd}`}
+          </button>
+          <button type="button" onClick={() => setPreview((v) => !v)} className="px-4 py-2.5 rounded-lg text-sm text-slate-300 border border-white/15 hover:border-white/30 min-h-[44px]" aria-pressed={preview}>
+            {preview ? 'Hide preview' : 'Preview listing'}
           </button>
           <button type="button" disabled={busy !== null} onClick={() => { const form = document.getElementById('post-a-job') as HTMLFormElement | null; if (form && !form.reportValidity()) return; submit(true); }} className="px-4 py-2.5 rounded-lg text-sm text-slate-300 border border-white/15 hover:border-white/30 min-h-[44px] disabled:opacity-50">
             {busy === 'draft' ? 'Saving…' : 'Save draft, pay later'}

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { JOB_CATEGORIES } from '@/types';
 import { JOB_POSTING_PLANS, type PostingStatus } from '@/lib/job-posting-plans';
 import { trackGA4Event } from '@/lib/analytics';
+import JobDescription from '@/components/jobs/JobDescription';
 
 /**
  * Employer portal (2026-09-10): every posting this account created or that
@@ -53,6 +54,7 @@ export default function EmployerPortal({ posted, canceled, draft }: { posted?: s
   const [applicants, setApplicants] = useState<Record<string, Applicant[] | undefined>>({});
   const [busy, setBusy] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [previewText, setPreviewText] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -259,7 +261,11 @@ export default function EmployerPortal({ posted, canceled, draft }: { posted?: s
                     </div>
                     <div><label className={label}>Salary min (USD/yr)</label><input name="salaryMin" type="number" min={10000} max={2000000} step={1000} defaultValue={p.salaryMin ?? ''} className={input} /></div>
                     <div><label className={label}>Salary max (USD/yr)</label><input name="salaryMax" type="number" min={10000} max={2000000} step={1000} defaultValue={p.salaryMax ?? ''} className={input} /></div>
-                    <div className="md:col-span-2"><label className={label}>Description</label><textarea name="description" required minLength={80} maxLength={12000} rows={8} defaultValue={p.description ?? ''} className={input} /></div>
+                    <div className="md:col-span-2">
+                      <div className="flex items-center justify-between"><label className={label}>Description — Markdown works: **bold**, - bullets, ## headings</label><button type="button" onClick={() => setPreviewText(previewText === null ? (document.querySelector<HTMLTextAreaElement>(`#desc-${p.id}`)?.value ?? '') : null)} className="text-xs text-cyan-300 hover:underline mb-1">{previewText === null ? 'Preview' : 'Hide preview'}</button></div>
+                      <textarea id={`desc-${p.id}`} name="description" required minLength={80} maxLength={12000} rows={10} defaultValue={p.description ?? ''} className={`${input} font-mono text-[13px]`} onChange={(e) => { if (previewText !== null) setPreviewText(e.target.value); }} />
+                      {previewText !== null && <div className="mt-3 rounded-lg border border-cyan-500/30 bg-black/40 p-4"><div className="text-[11px] uppercase tracking-wide text-cyan-300 mb-2">Preview</div><JobDescription markdown={previewText} compact /></div>}
+                    </div>
                     <fieldset className="md:col-span-2">
                       <legend className={label}>How candidates apply</legend>
                       <div className="flex flex-wrap gap-4 text-sm text-slate-300">
