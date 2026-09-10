@@ -28,7 +28,7 @@ const TITLE = 'The U.S. Space Academy Explained: What the Executive Order Does, 
 const DESCRIPTION =
   'President Trump signed an order on August 28, 2026 creating a commission to design a NASA-led U.S. Space Academy. What the order actually does, the 120-day report due in late December, the three ways it could be built, and the Texas, Florida, Alabama and Colorado bids for the campus.';
 /** Bumped by hand when the prose changes. */
-const LAST_EDITED = '2026-09-09T00:00:00Z';
+const LAST_EDITED = '2026-09-09T12:00:00Z';
 /** The order's 120-day clock. */
 const ORDER_SIGNED = '2026-08-28';
 const REPORT_DUE = '2026-12-26';
@@ -137,6 +137,17 @@ const BIDS: Bid[] = [
     drag: 'Being next to the Air Force Academy is the argument against as much as for: a NASA-led civilian academy co-located with a military one invites the duplication critique.',
     status: 'Floated',
   },
+];
+
+/** Kept current by hand as bids move; the date is shown on the page. */
+const BIDS_CHECKED = 'September 9, 2026';
+const BID_TRACKER: Array<{ who: string; status: string; tone: 'up' | 'watch' | 'flat' }> = [
+  { who: 'Florida — Space Coast', status: 'Sen. Moody announced the CAPE Canaveral Act on Sept 8 with Sen. Scott and ten House members from both parties; to be filed when the Senate reconvenes. No bill number yet.', tone: 'up' },
+  { who: 'Florida — Orlando / UCF', status: 'Orange County bid announced; competes with the Space Coast bid for the same delegation.', tone: 'watch' },
+  { who: 'Texas — Houston / JSC', status: 'Sen. Cruz and Texas lawmakers lobbying; no bill filed.', tone: 'watch' },
+  { who: 'Alabama — Huntsville', status: 'Floated on the back of the Space Command move; no formal bid published.', tone: 'flat' },
+  { who: 'Colorado — Colorado Springs', status: 'Floated by analysts only; the delegation has not made a public case.', tone: 'flat' },
+  { who: 'White House', status: 'Location not chosen; commission report due within 120 days of Aug 28.', tone: 'watch' },
 ];
 
 const CRITERIA = [
@@ -361,6 +372,21 @@ export default async function SpaceForceAcademyGuide() {
                       </dl>
                     </div>
                   ))}
+                </div>
+                <div className="mt-6 rounded-xl border border-cyan-500/20 bg-cyan-500/[0.04] p-5">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+                    <h3 className="text-white font-semibold">Bid tracker</h3>
+                    <span className="text-xs text-slate-500">Last checked {BIDS_CHECKED}</span>
+                  </div>
+                  <ul className="space-y-2 text-sm text-slate-300">
+                    {BID_TRACKER.map((b) => (
+                      <li key={b.who} className="flex gap-3">
+                        <span className={`shrink-0 mt-1.5 w-2 h-2 rounded-full ${b.tone === 'up' ? 'bg-emerald-400' : b.tone === 'watch' ? 'bg-amber-400' : 'bg-slate-500'}`} aria-hidden="true" />
+                        <span><span className="text-white font-medium">{b.who}:</span> {b.status}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-xs text-slate-500 mt-3">Next dated moments: the commission report (~Dec 26, 2026); Interior&apos;s Federal-land list under the launch policy memo (Nov 18); any site announcement, which the president has said will come &ldquo;very shortly.&rdquo; This box is updated as they land.</p>
                 </div>
                 <p className="text-slate-400 text-sm mt-4">
                   Not (yet) bidding, as far as public reporting shows: California (Vandenberg, JPL, Ames), Ohio (Wright-Patterson), New Mexico (White Sands, Spaceport America) and Virginia (Wallops, NASA headquarters). Any of them could file once the commission&apos;s criteria are public.

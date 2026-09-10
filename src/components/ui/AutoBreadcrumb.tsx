@@ -17,7 +17,10 @@ const HIDDEN_ROUTES = new Set([
 // Widget / embed pages (no chrome)
 // Pages that render their own breadcrumb nav (rockets, launches, charts, the
 // guide families) — the layout crumb doubled them (audit 2026-08-30).
-const HIDDEN_PREFIXES = ['/widgets/', '/rockets', '/launches', '/chart', '/guide/watch-a-launch', '/guide/cost-to-launch', '/guide/blue-origin-vs-spacex', '/guide/space-economy-games', '/space-tycoon/about', '/space-tycoon/dev-log', '/history', '/satellites'];
+const HIDDEN_PREFIXES = [
+  // The command deck has its own chrome; a breadcrumb row above the game's
+  // status bar was one more band between the player and the map (2026-09-09).
+  '/space-tycoon','/widgets/', '/rockets', '/launches', '/chart', '/guide/watch-a-launch', '/guide/cost-to-launch', '/guide/blue-origin-vs-spacex', '/guide/space-economy-games', '/space-tycoon/about', '/space-tycoon/dev-log', '/history', '/satellites'];
 
 /**
  * AutoBreadcrumb — auto-generates visible breadcrumb trail + Schema.org JSON-LD

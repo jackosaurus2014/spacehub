@@ -3,6 +3,7 @@
 import { useSubscription } from '@/components/SubscriptionProvider';
 import Link from 'next/link';
 import { useState, useEffect, useMemo } from 'react';
+import { usePathname } from 'next/navigation';
 
 type UrgencyLevel = 'info' | 'warning' | 'urgent' | 'critical';
 
@@ -46,6 +47,7 @@ const DISMISSAL_KEY = 'spacenexus_trial_banner_dismissed_level';
 
 export default function TrialCountdownBanner() {
   const { isTrialing, trialEndsAt, tier } = useSubscription();
+  const pathname = usePathname();
   const [dismissed, setDismissed] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -88,6 +90,7 @@ export default function TrialCountdownBanner() {
 
   // Don't render on server or if not trialing
   if (!mounted) return null;
+  if (pathname && (pathname === '/space-tycoon' || pathname.startsWith('/space-tycoon/'))) return null;
   if (!isTrialing || !trialEndsAt) return null;
   if (dismissed) return null;
 

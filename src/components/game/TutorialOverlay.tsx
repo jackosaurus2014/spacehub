@@ -62,6 +62,21 @@ export default function TutorialOverlay({ state, currentTab, onAdvance, onSkip, 
     prevStepRef.current = stepNumber;
   }, [stepNumber]);
 
+  // Get out of the way while the player explores: when they move to a tab
+  // the current step does not target, fold the card down to the pill. A new
+  // step re-expands it (above), and the pill re-expands on click.
+  const targetTab = stepDef?.targetTab;
+  const prevTabRef = useRef(currentTab);
+  // On a phone the expanded card covers most of the deck (388px of 844);
+  // start from the pill and let the player pull it down.
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) setCollapsed(true);
+  }, []);
+  useEffect(() => {
+    if (prevTabRef.current !== currentTab && targetTab && currentTab !== targetTab) setCollapsed(true);
+    prevTabRef.current = currentTab;
+  }, [currentTab, targetTab]);
+
   if (!isOnboardingActive(state) || !stepDef) return null;
 
   const totalSteps = ONBOARDING_STEPS.length;

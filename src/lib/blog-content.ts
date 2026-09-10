@@ -114,6 +114,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-08-15T12:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 18,
     featured: true,
     keywords: ['top space companies', 'space companies to watch', 'best space companies 2026', 'space companies second half 2026', 'space industry companies', 'space startups', 'commercial space companies', 'spacex ipo', 'space company list'],
@@ -273,7 +274,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="ground-segment">Ground Segment &amp; Communications</h2>
 
-<h3>36. Amazon / Project Kuiper</h3>
+<h3>36. Amazon / Project Kuiper (now Amazon Leo)</h3>
 <p>Amazon\'s <strong>$10+ billion</strong> constellation program is deep into deployment, making Kuiper the only credible scale competitor to Starlink. What to watch in H2: service expansion, enterprise-AWS bundling, and launch-partner cadence. <a href="/company-profiles/amazon-kuiper">Profile</a>.</p>
 
 <h3>37. Kratos Defense (KTOS)</h3>
@@ -470,6 +471,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-02-14T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 8,
     featured: true,
     keywords: ['space industry intelligence', 'bloomberg terminal for space', 'space economy data', 'space industry platform'],
@@ -513,7 +515,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Three trends are converging to make a unified space intelligence platform both necessary and possible:</p>
 
 <h3>1. The Commercial Space Explosion</h3>
-<p>In 2025, there were over 320 orbital launches — more than double the pace of just five years ago. SpaceX alone launched 165+ Falcon 9 missions. The number of active satellites passed 10,000. With Starship entering service, Amazon\'s Project Kuiper deploying, and new players like Relativity and Rocket Lab scaling up, the volume of data is growing exponentially.</p>
+<p>In 2025, there were over 320 orbital launches — more than double the pace of just five years ago. SpaceX alone launched 165+ Falcon 9 missions. The number of active satellites passed 10,000. With Starship entering service, Amazon\'s Project Kuiper (now Amazon Leo) deploying, and new players like Relativity and Rocket Lab scaling up, the volume of data is growing exponentially.</p>
 
 <h3>2. Government-Commercial Convergence</h3>
 <p>The U.S. Space Force, NASA\'s Commercial Crew and Cargo programs, and the Artemis Accords are blurring the line between government and commercial space. Professionals need to track both simultaneously — SBIR contracts, commercial partnerships, and regulatory decisions all affect the same companies.</p>
@@ -2101,7 +2103,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
     publishedAt: '2026-03-14T00:00:00Z',
-    updatedAt: '2026-08-15T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 12,
     featured: true,
     keywords: ['SpaceX IPO', 'SpaceX valuation', 'space investing', 'space stocks', 'ARKX', 'UFO ETF', 'Starlink IPO', 'space industry stocks', 'space economy investing'],
@@ -2172,7 +2174,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Starlink faces regulatory challenges in multiple markets. India, Brazil, and the EU have imposed or proposed restrictions on foreign satellite broadband providers. The FAA\'s launch licensing process, while favorable to SpaceX historically, faces political headwinds. And the defense/intelligence relationship creates export control complexity that limits Starlink\'s addressable market in certain regions.</p>
 
 <h3>Competition Is Coming</h3>
-<p>Amazon\'s <strong>Project Kuiper</strong> is deploying its constellation with significant capital backing and integration advantages (AWS, Prime). China\'s <strong>GW/SatNet mega-constellation</strong> (13,000+ satellites) is progressing rapidly. OneWeb (now Eutelsat OneWeb) is expanding. Telesat Lightspeed is targeting enterprise customers. SpaceX\'s dominance is real but not guaranteed to persist at current levels.</p>
+<p>Amazon\'s <strong>Project Kuiper (now Amazon Leo)</strong> is deploying its constellation with significant capital backing and integration advantages (AWS, Prime). China\'s <strong>GW/SatNet mega-constellation</strong> (13,000+ satellites) is progressing rapidly. OneWeb (now Eutelsat OneWeb) is expanding. Telesat Lightspeed is targeting enterprise customers. SpaceX\'s dominance is real but not guaranteed to persist at current levels.</p>
 
 <h3>IPO Valuation Premium</h3>
 <p>History shows that mega-IPOs often price at a premium that takes years to grow into. Facebook traded below its $38 IPO price for over a year. Saudi Aramco\'s stock languished below its IPO price for extended periods. Investors buying SpaceX at $1.75T need conviction that the company will continue growing into what is already a very optimistic valuation.</p>
@@ -3388,6 +3390,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-14T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 12,
     keywords: ['SATELLITE 2026', 'satellite conference', 'space conference 2026', 'direct-to-device', 'space-based data centers', 'defense space', 'GovMilSpace', 'Startup Space', 'satellite industry', 'space events'],
     content: `
@@ -3459,7 +3462,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>SpaceX's Starlink has proven that LEO broadband constellations can reach massive scale and generate billions in revenue. But the next wave of constellation economics is raising new questions:</p>
 
 <ul>
-<li><strong>Amazon's Project Kuiper:</strong> Amazon is ramping production and launch of its 3,236-satellite constellation, representing the first well-funded challenger to Starlink's LEO broadband dominance. SATELLITE 2026 is where Kuiper's commercial strategy will become clearer</li>
+<li><strong>Amazon's Project Kuiper (now Amazon Leo):</strong> Amazon is ramping production and launch of its 3,236-satellite constellation, representing the first well-funded challenger to Starlink's LEO broadband dominance. SATELLITE 2026 is where Kuiper's commercial strategy will become clearer</li>
 <li><strong>European constellations:</strong> The EU's IRIS² secure connectivity constellation (targeting 2030 deployment) represents Europe's strategic response to American and Chinese LEO dominance</li>
 <li><strong>Chinese mega-constellations:</strong> The Qianfan (G60) and Guowang programs have collectively filed for 26,000+ satellites. Early deployment has begun, raising questions about orbital congestion, spectrum coordination, and geopolitical competition</li>
 <li><strong>Spectrum and orbital sustainability:</strong> As constellation sizes grow, the ITU's spectrum coordination processes and orbital debris mitigation requirements are becoming critical business constraints. Multiple SATELLITE panels will address these regulatory challenges</li>
@@ -3965,6 +3968,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Mission Intelligence',
     publishedAt: '2026-03-17T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 14,
     featured: true,
     keywords: ['space launch schedule 2026', 'rocket launch schedule', 'upcoming space launches', 'Artemis II launch date', 'Starship launch schedule', 'New Glenn launch', 'Vulcan launch schedule', 'SpaceX launch schedule 2026', 'how to watch rocket launches', 'space mission calendar 2026'],
@@ -3980,7 +3984,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <ul>
 <li><strong>Vehicle diversity</strong> — More orbital-class rockets are operational simultaneously than at any point in history. SpaceX\'s Falcon 9 and Falcon Heavy, Starship, Blue Origin\'s New Glenn, ULA\'s Vulcan Centaur, Rocket Lab\'s Electron and Neutron, Arianespace\'s Ariane 6, and multiple Chinese vehicles are all flying or entering service.</li>
 <li><strong>Reusability goes mainstream</strong> — SpaceX has proven reusability works. Now Rocket Lab (Neutron), Blue Origin (New Glenn), and others are bringing reusable architectures to market, permanently shifting launch economics.</li>
-<li><strong>Mega-constellation deployment</strong> — Amazon\'s Project Kuiper begins full-scale deployment, joining SpaceX Starlink, OneWeb, and China\'s Guowang in a race to connect the planet from orbit.</li>
+<li><strong>Mega-constellation deployment</strong> — Amazon\'s Project Kuiper (now Amazon Leo) begins full-scale deployment, joining SpaceX Starlink, OneWeb, and China\'s Guowang in a race to connect the planet from orbit.</li>
 <li><strong>Lunar missions</strong> — Artemis II, commercial lunar landers from Intuitive Machines and Firefly, and international Moon missions mark a new era of cislunar activity.</li>
 <li><strong>National security launches</strong> — The U.S. Space Force\'s National Security Space Launch (NSSL) program is awarding record numbers of missions across multiple certified providers.</li>
 </ul>
@@ -5280,6 +5284,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-17T14:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 9,
     keywords: ['Starlink', 'SpaceX', 'mega-constellation', 'satellite internet', 'broadband', 'Kuiper', 'OneWeb', 'Telesat', 'direct-to-cell', 'Starlink V3', 'LEO broadband', 'satellite constellation'],
     content: `
@@ -5328,7 +5333,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h3>Amazon Kuiper</h3>
 
-<p>Amazon\'s Project Kuiper is the most serious competitive threat. Amazon has committed over <strong>$10 billion</strong> to the program and has FCC authorization for 3,236 satellites. The first two prototype satellites, KuiperSat-1 and KuiperSat-2, launched in late 2023, and Amazon began commercial production launches in 2025 using ULA\'s Atlas V and Vulcan Centaur, as well as Arianespace\'s Ariane 6 and Blue Origin\'s New Glenn.</p>
+<p>Amazon\'s Project Kuiper (now Amazon Leo) is the most serious competitive threat. Amazon has committed over <strong>$10 billion</strong> to the program and has FCC authorization for 3,236 satellites. The first two prototype satellites, KuiperSat-1 and KuiperSat-2, launched in late 2023, and Amazon began commercial production launches in 2025 using ULA\'s Atlas V and Vulcan Centaur, as well as Arianespace\'s Ariane 6 and Blue Origin\'s New Glenn.</p>
 
 <p>Kuiper\'s competitive advantage is integration with Amazon Web Services. Amazon is positioning Kuiper as the connectivity backbone for AWS edge computing, IoT deployments, and enterprise networking. The pitch to business customers is not "satellite internet" but "seamless AWS connectivity everywhere on Earth." As of March 2026, Amazon has roughly 600 Kuiper satellites in orbit and is ramping production at its Kent, Washington facility.</p>
 
@@ -5652,7 +5657,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-17T18:00:00Z',
-    updatedAt: '2026-08-15T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 12,
     featured: true,
     keywords: ['space economy 2026', 'space industry market size', 'space economy overview', 'satellite communications market', 'launch industry', 'Earth observation market', 'space investment', 'space industry trends', 'commercial space', 'space defense spending'],
@@ -5666,7 +5671,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The $630 billion space economy is not a single market — it is a collection of interconnected sectors with very different growth rates, competitive dynamics, and maturity levels. The major segments break down as follows:</p>
 
 <ul>
-<li><strong>Satellite communications: ~$180 billion.</strong> This is the largest single segment, encompassing direct-to-home television, fixed satellite services, mobile satellite services, and the rapidly growing broadband-from-space category. Starlink alone is projected to generate $7-8 billion in 2026 revenue, and Amazon\'s Project Kuiper is beginning commercial service.</li>
+<li><strong>Satellite communications: ~$180 billion.</strong> This is the largest single segment, encompassing direct-to-home television, fixed satellite services, mobile satellite services, and the rapidly growing broadband-from-space category. Starlink alone is projected to generate $7-8 billion in 2026 revenue, and Amazon\'s Project Kuiper (now Amazon Leo) is beginning commercial service.</li>
 <li><strong>Positioning, navigation, and timing (PNT): $200 billion+.</strong> GPS, Galileo, GLONASS, and BeiDou underpin an enormous downstream economy spanning logistics, agriculture, financial services, telecommunications, and consumer devices. The PNT segment is often undercounted because its value is distributed across industries that depend on precise timing and location data.</li>
 <li><strong>Launch services: ~$12 billion.</strong> The global launch market includes commercial, government, and military payloads. SpaceX dominates commercial launch with approximately 70% market share by mass to orbit. Arianespace, Rocket Lab, ULA, ISRO, and emerging Chinese commercial providers compete for the remainder. Reusability has compressed per-kilogram costs by 90% over the past decade, enabling new categories of space activity.</li>
 <li><strong>Earth observation (EO): ~$6 billion.</strong> The EO market spans optical, radar (SAR), and hyperspectral imagery for government intelligence, agriculture, insurance, energy, environmental monitoring, and climate analytics. Planet Labs, Vantor (formerly Maxar), Airbus Defence and Space, and BlackSky are major players, with AI-driven analytics platforms increasingly bundled with imagery data.</li>
@@ -6275,6 +6280,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Analysis',
     publishedAt: '2026-03-17T14:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 10,
     featured: true,
     keywords: [
@@ -6321,7 +6327,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Maiden flight target:</strong> 2026-2027</li>
 </ul>
 
-<p>Neutron is designed to compete directly with Falcon 9 for <strong>mega-constellation deployment</strong> — the single largest addressable market in commercial launch. Amazon\'s Project Kuiper alone needs 3,236 satellites launched by 2029. Telesat Lightspeed, OneWeb Phase 2, and various government constellation programs represent thousands more. This market is currently served almost exclusively by SpaceX. Neutron\'s entry would give constellation operators a second reliable option — and competitive pricing pressure benefits the entire market.</p>
+<p>Neutron is designed to compete directly with Falcon 9 for <strong>mega-constellation deployment</strong> — the single largest addressable market in commercial launch. Amazon\'s Project Kuiper (now Amazon Leo) alone needs 3,236 satellites launched by 2029. Telesat Lightspeed, OneWeb Phase 2, and various government constellation programs represent thousands more. This market is currently served almost exclusively by SpaceX. Neutron\'s entry would give constellation operators a second reliable option — and competitive pricing pressure benefits the entire market.</p>
 
 <h2 id="space-systems-division">Space Systems: The Hidden Growth Engine</h2>
 
@@ -6552,6 +6558,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Constellation Intelligence',
     publishedAt: '2026-03-17T18:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 12,
     featured: false,
     keywords: [
@@ -6567,7 +6574,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
       'space internet providers',
     ],
     content: `
-<p>The race to deliver broadband internet from low Earth orbit is the defining infrastructure competition of the 2020s. Three mega-constellations \u2014 <strong>SpaceX Starlink</strong>, <strong>Eutelsat OneWeb</strong>, and <strong>Amazon Project Kuiper</strong> \u2014 are deploying thousands of satellites to connect the unconnected and challenge terrestrial telecom incumbents. Each takes a fundamentally different approach to technology, business model, and market strategy.</p>
+<p>The race to deliver broadband internet from low Earth orbit is the defining infrastructure competition of the 2020s. Three mega-constellations \u2014 <strong>SpaceX Starlink</strong>, <strong>Eutelsat OneWeb</strong>, and <strong>Amazon Project Kuiper (now Amazon Leo)</strong> \u2014 are deploying thousands of satellites to connect the unconnected and challenge terrestrial telecom incumbents. Each takes a fundamentally different approach to technology, business model, and market strategy.</p>
 
 <p>This analysis compares all three across the dimensions that matter: constellation architecture, coverage, performance, pricing, partnerships, government contracts, and competitive positioning. The data is current as of March 2026.</p>
 
@@ -6984,6 +6991,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Launch Intelligence',
     publishedAt: '2026-03-17T22:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 8,
     featured: false,
     keywords: [
@@ -7001,7 +7009,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     content: `
 <p>After more than a decade of development, Blue Origin\'s <strong>New Glenn</strong> has entered the orbital launch market as one of the most anticipated heavy-lift vehicles in modern spaceflight. Named after astronaut John Glenn, the first American to orbit Earth, New Glenn represents Blue Origin\'s transition from suborbital tourism (New Shepard) to a serious orbital launch competitor capable of serving commercial, civil, and national security missions.</p>
 
-<p>New Glenn\'s debut has been closely watched not just for its technical ambitions but for its strategic implications. Blue Origin holds a <strong>multi-billion-dollar contract with Amazon</strong> to launch Project Kuiper broadband satellites, making New Glenn critical infrastructure for one of the most ambitious constellation deployments since Starlink. Whether New Glenn can deliver on its promises will shape the competitive landscape of heavy-lift launch for years to come.</p>
+<p>New Glenn\'s debut has been closely watched not just for its technical ambitions but for its strategic implications. Blue Origin holds a <strong>multi-billion-dollar contract with Amazon</strong> to launch Project Kuiper (now Amazon Leo) broadband satellites, making New Glenn critical infrastructure for one of the most ambitious constellation deployments since Starlink. Whether New Glenn can deliver on its promises will shape the competitive landscape of heavy-lift launch for years to come.</p>
 
 <h2 id="vehicle-specifications">Vehicle Specifications</h2>
 
@@ -7488,7 +7496,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-17T00:00:00Z',
-    updatedAt: '2026-08-15T12:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 15,
     keywords: ['top space companies', 'space companies to watch', 'best space companies 2026', 'space industry companies', 'space startups', 'commercial space companies', 'space company list'],
     content: `
@@ -7501,7 +7509,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Access to space is the foundation of the entire industry. These companies build and operate the rockets that get everything else into orbit.</p>
 
 <h3>1. SpaceX</h3>
-<p>The dominant force in commercial launch. SpaceX conducted <strong>130+ Falcon 9 missions in 2025</strong>, operates the world\'s largest satellite constellation (Starlink, 7,000+ satellites), and is developing Starship — the largest and most powerful rocket ever built. SpaceX\'s vertical integration, reusability leadership, and sheer launch cadence make it the single most important company in the space industry. The anticipated <strong>Starlink IPO</strong> could be the largest space-related public offering in history.</p>
+<p>The dominant force in commercial launch. SpaceX conducted <strong>165 Falcon 9 missions in 2025</strong>, operates the world\'s largest satellite constellation (Starlink, 7,000+ satellites), and is developing Starship — the largest and most powerful rocket ever built. SpaceX\'s vertical integration, reusability leadership, and sheer launch cadence make it the single most important company in the space industry. The anticipated <strong>Starlink IPO</strong> could be the largest space-related public offering in history.</p>
 
 <h3>2. Rocket Lab</h3>
 <p>The <strong>second most frequently launched U.S. orbital rocket</strong> (Electron) and a rapidly growing space systems business. Rocket Lab is developing the <strong>Neutron medium-lift rocket</strong> to compete directly with Falcon 9 for constellation deployment and national security missions. CEO Peter Beck has built an end-to-end space company — launch, spacecraft buses, components, and mission operations. Publicly traded as <strong>RKLB</strong>, it\'s the top-performing space SPAC graduate.</p>
@@ -7629,7 +7637,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>The terrestrial infrastructure that connects space assets to their users.</p>
 
-<h3>36. Amazon / Project Kuiper</h3>
+<h3>36. Amazon / Project Kuiper (now Amazon Leo)</h3>
 <p>Amazon\'s <strong>$10+ billion investment</strong> in a 3,236-satellite LEO broadband constellation. Kuiper\'s first prototype satellites launched in 2023, and the operational constellation is now deploying. With Amazon\'s cloud infrastructure (AWS), logistics, and capital, Kuiper is the only credible competitor to Starlink at scale.</p>
 
 <h3>37. Kratos Defense (KTOS)</h3>
@@ -8638,6 +8646,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-17T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 9,
     keywords: ['space supply chain', 'satellite manufacturing', 'rocket components', 'space industry suppliers', 'aerospace supply chain', 'spacecraft materials', 'space manufacturing bottleneck'],
     content: `
@@ -8699,7 +8708,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Continuous iteration:</strong> Unlike traditional programs that freeze designs, SpaceX continuously updates the Starlink satellite design between production batches</li>
 </ul>
 
-<p>Amazon's Project Kuiper is building similar mass-production capabilities at its facility in Kirkland, Washington, targeting <strong>5 satellites per day</strong> for its 3,236-satellite constellation.</p>
+<p>Amazon's Project Kuiper (now Amazon Leo) is building similar mass-production capabilities at its facility in Kirkland, Washington, targeting <strong>5 satellites per day</strong> for its 3,236-satellite constellation.</p>
 
 <h2 id="testing">Stage 4: Environmental Testing</h2>
 
@@ -10792,6 +10801,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Space Operations',
     publishedAt: '2026-03-18T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 10,
     keywords: ['Kessler syndrome', 'space debris', 'orbital debris', 'space junk', 'Kessler effect', 'space sustainability', 'debris collision', 'space environment'],
     content: `
@@ -10856,7 +10866,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="mega-constellations">The Mega-Constellation Challenge</h2>
 
-<p>The deployment of mega-constellations — primarily SpaceX\'s <strong>Starlink</strong> (targeting 12,000+ satellites), Amazon\'s <strong>Project Kuiper</strong> (3,236 planned), and others — introduces a new dimension to the debris problem:</p>
+<p>The deployment of mega-constellations — primarily SpaceX\'s <strong>Starlink</strong> (targeting 12,000+ satellites), Amazon\'s <strong>Project Kuiper (now Amazon Leo)</strong> (3,236 planned), and others — introduces a new dimension to the debris problem:</p>
 
 <ul>
 <li><strong>Volume:</strong> Starlink alone has deployed over 6,000 satellites, more than doubling the total active satellite population. The sheer number increases collision probability even if each satellite is well-managed.</li>
@@ -10908,11 +10918,12 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   {
     slug: 'satellite-internet-explained-broadband-space',
     title: 'Satellite Internet Explained: How Broadband from Space Works',
-    excerpt: 'From Starlink to Project Kuiper, satellite internet is transforming global connectivity. Learn how broadband from space works, its advantages and limitations, and where the technology is heading.',
+    excerpt: 'From Starlink to Project Kuiper (now Amazon Leo), satellite internet is transforming global connectivity. Learn how broadband from space works, its advantages and limitations, and where the technology is heading.',
     category: 'technology',
     author: 'SpaceNexus Team',
     authorRole: 'Technology',
     publishedAt: '2026-03-18T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 10,
     keywords: ['satellite internet', 'broadband from space', 'Starlink internet', 'LEO internet', 'satellite broadband explained', 'Project Kuiper', 'OneWeb internet'],
     content: `
@@ -12197,6 +12208,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-18T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 5,
     keywords: ['starlink maritime', 'satellite internet ships', 'maritime connectivity', 'starlink ocean', 'ship satellite internet', 'VSAT replacement', 'maritime broadband'],
     content: `
@@ -12246,7 +12258,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>Starlink Maritime\'s success has forced legacy maritime VSAT providers to respond. <strong>Inmarsat</strong> (now part of Viasat) launched its Orchestra network combining GEO, LEO, and terrestrial 5G. <strong>OneWeb</strong> (Eutelsat) is targeting maritime with its Ku-band LEO constellation. <strong>SES</strong> offers O3b mPOWER in medium Earth orbit for maritime customers requiring guaranteed SLAs.</p>
 
-<p>Amazon\'s <strong>Project Kuiper</strong> has announced maritime terminals for its constellation, expected to begin service in 2026-2027. The competition is driving prices down and performance up across the entire maritime connectivity market.</p>
+<p>Amazon\'s <strong>Project Kuiper (now Amazon Leo)</strong> has announced maritime terminals for its constellation, expected to begin service in 2026-2027. The competition is driving prices down and performance up across the entire maritime connectivity market.</p>
 
 <h2 id="challenges">Challenges and Limitations</h2>
 
@@ -12987,6 +12999,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-18T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 7,
     keywords: ['space economy 2030', 'trillion dollar space industry', 'space market forecast', 'space industry growth', 'satellite economy', 'space investment', 'commercial space market'],
     content: `
@@ -13009,7 +13022,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <h2 id="growth-drivers">The Five Growth Drivers to $1 Trillion</h2>
 
 <h3>1. Satellite Broadband: The Biggest Driver</h3>
-<p>Satellite internet is the single largest growth driver in the space economy. <strong>Starlink</strong> alone is projected to generate $15-20 billion in annual revenue by 2030, up from approximately $6.6 billion in 2025. Add <strong>Amazon\'s Project Kuiper</strong> (targeting 2026-2027 service launch with $10+ billion invested), <strong>OneWeb/Eutelsat</strong>, <strong>Telesat Lightspeed</strong>, and regional LEO constellations, and satellite broadband could be a <strong>$40-60 billion annual market</strong> by 2030.</p>
+<p>Satellite internet is the single largest growth driver in the space economy. <strong>Starlink</strong> alone is projected to generate $15-20 billion in annual revenue by 2030, up from approximately $6.6 billion in 2025. Add <strong>Amazon\'s Project Kuiper (now Amazon Leo)</strong> (targeting 2026-2027 service launch with $10+ billion invested), <strong>OneWeb/Eutelsat</strong>, <strong>Telesat Lightspeed</strong>, and regional LEO constellations, and satellite broadband could be a <strong>$40-60 billion annual market</strong> by 2030.</p>
 
 <p>The addressable market is enormous: approximately 3 billion people globally lack reliable internet access. Satellite broadband serves not just rural homes but maritime vessels, airlines, enterprises, government agencies, and connected vehicles. Each new use case expands the total addressable market.</p>
 
@@ -13737,6 +13750,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-18T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 8,
     keywords: ['satellite constellations explained', 'GPS constellation', 'Starlink constellation', 'OneWeb', 'Kuiper constellation', 'mega-constellations', 'LEO satellites', 'satellite orbits explained'],
     content: `
@@ -13777,7 +13791,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <h3>OneWeb (Eutelsat OneWeb)</h3>
 <p>Following a bankruptcy and rescue by the UK government and Bharti Global in 2020, OneWeb completed its first-generation constellation of <strong>648 satellites</strong> at 1,200 km altitude. OneWeb targets enterprise and government customers rather than consumers, with a focus on backhaul connectivity, maritime, aviation, and bridging the digital divide in underserved regions. The merger with Eutelsat created a combined GEO/LEO operator with a comprehensive product portfolio.</p>
 
-<h3>Project Kuiper (Amazon)</h3>
+<h3>Project Kuiper (now Amazon Leo) (Amazon)</h3>
 <p>Amazon's constellation plans call for <strong>3,236 satellites</strong> in LEO at 590-630 km. After launching prototype satellites in late 2023, Amazon has been ramping production at its Kirkland, WA facility with a goal of deploying half the constellation by mid-2026. Kuiper will compete directly with Starlink for consumer and enterprise broadband, leveraging Amazon's existing cloud infrastructure (AWS) and consumer hardware expertise.</p>
 
 <h2 id="earth-observation-constellations">Earth Observation Constellations</h2>
@@ -14968,6 +14982,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-18T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 7,
     keywords: ['spectrum management', 'radio frequency allocation', 'ITU', 'satellite spectrum', 'frequency coordination', 'Ka-band', 'Ku-band', 'V-band', 'spectrum policy', 'FCC spectrum'],
     content: `
@@ -15003,7 +15018,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>The ITU's coordination system has a critical feature: <strong>priority is based on filing date</strong>. The first operator to file a satellite network at a given orbital position and frequency has coordination priority over later filers. This "first come, first served" principle has created a <strong>filing race</strong>, with countries and companies submitting hundreds of satellite network filings — many of which may never be built — to secure priority rights.</p>
 
-<p>The mega-constellation era has intensified this dynamic. SpaceX, Amazon (Project Kuiper), OneWeb, and others have filed for thousands of satellites across multiple frequency bands. Smaller operators and developing nations have raised concerns that large, well-funded operators are effectively <strong>monopolizing spectrum</strong> by filing massive constellation plans that absorb available coordination capacity, making it harder for new entrants to secure interference-free frequencies.</p>
+<p>The mega-constellation era has intensified this dynamic. SpaceX, Amazon (Project Kuiper (now Amazon Leo)), OneWeb, and others have filed for thousands of satellites across multiple frequency bands. Smaller operators and developing nations have raised concerns that large, well-funded operators are effectively <strong>monopolizing spectrum</strong> by filing massive constellation plans that absorb available coordination capacity, making it harder for new entrants to secure interference-free frequencies.</p>
 
 <p>The ITU has responded with rules requiring operators to demonstrate milestones — launching a minimum number of satellites within defined timeframes — or lose their filing priority. The <strong>WRC-23</strong> conference in late 2023 updated these milestone requirements for non-geostationary (NGSO) constellation filings, requiring operators to deploy 10% of their constellation within specific deadlines.</p>
 
@@ -17612,6 +17627,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-18T00:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 8,
     keywords: ['satellite frequency bands', 'L-band', 'S-band', 'C-band', 'X-band', 'Ku-band', 'Ka-band', 'spectrum allocation', 'satellite communications'],
     content: `
@@ -17647,7 +17663,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="emerging-bands">Emerging: Q-Band and V-Band (33-75 GHz)</h2>
 
-<p>As Ka-band congests, operators are eyeing Q-band (33-50 GHz) and V-band (40-75 GHz) for feeder links and next-generation constellations. Amazon\'s Project Kuiper has filed for V-band gateway links, and Telesat Lightspeed is exploring Q/V-band for its inter-satellite and gateway segments. These bands offer vast bandwidth but face extreme atmospheric attenuation, limiting their use to gateway-to-satellite feeder links where site diversity can mitigate weather outages.</p>
+<p>As Ka-band congests, operators are eyeing Q-band (33-50 GHz) and V-band (40-75 GHz) for feeder links and next-generation constellations. Amazon\'s Project Kuiper (now Amazon Leo) has filed for V-band gateway links, and Telesat Lightspeed is exploring Q/V-band for its inter-satellite and gateway segments. These bands offer vast bandwidth but face extreme atmospheric attenuation, limiting their use to gateway-to-satellite feeder links where site diversity can mitigate weather outages.</p>
 
 <h2 id="choosing-the-right-band">Choosing the Right Band</h2>
 
@@ -19014,6 +19030,7 @@ ISS (ZARYA)
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
     publishedAt: '2026-03-19T04:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 6,
     keywords: ['satellite internet 2026', 'starlink vs kuiper', 'satellite broadband comparison', 'oneweb coverage', 'leo internet'],
     content: `
@@ -19030,7 +19047,7 @@ ISS (ZARYA)
 <li><strong>Market position:</strong> First-mover advantage with massive installed base. 3M+ active subscribers. Direct-to-cell partnership with T-Mobile. Government contracts with DoD and allied militaries</li>
 </ul>
 
-<h2 id="kuiper">Project Kuiper (Amazon)</h2>
+<h2 id="kuiper">Project Kuiper (now Amazon Leo) (Amazon)</h2>
 
 <ul>
 <li><strong>Satellites in orbit:</strong> ~100 (early deployment phase)</li>
@@ -20337,6 +20354,7 @@ ISS (ZARYA)
     author: 'SpaceNexus Team',
     authorRole: 'Engineering',
     publishedAt: '2026-03-22T11:00:00Z',
+    updatedAt: '2026-09-09T00:00:00Z',
     readingTime: 10,
     keywords: ['SpaceNexus engineering', 'space data aggregation', 'building in public', 'space API', 'space industry data platform', 'next.js space platform'],
     content: `
@@ -20887,7 +20905,7 @@ ISS (ZARYA)
   readingTime: 8,
   keywords: ['LEO broadband', 'Starlink', 'Amazon Kuiper', 'OneWeb', 'Telesat Lightspeed', 'satellite internet constellation', 'LEO constellation comparison', 'satellite broadband market'],
   content: `
-<p>The deployment of large LEO broadband constellations represents the most significant structural change in the satellite communications industry since the launch of the first commercial GEO comsats. Four major constellations are now in various stages of deployment or operation: SpaceX Starlink, Amazon's Project Kuiper, Eutelsat OneWeb, and Telesat Lightspeed. Each takes a different approach to orbital architecture, business model, and target market — and each reflects different assumptions about where the real value lies in global broadband connectivity.</p>
+<p>The deployment of large LEO broadband constellations represents the most significant structural change in the satellite communications industry since the launch of the first commercial GEO comsats. Four major constellations are now in various stages of deployment or operation: SpaceX Starlink, Amazon's Project Kuiper (now Amazon Leo), Eutelsat OneWeb, and Telesat Lightspeed. Each takes a different approach to orbital architecture, business model, and target market — and each reflects different assumptions about where the real value lies in global broadband connectivity.</p>
 
 <h2>Starlink: The Incumbent</h2>
 

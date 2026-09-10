@@ -124,11 +124,12 @@ export default function CookieConsent() {
       <div className="bg-black border-t border-white/[0.08] shadow-[0_-4px_20px_rgba(0,0,0,0.4)]">
         <div className="max-w-6xl mx-auto px-4 py-2.5 sm:px-6">
           {/* Main banner content */}
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex flex-col gap-3 md:gap-4">
+            {/* Compact on phones (2026-09-09): the bar took 191 of 844px over the game deck. */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-4">
               {/* Text */}
               <div className="flex-1">
-                <p className="text-sm text-white/70 leading-relaxed">
+                <p className="text-xs sm:text-sm text-white/70 leading-snug sm:leading-relaxed">
                   We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.{' '}
                   <Link
                     href="/cookies"
@@ -140,7 +141,7 @@ export default function CookieConsent() {
               </div>
 
               {/* Buttons */}
-              <div className="flex flex-wrap items-center gap-3 shrink-0">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0">
                 <button
                   onClick={() => setShowSettings(!showSettings)}
                   className="px-4 py-2 rounded-lg text-sm font-medium

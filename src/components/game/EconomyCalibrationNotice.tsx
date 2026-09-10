@@ -22,7 +22,7 @@ import Link from 'next/link';
 /** When the clock unification + balance rescale went live (UTC). */
 export const CLOCK_UNIFICATION_AT: number = Date.UTC(2026, 8, 2, 0, 0, 0);
 /** How long the notice stays up. */
-export const CALIBRATION_NOTICE_DAYS = 14;
+export const CALIBRATION_NOTICE_DAYS = 7;
 
 export function isCalibrationNoticeActive(now: number): boolean {
   return now >= CLOCK_UNIFICATION_AT && now < CLOCK_UNIFICATION_AT + CALIBRATION_NOTICE_DAYS * 24 * 60 * 60 * 1000;

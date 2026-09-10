@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { SITE_STATS } from '@/lib/site-stats';
 
@@ -93,6 +94,7 @@ function loadDismissed(): boolean {
 }
 
 export default function QuickStartGuide() {
+  const pathname = usePathname();
   const [completed, setCompleted] = useState<string[]>([]);
   const [dismissed, setDismissed] = useState(true);
   const [visible, setVisible] = useState(false);
@@ -141,6 +143,9 @@ export default function QuickStartGuide() {
     setVisible(false);
   }, []);
 
+  // The command deck has its own first-hour guide; a second floating
+  // checklist on top of it was one of five overlays a new player saw at once.
+  if (pathname && (pathname === '/space-tycoon' || pathname.startsWith('/space-tycoon/'))) return null;
   if (!mounted || dismissed || completed.length >= STEPS.length) return null;
 
   const completedCount = completed.length;
