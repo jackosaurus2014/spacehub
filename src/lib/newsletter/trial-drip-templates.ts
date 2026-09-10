@@ -123,7 +123,7 @@ function generateTrialWelcomeEmail(params: TrialDripParams): { html: string; pla
       </span>
       <br>
       <span style="color:${styles.textMuted};font-size:12px;">
-        Unlimited articles, smart alerts, deal flow, executive moves &mdash; all unlocked.
+        Unlimited articles, the supply-chain map, the compliance suite, smart alerts &mdash; all unlocked.
       </span>
     </div>
 
@@ -353,7 +353,7 @@ function generateTrialWeekOneEmail(params: TrialDripParams): { html: string; pla
           <span style="color:${styles.accentAmber};margin-right:6px;">&times;</span> Smart alerts and price notifications
         </td></tr>
         <tr><td style="padding:3px 0;color:${styles.textLight};font-size:13px;">
-          <span style="color:${styles.accentAmber};margin-right:6px;">&times;</span> Deal flow and executive moves
+          <span style="color:${styles.accentAmber};margin-right:6px;">&times;</span> Customer-discovery database and API access
         </td></tr>
         <tr><td style="padding:3px 0;color:${styles.textLight};font-size:13px;">
           <span style="color:${styles.accentAmber};margin-right:6px;">&times;</span> Supply chain map and regulatory calendar
@@ -388,7 +388,7 @@ You're in the top 10% of active users!
 When your trial ends, you'll lose access to:
 - Unlimited article access
 - Smart alerts and price notifications
-- Deal flow and executive moves
+- Customer-discovery database and API access
 - Supply chain map and regulatory calendar
 - Ad-free experience
 

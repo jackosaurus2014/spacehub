@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { formatMoney, formatGameDate } from '@/lib/game/formulas';
@@ -41,6 +42,8 @@ interface ResourceBarProps {
    *  defaults to comfortable. */
   density?: GameDensity;
   onDensityChange?: (density: GameDensity) => void;
+  /** 'local' shows the sign-in chip (save lives only in this browser); 'account' shows nothing. */
+  saveScope?: 'local' | 'account';
 }
 
 /** Animated number that rolls toward a target value via RAF easing.
@@ -212,7 +215,7 @@ function ResourceFlowCell({ flow, omitted }: { flow: ResourceFlow; omitted: read
   );
 }
 
-export default function ResourceBar({ state, density = 'comfortable', onDensityChange }: ResourceBarProps) {
+export default function ResourceBar({ state, density = 'comfortable', onDensityChange, saveScope }: ResourceBarProps) {
   const [muted, setMuted] = useState(true);
   const [ambient, setAmbient] = useState(false);
   const [music, setMusic] = useState(false);
@@ -452,6 +455,15 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse motion-reduce:animate-none" aria-hidden="true" />
             <span className="text-[10px] text-cyan-400 font-medium tracking-widest">LIVE</span>
           </div>
+          {saveScope === 'local' && (
+            <Link
+              href="/login?callbackUrl=%2Fspace-tycoon"
+              className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-[10px] text-amber-300 hover:bg-amber-500/20 tracking-wide"
+              title="This save lives only in this browser. Sign in to keep it on your account and continue on any device."
+            >
+              Not saved to an account · Sign in
+            </Link>
+          )}
         </div>
 
         {/* Audio Controls */}

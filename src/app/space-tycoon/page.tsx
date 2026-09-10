@@ -5,6 +5,7 @@ import type { GameState, GameTab } from '@/lib/game/types';
 import { processFullTick } from '@/lib/game/game-engine';
 import { getNewGameState, saveGame, loadGame, deleteSave, migrateLoadedState } from '@/lib/game/save-load';
 import { useSession } from 'next-auth/react';
+import AccountKeepPrompt from '@/components/game/AccountKeepPrompt';
 import { TICK_INTERVALS, AUTO_SAVE_INTERVAL_MS } from '@/lib/game/constants';
 import { formatMoney, formatGameDate, formatDuration, formatCountdown, advanceDate, generateId, scaledBuildingCost, scaledResearchTime } from '@/lib/game/formulas';
 import { BUILDINGS, BUILDING_MAP, scaledBuildTime, checkBuildingCap } from '@/lib/game/buildings';
@@ -2610,7 +2611,8 @@ export default function SpaceTycoonPage() {
       {/* Wave V7 — tab-independent order-completion feedback (map pings, sound, haptics) */}
       <GlobalEffectsLayer state={state} />
       {/* Resource Bar */}
-      <ResourceBar state={state} density={density} onDensityChange={setDensityState} />
+      <ResourceBar state={state} density={density} onDensityChange={setDensityState} saveScope={sessionStatus === 'authenticated' ? 'account' : sessionStatus === 'unauthenticated' ? 'local' : undefined} />
+      <AccountKeepPrompt show={sessionStatus === 'unauthenticated' && isOnboardingComplete(state)} companyName={state.companyName || 'your corporation'} />
 
       {/* Scheduled world-restart notice — renders only while a restart is pending */}
       <WorldResetNotice />
