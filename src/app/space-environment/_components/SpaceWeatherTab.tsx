@@ -194,6 +194,27 @@ function getEventCategoryColor(categoryTitle: string): string {
 // SPACE WEATHER TAB CONTENT
 // ════════════════════════════════════════════════════════════════
 
+/** Shape the refresh cron stores for one EONET event (module-api-fetchers). */
+interface StoredEarthEvent { id: string; title: string; category: string; date: string; coordinates: number[] | null; magnitude: number | null; magnitudeUnit: string | null; sourceUrl: string | null; isClosed: boolean }
+function liveEarthEvents(rows: unknown): EarthEvent[] {
+  const row = Array.isArray(rows) ? (rows[0] as { events?: unknown } | undefined) : undefined;
+  const events = row && Array.isArray(row.events) ? (row.events as StoredEarthEvent[]) : [];
+  return events.filter((e) => e && e.id && e.title).map((e) => ({
+    id: e.id,
+    title: e.title,
+    description: e.magnitude != null ? `${e.magnitude}${e.magnitudeUnit ? ` ${e.magnitudeUnit}` : ''}` : '',
+    categories: [{ id: 0, title: e.category || 'Other' }],
+    sources: e.sourceUrl ? [{ id: 'EONET', url: e.sourceUrl }] : [],
+    geometry: [{ date: e.date, type: 'Point', coordinates: e.coordinates || [] }],
+    closed: e.isClosed ? e.date : null,
+  }));
+}
+function liveImageryTime(rows: unknown): string | null {
+  const row = Array.isArray(rows) ? (rows[0] as { latestImageDate?: string; solarImages?: Array<{ date?: string }> } | undefined) : undefined;
+  const t = row?.latestImageDate || row?.solarImages?.[0]?.date || null;
+  return t && !Number.isNaN(new Date(t).getTime()) ? t : null;
+}
+
 export default function SpaceWeatherTab() {
   const [data, setData] = useState<SolarFlareData | null>(null);
   /** Underlying data timestamp from the API's _meta (not the page-load time). */
@@ -241,12 +262,20 @@ export default function SpaceWeatherTab() {
         imageryRes.json(),
       ]);
 
-      const hasLiveEvents = eventsData.data?.length >= 3;
-      const hasLiveImagery = imageryData.data?.length >= 2;
-      setEarthEvents(hasLiveEvents ? eventsData.data : FALLBACK_EARTH_EVENTS);
-      setSolarImagery(hasLiveImagery ? imageryData.data : FALLBACK_SOLAR_IMAGERY);
+      // The content API returns one stored row per section: the EONET row
+      // wraps `events` in the fetcher's flattened shape and the Helioviewer
+      // row wraps `solarImages` (JPEG 2000, which browsers cannot render).
+      // Map the events into the EONET shape this tab renders; keep the SDO
+      // "latest" frames (live by construction) and caption them with the
+      // Helioviewer capture time when we have one. Before 2026-09-10 this
+      // compared row counts against 3 and 2, so the tab never left sample mode.
+      const liveEvents = liveEarthEvents(eventsData.data);
+      const hasLiveEvents = liveEvents.length >= 3;
+      const captureTime = liveImageryTime(imageryData.data);
+      setEarthEvents(hasLiveEvents ? liveEvents : FALLBACK_EARTH_EVENTS);
+      setSolarImagery(FALLBACK_SOLAR_IMAGERY.map((img) => ({ ...img, timestamp: captureTime || img.timestamp })));
       setEventsAreSample(!hasLiveEvents);
-      setImageryIsSample(!hasLiveImagery);
+      setImageryIsSample(!captureTime);
     } catch (error) {
       clientLogger.error('Failed to fetch dynamic content', { error: error instanceof Error ? error.message : String(error) });
       setEarthEvents(FALLBACK_EARTH_EVENTS);
@@ -797,7 +826,7 @@ export default function SpaceWeatherTab() {
                 <span className="ml-2 text-slate-400 text-sm font-normal">SDO / SOHO</span>
                 {imageryIsSample && (
                   <span className="ml-2 px-2 py-0.5 rounded border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs font-normal">
-                    Sample data &mdash; live feed unavailable
+                    Latest SDO frames &mdash; capture time unavailable
                   </span>
                 )}
               </h3>
