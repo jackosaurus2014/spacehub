@@ -151,33 +151,6 @@ export async function POST(request: Request) {
     // `economics` is what the rest of the route reads. For a brand-new
     // profile it is REPLACED by the server-derived first-sync kit below.
     let economics: ValidatedSyncEconomics = validated.data;
-
-    // Cloud save (2026-09-09): store the client's full state for cross-device
-    // restore. Bounded, best-effort, and independent of the economic sync —
-    // a missing column (schema not yet pushed) only logs.
-    const cloudSaveBody = (body as Record<string, unknown>).cloudSave;
-    if (cloudSaveBody && typeof cloudSaveBody === 'object' && !Array.isArray(cloudSaveBody)) {
-      const blob = cloudSaveBody as Record<string, unknown>;
-      const bytes = JSON.stringify(blob).length;
-      const version = typeof blob.version === 'number' ? blob.version : null;
-      if (bytes <= CLOUD_SAVE_MAX_BYTES && version !== null) {
-        const savedAtMs = Number((body as Record<string, unknown>).cloudSavedAt);
-        try {
-          await prisma.gameProfile.updateMany({
-            where: { userId: session.user.id },
-            data: {
-              cloudSave: blob as object,
-              cloudSaveVersion: version,
-              cloudSavedAt: new Date(Number.isFinite(savedAtMs) ? savedAtMs : Date.now()),
-            },
-          });
-        } catch (cloudErr) {
-          logger.warn('Cloud save not stored', { userId: session.user.id, bytes, error: cloudErr instanceof Error ? cloudErr.message : String(cloudErr) });
-        }
-      } else {
-        logger.warn('Cloud save rejected', { userId: session.user.id, bytes, version });
-      }
-    }
     const {
       companyName = 'Untitled Aerospace',
       minedThisTick = {},
@@ -1247,6 +1220,34 @@ export async function POST(request: Request) {
             serverResources: (serverResourcesToPersist ?? {}) as object,
           },
         });
+
+    // Cloud save (2026-09-09): store the client's full state for cross-device
+    // restore. Runs after the profile row exists (the first sync creates it),
+    // bounded, best-effort, independent of the economic sync — a missing
+    // column (schema not yet pushed) only logs.
+    const cloudSaveBody = (body as Record<string, unknown>).cloudSave;
+    if (cloudSaveBody && typeof cloudSaveBody === 'object' && !Array.isArray(cloudSaveBody)) {
+      const blob = cloudSaveBody as Record<string, unknown>;
+      const bytes = JSON.stringify(blob).length;
+      const version = typeof blob.version === 'number' ? blob.version : null;
+      if (bytes <= CLOUD_SAVE_MAX_BYTES && version !== null) {
+        const savedAtMs = Number((body as Record<string, unknown>).cloudSavedAt);
+        try {
+          await prisma.gameProfile.update({
+            where: { id: profile.id },
+            data: {
+              cloudSave: blob as object,
+              cloudSaveVersion: version,
+              cloudSavedAt: new Date(Number.isFinite(savedAtMs) ? savedAtMs : Date.now()),
+            },
+          });
+        } catch (cloudErr) {
+          logger.warn('Cloud save not stored', { userId: session.user.id, bytes, error: cloudErr instanceof Error ? cloudErr.message : String(cloudErr) });
+        }
+      } else {
+        logger.warn('Cloud save rejected', { userId: session.user.id, bytes, version });
+      }
+    }
 
     // Phase 3 slice 1 (C-1): the starter kit's buildings are this new
     // profile's first registry rows — baselined in the same request, so the

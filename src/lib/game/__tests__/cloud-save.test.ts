@@ -33,6 +33,7 @@ describe('cloud save', () => {
     const route = read('src/app/api/space-tycoon/sync/route.ts');
     expect(route).toMatch(/CLOUD_SAVE_MAX_BYTES = 2_000_000/);
     expect(route).toMatch(/cloudSave: blob as object/);
+    expect(route.indexOf('cloudSave: blob as object')).toBeGreaterThan(route.indexOf('const profile = existingProfile'));
     const schema = read('prisma/schema.prisma');
     expect(schema).toMatch(/cloudSave\s+Json\?/);
     expect(schema).toMatch(/cloudSavedAt\s+DateTime\?/);
