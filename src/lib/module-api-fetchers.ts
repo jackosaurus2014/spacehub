@@ -1,3 +1,4 @@
+import { fetchDonki } from '@/lib/donki';
 /**
  * External API fetchers for module data.
  * Each function fetches from a real API, transforms the data, and stores it in DynamicContent.
@@ -2272,7 +2273,6 @@ export async function fetchAndStoreDonkiEnhanced(): Promise<number> {
   const start = Date.now();
   let updated = 0;
 
-  const nasaApiKey = EXTERNAL_APIS.NASA_DONKI.apiKey;
   const endDate = formatDateForApi(new Date());
   const startDate30 = formatDateForApi(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
   const startDate7 = formatDateForApi(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
@@ -2285,14 +2285,12 @@ export async function fetchAndStoreDonkiEnhanced(): Promise<number> {
   // 1. Solar Energetic Particle events (SEP)
   try {
     const sepData = await donkiEnhancedBreaker.execute(async () => {
-      const url = `${EXTERNAL_APIS.NASA_DONKI.baseUrl}/SEP?startDate=${startDate30}&endDate=${endDate}&api_key=${nasaApiKey}`;
-      const res = await fetchWithRetry(url);
-      return res.json() as Promise<Array<{
+      return fetchDonki<Array<{
         sepID: string;
         eventTime: string;
         instruments: Array<{ displayName: string }>;
         linkedEvents: Array<{ activityID: string }> | null;
-      }>>;
+      }>>('SEP', { startDate: startDate30, endDate });
     }, null);
 
     if (sepData && Array.isArray(sepData)) {
@@ -2321,13 +2319,11 @@ export async function fetchAndStoreDonkiEnhanced(): Promise<number> {
   // 2. Radiation Belt Enhancement (RBE) events
   try {
     const rbeData = await donkiEnhancedBreaker.execute(async () => {
-      const url = `${EXTERNAL_APIS.NASA_DONKI.baseUrl}/RBE?startDate=${startDate30}&endDate=${endDate}&api_key=${nasaApiKey}`;
-      const res = await fetchWithRetry(url);
-      return res.json() as Promise<Array<{
+      return fetchDonki<Array<{
         rbeID: string;
         eventTime: string;
         instruments: Array<{ displayName: string }>;
-      }>>;
+      }>>('RBE', { startDate: startDate30, endDate });
     }, null);
 
     if (rbeData && Array.isArray(rbeData)) {
@@ -2355,14 +2351,12 @@ export async function fetchAndStoreDonkiEnhanced(): Promise<number> {
   // 3. High Speed Stream (HSS) events
   try {
     const hssData = await donkiEnhancedBreaker.execute(async () => {
-      const url = `${EXTERNAL_APIS.NASA_DONKI.baseUrl}/HSS?startDate=${startDate7}&endDate=${endDate}&api_key=${nasaApiKey}`;
-      const res = await fetchWithRetry(url);
-      return res.json() as Promise<Array<{
+      return fetchDonki<Array<{
         hssID: string;
         eventTime: string;
         instruments: Array<{ displayName: string }>;
         linkedEvents: Array<{ activityID: string }> | null;
-      }>>;
+      }>>('HSS', { startDate: startDate7, endDate });
     }, null);
 
     if (hssData && Array.isArray(hssData)) {
@@ -2391,15 +2385,13 @@ export async function fetchAndStoreDonkiEnhanced(): Promise<number> {
   // 4. Interplanetary Shock (IPS) events
   try {
     const ipsData = await donkiEnhancedBreaker.execute(async () => {
-      const url = `${EXTERNAL_APIS.NASA_DONKI.baseUrl}/IPS?startDate=${startDate30}&endDate=${endDate}&api_key=${nasaApiKey}`;
-      const res = await fetchWithRetry(url);
-      return res.json() as Promise<Array<{
+      return fetchDonki<Array<{
         activityID: string;
         eventTime: string;
         catalog: string;
         instruments: Array<{ displayName: string }>;
         location: string;
-      }>>;
+      }>>('IPS', { startDate: startDate30, endDate });
     }, null);
 
     if (ipsData && Array.isArray(ipsData)) {
@@ -3234,7 +3226,7 @@ interface HelioviewerResponse {
 export async function fetchAndStoreSolarImagery(): Promise<number> {
   const start = Date.now();
   try {
-    const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    const now = new Date().toISOString().slice(0, 19) + 'Z'; // Helioviewer requires ISO 8601 with T and Z; the space form is rejected (2026-09-10)
 
     // Fetch from multiple SDO sources for different wavelengths
     const sourceIds = [

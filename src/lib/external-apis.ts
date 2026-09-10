@@ -1,3 +1,4 @@
+import { fetchDonki } from '@/lib/donki';
 // External API Configuration and Utilities for Real-Time Data Integration
 
 import { createCircuitBreaker } from './circuit-breaker';
@@ -342,16 +343,8 @@ export async function fetchNasaDonki(
   endpoint: string,
   params: Record<string, string> = {}
 ): Promise<unknown> {
-  return nasaDonkiBreaker.execute(async () => {
-    const searchParams = new URLSearchParams({
-      api_key: EXTERNAL_APIS.NASA_DONKI.apiKey,
-      ...params,
-    });
-
-    const url = `${EXTERNAL_APIS.NASA_DONKI.baseUrl}/${endpoint}?${searchParams}`;
-    const response = await fetchWithRetry(url);
-    return response.json();
-  }, null);
+  // Gateway first, CCMC fallback (src/lib/donki.ts); the breaker still guards repeated total failure.
+  return nasaDonkiBreaker.execute(() => fetchDonki(endpoint, params), null);
 }
 
 // NOAA SWPC API helpers

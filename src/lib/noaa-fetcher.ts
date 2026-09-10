@@ -1,4 +1,5 @@
 import { createCircuitBreaker } from './circuit-breaker';
+import { fetchDonki } from '@/lib/donki';
 import { logger } from './logger';
 
 const noaaBreaker = createCircuitBreaker('noaa-swpc', {
@@ -81,16 +82,7 @@ export async function fetchRecentSolarFlares(days: number = 7): Promise<SolarFla
     const endDate = new Date().toISOString().split('T')[0];
     const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    const response = await fetch(
-      `https://api.nasa.gov/DONKI/FLR?startDate=${startDate}&endDate=${endDate}&api_key=${process.env.NASA_API_KEY || 'DEMO_KEY'}`,
-      { cache: 'no-store', signal: AbortSignal.timeout(4000) }
-    );
-
-    if (!response.ok) {
-      throw new Error(`DONKI FLR API error: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchDonki('FLR', { startDate, endDate }, { timeoutMs: 4000 });
     return Array.isArray(data) ? data : [];
   }, [] as SolarFlareData[]);
 }
@@ -103,16 +95,7 @@ export async function fetchRecentGeomagneticStorms(days: number = 30): Promise<G
     const endDate = new Date().toISOString().split('T')[0];
     const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    const response = await fetch(
-      `https://api.nasa.gov/DONKI/GST?startDate=${startDate}&endDate=${endDate}&api_key=${process.env.NASA_API_KEY || 'DEMO_KEY'}`,
-      { cache: 'no-store', signal: AbortSignal.timeout(4000) }
-    );
-
-    if (!response.ok) {
-      throw new Error(`DONKI GST API error: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchDonki('GST', { startDate, endDate }, { timeoutMs: 4000 });
     return Array.isArray(data) ? data : [];
   }, [] as GeomagneticStormData[]);
 }
@@ -125,16 +108,7 @@ export async function fetchRecentCMEs(days: number = 14): Promise<CMEData[]> {
     const endDate = new Date().toISOString().split('T')[0];
     const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    const response = await fetch(
-      `https://api.nasa.gov/DONKI/CME?startDate=${startDate}&endDate=${endDate}&api_key=${process.env.NASA_API_KEY || 'DEMO_KEY'}`,
-      { cache: 'no-store', signal: AbortSignal.timeout(4000) }
-    );
-
-    if (!response.ok) {
-      throw new Error(`DONKI CME API error: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchDonki('CME', { startDate, endDate }, { timeoutMs: 4000 });
     return Array.isArray(data) ? data : [];
   }, [] as CMEData[]);
 }
