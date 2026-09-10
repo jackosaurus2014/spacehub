@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     });
     if (b.draft) {
       logger.info('Job posting saved as draft', { jobId: posting.id, userId: session.user.id });
-      return NextResponse.json({ success: true, data: { jobId: posting.id, draft: true, url: `/hire/dashboard?draft=` } });
+      return NextResponse.json({ success: true, data: { jobId: posting.id, draft: true, url: `${APP_URL}/hire/dashboard?draft=${posting.id}` } });
     }
 
     const checkout = await getStripe().checkout.sessions.create({
