@@ -11,6 +11,7 @@ import {
 } from '@/lib/errors';
 import { contactFormSchema, validateBody } from '@/lib/validations';
 import { logger } from '@/lib/logger';
+import { notifyFounderOfContact } from '@/lib/founder-notify';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,6 +42,8 @@ export async function POST(req: NextRequest) {
         status: 'new',
       },
     });
+    // Founder sees it the moment it lands, with reply-to set to the sender.
+    void notifyFounderOfContact({ id: submission.id, name, email, subject, message });
 
     // Log for monitoring
     logger.info('Contact form submission', {
