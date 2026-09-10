@@ -144,6 +144,11 @@ export const GUIDE_LIST: GuideEntry[] = [
     shortTitle: 'U.S. Space Academy',
   },
   {
+    slug: '1000-launches-a-year',
+    title: '1,000 Launches a Year by 2030: The Policy, the Gap, the Bottlenecks',
+    shortTitle: '1,000 Launches a Year',
+  },
+  {
     slug: 'rockets-flying-in-2026',
     title: 'Which Rockets Are Flying in 2026? Live Scorecard',
     shortTitle: 'Rockets Flying in 2026',

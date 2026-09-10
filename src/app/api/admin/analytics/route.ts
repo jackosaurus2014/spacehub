@@ -180,11 +180,13 @@ export async function GET() {
     }
 
     const tycoon = await tycoonFunnel(since7d, since30d);
+    const trial = await trialFunnel(since7d, since30d);
 
     return NextResponse.json({
       success: true,
       data: {
         tycoon,
+        trial,
         totalUsers,
         signupsLast7Days,
         signupsLast30Days,
@@ -221,6 +223,31 @@ export async function GET() {
 // way. Archetypes found a corporation with 2-3 buildings, so "built" means
 // more than that.
 const ARCHETYPE_MAX_STARTING_BUILDINGS = 3;
+
+/**
+ * Trial funnel (2026-09-09): every registration auto-starts a Pro trial, so
+ * "signups" and "trials" are the same cohort; what matters is how many are
+ * still active, how many converted to a paid tier, and how many expired
+ * without paying. Conversion is read off the User row, not Stripe.
+ */
+async function trialFunnel(since7d: Date, since30d: Date) {
+  const cohort = await prisma.user.findMany({
+    where: { trialStartDate: { gte: since30d } },
+    select: { trialStartDate: true, trialEndDate: true, subscriptionTier: true, subscriptionStatus: true, stripeCustomerId: true },
+  });
+  const now = new Date();
+  const paid = (u: { subscriptionTier: string | null; subscriptionStatus: string | null }) =>
+    normalizeTier(u.subscriptionTier) !== 'free' && (u.subscriptionStatus === 'active' || u.subscriptionStatus === 'trialing');
+  return {
+    windowDays: 30,
+    trialsStarted30d: cohort.length,
+    trialsStarted7d: cohort.filter((u) => u.trialStartDate && u.trialStartDate >= since7d).length,
+    trialsActive: cohort.filter((u) => u.trialEndDate && u.trialEndDate > now && !paid(u)).length,
+    addedPaymentMethod: cohort.filter((u) => !!u.stripeCustomerId).length,
+    converted: cohort.filter(paid).length,
+    expiredUnpaid: cohort.filter((u) => (!u.trialEndDate || u.trialEndDate <= now) && !paid(u)).length,
+  };
+}
 
 async function tycoonFunnel(since7d: Date, since30d: Date) {
   const cohort = await prisma.gameProfile.findMany({

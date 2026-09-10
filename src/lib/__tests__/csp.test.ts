@@ -287,7 +287,7 @@ describe('isNonceEligible', () => {
   it('is true for per-request routes', () => {
     expect(isNonceEligible('/')).toBe(true);
     expect(isNonceEligible('/news')).toBe(true);
-    expect(isNonceEligible('/company-profiles/spacex')).toBe(true);
+    expect(isNonceEligible('/guide/1000-launches-a-year')).toBe(true);
     expect(isNonceEligible('/embed/space-weather')).toBe(true);
     expect(isNonceEligible('/launches/vandenberg/2026-09')).toBe(true);
   });

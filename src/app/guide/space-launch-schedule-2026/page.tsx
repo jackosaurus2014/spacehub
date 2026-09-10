@@ -127,7 +127,7 @@ export default async function SpaceLaunchSchedule2026Page() {
           {/* Header */}
           <header className="mb-12">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              2026 Space Launch Schedule: Every Mission This Year
+              Cape Canaveral Launch Schedule 2026 — and Every Mission Worldwide This Year
             </h1>
             <p className="text-lg text-slate-300 leading-relaxed">
               A comprehensive, continuously updated guide to 2026 launch activity — what has flown

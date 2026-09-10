@@ -80,7 +80,7 @@ export default function GoogleAnalytics({
       {/* Initialize data layer before loading gtag.js */}
       <Script
         id="ga-init"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         nonce={nonce}
         dangerouslySetInnerHTML={{
           __html: `
@@ -112,7 +112,7 @@ export default function GoogleAnalytics({
       {/* Google Analytics gtag.js script */}
       <Script
         id="ga-script"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         nonce={nonce}
         src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
       />

@@ -35,6 +35,15 @@ interface AnalyticsData {
     wau: number;
     mau: number;
   };
+  trial?: {
+    windowDays: number;
+    trialsStarted30d: number;
+    trialsStarted7d: number;
+    trialsActive: number;
+    addedPaymentMethod: number;
+    converted: number;
+    expiredUnpaid: number;
+  };
   tycoon?: {
     windowDays: number;
     profilesCreated30d: number;
@@ -383,6 +392,35 @@ export default function AdminAnalyticsPage() {
                       });
                     })()}
                   </div>
+                </div>
+              </ScrollReveal>
+            )}
+
+            {/* Pro trial funnel — every registration starts a trial, so this is
+                the signup cohort's fate: still trialing, paid, or expired unpaid. */}
+            {data.trial && (
+              <ScrollReveal delay={0.16}>
+                <div className="card border border-space-600/50 p-5">
+                  <h2 className="text-white font-semibold text-lg mb-1">Pro Trial Funnel</h2>
+                  <p className="text-star-400 text-xs mb-4">
+                    trials started in the last {data.trial.windowDays} days ({data.trial.trialsStarted7d} in the last 7) · conversion is read off the account, not Stripe
+                  </p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {[
+                      { label: 'Trials started', value: data.trial.trialsStarted30d, color: 'text-slate-200' },
+                      { label: 'Still trialing', value: data.trial.trialsActive, color: 'text-cyan-300' },
+                      { label: 'Added a payment method', value: data.trial.addedPaymentMethod, color: 'text-amber-300' },
+                      { label: 'Converted to paid', value: data.trial.converted, color: 'text-emerald-300' },
+                    ].map((s) => (
+                      <div key={s.label} className="rounded-lg border border-space-600/30 bg-space-700/20 px-4 py-3">
+                        <p className={`text-2xl font-semibold tabular-nums ${s.color}`}>{s.value}</p>
+                        <p className="text-star-400 text-xs mt-1">{s.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-star-400 text-xs mt-3">
+                    Expired without paying: {data.trial.expiredUnpaid} · conversion {data.trial.trialsStarted30d ? Math.round((data.trial.converted / data.trial.trialsStarted30d) * 100) : 0}% of trials started
+                  </p>
                 </div>
               </ScrollReveal>
             )}

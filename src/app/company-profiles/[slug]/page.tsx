@@ -8,7 +8,9 @@ import { logger } from '@/lib/logger';
 // rate-limited API left an error card where 331 company pages' content
 // belonged — and crawlers saw the shell. The client component still owns
 // the tabs, claim flow and section fetches; it just starts with the data.
-export const dynamic = 'force-dynamic';
+// Five-minute ISR: crawlers and repeat visitors get a cached page; the
+// client component's own fetches keep the live sections current.
+export const revalidate = 300;
 
 export default async function CompanyProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

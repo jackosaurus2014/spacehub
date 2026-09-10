@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FOUNDING_MEMBER_OFFER_ENABLED } from '@/lib/pricing-integrity';
+import { TRIAL_DAYS } from '@/lib/subscription';
 import LegalDisclaimerModal from '@/components/LegalDisclaimerModal';
 import { toast } from '@/lib/toast';
 import { extractApiError } from '@/lib/errors';
@@ -229,7 +230,7 @@ function RegisterPageContent() {
         trial: isTrial,
       });
       trackGA4Event('sign_up', { method: 'email' });
-      trackGA4Event('trial_started', { tier: 'pro', duration_days: 3 });
+      trackGA4Event('trial_started', { tier: 'pro', duration_days: TRIAL_DAYS });
       trackSignupConversion();
 
       // Store selected role for future personalization
