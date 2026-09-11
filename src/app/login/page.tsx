@@ -120,6 +120,19 @@ function getFieldError(field: string, value: string): string | null {
   }
 }
 
+/** Outcome of /api/account/change-email/confirm (2026-09-10): the session cookie still carries the old email, so the user lands here. */
+function EmailChangeBanner() {
+  const searchParams = useSearchParams();
+  const state = searchParams.get('emailChange');
+  if (!state) return null;
+  const ok = state === 'done';
+  const text = ok ? 'Your email address has been changed. Sign in with the new address.'
+    : state === 'expired' ? 'That confirmation link has expired. Sign in and request the email change again.'
+    : state === 'taken' ? 'That email address is now in use on another account. Sign in and choose a different one.'
+    : 'That confirmation link is not valid. Sign in and request the email change again.';
+  return <div className={`${ok ? 'bg-green-500/10 border-green-500/50 text-green-400' : 'bg-yellow-500/10 border-yellow-500/50 text-yellow-400'} border px-4 py-3 rounded-lg text-sm mb-6`} role="status"><p>{text}</p></div>;
+}
+
 function ResendVerificationBanner() {
   const searchParams = useSearchParams();
   const isRegistered = searchParams.get('registered') === 'true';
@@ -284,6 +297,7 @@ function LoginContent() {
       </div>
 
       <ResendVerificationBanner />
+            <EmailChangeBanner />
 
       <OAuthButtons
         callbackUrl={

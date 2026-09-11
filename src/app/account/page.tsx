@@ -556,6 +556,8 @@ function SecuritySection() {
           {isChanging ? 'Changing Password...' : 'Change Password'}
         </button>
       </form>
+
+      <ChangeEmailForm />
     </section>
   );
 }
@@ -1083,5 +1085,65 @@ function DataPrivacySection() {
         </div>
       )}
     </>
+  );
+}
+
+/**
+ * Self-serve email change (2026-09-10). New address + current password →
+ * verification link to the new address; nothing changes until it is opened.
+ * Shows the pending change (with cancel) so a mistyped address is recoverable.
+ */
+function ChangeEmailForm() {
+  const [newEmail, setNewEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<{ newEmail: string; expiresAt: string } | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const loadPending = useCallback(async () => {
+    try { const r = await fetch('/api/account/change-email', { cache: 'no-store' }); if (r.ok) setPending((await r.json()).data?.pending ?? null); } catch { /* leave as is */ }
+  }, []);
+  useEffect(() => { loadPending(); }, [loadPending]);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault(); setBusy(true); setMsg(null); setErr(null);
+    try {
+      const r = await fetch('/api/account/change-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ newEmail, password }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { setErr(typeof j?.error === 'string' ? j.error : j?.error?.message || 'Could not start the change'); return; }
+      setMsg(j.data?.message || 'Verification email sent.'); setPending(j.data?.pending ?? null); setNewEmail(''); setPassword('');
+    } catch { setErr('Something went wrong. Please try again.'); }
+    finally { setBusy(false); }
+  };
+  const cancel = async () => {
+    setBusy(true);
+    try { await fetch('/api/account/change-email', { method: 'DELETE' }); setPending(null); setMsg('Pending change cancelled.'); } finally { setBusy(false); }
+  };
+
+  return (
+    <div className="mt-10 pt-8 border-t border-white/[0.06]">
+      <h3 className="text-sm font-semibold text-white mb-1">Change email address</h3>
+      <p className="text-xs text-slate-400 mb-4">We send a confirmation link to the new address; your login switches when you open it. Your current address is told either way.</p>
+      {pending && (
+        <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/[0.06] px-4 py-3 text-sm text-amber-200 flex flex-wrap items-center justify-between gap-2">
+          <span>Waiting for <strong>{pending.newEmail}</strong> to confirm (link expires {new Date(pending.expiresAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}).</span>
+          <button type="button" onClick={cancel} disabled={busy} className="text-xs underline hover:text-white disabled:opacity-50">Cancel</button>
+        </div>
+      )}
+      <form onSubmit={submit} className="space-y-4 max-w-md">
+        <div>
+          <label className="block text-sm text-slate-300 mb-1.5" htmlFor="ce-email">New email address</label>
+          <input id="ce-email" type="email" required value={newEmail} onChange={(e) => setNewEmail(e.target.value)} autoComplete="email" className="w-full px-4 py-2.5 bg-white/[0.04] border border-white/[0.1] rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50" placeholder="you@newaddress.com" />
+        </div>
+        <div>
+          <label className="block text-sm text-slate-300 mb-1.5" htmlFor="ce-password">Current password</label>
+          <input id="ce-password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" className="w-full px-4 py-2.5 bg-white/[0.04] border border-white/[0.1] rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50" />
+        </div>
+        {err && <p className="text-sm text-red-400" role="alert">{err}</p>}
+        {msg && <p className="text-sm text-emerald-300" role="status">{msg}</p>}
+        <button type="submit" disabled={busy || !newEmail || !password} className="btn-primary px-5 py-2.5 rounded-lg text-sm font-semibold min-h-[44px] disabled:opacity-50">{busy ? 'Sending…' : 'Send confirmation link'}</button>
+      </form>
+    </div>
   );
 }

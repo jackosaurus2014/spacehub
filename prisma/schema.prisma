@@ -64,6 +64,7 @@ model User {
   helpRequests             HelpRequest[]
   newsletterSubscription   NewsletterSubscriber?
   passwordResetTokens      PasswordResetToken[]
+  emailChangeTokens        EmailChangeToken[]
   alerts                   AlertRule[]
   apiKeys                  ApiKey[]
   advertiserProfile        Advertiser?
@@ -8034,4 +8035,20 @@ model JobApplication {
 
   @@index([jobId, createdAt])
   @@index([email])
+}
+
+/// Self-serve email change (2026-09-10): the new address must click a link
+/// before the account switches; the old address is told a change was requested.
+model EmailChangeToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  newEmail  String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }

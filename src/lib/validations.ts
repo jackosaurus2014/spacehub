@@ -4323,3 +4323,10 @@ export const corpPactBodySchema = z.discriminatedUnion('action', [
   z.object({ action: z.literal('break'), pactId: z.string().min(1).max(64) }),
 ]);
 export type CorpPactBodyInput = z.infer<typeof corpPactBodySchema>;
+
+/** Self-serve email change (2026-09-10): new address + current password. */
+export const changeEmailSchema = z.object({
+  newEmail: z.string().trim().email('Enter a valid email address').max(200),
+  password: z.string().min(1, 'Password is required'),
+});
+export type ChangeEmailData = z.infer<typeof changeEmailSchema>;
