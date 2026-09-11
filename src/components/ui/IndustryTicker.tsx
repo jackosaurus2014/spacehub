@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
+import { isMarketTickerEnabled, setMarketTickerEnabled, marketTickerHiddenOnPath, MARKET_TICKER_EVENT } from '@/lib/market-ticker-pref';
+import { toast } from '@/lib/toast';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -95,6 +98,21 @@ function Separator() {
 export default function IndustryTicker() {
   const [items, setItems] = useState<TickerItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
+  // Per-browser off switch (Account → Appearance, or the × on the strip). Starts
+  // false so the server and first client render agree; flips after mount.
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    const sync = () => setEnabled(isMarketTickerEnabled());
+    sync();
+    window.addEventListener(MARKET_TICKER_EVENT, sync);
+    window.addEventListener('storage', sync);
+    return () => { window.removeEventListener(MARKET_TICKER_EVENT, sync); window.removeEventListener('storage', sync); };
+  }, []);
+  const hide = () => {
+    setMarketTickerEnabled(false);
+    toast.info('Market ticker hidden. Turn it back on under Account → Appearance.');
+  };
 
   // Get persona from localStorage
   const getPersona = useCallback(() => {
@@ -133,8 +151,8 @@ export default function IndustryTicker() {
     return () => clearInterval(interval);
   }, [fetchTicker]);
 
-  if (loading || items.length === 0) {
-    return null; // Don't render empty ticker
+  if (!enabled || marketTickerHiddenOnPath(pathname) || loading || items.length === 0) {
+    return null; // off by preference, out of the way on game/embed/portal routes, or nothing to show
   }
 
   return (
@@ -149,6 +167,7 @@ export default function IndustryTicker() {
         {/* Fade edges */}
         <div className="absolute left-0 top-0 bottom-0 w-8 z-10" style={{ background: 'linear-gradient(to right, rgba(9,9,11,1), transparent)' }} />
         <div className="absolute right-0 top-0 bottom-0 w-8 z-10" style={{ background: 'linear-gradient(to left, rgba(9,9,11,1), transparent)' }} />
+        <button type="button" onClick={hide} aria-label="Hide market ticker" title="Hide market ticker (Account → Appearance to restore)" className="absolute right-1 top-0 bottom-0 z-20 px-1.5 text-slate-500 hover:text-white text-xs leading-none">×</button>
 
         {/* Scrolling content — duplicated for seamless loop */}
         <div className="animate-ticker flex items-center whitespace-nowrap">

@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import prisma from '@/lib/db';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import IndustryTicker from '@/components/ui/IndustryTicker';
 import { getPriceHistoriesCached } from '@/lib/stock-quote';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
@@ -245,7 +244,6 @@ export default async function SpaceStocksPage() {
       <div className="container mx-auto px-4 pt-6">
         {/* The ticker left global chrome (worst reduced-motion offender on every
             page) and lives on the markets surfaces where it earns its pixels. */}
-        <IndustryTicker />
         <AnimatedPageHeader
           title="Space Stocks"
           subtitle="Live prices for every publicly traded space company — from the newest IPOs to the legacy primes."

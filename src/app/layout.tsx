@@ -51,6 +51,7 @@ import OfflineIndicator from '@/components/ui/OfflineIndicator';
 // FeedbackButton removed — replaced with /feedback page to avoid blocking left nav
 import AutoBreadcrumb from '@/components/ui/AutoBreadcrumb';
 import LiveRail from '@/components/LiveRail';
+import { IndustryTicker } from '@/components/layout/ClientOnly';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -279,6 +280,7 @@ export default function RootLayout({
               <LiveNowBanner />
               <LiveRail />
               <Navigation />
+              <IndustryTicker />
               <main id="main-content" className="flex-1 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0" tabIndex={-1}>
                 <AutoBreadcrumb />
                 <TrialCountdownBanner />

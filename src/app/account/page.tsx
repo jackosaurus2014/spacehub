@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { isMarketTickerEnabled, setMarketTickerEnabled } from '@/lib/market-ticker-pref';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -738,10 +739,18 @@ function NotificationsSection() {
 
 function AppearanceSection() {
   const [oledEnabled, setOledEnabled] = useState(false);
+  const [tickerEnabled, setTickerEnabled] = useState(true);
 
   useEffect(() => {
     setOledEnabled(localStorage.getItem('spacenexus-oled') === 'true');
+    setTickerEnabled(isMarketTickerEnabled());
   }, []);
+
+  const handleToggleTicker = () => {
+    const next = !tickerEnabled;
+    setTickerEnabled(next);
+    setMarketTickerEnabled(next);
+  };
 
   const handleToggleOled = () => {
     const next = !oledEnabled;
@@ -758,6 +767,30 @@ function AppearanceSection() {
       </p>
 
       <div className="space-y-1">
+        <div className="flex items-center justify-between py-3 border-b border-white/[0.06]/50">
+          <div className="mr-4">
+            <p className="text-sm font-medium text-white">Market ticker</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              The scrolling strip of space stocks, launches and signals under the navigation on every page. Off hides it on this device.
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={tickerEnabled}
+            aria-label="Show market ticker"
+            onClick={handleToggleTicker}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+              tickerEnabled ? 'bg-white' : 'bg-white/[0.1]'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition duration-200 ease-in-out ${
+                tickerEnabled ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
         <div className="flex items-center justify-between py-3 border-b border-white/[0.06]/50">
           <div className="mr-4">
             <p className="text-sm font-medium text-white">OLED True Black Mode</p>

@@ -35,3 +35,6 @@ export const BackToTop = dynamic(() => import('@/components/ui/BackToTop'), { ss
 export const ScrollProgress = dynamic(() => import('@/components/ui/ScrollProgress'), { ssr: false });
 export const WebVitals = dynamic(() => import('@/components/analytics/WebVitals'), { ssr: false });
 export const ErrorReporter = dynamic(() => import('@/components/ErrorReporter'), { ssr: false });
+
+/** Terminal-style stock strip, back in global chrome 2026-09-10 (per-browser off switch in src/lib/market-ticker-pref.ts). */
+export const IndustryTicker = dynamic(() => import('@/components/ui/IndustryTicker'), { ssr: false });

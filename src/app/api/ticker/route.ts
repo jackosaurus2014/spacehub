@@ -17,13 +17,16 @@ export async function GET(request: NextRequest) {
   try {
     const items: TickerItem[] = [];
 
-    // ── 1. Public space company stock prices (investor + professional) ──
-    if (persona === 'investor' || persona === 'professional') {
+    // ── 1. Public space company stock prices (every persona; 2026-09-10) ──
+    // The strip is the site's terminal tape, so prices lead it for everyone:
+    // the largest names by market cap for enthusiasts, the full dozen for
+    // investors and professionals.
+    {
       const publicCompanies = await prisma.companyProfile.findMany({
         where: { isPublic: true, stockPrice: { not: null }, ticker: { not: null } },
         select: { name: true, ticker: true, stockPrice: true, priceChange24h: true, marketCap: true },
         orderBy: { marketCap: { sort: 'desc', nulls: 'last' } },
-        take: 12,
+        take: persona === 'investor' || persona === 'professional' ? 12 : 6,
       });
 
       for (const co of publicCompanies) {
