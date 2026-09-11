@@ -1,6 +1,7 @@
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
 import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
+import { createMessageStreamed } from '@/lib/anthropic-stream';
 import { logger } from '@/lib/logger';
 
 interface GeneratedDigest {
@@ -127,7 +128,7 @@ Respond with valid JSON (no markdown code fences):
 }`;
 
     try {
-      const response = await anthropic.messages.create({
+      const response = await createMessageStreamed(anthropic, {
         model: EDITORIAL_MODEL,
         max_tokens: 12000,
         messages: [{ role: 'user', content: prompt }],

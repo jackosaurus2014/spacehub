@@ -29,8 +29,12 @@ export async function GET(request: NextRequest) {
         take: persona === 'investor' || persona === 'professional' ? 12 : 6,
       });
 
+      const seenTickers = new Set<string>();
       for (const co of publicCompanies) {
         if (!co.ticker || !co.stockPrice) continue;
+        // Two profiles can share a symbol (RTX appeared twice); one entry per symbol.
+        if (seenTickers.has(co.ticker)) continue;
+        seenTickers.add(co.ticker);
         const change = co.priceChange24h || 0;
         const arrow = change > 0 ? '▲' : change < 0 ? '▼' : '–';
         const color = change > 0 ? 'green' : change < 0 ? 'red' : 'neutral';

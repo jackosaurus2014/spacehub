@@ -1,4 +1,5 @@
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
+import { createMessageStreamed } from '@/lib/anthropic-stream';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -274,6 +275,7 @@ function shouldIncludeForecast(): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  let heldLockKey: string | null = null;
   try {
     if (!(await isAuthorized(request))) {
       return unauthorizedError('Valid CRON_SECRET token or admin session required');
@@ -327,6 +329,7 @@ export async function POST(request: NextRequest) {
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
         },
       });
+      heldLockKey = lockKey;
     } catch {
       logger.info('AI insights generation already in progress or done for today (lock exists), skipping', { lockKey });
       return NextResponse.json({
@@ -538,7 +541,9 @@ Respond with valid JSON in this exact format (no markdown code fences):
       articleCount,
     });
 
-    const response = await anthropic.messages.create({
+    // Streamed: the SDK refuses a non-streaming call at this max_tokens and
+    // the daily run died on that every night 08-31 → 09-10 (see anthropic-stream.ts).
+    const response = await createMessageStreamed(anthropic, {
       model: EDITORIAL_MODEL,
       max_tokens: articleCount >= 3 ? 22000 : 16000,
       messages: [{ role: 'user', content: prompt }],
@@ -750,6 +755,12 @@ Respond with valid JSON in this exact format (no markdown code fences):
     logger.error('AI insights generation failed', {
       error: error instanceof Error ? error.message : String(error),
     });
+    // Release today's lock so the 07:00 UTC retry (or a manual run) can try
+    // again instead of skipping for the rest of the day (2026-09-10).
+    if (heldLockKey) {
+      await prisma.dynamicContent.deleteMany({ where: { contentKey: heldLockKey } }).catch(() => null);
+      logger.info('AI insights generation lock released after failure', { lockKey: heldLockKey });
+    }
     return internalError('Failed to generate AI insights');
   }
 }

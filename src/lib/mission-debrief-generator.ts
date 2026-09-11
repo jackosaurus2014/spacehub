@@ -11,6 +11,7 @@
 // unpublish and manual runs.
 
 import Anthropic from '@anthropic-ai/sdk';
+import { createMessageStreamed } from '@/lib/anthropic-stream';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
@@ -272,7 +273,7 @@ export async function generateDebriefDraft(
   // max_tokens caps thinking AND text together on EDITORIAL_MODEL (Sonnet 5
   // runs adaptive thinking by default) — the module-refresher learned this
   // the hard way. Generous cap, reasoning bounded by effort instead.
-  const response = await anthropic.messages.create({
+  const response = await createMessageStreamed(anthropic, {
     model: EDITORIAL_MODEL,
     max_tokens: 12000,
     output_config: { effort: 'medium' },

@@ -1,6 +1,7 @@
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
 import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
+import { createMessageStreamed } from '@/lib/anthropic-stream';
 import { logger } from '@/lib/logger';
 
 interface GeneratedExplainer {
@@ -172,7 +173,7 @@ Respond with valid JSON (no markdown code fences):
     legalUpdateCount: legalUpdates.length,
   });
 
-  const response = await anthropic.messages.create({
+  const response = await createMessageStreamed(anthropic, {
     model: EDITORIAL_MODEL,
     max_tokens: 16000,
     messages: [{ role: 'user', content: prompt }],
