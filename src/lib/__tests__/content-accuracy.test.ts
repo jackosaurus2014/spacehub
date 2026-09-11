@@ -25,10 +25,10 @@ jest.mock('@/lib/db', () => ({
     countdownWidget: { findMany: jest.fn() },
     spaceJobPosting: { findFirst: jest.fn() },
     newsArticle: { findFirst: jest.fn() },
-    aIInsight: { findFirst: jest.fn() },
+    aIInsight: { findFirst: jest.fn(), findMany: jest.fn(), count: jest.fn() },
     publishedBrief: { findFirst: jest.fn() },
     feedbackSubmission: { findFirst: jest.fn() },
-    dynamicContent: { findFirst: jest.fn() },
+    dynamicContent: { findFirst: jest.fn(), findUnique: jest.fn() },
   },
 }));
 
@@ -60,10 +60,10 @@ const mockPrisma = prisma as unknown as {
   countdownWidget: { findMany: jest.Mock };
   spaceJobPosting: { findFirst: jest.Mock };
   newsArticle: { findFirst: jest.Mock };
-  aIInsight: { findFirst: jest.Mock };
+  aIInsight: { findFirst: jest.Mock; findMany: jest.Mock; count: jest.Mock };
   publishedBrief: { findFirst: jest.Mock };
   feedbackSubmission: { findFirst: jest.Mock };
-  dynamicContent: { findFirst: jest.Mock };
+  dynamicContent: { findFirst: jest.Mock; findUnique: jest.Mock };
 };
 
 function getCheck(id: string): AccuracyCheckDef {
@@ -213,16 +213,47 @@ describe('news-articles-fresh', () => {
 });
 
 describe('ai-insights-fresh', () => {
-  it('passes when the freshest insight is under 48h old', async () => {
-    mockPrisma.aIInsight.findFirst.mockResolvedValueOnce({ generatedAt: new Date(Date.now() - 10 * HOUR) });
+  it('passes when a standalone insight is under 36h old', async () => {
+    mockPrisma.aIInsight.findMany.mockResolvedValueOnce([{ title: 'NASA does a thing', generatedAt: new Date(Date.now() - 10 * HOUR) }]);
     const result = await getCheck('ai-insights-fresh').run();
     expect(result.ok).toBe(true);
   });
 
-  it('fails when the freshest insight is over 48h old', async () => {
-    mockPrisma.aIInsight.findFirst.mockResolvedValueOnce({ generatedAt: new Date(Date.now() - 72 * HOUR) });
+  it('ignores the weekly digests — they kept this green through 12 silent days (2026-08-31 → 09-10)', async () => {
+    mockPrisma.aIInsight.findMany.mockResolvedValueOnce([
+      { title: "Who's Hiring in Space — Week of 2026-09-09", generatedAt: new Date(Date.now() - 2 * HOUR) },
+      { title: 'State of the Space Economy — Week of 2026-09-07', generatedAt: new Date(Date.now() - 30 * HOUR) },
+      { title: 'A real daily article', generatedAt: new Date(Date.now() - 72 * HOUR) },
+    ]);
     const result = await getCheck('ai-insights-fresh').run();
     expect(result.ok).toBe(false);
+    expect(result.detail).toMatch(/72.0h/);
+  });
+
+  it('fails when there is no standalone insight at all in 7 days', async () => {
+    mockPrisma.aIInsight.findMany.mockResolvedValueOnce([{ title: 'Regulatory Radar — Week of 2026-09-07', generatedAt: new Date() }]);
+    const result = await getCheck('ai-insights-fresh').run();
+    expect(result.ok).toBe(false);
+  });
+});
+
+describe('ai-insights-daily-ran', () => {
+  it("passes when today's lock exists and rows were written", async () => {
+    mockPrisma.dynamicContent.findUnique.mockResolvedValueOnce({ createdAt: new Date() });
+    mockPrisma.aIInsight.count.mockResolvedValueOnce(3);
+    expect((await getCheck('ai-insights-daily-ran').run()).ok).toBe(true);
+  });
+  it('fails with the re-run recipe when the lock was taken but no rows followed (the 08-31 → 09-10 signature)', async () => {
+    mockPrisma.dynamicContent.findUnique.mockResolvedValueOnce({ createdAt: new Date() });
+    mockPrisma.aIInsight.count.mockResolvedValueOnce(0);
+    const r = await getCheck('ai-insights-daily-ran').run();
+    expect(r.ok).toBe(false);
+    expect(r.detail).toMatch(/insights-unlock/);
+  });
+  it('fails when the cron never ran (no lock)', async () => {
+    mockPrisma.dynamicContent.findUnique.mockResolvedValueOnce(null);
+    mockPrisma.aIInsight.count.mockResolvedValueOnce(0);
+    expect((await getCheck('ai-insights-daily-ran').run()).ok).toBe(false);
   });
 });
 

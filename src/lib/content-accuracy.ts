@@ -228,19 +228,44 @@ async function checkNewsArticlesFresh(): Promise<AccuracyCheckOutcome> {
 // Check 6 — AIInsight latest generatedAt < 48h (article pipeline alive)
 // ---------------------------------------------------------------------------
 
+/** The weekly digests (Mon/Wed crons) are excluded: they kept this check green
+ *  through 12 silent days of the DAILY generator (2026-08-31 → 09-10). */
+const WEEKLY_DIGEST_TITLE = /^(Who's Hiring in Space|Regulatory Radar|State of the Space Economy)/;
+
 async function checkAIInsightsFresh(): Promise<AccuracyCheckOutcome> {
-  const latest = await prisma.aIInsight.findFirst({
+  const recent = await prisma.aIInsight.findMany({
+    where: { generatedAt: { gte: new Date(Date.now() - 7 * 24 * MS_PER_HOUR) } },
     orderBy: { generatedAt: 'desc' },
-    select: { generatedAt: true },
+    select: { title: true, generatedAt: true },
+    take: 60,
   });
-
-  if (!latest) {
-    return { ok: false, detail: 'No AIInsight rows found — the AI article pipeline may never have run.' };
+  const latestDaily = recent.find((r) => !WEEKLY_DIGEST_TITLE.test(r.title));
+  if (!latestDaily) {
+    return { ok: false, detail: 'No standalone (non-digest) AI insight in the last 7 days — the daily generator is not producing articles.' };
   }
+  const ageHours = (Date.now() - latestDaily.generatedAt.getTime()) / MS_PER_HOUR;
+  // The daily runs at 01:00 UTC with a 07:00 retry; this check runs at 12:00 UTC.
+  const ok = ageHours < 36;
+  return { ok, detail: `Freshest standalone AI insight is ${ageHours.toFixed(1)}h old (policy: < 36h; weekly digests excluded).` };
+}
 
-  const ageHours = (Date.now() - latest.generatedAt.getTime()) / MS_PER_HOUR;
-  const ok = ageHours < 48;
-  return { ok, detail: `Freshest AIInsight.generatedAt is ${ageHours.toFixed(1)}h old (policy: < 48h).` };
+// Check 6b — the failure signature of 2026-08-31 → 09-10: the generator took
+// today's lock (dynamicContent ai-insights:generation-lock:<day>) and wrote
+// no rows. One failed attempt a day, invisible unless something looks for it.
+async function checkAIInsightsDailyRan(): Promise<AccuracyCheckOutcome> {
+  const day = new Date().toISOString().slice(0, 10);
+  const todayStart = new Date(`${day}T00:00:00Z`);
+  const [lock, rowsToday] = await Promise.all([
+    prisma.dynamicContent.findUnique({ where: { contentKey: `ai-insights:generation-lock:${day}` }, select: { createdAt: true } }),
+    prisma.aIInsight.count({ where: { generatedAt: { gte: todayStart } } }),
+  ]);
+  if (!lock) {
+    return { ok: false, detail: `No generation lock for ${day} — the 01:00/07:00 UTC ai-insights cron did not run at all.` };
+  }
+  if (rowsToday === 0) {
+    return { ok: false, detail: `Generation lock for ${day} exists but 0 AI insight rows were written — the run failed after taking the lock. Read railway logs for the deployment that ran it and re-run: scripts/insights-unlock.ts then POST /api/ai-insights/generate.` };
+  }
+  return { ok: true, detail: `${rowsToday} AI insight row(s) written today.` };
 }
 
 // ---------------------------------------------------------------------------
@@ -453,8 +478,13 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
   },
   {
     id: 'ai-insights-fresh',
-    label: 'AI insight pipeline is alive (freshest insight < 48h)',
+    label: 'Daily AI article generator is alive (freshest standalone insight < 36h)',
     run: checkAIInsightsFresh,
+  },
+  {
+    id: 'ai-insights-daily-ran',
+    label: "Today's AI insight run wrote rows (lock taken means rows written)",
+    run: checkAIInsightsDailyRan,
   },
   {
     id: 'artemis-tracker-freshness',

@@ -3,6 +3,7 @@ import { usePathname } from 'next/navigation';
 
 import { useState } from 'react';
 import { useSubscription } from '@/components/SubscriptionProvider';
+import { TIER_ACCESS } from '@/lib/subscription';
 import Link from 'next/link';
 
 /**
@@ -22,7 +23,8 @@ export default function UsageLimitBanner() {
   if (!METERED_PREFIXES.some((p) => pathname.startsWith(p))) return null;
   if (tier !== 'free') return null;
 
-  const maxDaily = 25;
+  // The one source of truth for the free tier's daily article limit (was a hard-coded 25 while the tier says 15; the meter read 15/25).
+  const maxDaily = TIER_ACCESS.free.maxDailyArticles;
   const used = maxDaily - (remainingArticles ?? maxDaily);
   const pctUsed = (used / maxDaily) * 100;
   const remaining = remainingArticles ?? maxDaily;

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { TIER_ACCESS } from '@/lib/subscription';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import NewsCard from '@/components/NewsCard';
 import NewsFilter from '@/components/NewsFilter';
@@ -62,7 +63,7 @@ function NewsContent({ initialArticles, initialTotal }: { initialArticles?: News
 
   // Calculate how many articles have been viewed today
   // remainingArticles is null for paid users, or 0-10 for free users
-  const maxDailyArticles = 10;
+  const maxDailyArticles = TIER_ACCESS.free.maxDailyArticles; // was a hard-coded 10; the tier says 15 (2026-09-10)
   const articlesViewed = remainingArticles !== null
     ? maxDailyArticles - remainingArticles
     : 0;
