@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 /**
  * @jest-environment node
  */
@@ -31,9 +33,20 @@ const promo = (over: Record<string, unknown> = {}) => ({
 });
 
 describe('advertised discount registry', () => {
-  it('the founding-member offer is withdrawn', () => {
-    // Re-enabling requires Stripe work first — see pricing-integrity.ts.
-    expect(FOUNDING_MEMBER_OFFER_ENABLED).toBe(false);
+  it('the founding-member offer is live again as 50% off 12 months for first-time subscribers (Jay, 2026-09-10)', () => {
+    // Stripe: coupon e3YIBO8l (50% repeating 12) + promotion code FOUNDER50
+    // (active, max 50, first_time_transaction). The code is typed at checkout
+    // (allow_promotion_codes); the site never promises anything "for life".
+    expect(FOUNDING_MEMBER_OFFER_ENABLED).toBe(true);
+    const offer = ADVERTISED_DISCOUNTS.find((d) => d.id === 'founding-member')!;
+    expect(offer.promotionCode).toBe('FOUNDER50');
+    expect(offer.percentOff).toBe(50);
+    expect(offer.duration).toBe(12);
+    for (const rel of offer.surfaces) {
+      const src = fs.readFileSync(path.join(process.cwd(), rel), 'utf-8');
+      expect(src).not.toMatch(/for life|locked forever|$4.99/i);
+    }
+    expect(fs.readFileSync(path.join(process.cwd(), 'src/app/api/stripe/checkout/route.ts'), 'utf-8')).toMatch(/allow_promotion_codes: true/);
   });
 
   it('every advertised discount names where it is claimed', () => {
@@ -55,15 +68,16 @@ describe('checkAdvertisedDiscountsMatchStripe', () => {
     else process.env.STRIPE_SECRET_KEY = OLD_KEY;
   });
 
-  it('passes trivially while nothing is advertised, without calling Stripe', async () => {
+  it('checks the live FOUNDER50 offer against Stripe and passes when the promo matches', async () => {
+    listMock.mockResolvedValue(promo());
     const r = await checkAdvertisedDiscountsMatchStripe();
     expect(r.ok).toBe(true);
-    expect(listMock).not.toHaveBeenCalled();
+    expect(listMock).toHaveBeenCalledWith(expect.objectContaining({ code: 'FOUNDER50' }));
   });
 
   /**
-   * The rest drive the checker through a temporarily-enabled offer, since the
-   * real registry is (correctly) all-disabled.
+   * The rest drive the checker through a temporarily-added second offer; the
+   * real FOUNDER50 entry also runs and passes against the same mock.
    */
   function withEnabledOffer(over: Partial<(typeof ADVERTISED_DISCOUNTS)[number]> = {}) {
     ADVERTISED_DISCOUNTS.push({

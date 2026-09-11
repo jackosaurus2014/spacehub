@@ -151,8 +151,9 @@ function RegisterPageContent() {
 
   // Parse monetization-relevant query params
   // Gated on the offer flag, not just the query string — a bookmarked or
-  // shared ?founding=true link would otherwise still promise $4.99/month
-  // for life, which Stripe has never been able to charge.
+  // shared ?founding=true link must only promise what Stripe delivers: the
+  // FOUNDER50 promotion code (50% off, 12 months, first-time subscribers).
+  // The old lifetime-price wording is gone for good (Jay, 2026-09-10).
   const isFounding = FOUNDING_MEMBER_OFFER_ENABLED && searchParams.get('founding') === 'true';
   const isTrial = searchParams.get('trial') === 'true';
   const rawPlanParam = searchParams.get('plan'); // 'pro' ('enterprise' accepted from old links)
@@ -303,8 +304,9 @@ function RegisterPageContent() {
                 You&apos;re claiming a Founding Member spot!
               </p>
               <p className="text-purple-200 text-sm">
-                <span className="font-bold text-white">$4.99/month</span> locked for life.
-                Create your account below to secure your price.
+                <span className="font-bold text-white">50% off Professional for your first 12 months</span> with code{' '}
+                <span className="font-mono font-bold text-white bg-white/10 px-1.5 py-0.5 rounded">FOUNDER50</span> at checkout.
+                First-time subscribers only, while spots last. Create your account below.
               </p>
             </div>
           )}

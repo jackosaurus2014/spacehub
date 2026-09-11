@@ -32,7 +32,7 @@ import { getStripe } from '@/lib/stripe';
  *      merely offering the input box via `allow_promotion_codes`.
  * The check below enforces 1 and 2; 3 lives in the checkout route.
  */
-export const FOUNDING_MEMBER_OFFER_ENABLED = false;
+export const FOUNDING_MEMBER_OFFER_ENABLED = true; // re-enabled 2026-09-10 (Jay): 50% off 12 months, first-time subscribers, code entered at checkout
 
 /** A discount the site advertises to visitors, in the site's own words. */
 export interface AdvertisedDiscount {
