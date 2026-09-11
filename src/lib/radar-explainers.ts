@@ -1,4 +1,5 @@
 import prisma from '@/lib/db';
+import { isNonSpaceUsmlDocument } from '@/lib/usml-space-gate';
 import { logger } from '@/lib/logger';
 
 /**
@@ -105,9 +106,11 @@ const EXPORT_CONTROL_AGENCY_SLUGS = ['industry-and-security-bureau', 'state-depa
  * (State). Pure, exported for tests.
  */
 export function isExplainerEligible(
-  action: Pick<ExplainerCandidate, 'source' | 'significant' | 'category' | 'documentType' | 'agency' | 'raw'>
+  action: Pick<ExplainerCandidate, 'source' | 'significant' | 'category' | 'documentType' | 'agency' | 'raw'> & Partial<Pick<ExplainerCandidate, 'title' | 'summary'>>
 ): boolean {
   if (action.source !== 'federal-register') return false;
+  // Non-space USML categories (e.g. XI military electronics) are not our beat (Jay, 2026-09-11).
+  if (isNonSpaceUsmlDocument(action.title, action.summary)) return false;
   if (action.significant) return true;
   if (action.category !== 'export-controls') return false;
   const docType = (action.documentType || '').toLowerCase();

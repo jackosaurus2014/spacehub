@@ -586,6 +586,29 @@ interface RSSFeedSource {
   name: string;
   url: string;
   defaultCategory?: string;
+  /** Minimum minutes between fetches of this feed (default: every cron cycle, 5). Science aggregators need far less than that and rate-limit shared egress IPs when polled every 5 minutes. */
+  intervalMinutes?: number;
+}
+
+/**
+ * Per-feed pacing (2026-09-11). news-fetch runs every 5 minutes; Phys.org
+ * answered 429 and Sky & Telescope 403 to Railway's shared IP while serving
+ * the same feeds fine from elsewhere. Each feed now carries a minimum
+ * interval, and a 403/429 parks the feed for a cooldown instead of retrying
+ * 288 times a day and making the block permanent.
+ */
+const nextFetchAt = new Map<string, number>();
+export function rssCooldownMinutesFor(errorMessage: string): number {
+  if (/\b403\b/.test(errorMessage)) return 6 * 60;
+  if (/\b429\b/.test(errorMessage)) return 2 * 60;
+  if (/EAI_AGAIN|ENOTFOUND/.test(errorMessage)) return 12 * 60;
+  return 0;
+}
+export function isRssFeedDue(url: string, now: number = Date.now()): boolean {
+  return now >= (nextFetchAt.get(url) ?? 0);
+}
+export function scheduleRssFeed(url: string, minutes: number, now: number = Date.now()): void {
+  nextFetchAt.set(url, now + minutes * 60_000);
 }
 
 const RSS_FEEDS: RSSFeedSource[] = [
@@ -601,13 +624,13 @@ const RSS_FEEDS: RSSFeedSource[] = [
 
   // Space business (not in SNAPI)
   { name: 'Payload Space', url: 'https://payloadspace.com/feed/', defaultCategory: 'companies' },
-  { name: 'Orbital Today', url: 'https://orbitaltoday.com/feed/', defaultCategory: 'missions' },
 
   // Government/institutional
   { name: 'NASA Breaking News', url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss', defaultCategory: 'missions' },
   { name: 'ESA Top News', url: 'https://www.esa.int/rssfeed/TopNews', defaultCategory: 'missions' },
   // JAXA removed — global.jaxa.jp RSS feed discontinued (404)
-  { name: 'NASA JPL', url: 'https://www.jpl.nasa.gov/feeds/news', defaultCategory: 'missions' },
+  // JPL's own feed now answers 202 with an empty body (bot challenge) on every path; its stories run on NASA Science (2026-09-11).
+  { name: 'NASA Science', url: 'https://science.nasa.gov/feed/', defaultCategory: 'missions', intervalMinutes: 30 },
 
   // Additional general space (not in SNAPI)
   { name: 'NASA Watch', url: 'https://nasawatch.com/feed/', defaultCategory: 'policy' },
@@ -640,10 +663,10 @@ const RSS_FEEDS: RSSFeedSource[] = [
   { name: 'DefenseScoop', url: 'https://defensescoop.com/feed/', defaultCategory: 'defense' },
 
   // Science/Academic feeds
-  { name: 'Sky & Telescope', url: 'https://skyandtelescope.org/astronomy-news/feed/', defaultCategory: 'missions' },
-  { name: 'ScienceAlert Space', url: 'https://feeds.feedburner.com/sciencealert-latestnews', defaultCategory: 'missions' },
-  { name: 'Phys.org Space', url: 'https://phys.org/rss-feed/space-news/', defaultCategory: 'missions' },
-  { name: 'ScienceDaily Space', url: 'https://www.sciencedaily.com/rss/space_time.xml', defaultCategory: 'missions' },
+  { name: 'Sky & Telescope', url: 'https://skyandtelescope.org/astronomy-news/feed/', defaultCategory: 'missions', intervalMinutes: 60 },
+  { name: 'ScienceAlert Space', url: 'https://feeds.feedburner.com/sciencealert-latestnews', defaultCategory: 'missions', intervalMinutes: 60 },
+  { name: 'Phys.org Space', url: 'https://phys.org/rss-feed/space-news/', defaultCategory: 'missions', intervalMinutes: 60 },
+  { name: 'ScienceDaily Space', url: 'https://www.sciencedaily.com/rss/space_time.xml', defaultCategory: 'missions', intervalMinutes: 60 },
   { name: 'NASA Earth Observatory', url: 'https://earthobservatory.nasa.gov/feeds/earth-observatory.rss', defaultCategory: 'satellites' },
 
   // Business/Economy feeds
@@ -698,10 +721,12 @@ const rssParser = new RSSParser({
 });
 
 async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
+  if (!isRssFeedDue(feed.url)) return 0;
   return rssBreaker.execute(async () => {
     try {
       const cache = await getDeduplicationCache();
       const parsed = await rssParser.parseURL(feed.url);
+      scheduleRssFeed(feed.url, feed.intervalMinutes ?? 5);
       let savedCount = 0;
       let skippedCount = 0;
       let offtopicSkipped = 0;
@@ -807,7 +832,9 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
 
       return savedCount;
     } catch (error) {
-      logger.warn(`[RSS] Failed to fetch ${feed.name}`, { error: String(error) });
+      const cooldown = rssCooldownMinutesFor(String(error));
+      if (cooldown > 0) scheduleRssFeed(feed.url, cooldown);
+      logger.warn(`[RSS] Failed to fetch ${feed.name}`, { error: String(error), ...(cooldown > 0 ? { cooldownMinutes: cooldown } : {}) });
       throw error; // Re-throw so the circuit breaker can track the failure
     }
   }, 0); // fallback: 0 saved articles

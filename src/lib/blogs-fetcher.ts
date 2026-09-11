@@ -261,15 +261,6 @@ const BLOG_SOURCES = [
     authorType: 'journalist',
     description: 'Defense and national security space news',
   },
-  {
-    name: 'Orbital Today',
-    slug: 'orbital-today',
-    url: 'https://orbitaltoday.com',
-    feedUrl: 'https://orbitaltoday.com/feed/',
-    type: 'blog',
-    authorType: 'journalist',
-    description: 'Space industry and aerospace news coverage',
-  },
 
   // --- Space Company Blogs ---
   // SpaceX Updates removed — no public RSS feed available

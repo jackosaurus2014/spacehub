@@ -49,7 +49,12 @@ async function getMergedMoves(): Promise<ExecutiveMove[]> {
   }
 
   try {
+    // Only moves whose organisation matched a known space company (fetcher
+    // sets `verified`). The Google News input (2026-09-10) also surfaces
+    // near-misses such as an aviation insurer with "Aerospace" in its name;
+    // those stay in the table for review but never on the page.
     const dbMoves = await prisma.executiveMove.findMany({
+      where: { verified: true },
       orderBy: { date: 'desc' },
       take: 500,
     });

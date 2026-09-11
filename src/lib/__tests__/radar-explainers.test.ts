@@ -12,6 +12,7 @@ import {
   parseExplainerRaw,
   type ExplainerCandidate,
 } from '../radar-explainers';
+import { isNonSpaceUsmlDocument } from '../usml-space-gate';
 
 jest.mock('@/lib/db', () => ({
   __esModule: true,
@@ -193,5 +194,22 @@ describe('parseExplainerRaw', () => {
     expect(parseExplainerRaw(null)).toEqual({});
     expect(parseExplainerRaw('not json')).toEqual({});
     expect(parseExplainerRaw('"a string"')).toEqual({});
+  });
+});
+
+describe('USML category gate (Jay, 2026-09-11)', () => {
+  it('skips a document whose subject is a non-space USML category with no space terms', () => {
+    expect(isNonSpaceUsmlDocument('State Department Extends Temporary Modification of USML Category XI(b)', 'Military electronics; the temporary modification of Category XI(b) is extended.')).toBe(true);
+    expect(isExplainerEligible(candidate({ significant: false, documentType: 'Rule', title: 'Temporary Modification of Category XI(b)', summary: 'Military electronics.' }))).toBe(false);
+  });
+  it('keeps space categories and anything that talks about space', () => {
+    expect(isNonSpaceUsmlDocument('Revisions to Category XV (Spacecraft)', null)).toBe(false);
+    expect(isNonSpaceUsmlDocument('Category IV launch vehicle controls', null)).toBe(false);
+    expect(isNonSpaceUsmlDocument('Category XI(b) electronics used on satellites', null)).toBe(false);
+    expect(isNonSpaceUsmlDocument('Categories XI and XV updates', null)).toBe(false);
+  });
+  it('documents that name no category are unaffected', () => {
+    expect(isNonSpaceUsmlDocument('International Traffic in Arms Regulations: definitions', 'General amendments.')).toBe(false);
+    expect(isExplainerEligible(candidate({ significant: false, documentType: 'Rule' }))).toBe(true);
   });
 });

@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { clientLogger } from '@/lib/client-logger';
+import { reloadOnceForChunkError } from '@/lib/chunk-reload';
 
 export default function Error({
   error,
@@ -12,6 +13,8 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
+    // A stale bundle after a deploy is not a bug to report — reload once and move on.
+    if (reloadOnceForChunkError(error)) return;
     clientLogger.error('Page error', {
       message: error.message,
       digest: error.digest,

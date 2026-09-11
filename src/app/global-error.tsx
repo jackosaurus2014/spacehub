@@ -1,9 +1,12 @@
 'use client';
 import { useEffect } from 'react';
 import { clientLogger } from '@/lib/client-logger';
+import { reloadOnceForChunkError } from '@/lib/chunk-reload';
 
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
+    // A stale bundle after a deploy is not a bug to report — reload once and move on.
+    if (reloadOnceForChunkError(error)) return;
     clientLogger.error('Global unhandled error', {
       message: error.message,
       digest: error.digest,
