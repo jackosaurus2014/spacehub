@@ -12,7 +12,7 @@ const read = (rel: string) => fs.readFileSync(path.join(process.cwd(), rel), 'ut
 describe('rss pacing', () => {
   it('cooldowns by failure type', () => {
     expect(rssCooldownMinutesFor('Error: Status code 403')).toBe(360);
-    expect(rssCooldownMinutesFor('Error: Status code 429')).toBe(120);
+    expect(rssCooldownMinutesFor('Error: Status code 429')).toBe(30);
     expect(rssCooldownMinutesFor('Error: getaddrinfo EAI_AGAIN orbitaltoday.com')).toBe(720);
     expect(rssCooldownMinutesFor('Error: timeout of 15000ms exceeded')).toBe(0);
   });
@@ -35,5 +35,7 @@ describe('rss pacing', () => {
       expect(line).toContain('intervalMinutes: 60');
     }
     expect(src).toContain("name: 'NASA Science', url: 'https://science.nasa.gov/feed/'");
+    // every nasa.gov feed is paced (six of them polled every 5 minutes drew 429s)
+    for (const l of lines.filter((l) => /url: 'https:\/\/[a-z.]*nasa\.gov/.test(l) && /defaultCategory:/.test(l))) expect(l).toMatch(/intervalMinutes: \d+/);
   });
 });

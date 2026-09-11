@@ -600,7 +600,7 @@ interface RSSFeedSource {
 const nextFetchAt = new Map<string, number>();
 export function rssCooldownMinutesFor(errorMessage: string): number {
   if (/\b403\b/.test(errorMessage)) return 6 * 60;
-  if (/\b429\b/.test(errorMessage)) return 2 * 60;
+  if (/\b429\b/.test(errorMessage)) return 30; // nasa.gov hands out 429s in bursts; half an hour is enough
   if (/EAI_AGAIN|ENOTFOUND/.test(errorMessage)) return 12 * 60;
   return 0;
 }
@@ -626,7 +626,7 @@ const RSS_FEEDS: RSSFeedSource[] = [
   { name: 'Payload Space', url: 'https://payloadspace.com/feed/', defaultCategory: 'companies' },
 
   // Government/institutional
-  { name: 'NASA Breaking News', url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss', defaultCategory: 'missions' },
+  { name: 'NASA Breaking News', url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss', defaultCategory: 'missions', intervalMinutes: 20 },
   { name: 'ESA Top News', url: 'https://www.esa.int/rssfeed/TopNews', defaultCategory: 'missions' },
   // JAXA removed — global.jaxa.jp RSS feed discontinued (404)
   // JPL's own feed now answers 202 with an empty body (bot challenge) on every path; its stories run on NASA Science (2026-09-11).
@@ -667,7 +667,7 @@ const RSS_FEEDS: RSSFeedSource[] = [
   { name: 'ScienceAlert Space', url: 'https://feeds.feedburner.com/sciencealert-latestnews', defaultCategory: 'missions', intervalMinutes: 60 },
   { name: 'Phys.org Space', url: 'https://phys.org/rss-feed/space-news/', defaultCategory: 'missions', intervalMinutes: 60 },
   { name: 'ScienceDaily Space', url: 'https://www.sciencedaily.com/rss/space_time.xml', defaultCategory: 'missions', intervalMinutes: 60 },
-  { name: 'NASA Earth Observatory', url: 'https://earthobservatory.nasa.gov/feeds/earth-observatory.rss', defaultCategory: 'satellites' },
+  { name: 'NASA Earth Observatory', url: 'https://earthobservatory.nasa.gov/feeds/earth-observatory.rss', defaultCategory: 'satellites', intervalMinutes: 20 },
 
   // Business/Economy feeds
   { name: 'TechCrunch Space', url: 'https://techcrunch.com/category/space/feed/', defaultCategory: 'earnings' },
@@ -682,9 +682,9 @@ const RSS_FEEDS: RSSFeedSource[] = [
   { name: 'Smithsonian Air & Space', url: 'https://www.smithsonianmag.com/rss/air-space-magazine/', defaultCategory: 'missions' },
 
   // Mission-specific
-  { name: 'NASA Artemis Blog', url: 'https://blogs.nasa.gov/artemis/feed/', defaultCategory: 'missions' },
-  { name: 'NASA JWST Blog', url: 'https://science.nasa.gov/blogs/webb/feed/', defaultCategory: 'missions' },
-  { name: 'NASA Space Station Blog', url: 'https://blogs.nasa.gov/spacestation/feed/', defaultCategory: 'missions' },
+  { name: 'NASA Artemis Blog', url: 'https://blogs.nasa.gov/artemis/feed/', defaultCategory: 'missions', intervalMinutes: 20 },
+  { name: 'NASA JWST Blog', url: 'https://science.nasa.gov/blogs/webb/feed/', defaultCategory: 'missions', intervalMinutes: 20 },
+  { name: 'NASA Space Station Blog', url: 'https://blogs.nasa.gov/spacestation/feed/', defaultCategory: 'missions', intervalMinutes: 20 },
 
   // Regional
   { name: 'Space in Africa', url: 'https://spaceinafrica.com/feed/', defaultCategory: 'companies' },
@@ -697,12 +697,12 @@ const RSS_FEEDS: RSSFeedSource[] = [
   // Military Aerospace removed — publisher discontinued the RSS endpoint (404)
   { name: 'Federal News Network Defense', url: 'https://federalnewsnetwork.com/category/defense-main/feed/', defaultCategory: 'defense' },
   { name: 'Wired Science', url: 'https://www.wired.com/feed/category/science/latest/rss', defaultCategory: 'general' },
-  { name: 'NASA Technology', url: 'https://www.nasa.gov/technology/feed/', defaultCategory: 'technology' },
-  { name: 'NASA Kennedy Space Center', url: 'https://www.nasa.gov/centers-and-facilities/kennedy/feed/', defaultCategory: 'launches' },
+  { name: 'NASA Technology', url: 'https://www.nasa.gov/technology/feed/', defaultCategory: 'technology', intervalMinutes: 20 },
+  { name: 'NASA Kennedy Space Center', url: 'https://www.nasa.gov/centers-and-facilities/kennedy/feed/', defaultCategory: 'launches', intervalMinutes: 20 },
   { name: 'ESA Launchers', url: 'http://www.esa.int/rssfeed/Our_Activities/Launchers', defaultCategory: 'launches' },
   { name: 'ESA Observing the Earth', url: 'http://www.esa.int/rssfeed/Our_Activities/Observing_the_Earth', defaultCategory: 'satellites' },
   { name: 'ESA Navigation', url: 'http://www.esa.int/rssfeed/Our_Activities/Navigation', defaultCategory: 'satellites' },
-  { name: 'NASA Image of the Day', url: 'https://www.nasa.gov/feeds/iotd-feed/', defaultCategory: 'general' },
+  { name: 'NASA Image of the Day', url: 'https://www.nasa.gov/feeds/iotd-feed/', defaultCategory: 'general', intervalMinutes: 20 },
 
   // YouTube space channels
   { name: 'Scott Manley', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCxzC4EngIsMrPmbm6Nxvb-A', defaultCategory: 'general' },
