@@ -24,7 +24,7 @@ export async function GET() {
     select: {
       id: true, title: true, company: true, location: true, remoteOk: true, category: true, seniorityLevel: true, employmentType: true,
       description: true, sourceUrl: true, contactEmail: true, salaryMin: true, salaryMax: true, clearanceRequired: true, applyMode: true,
-      planId: true, isActive: true, paidAt: true, expiresAt: true, featured: true, featuredUntil: true, viewCount: true, applyClicks: true,
+      planId: true, isActive: true, paidAt: true, expiresAt: true, featured: true, featuredUntil: true, viewCount: true, applyClicks: true, stripeReceiptUrl: true,
       createdAt: true, postedDate: true, companyProfile: { select: { slug: true, name: true } },
       _count: { select: { applications: true } },
       applications: { where: { status: 'new' }, select: { id: true } },

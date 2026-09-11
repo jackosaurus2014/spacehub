@@ -372,7 +372,7 @@ export function isNonceEligible(pathname: string): boolean {
 
 // ── Mode switch ───────────────────────────────────────────────────────────
 
-export type CspMode = 'report-only' | 'enforce-nonce';
+export type CspMode = 'off' | 'report-only' | 'enforce-nonce';
 
 /**
  * CSP_MODE=report-only (default): nonce policy goes out as
@@ -386,7 +386,13 @@ export type CspMode = 'report-only' | 'enforce-nonce';
  * would break under it. See docs/SECURITY_AUDIT_2026-09.md "CSP".
  */
 export function getCspMode(raw: string | undefined = process.env.CSP_MODE): CspMode {
-  return raw === 'enforce-nonce' ? 'enforce-nonce' : 'report-only';
+  // 'off' is the default since 2026-09-11: the report-only nonce header was
+  // proven a dead mechanism on 2026-09-03 (Next stamps no nonce under it), yet
+  // it was still flooding browser consoles (170+ lines on /gallery) and the
+  // violation endpoint with artifacts. Opt back in with CSP_MODE=report-only.
+  if (raw === 'enforce-nonce') return 'enforce-nonce';
+  if (raw === 'report-only') return 'report-only';
+  return 'off';
 }
 
 // ── Nonce ─────────────────────────────────────────────────────────────────
@@ -549,6 +555,9 @@ export function documentCspHeaders({
     return { enforced: buildCsp({ frameAncestors, dev }), xFrameOptions };
   }
 
+  if (mode === 'off') {
+    return { enforced: buildCsp({ frameAncestors, dev }), xFrameOptions };
+  }
   const n = nonce ?? generateNonce();
   if (mode === 'enforce-nonce') {
     return { enforced: buildCsp({ nonce: n, frameAncestors, dev }), nonce: n, xFrameOptions };

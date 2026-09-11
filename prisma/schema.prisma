@@ -1615,16 +1615,17 @@ model SpaceJobPosting {
   // Employer postings (2026-09-10): jobs posted directly on SpaceNexus and paid
   // through Stripe, alongside the ATS-synced rows. Featured rows sort first on
   // the board and go into the Who's Hiring email while featuredUntil is ahead.
-  postedByUserId  String?
-  planId          String?
-  contactEmail    String?
-  featured        Boolean   @default(false)
-  featuredUntil   DateTime?
-  expiresAt       DateTime?
-  paidAt          DateTime?
-  stripeSessionId String?   @unique
-  viewCount       Int       @default(0)
-  applyClicks     Int       @default(0)
+  postedByUserId   String?
+  planId           String?
+  contactEmail     String?
+  featured         Boolean   @default(false)
+  featuredUntil    DateTime?
+  expiresAt        DateTime?
+  paidAt           DateTime?
+  stripeSessionId  String?   @unique
+  stripeReceiptUrl String?
+  viewCount        Int       @default(0)
+  applyClicks      Int       @default(0)
 
   // Applicant tracking (2026-09-10): 'link' sends candidates to sourceUrl;
   // 'spacenexus' collects applications here and emails the employer.

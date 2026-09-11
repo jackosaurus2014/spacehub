@@ -21,7 +21,7 @@ interface Posting {
   id: string; title: string; company: string; location: string; remoteOk: boolean; category: string; seniorityLevel: string; employmentType: string | null;
   description: string | null; sourceUrl: string | null; contactEmail: string | null; salaryMin: number | null; salaryMax: number | null; clearanceRequired: boolean;
   applyMode: 'link' | 'spacenexus'; planId: string | null; isActive: boolean; paidAt: string | null; expiresAt: string | null; featured: boolean; featuredUntil: string | null;
-  viewCount: number; applyClicks: number; applicantCount: number; newApplicantCount: number; createdAt: string; status: PostingStatus;
+  viewCount: number; applyClicks: number; applicantCount: number; newApplicantCount: number; createdAt: string; status: PostingStatus; stripeReceiptUrl?: string | null;
   plan: { id: string; name: string; priceUsd: number; days: number } | null; companyProfile: { slug: string; name: string } | null;
 }
 interface Applicant {
@@ -182,6 +182,7 @@ export default function EmployerPortal({ posted, canceled, draft }: { posted?: s
                     <div className="text-xs text-slate-500 mt-1">
                       {p.plan ? `${p.plan.name} · $${p.plan.priceUsd}` : '—'} · {p.status === 'unpaid' ? `created ${fmt(p.createdAt)}` : `expires ${fmt(p.expiresAt)}${d !== null && d >= 0 && p.status !== 'expired' ? ` (${d} day${d === 1 ? '' : 's'})` : ''}`}
                       {' · '}{p.applyMode === 'spacenexus' ? 'applications on SpaceNexus' : 'applications on your site'}
+                      {p.stripeReceiptUrl && <>{' · '}<a href={p.stripeReceiptUrl} target="_blank" rel="noopener noreferrer" className="text-cyan-300 hover:underline">Receipt</a></>}
                     </div>
                   </div>
                   <div className="flex gap-5 text-right">

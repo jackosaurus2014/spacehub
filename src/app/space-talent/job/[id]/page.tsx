@@ -345,6 +345,7 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
   const job = await fetchJob(params.id);
   if (!job || !job.isActive) notFound();
   const onSite = job.source === 'direct' && job.applyMode === 'spacenexus';
+  const hiringOrgCountLabel = '8,600+';
 
   const [moreAtCompany, similarRoles] = await Promise.all([
     fetchMoreAtCompany(job),
@@ -510,6 +511,19 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
                     View all {job.company} jobs &rarr;
                   </Link>
                 )}
+              </div>
+            )}
+
+            {job.source !== 'direct' && (
+              <div className="card p-5 border-cyan-500/20">
+                <h2 className="text-sm font-semibold text-white mb-1">Is this your listing?</h2>
+                <p className="text-xs text-slate-400 leading-relaxed">This role was synced from {job.company}&apos;s careers page. Post it directly on SpaceNexus to collect applications here, see views and applicants in your portal, and pin it above {hiringOrgCountLabel} synced roles.</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Link href={`/hire?company=${encodeURIComponent(job.company)}#post-a-job`} className="btn-primary inline-flex items-center px-3 py-2 rounded-lg text-xs font-semibold min-h-[36px]">Post this job — from $125</Link>
+                  {job.companyProfile && (
+                    <Link href={`/company-profiles/${job.companyProfile.slug}`} className="inline-flex items-center px-3 py-2 rounded-lg text-xs text-slate-300 border border-white/15 hover:border-white/30 min-h-[36px]">Claim {job.company}&apos;s profile</Link>
+                  )}
+                </div>
               </div>
             )}
 

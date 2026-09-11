@@ -1011,5 +1011,17 @@ async function handleJobPostingCompleted(session: Stripe.Checkout.Session) {
     },
   });
   logger.info('Job posting activated', { jobId, planId: plan.id, expiresAt: expiresAt.toISOString() });
+  // Receipt link for the portal (2026-09-11): one-time Checkout has no invoice;
+  // the charge behind the payment intent carries Stripe's hosted receipt.
+  try {
+    const piId = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id;
+    if (piId) {
+      const pi = await getStripe().paymentIntents.retrieve(piId, { expand: ['latest_charge'] });
+      const charge = pi.latest_charge && typeof pi.latest_charge !== 'string' ? pi.latest_charge : null;
+      if (charge?.receipt_url) await prisma.spaceJobPosting.update({ where: { id: jobId }, data: { stripeReceiptUrl: charge.receipt_url } });
+    }
+  } catch (error) {
+    logger.warn('Job posting receipt lookup failed', { jobId, error: error instanceof Error ? error.message : String(error) });
+  }
   void notifyFounderOfPostingEvent({ event: session.metadata?.upgrade === '1' ? 'upgraded' : session.metadata?.renewal === '1' ? 'renewed' : 'paid', jobId, jobTitle: existing.title, company: existing.company, planId: plan.id, amountUsd: plan.priceUsd });
 }

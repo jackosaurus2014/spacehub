@@ -195,10 +195,11 @@ describe('generateNonce', () => {
 });
 
 describe('getCspMode', () => {
-  it('defaults to report-only and only recognises enforce-nonce', () => {
-    expect(getCspMode(undefined)).toBe('report-only');
-    expect(getCspMode('')).toBe('report-only');
-    expect(getCspMode('enforce')).toBe('report-only');
+  it('defaults to off; report-only and enforce-nonce are explicit opt-ins (2026-09-11)', () => {
+    expect(getCspMode(undefined)).toBe('off');
+    expect(getCspMode('')).toBe('off');
+    expect(getCspMode('enforce')).toBe('off');
+    expect(getCspMode('report-only')).toBe('report-only');
     expect(getCspMode('enforce-nonce')).toBe('enforce-nonce');
   });
 });
@@ -374,7 +375,7 @@ describe('middleware document branch', () => {
     else process.env.CSP_MODE = originalMode;
   });
 
-  it('sends exactly one CSP header + XFO DENY on a normal page, plus report-only on eligible ones', async () => {
+  it('default mode (off): one enforced CSP header + XFO DENY, no report-only header, no nonce (2026-09-11)', async () => {
     delete process.env.CSP_MODE;
     const res = await middleware(new NextRequest('https://spacenexus.us/news'));
     const csp = res.headers.get('content-security-policy');
@@ -383,6 +384,17 @@ describe('middleware document branch', () => {
     expect(directive(csp!, 'frame-ancestors')).toBe("frame-ancestors 'none'");
     expect(res.headers.get('x-frame-options')).toBe('DENY');
     expect(res.headers.get('reporting-endpoints')).toBe(REPORTING_ENDPOINTS_HEADER);
+    expect(res.headers.get('content-security-policy-report-only')).toBeNull();
+    expect(res.headers.get('x-middleware-request-x-nonce')).toBeNull();
+    expect(res.headers.get('x-middleware-request-content-security-policy')).toBeNull();
+  });
+
+  it('CSP_MODE=report-only (opt-in): adds the nonce policy as report-only on eligible routes', async () => {
+    process.env.CSP_MODE = 'report-only';
+    const res = await middleware(new NextRequest('https://spacenexus.us/news'));
+    const csp = res.headers.get('content-security-policy');
+    expect(csp).toBeTruthy();
+    expect(csp).not.toContain('nonce-');
     const ro = res.headers.get('content-security-policy-report-only');
     expect(ro).toContain("'strict-dynamic'");
     // Next reads the nonce from the *request* CSP[-Report-Only] header.

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { JOB_CATEGORIES } from '@/types';
@@ -25,6 +25,10 @@ export default function PostJobForm({ defaultPlan = 'featured' }: { defaultPlan?
   const [busy, setBusy] = useState<'pay' | 'draft' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState(false);
+  // "Is this your listing?" on a synced job page links here with ?company= (2026-09-11).
+  useEffect(() => {
+    try { const c = new URLSearchParams(window.location.search).get('company'); if (c && c.length <= 120) setF((p) => (p.company ? p : { ...p, company: c })); } catch { /* no window */ }
+  }, []);
   const set = (k: keyof typeof f, v: string | boolean) => setF((p) => ({ ...p, [k]: v }));
   const plan = JOB_POSTING_PLANS.find((p) => p.id === planId)!;
 

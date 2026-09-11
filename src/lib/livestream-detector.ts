@@ -875,8 +875,18 @@ async function detectViaDatabase(): Promise<ActiveLiveStream[]> {
  *
  * Requires X_BEARER_TOKEN env var (Twitter/X API Bearer token).
  */
+/**
+ * When X answers 402 (credits depleted) or 401/403 (token dead) the leg is
+ * paused for a day: before 2026-09-11 it retried every 5 minutes and logged
+ * an error each time while YouTube detection carried on regardless.
+ */
+let xApiPausedUntil = 0;
+export function isXApiPaused(now: number = Date.now()): boolean { return now < xApiPausedUntil; }
+export function pauseXApi(hours: number, now: number = Date.now()): void { xApiPausedUntil = now + hours * 3_600_000; }
+
 async function detectViaXApi(bearerToken: string): Promise<ActiveLiveStream[]> {
   const streams: ActiveLiveStream[] = [];
+  if (isXApiPaused()) return streams;
 
   // Build a search query for live/streaming tweets from space accounts
   // X API v2 recent search: find tweets with video from known handles mentioning "live"
@@ -907,6 +917,11 @@ async function detectViaXApi(bearerToken: string): Promise<ActiveLiveStream[]> {
 
     if (!res.ok) {
       const body = await res.text().catch(() => '');
+      if (res.status === 402 || res.status === 401 || res.status === 403) {
+        pauseXApi(24);
+        logger.warn('[LivestreamDetector] X API unavailable — leg paused for 24h (YouTube detection continues)', { status: res.status, body: body.slice(0, 160) });
+        return [];
+      }
       logger.warn('[LivestreamDetector] X API search error', {
         status: res.status,
         body: body.slice(0, 300),
