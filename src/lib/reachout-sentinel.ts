@@ -20,8 +20,9 @@
  */
 
 import prisma from '@/lib/db';
+import { correspondenceEmail } from '@/lib/notify-routing';
 import { logger } from '@/lib/logger';
-import { APP_URL, FOUNDER_EMAIL } from '@/lib/constants';
+import { APP_URL } from '@/lib/constants';
 import { escapeHtml } from '@/lib/newsletter/email-templates';
 
 // ---------------------------------------------------------------------------
@@ -514,14 +515,14 @@ export async function runReachoutSentinel(now: Date = new Date()): Promise<Reach
     const { Resend } = await import('resend');
     const resend = new Resend(apiKey);
     const fromEmail = process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <alerts@spacenexus.us>';
-    const { error } = await resend.emails.send({ from: fromEmail, to: FOUNDER_EMAIL, subject, html, text });
+    const { error } = await resend.emails.send({ from: fromEmail, to: correspondenceEmail(), subject, html, text });
 
     if (error) {
       logger.warn('Reachout sentinel email failed', { error: error.message });
       return { ...result, emailed: false, emailSkippedReason: error.message };
     }
 
-    logger.info('Reachout sentinel email sent', { totalStale: result.totalStale, to: FOUNDER_EMAIL });
+    logger.info('Reachout sentinel email sent', { totalStale: result.totalStale, to: correspondenceEmail() });
     return { ...result, emailed: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

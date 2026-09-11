@@ -1,4 +1,5 @@
 import { getAllModuleFreshness, upsertContent } from '@/lib/dynamic-content';
+import { alertEmail } from '@/lib/notify-routing';
 import { isStale, isExpired, FRESHNESS_POLICIES } from '@/lib/freshness-policies';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
@@ -99,7 +100,7 @@ export async function sendFreshnessAlert(
     });
 
     // --- 2. Optionally email admin via Resend ---
-    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminEmail = alertEmail(); // broken things go to the alerts inbox (notify-routing.ts)
     if (adminEmail) {
       try {
         const { Resend } = await import('resend');

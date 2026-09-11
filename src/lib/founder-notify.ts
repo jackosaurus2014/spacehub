@@ -1,5 +1,6 @@
 import { logger } from '@/lib/logger';
-import { APP_URL, FOUNDER_EMAIL } from '@/lib/constants';
+import { correspondenceEmail } from '@/lib/notify-routing';
+import { APP_URL } from '@/lib/constants';
 
 /**
  * Immediate founder heads-up for inbound messages (2026-09-10). Until now a
@@ -20,7 +21,7 @@ export async function notifyFounderOfContact(opts: { id: string; name: string; e
     const admin = `${APP_URL}/admin?tab=reachouts`;
     const html = `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#0f172a"><h2 style="margin:0 0 12px">${esc(subject)}</h2><p><b>${esc(opts.name)}</b> &lt;${esc(opts.email)}&gt; · ${esc(opts.subject)}</p><p style="white-space:pre-wrap;border-left:3px solid #e2e8f0;padding-left:12px">${esc(opts.message)}</p><p><a href="mailto:${esc(opts.email)}?subject=${encodeURIComponent(`Re: your message to SpaceNexus`)}" style="display:inline-block;background:#0ea5e9;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none">Reply</a> &nbsp; <a href="${admin}">Open reachouts</a></p></div>`;
     const text = `${subject}\n\nFrom: ${opts.name} <${opts.email}>\nSubject: ${opts.subject}\n\n${opts.message}\n\nReply: ${opts.email}\nReachouts: ${admin}`;
-    await resend.emails.send({ from, to: FOUNDER_EMAIL, replyTo: opts.email, subject, html, text });
+    await resend.emails.send({ from, to: correspondenceEmail(), replyTo: opts.email, subject, html, text });
     return true;
   } catch (error) {
     logger.warn('Founder contact notification failed', { id: opts.id, error: error instanceof Error ? error.message : String(error) });

@@ -107,7 +107,7 @@ describe('founder notifications', () => {
     expect(wh).toMatch(/void notifyFounderOfPostingEvent\(\{ event: session\.metadata\?\.upgrade === '1' \? 'upgraded' : session\.metadata\?\.renewal === '1' \? 'renewed' : 'paid'/);
     const apply = read('src/app/api/jobs/[id]/apply/route.ts');
     expect(apply).toMatch(/if \(priorCount === 1\) void notifyFounderOfPostingEvent\(\{ event: 'first_applicant'/);
-    expect(read('src/lib/employer-email.ts')).toMatch(/send\(FOUNDER_EMAIL, subject, html/);
+    expect(read('src/lib/employer-email.ts')).toMatch(/send\(alertEmail\(\), subject, html/); // money events go to the alerts inbox (notify-routing.ts)
   });
 });
 

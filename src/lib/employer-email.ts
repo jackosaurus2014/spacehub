@@ -47,14 +47,14 @@ export async function sendListingExpiryEmail(opts: { to: string; jobId: string; 
 
 /**
  * Founder heads-up (2026-09-10): a paid posting, an upgrade, or a role's
- * first applicant. Goes to FOUNDER_EMAIL so the first real customers do not
+ * first applicant. Goes to the alerts inbox (money events) so the first real customers do not
  * pass unnoticed; never blocks the caller.
  */
 export async function notifyFounderOfPostingEvent(opts: { event: 'paid' | 'upgraded' | 'renewed' | 'first_applicant'; jobId: string; jobTitle: string; company: string; planId?: string | null; amountUsd?: number | null }) {
-  const { FOUNDER_EMAIL } = await import('@/lib/constants');
+  const { alertEmail } = await import('@/lib/notify-routing');
   const label = { paid: 'New paid job posting', upgraded: 'Job posting upgraded to featured', renewed: 'Job posting renewed', first_applicant: 'First applicant on a posting' }[opts.event];
   const subject = `${label}: ${opts.jobTitle} — ${opts.company}`;
   const lines = [`${label}`, '', `Role: ${opts.jobTitle}`, `Company: ${opts.company}`, opts.planId ? `Plan: ${opts.planId}` : '', opts.amountUsd != null ? `Amount: $${opts.amountUsd}` : '', '', `Job page: ${APP_URL}/space-talent/job/${opts.jobId}`, `Admin: ${APP_URL}/admin?tab=users`].filter((l) => l !== '');
   const html = shell(label, `<p>${esc(opts.jobTitle)} · ${esc(opts.company)}${opts.planId ? ` · ${esc(opts.planId)}` : ''}${opts.amountUsd != null ? ` · $${opts.amountUsd}` : ''}</p><p><a href="${APP_URL}/space-talent/job/${opts.jobId}">Open the job page</a></p>`);
-  return send(FOUNDER_EMAIL, subject, html, lines.join('\n'));
+  return send(alertEmail(), subject, html, lines.join('\n'));
 }

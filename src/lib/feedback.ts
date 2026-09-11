@@ -16,8 +16,9 @@
  */
 
 import { z } from 'zod';
+import { correspondenceEmail } from '@/lib/notify-routing';
 import { logger } from '@/lib/logger';
-import { APP_URL, FOUNDER_EMAIL } from '@/lib/constants';
+import { APP_URL } from '@/lib/constants';
 import { escapeHtml } from '@/lib/newsletter/email-templates';
 
 // ---------------------------------------------------------------------------
@@ -123,7 +124,7 @@ export async function sendFeedbackNotificationEmail(
 
     const { error } = await resend.emails.send({
       from: fromEmail,
-      to: FOUNDER_EMAIL,
+      to: correspondenceEmail(),
       subject: `[SpaceNexus feedback] ${payload.category}: ${payload.message.slice(0, 60)}${payload.message.length > 60 ? '…' : ''}`,
       html: `
         <h2 style="margin:0 0 8px 0;">New feedback submission</h2>
@@ -156,7 +157,7 @@ export async function sendFeedbackNotificationEmail(
       return { sent: false, reason: error.message };
     }
 
-    logger.info('Feedback notification email sent', { id: payload.id, to: FOUNDER_EMAIL });
+    logger.info('Feedback notification email sent', { id: payload.id, to: correspondenceEmail() });
     return { sent: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

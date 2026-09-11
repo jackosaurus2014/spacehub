@@ -15,9 +15,9 @@ describe('contact form founder notification', () => {
     expect(route).toMatch(/void notifyFounderOfContact\(\{ id: submission\.id, name, email, subject, message \}\)/);
     expect(route.indexOf('contactSubmission.create')).toBeLessThan(route.indexOf('void notifyFounderOfContact'));
   });
-  it('the helper targets FOUNDER_EMAIL with reply-to set to the sender and never throws', () => {
+  it('the helper targets the correspondence mailbox with reply-to set to the sender and never throws', () => {
     const lib = read('src/lib/founder-notify.ts');
-    expect(lib).toMatch(/to: FOUNDER_EMAIL, replyTo: opts\.email/);
+    expect(lib).toMatch(/to: correspondenceEmail\(\), replyTo: opts\.email/);
     expect(lib).toMatch(/catch \(error\) \{[\s\S]*return false;/);
   });
 });
