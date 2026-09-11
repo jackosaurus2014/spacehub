@@ -70,6 +70,7 @@ export async function sendFreshnessAlert(
   jobName: string,
   lastRunAt: number | null,
   expectedIntervalMinutes: number,
+  opts: { severity?: 'warning' | 'critical'; detail?: string } = {},
 ): Promise<void> {
   try {
     const alert: CronFreshnessAlert = {
@@ -78,7 +79,7 @@ export async function sendFreshnessAlert(
       expectedInterval: formatInterval(expectedIntervalMinutes),
       alertedAt: new Date().toISOString(),
       resolved: false,
-      severity: lastRunAt === null ? 'critical' : 'warning',
+      severity: opts.severity ?? (lastRunAt === null ? 'critical' : 'warning'),
     };
 
     // --- 1. Persist to DynamicContent ---
@@ -119,6 +120,7 @@ export async function sendFreshnessAlert(
               <p><strong>Last successful run:</strong> ${alert.lastRun || 'Never'}</p>
               <p><strong>Expected interval:</strong> ${alert.expectedInterval}</p>
               <p><strong>Severity:</strong> ${alert.severity}</p>
+              ${opts.detail ? `<p><strong>Detail:</strong> ${opts.detail.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c] as string))}</p>` : ''}
               <p><strong>Detected at:</strong> ${alert.alertedAt}</p>
               <hr/>
               <p style="color:#666;font-size:12px">This is an automated alert from SpaceNexus data pipeline monitoring.</p>

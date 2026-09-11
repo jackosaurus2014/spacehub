@@ -805,7 +805,12 @@ export async function runContentAccuracySentinel(
       // null (severity: critical) since this represents a content-accuracy
       // fault detected right now, not a missed cron run.
       const jobName = `content-accuracy: ${failed.map((f) => f.id).join(', ')}`;
-      await sendFreshnessAlert(jobName, null, 1440);
+      // Housekeeping failures (an article waiting for review, a slow table)
+      // are warnings; anything else is a live accuracy fault (2026-09-11).
+      const HOUSEKEEPING = new Set(['stuck-transitional-rows', 'table-pipeline-liveness']);
+      const severity = failed.every((x) => HOUSEKEEPING.has(x.id)) ? 'warning' : 'critical';
+      const detail = failed.map((x) => `${x.id}: ${x.detail}`).join(' | ');
+      await sendFreshnessAlert(jobName, null, 1440, { severity, detail });
     } catch (error) {
       logger.error('Content accuracy sentinel: failed to send summary alert', {
         error: error instanceof Error ? error.message : String(error),
