@@ -19,7 +19,7 @@ async function main() {
   const [articles, known, newest, total] = await Promise.all([
     prisma.newsArticle.findMany({ where: { publishedAt: { gte: since } }, select: { title: true, summary: true, source: true, url: true, publishedAt: true }, orderBy: { publishedAt: 'desc' } }),
     loadKnownCompanyNames(),
-    prisma.executiveMove.findMany({ orderBy: { date: 'desc' }, take: 5, select: { personName: true, newTitle: true, company: true, date: true, source: true } as never }),
+    prisma.executiveMove.findMany({ orderBy: { date: 'desc' }, take: 5, select: { personName: true, toTitle: true, toCompany: true, date: true, source: true } }),
     prisma.executiveMove.count(),
   ]);
   const candidates = articles.filter((a) => BROAD.test(a.title) && TITLE_WORDS.test(`${a.title} ${a.summary || ''}`));
