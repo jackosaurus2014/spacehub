@@ -30,7 +30,7 @@ const DESCRIPTION =
 /** Bumped by hand when the prose changes. The launch figures are live, but a
  *  dateModified that changes on every request is a freshness signal search
  *  engines learn to ignore; this one only moves when the words do. */
-const LAST_EDITED = '2026-09-06T00:00:00Z';
+const LAST_EDITED = '2026-09-10T00:00:00Z';
 
 // One tracker read per request, shared by generateMetadata and the page.
 const getIndex = cache(() => getRocketIndex(new Date()));
@@ -88,7 +88,7 @@ const FAQ = [
   { q: 'Which rocket is bigger, New Glenn or Falcon 9?', a: 'New Glenn. It carries about 45 tonnes to low Earth orbit against Falcon 9\'s 22.8 tonnes, with a 7-metre fairing that fits payloads Falcon 9 cannot. Starship, when operational, dwarfs both at 100-150 tonnes.' },
   { q: 'Is Blue Origin cheaper than SpaceX?', a: 'On list price they are close: roughly $68 million for a New Glenn launch versus about $74 million for Falcon 9. Per kilogram New Glenn is cheaper on paper because it lifts twice the mass, but Falcon 9\'s reliability record and schedule certainty are what customers actually pay for today.' },
   { q: 'Does Blue Origin have a Starlink competitor?', a: 'Not one it owns. Amazon Leo (formerly Project Kuiper) is Amazon\'s constellation; Blue Origin is one of its launch providers alongside ULA, Arianespace and — awkwardly — SpaceX. Blue Origin and Amazon are separate companies that share a founder.' },
-  { q: 'Which company is winning NASA contracts?', a: 'SpaceX has the larger book: cargo and crew to the ISS, the Starship Human Landing System for Artemis III, and science launches. Blue Origin holds the Artemis sustaining-lander contract (Blue Moon Mk2) and flies New Shepard payloads for NASA. Both are in the lunar programme; SpaceX is in it first.' },
+  { q: 'Which company is winning NASA contracts?', a: 'SpaceX has the larger book: cargo and crew to the ISS, the Starship Human Landing System for the first crewed landing (now Artemis IV, 2028, after NASA made Artemis III an Earth-orbit docking test in February 2026), and science launches. Blue Origin holds the Artemis sustaining-lander contract (Blue Moon Mk2) and flies New Shepard payloads for NASA. Both are in the lunar programme; SpaceX is in it first.' },
   { q: 'Can I invest in either company?', a: 'SpaceX has traded on NASDAQ as SPCX since its June 2026 IPO. Blue Origin is private and funded almost entirely by Jeff Bezos, with no announced plans to list.' },
 ];
 
@@ -263,7 +263,7 @@ export default async function BlueOriginVsSpaceXGuide() {
               <section id="nasa">
                 <h2 className="text-2xl font-bold text-white mb-4">NASA and the Moon</h2>
                 <p className="text-slate-400 leading-relaxed mb-4">
-                  Both companies are building lunar landers for NASA&apos;s Artemis programme, and the split is instructive. SpaceX holds the Human Landing System contract for Artemis III, the first crewed landing, with a lunar variant of Starship. Blue Origin&apos;s Blue Moon Mk2 was selected as the &ldquo;sustaining&rdquo; lander for later missions — a second supplier NASA deliberately bought so that it would never again depend on one company for access to the Moon. Read that as NASA&apos;s own answer to the question in this guide&apos;s title: SpaceX first, Blue Origin as insurance, and the agency happy to pay for both.
+                  Both companies are building lunar landers for NASA&apos;s Artemis programme, and the split is instructive. SpaceX holds the Human Landing System contract for the first crewed landing with a lunar variant of Starship. That landing is now Artemis IV in 2028: NASA restructured Artemis III in February 2026 into an Earth-orbit docking test with no landing. Blue Origin&apos;s Blue Moon Mk2 was selected as the &ldquo;sustaining&rdquo; lander for later missions — a second supplier NASA deliberately bought so that it would never again depend on one company for access to the Moon. Read that as NASA&apos;s own answer to the question in this guide&apos;s title: SpaceX first, Blue Origin as insurance, and the agency happy to pay for both.
                 </p>
                 <p className="text-slate-400 leading-relaxed">
                   Beyond the Moon, SpaceX&apos;s government book is far larger: cargo and crew rotation to the International Space Station, science launches, and a long-standing relationship with the Space Force under the National Security Space Launch programme. Blue Origin flies NASA research on New Shepard and is working its way onto the science and national-security manifests with New Glenn. Our <Link href="/artemis" className="text-cyan-400 hover:text-cyan-300">Artemis tracker</Link> follows both landers.
@@ -300,7 +300,7 @@ export default async function BlueOriginVsSpaceXGuide() {
                   <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">Routine booster reuse.</strong> Landing was proven in November 2025 and the first reflight in April 2026; the economics only change when every flight reuses a booster and the upper stage delivers.</span></li>
                   <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">Starship reaching operational status.</strong> Every Starship milestone lowers the price floor New Glenn will eventually have to meet. <Link href="/starship" className="text-cyan-400 hover:text-cyan-300">Starship tracker</Link>.</span></li>
                   <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">Amazon Leo&apos;s deployment pace</strong> and how much of it New Glenn actually flies versus the other providers on the manifest.</span></li>
-                  <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">Artemis III&apos;s date</strong> — the Starship lander&apos;s schedule sets the timeline for Blue Moon too. <Link href="/artemis" className="text-cyan-400 hover:text-cyan-300">Artemis tracker</Link>.</span></li>
+                  <li className="flex items-start gap-3"><span className="mt-2 w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" aria-hidden="true" /><span><strong className="text-slate-300">Artemis IV&apos;s date</strong> — the first crewed landing (2028) rides on the Starship lander&apos;s schedule, and that sets the timeline for Blue Moon too. <Link href="/artemis" className="text-cyan-400 hover:text-cyan-300">Artemis tracker</Link>.</span></li>
                 </ul>
               </section>
 

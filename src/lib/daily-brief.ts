@@ -97,7 +97,8 @@ async function buildLaunchesNext24h(now: Date): Promise<DailyBriefSection | null
   const events = await prisma.spaceEvent.findMany({
     where: {
       type: 'launch',
-      status: 'upcoming',
+      // LL2 statuses (go/tbc/tbd) as well as 'upcoming' — 'upcoming' alone left this section empty (2026-09-10).
+      status: { in: ['upcoming', 'go', 'tbc', 'tbd'] },
       launchDate: { gte: now, lte: new Date(now.getTime() + 24 * 3600 * 1000) },
     },
     orderBy: { launchDate: 'asc' },

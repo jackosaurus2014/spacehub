@@ -140,7 +140,10 @@ export async function buildWeeklyEconomyReport(now = new Date()): Promise<Weekly
     }),
     prisma.spaceEvent.findMany({
       where: {
-        status: 'upcoming',
+        // Scheduled launches carry LL2's status words (go/tbc/tbd) as well as
+        // 'upcoming'; matching only 'upcoming' printed "0 launches in the next
+        // 14 days" in the 2026-09-07 brief while the tracker showed six.
+        status: { in: ['upcoming', 'go', 'tbc', 'tbd'] },
         type: 'launch',
         launchDate: { gte: now, lte: twoWeeksAhead },
       },

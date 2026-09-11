@@ -67,7 +67,7 @@ async function checkMissionControlFeaturedFuture(): Promise<AccuracyCheckOutcome
   const stale = await prisma.spaceEvent.findMany({
     where: {
       type: { in: MARQUEE_EVENT_TYPES },
-      status: 'upcoming',
+      status: { in: ['upcoming', 'go', 'tbc', 'tbd'] }, // any still-scheduled status with a past date is stale (2026-09-10)
       launchDate: { lt: now },
     },
     select: { id: true, name: true, launchDate: true },
