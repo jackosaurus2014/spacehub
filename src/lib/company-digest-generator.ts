@@ -1,4 +1,5 @@
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
+import { parseLooseJson } from '@/lib/loose-json';
 import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import { createMessageStreamed } from '@/lib/anthropic-stream';
@@ -140,7 +141,7 @@ Respond with valid JSON (no markdown code fences):
       const jsonMatch = textBlock.text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) continue;
 
-      const parsed: ClaudeDigestResponse = JSON.parse(jsonMatch[0]);
+      const parsed: ClaudeDigestResponse = parseLooseJson(jsonMatch[0]);
       if (!parsed.digests || !Array.isArray(parsed.digests)) continue;
 
       for (const digest of parsed.digests) {
@@ -266,7 +267,7 @@ Respond with JSON (no markdown code fences):
       const jsonMatch = textBlock.text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) continue;
 
-      const parsed = JSON.parse(jsonMatch[0]);
+      const parsed = parseLooseJson(jsonMatch[0]);
 
       const result = await prisma.companyDigest.create({
         data: {

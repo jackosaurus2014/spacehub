@@ -7,6 +7,7 @@
  */
 
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
+import { parseLooseJson } from '@/lib/loose-json';
 import prisma from '@/lib/db';
 import { upsertContent } from '@/lib/dynamic-content';
 import { logger } from '@/lib/logger';
@@ -173,7 +174,7 @@ Respond with valid JSON (no markdown code fences):
       return null;
     }
 
-    const parsed = JSON.parse(jsonMatch[0]);
+    const parsed = parseLooseJson(jsonMatch[0]);
 
     return {
       title: parsed.title,

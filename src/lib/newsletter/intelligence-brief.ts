@@ -3,6 +3,7 @@
 // an 8-section intelligence brief for space industry professionals.
 
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
+import { parseLooseJson } from '@/lib/loose-json';
 import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import { logger } from '@/lib/logger';
@@ -230,7 +231,7 @@ Return the JSON response now.`;
       return getDefaultSections();
     }
 
-    const parsed = JSON.parse(jsonMatch[0]);
+    const parsed = parseLooseJson(jsonMatch[0]);
     if (!parsed.sections || !Array.isArray(parsed.sections)) {
       logger.error('Invalid JSON structure in AI response for intelligence brief');
       return getDefaultSections();

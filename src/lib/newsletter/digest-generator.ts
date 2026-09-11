@@ -2,6 +2,7 @@
 // Aggregates yesterday's news and generates AI feature articles
 
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
+import { parseLooseJson } from '@/lib/loose-json';
 import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import { logger } from '@/lib/logger';
@@ -158,7 +159,7 @@ Respond with valid JSON in this exact format:
       return [];
     }
 
-    const parsed = JSON.parse(jsonMatch[0]);
+    const parsed = parseLooseJson(jsonMatch[0]);
     return parsed.articles || [];
   } catch (error) {
     logger.error('Error generating feature articles', { error: error instanceof Error ? error.message : String(error) });

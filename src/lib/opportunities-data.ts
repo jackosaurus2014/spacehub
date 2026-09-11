@@ -1,4 +1,5 @@
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
+import { parseLooseJson } from '@/lib/loose-json';
 import prisma from '@/lib/db';
 import { safeJsonParse } from '@/lib/errors';
 import Anthropic from '@anthropic-ai/sdk';
@@ -595,7 +596,7 @@ Return your response as a JSON array of opportunity objects.`;
       // Extract JSON from the response
       const jsonMatch = content.text.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
+        const parsed = parseLooseJson(jsonMatch[0]);
         opportunities = parsed.map((opp: Record<string, unknown>, index: number) => ({
           slug: `ai-${Date.now()}-${index}`,
           title: opp.title as string,

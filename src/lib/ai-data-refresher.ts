@@ -4,6 +4,7 @@
  */
 
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
+import { parseLooseJson } from '@/lib/loose-json';
 import Anthropic from '@anthropic-ai/sdk';
 import prisma from '@/lib/db';
 import { getModuleContent, upsertContent, logRefresh } from './dynamic-content';
@@ -560,7 +561,7 @@ Respond with valid JSON (no markdown code fences):
 
     let parsed: AIRefreshResponse;
     try {
-      parsed = JSON.parse(jsonMatch[0]);
+      parsed = parseLooseJson(jsonMatch[0]);
     } catch {
       throw new Error(
         `Failed to parse AI response JSON (${jsonMatch[0].length} chars, ` +

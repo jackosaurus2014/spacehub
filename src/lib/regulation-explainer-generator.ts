@@ -1,4 +1,5 @@
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
+import { parseLooseJson } from '@/lib/loose-json';
 import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import { createMessageStreamed } from '@/lib/anthropic-stream';
@@ -189,7 +190,7 @@ Respond with valid JSON (no markdown code fences):
     throw new Error('Failed to parse AI response — no JSON found');
   }
 
-  const parsed: ClaudeExplainerResponse = JSON.parse(jsonMatch[0]);
+  const parsed: ClaudeExplainerResponse = parseLooseJson(jsonMatch[0]);
 
   if (!parsed.explainers || !Array.isArray(parsed.explainers) || parsed.explainers.length === 0) {
     throw new Error('AI response contained no explainers');

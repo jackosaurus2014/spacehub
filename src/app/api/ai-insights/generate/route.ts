@@ -1,5 +1,6 @@
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
 import { createMessageStreamed } from '@/lib/anthropic-stream';
+import { parseLooseJson } from '@/lib/loose-json';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -142,7 +143,7 @@ IMPORTANT GUIDELINES:
     }
 
     try {
-      return { ok: true, result: JSON.parse(jsonMatch[0]) as FactCheckResult };
+      return { ok: true, result: parseLooseJson<FactCheckResult>(jsonMatch[0]) };
     } catch {
       return { ok: false, reason: 'Could not parse fact-check response' };
     }
@@ -339,6 +340,17 @@ export async function POST(request: NextRequest) {
         message: 'Generation lock held — another run is in progress or completed today',
       });
     }
+
+    // Any failure after the lock is taken must release it, or the 07:00 UTC
+    // retry skips with "lock held" for the rest of the day (2026-09-10).
+    const fail = async (message: string) => {
+      if (heldLockKey) {
+        await prisma.dynamicContent.deleteMany({ where: { contentKey: heldLockKey } }).catch(() => null);
+        logger.info('AI insights generation lock released after failure', { lockKey: heldLockKey, message });
+        heldLockKey = null;
+      }
+      return internalError(message);
+    };
 
     // Fetch recent content for analysis
     const thirtysSixHoursAgo = new Date(Date.now() - 36 * 60 * 60 * 1000);
@@ -552,7 +564,7 @@ Respond with valid JSON in this exact format (no markdown code fences):
     const textBlock = response.content.find((block) => block.type === 'text');
     if (!textBlock || textBlock.type !== 'text') {
       logger.error('AI insights generation returned no text content');
-      return internalError('AI response contained no text content');
+      return fail('AI response contained no text content');
     }
 
     const jsonMatch = textBlock.text.match(/\{[\s\S]*\}/);
@@ -560,22 +572,22 @@ Respond with valid JSON in this exact format (no markdown code fences):
       logger.error('AI insights generation returned no valid JSON', {
         responsePreview: textBlock.text.slice(0, 200),
       });
-      return internalError('Failed to parse AI response');
+      return fail('Failed to parse AI response');
     }
 
     let parsed: ClaudeInsightsResponse;
     try {
-      parsed = JSON.parse(jsonMatch[0]);
+      parsed = parseLooseJson<ClaudeInsightsResponse>(jsonMatch[0]);
     } catch (parseError) {
       logger.error('Failed to parse AI insights JSON', {
         error: parseError instanceof Error ? parseError.message : String(parseError),
       });
-      return internalError('Failed to parse AI response JSON');
+      return fail('Failed to parse AI response JSON');
     }
 
     if (!parsed.insights || !Array.isArray(parsed.insights) || parsed.insights.length === 0) {
       logger.error('AI insights response contained no insights array');
-      return internalError('AI response contained no insights');
+      return fail('AI response contained no insights');
     }
 
     const validCategories = new Set(['regulatory', 'market', 'technology', 'geopolitical', 'forecast']);

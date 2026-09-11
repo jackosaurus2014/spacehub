@@ -1,4 +1,5 @@
 import { EDITORIAL_MODEL } from '@/lib/ai-models';
+import { parseLooseJson } from '@/lib/loose-json';
 import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import crypto from 'crypto';
@@ -112,7 +113,7 @@ Respond with valid JSON (no markdown code fences):
       logger.warn('Explainer fact-check response could not be parsed — holding for review', { title });
       return { overallVerdict: 'major_issues', notes: 'Could not parse fact-check response — requires manual review', corrections: [] };
     }
-    return JSON.parse(jsonMatch[0]) as FactCheckResult;
+    return parseLooseJson(jsonMatch[0]) as FactCheckResult;
   } catch (error) {
     logger.warn('Explainer fact-check failed — holding for review', {
       title,
@@ -126,7 +127,7 @@ function parseGeneratedSections(text: string): GeneratedExplainerSections | null
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) return null;
   try {
-    const parsed = JSON.parse(jsonMatch[0]) as Partial<GeneratedExplainerSections>;
+    const parsed = parseLooseJson(jsonMatch[0]) as Partial<GeneratedExplainerSections>;
     if (
       typeof parsed.title === 'string' && parsed.title.trim() &&
       typeof parsed.summary === 'string' && parsed.summary.trim() &&
