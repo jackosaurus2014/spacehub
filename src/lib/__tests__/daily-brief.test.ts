@@ -56,8 +56,10 @@ const NOW = new Date('2026-09-01T07:04:00Z');
 
 /** spaceEvent.findMany serves two sections; route on the queried status. */
 function mockSpaceEvents(upcoming: unknown[], flown: unknown[]) {
+  // The next-24h query matches every still-scheduled status ({ in: ['upcoming','go','tbc','tbd'] }, 2026-09-10); flown launches use a different filter.
+  const isScheduledQuery = (status: unknown) => status === 'upcoming' || (typeof status === 'object' && status !== null && Array.isArray((status as { in?: unknown }).in) && ((status as { in: unknown[] }).in).includes('upcoming'));
   mockSpaceEventFindMany.mockImplementation((args: { where: { status: unknown } }) =>
-    Promise.resolve(args.where.status === 'upcoming' ? upcoming : flown)
+    Promise.resolve(isScheduledQuery(args.where.status) ? upcoming : flown)
   );
 }
 

@@ -35,7 +35,9 @@ jest.mock('@/lib/logger', () => ({
 jest.mock('@anthropic-ai/sdk', () => ({
   __esModule: true,
   default: class MockAnthropic {
-    messages = { create: mockMessagesCreate };
+    // The generator streams long-form calls (anthropic-stream.ts): stream() resolves
+    // its finalMessage() from the same mock so each test's queued responses apply.
+    messages = { create: mockMessagesCreate, stream: (params: unknown) => ({ finalMessage: () => mockMessagesCreate(params) }) };
   },
 }));
 

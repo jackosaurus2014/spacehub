@@ -86,7 +86,8 @@ describe('mission-control-featured-future', () => {
     const result = await getCheck('mission-control-featured-future').run();
     expect(result.ok).toBe(true);
     expect(mockPrisma.spaceEvent.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: expect.objectContaining({ status: 'upcoming' }) })
+      // any still-scheduled status (LL2 go/tbc/tbd as well as 'upcoming') with a past date is stale (2026-09-10)
+      expect.objectContaining({ where: expect.objectContaining({ status: { in: ['upcoming', 'go', 'tbc', 'tbd'] } }) })
     );
   });
 

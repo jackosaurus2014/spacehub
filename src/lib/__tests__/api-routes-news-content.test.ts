@@ -294,6 +294,7 @@ describe('GET /api/blogs', () => {
 describe('GET /api/ticker', () => {
   it('returns ticker items for default (enthusiast) persona', async () => {
     // Mock news articles — always fetched
+    (mockPrisma.companyProfile.findMany as jest.Mock).mockResolvedValue([]); // stocks query runs for every persona now
     (mockPrisma.newsArticle.findMany as jest.Mock).mockResolvedValue([
       { title: 'SpaceX Launch', source: 'SpaceNews', category: 'launch', url: '/news' },
     ]);
@@ -349,6 +350,7 @@ describe('GET /api/ticker', () => {
   });
 
   it('includes Cache-Control header', async () => {
+    (mockPrisma.companyProfile.findMany as jest.Mock).mockResolvedValue([]); // stocks query runs for every persona now
     (mockPrisma.newsArticle.findMany as jest.Mock).mockResolvedValue([]);
     (mockPrisma.spaceEvent.findMany as jest.Mock).mockResolvedValue([]);
     (mockPrisma.blogPost.findMany as jest.Mock).mockResolvedValue([]);
@@ -360,6 +362,7 @@ describe('GET /api/ticker', () => {
   });
 
   it('returns empty items array on error (graceful degradation)', async () => {
+    (mockPrisma.companyProfile.findMany as jest.Mock).mockResolvedValue([]); // stocks query runs for every persona now
     (mockPrisma.newsArticle.findMany as jest.Mock).mockRejectedValue(new Error('DB error'));
 
     const req = new NextRequest('http://localhost/api/ticker');
@@ -373,6 +376,7 @@ describe('GET /api/ticker', () => {
   });
 
   it('ticker items have required fields (type, label, value, color, priority)', async () => {
+    (mockPrisma.companyProfile.findMany as jest.Mock).mockResolvedValue([]); // stocks query runs for every persona now
     (mockPrisma.newsArticle.findMany as jest.Mock).mockResolvedValue([
       { title: 'Rocket Launch Success', source: 'NASA', category: 'launch', url: '/news' },
     ]);
