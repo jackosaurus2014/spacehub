@@ -44,7 +44,7 @@ describe('advertised discount registry', () => {
     expect(offer.duration).toBe(12);
     for (const rel of offer.surfaces) {
       const src = fs.readFileSync(path.join(process.cwd(), rel), 'utf-8');
-      expect(src).not.toMatch(/for life|locked forever|$4.99/i);
+      expect(src).not.toMatch(/for life|locked forever|access forever|\$4\.99/i);
     }
     expect(fs.readFileSync(path.join(process.cwd(), 'src/app/api/stripe/checkout/route.ts'), 'utf-8')).toMatch(/allow_promotion_codes: true/);
   });

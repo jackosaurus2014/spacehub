@@ -340,7 +340,7 @@ function RegisterPageContent() {
             </h1>
             <p className="text-slate-400 mt-2">
               {isFounding
-                ? 'Lock in $4.99/month Professional access forever'
+                ? 'Get 50% off Professional for your first 12 months'
                 : isTrial
                 ? 'Create your account to begin your 14-day Professional trial'
                 : 'Create your account and explore the cosmos'}
