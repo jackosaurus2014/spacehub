@@ -20,7 +20,7 @@ async function main() {
     const d = String(r.createdAt).slice(0, 10); const st = String(r.status ?? '?');
     byDay[d] = byDay[d] || {}; byDay[d][st] = (byDay[d][st] || 0) + 1;
   }
-  const newest = rows.slice(0, 12).map((r) => ({ created: String(r.createdAt).slice(0, 16), status: r.status, title: String(r.title ?? r.headline ?? '').slice(0, 70), published: r.publishedAt ? String(r.publishedAt).slice(0, 10) : null, rejected: r.rejectedAt ? String(r.rejectedAt).slice(0, 10) : null, reason: r.rejectionReason ?? r.reviewNote ?? null }));
+  const newest = rows.slice(0, 12).map((r) => ({ slug: r.slug, created: String(r.createdAt).slice(0, 16), status: r.status, title: String(r.title ?? r.headline ?? '').slice(0, 70), published: r.publishedAt ? String(r.publishedAt).slice(0, 10) : null, rejected: r.rejectedAt ? String(r.rejectedAt).slice(0, 10) : null, reason: r.rejectionReason ?? r.reviewNote ?? null }));
   console.log('HEX', hex({ days, total: rows.length, byDay, newest }));
 }
 
