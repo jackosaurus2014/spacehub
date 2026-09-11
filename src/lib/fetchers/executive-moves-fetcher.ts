@@ -91,7 +91,8 @@ const NAME_TOKEN_RE = /^\p{Lu}[\p{L}'-]*\.?$/u;
  */
 export function isLikelyPersonName(raw: string | null | undefined): boolean {
   if (!raw) return false;
-  const name = raw.trim();
+  // "Dr Tidiane Ouattara Appointed …" was rejected on the honorific (2026-09-10).
+  const name = raw.trim().replace(/^(?:Dr|Mr|Mrs|Ms|Prof|Gen|Adm|Col|Lt|Maj|Sen|Rep)\.?\s+/i, '');
   if (!name || name.length >= PERSON_NAME_MAX_LENGTH) return false;
   if (/\d/.test(name)) return false;
 
@@ -107,6 +108,25 @@ export function isLikelyPersonName(raw: string | null | undefined): boolean {
   return true;
 }
 
+/**
+ * Headlines lead with descriptors — "Former NGA director Frank Whitworth
+ * named president of Satellogic" — and the person group captures all of it,
+ * which the name check then rejects (2026-09-10). Keep the trailing run of
+ * name-like tokens (capitalised, not a known non-name word), at most four.
+ */
+export function normalizePersonCandidate(raw: string | null | undefined): string {
+  if (!raw) return '';
+  const stripped = raw.trim().replace(/^(?:Dr|Mr|Mrs|Ms|Prof|Gen|Adm|Col|Lt|Maj|Sen|Rep)\.?\s+/i, '');
+  const tokens = stripped.split(/\s+/).filter(Boolean);
+  const kept: string[] = [];
+  for (let i = tokens.length - 1; i >= 0 && kept.length < PERSON_NAME_TOKEN_MAX; i--) {
+    const bare = tokens[i].replace(/\.$/, '');
+    if (!NAME_TOKEN_RE.test(tokens[i]) || NON_NAME_WORDS.has(bare.toLowerCase())) break;
+    kept.unshift(tokens[i]);
+  }
+  return kept.length >= PERSON_NAME_TOKEN_MIN ? kept.join(' ') : stripped;
+}
+
 const TITLE_MAX_LENGTH = 60;
 const TITLE_MAX_WORDS = 8;
 
@@ -115,7 +135,7 @@ const ROLE_KEYWORDS = [
   'president', 'vice president', 'vp',
   'chief', 'head of', 'general manager', 'managing director',
   'founder', 'co-founder', 'chairman', 'chairwoman', 'chairperson', 'chair',
-  'board member', 'board of directors', 'director', 'administrator',
+  'board member', 'board of directors', 'director', 'director general', 'director-general', 'secretary general', 'administrator',
   'executive director', 'partner', 'principal', 'officer',
 ];
 
@@ -302,6 +322,14 @@ const MOVE_PATTERNS: MovePatternDef[] = [
     regex: /(\w[\w\s.'-]+?)\s+(?:steps down|stepped down|resigned|departed|retired)\s+(?:as\s+)?(.+?)\s+(?:of|at|from)\s+(.+?)(?:\.|,|$)/gi,
     extract: (m) => ({ person: m[1], title: m[2], company: m[3] }),
   },
+  {
+    // "L3Harris names space sector leader Sam Mehta CEO after Kubasik steps
+    // down" — company-first with NO "as": optional lowercase descriptors,
+    // then a capitalised 2–4 token name, then the title up to a boundary word.
+    // Name tokens need a lowercase second letter so an all-caps role (CEO) is never swallowed into the name.
+    regex: /(\w[\w\s.'&-]+?)\s+(?:appoints|names|hires|promotes|taps)\s+(?:(?:[a-z][\w-]*\s+){0,5})?((?:[A-Z][a-z][\w'.-]*\s+){1,3}[A-Z][a-z][\w'-]*)\s+([A-Za-z][\w\s&-]{1,40}?)(?=\s+(?:after|to succeed|succeeding|effective|following|amid|from|starting|beginning|as part)\b|[.,;:]|$)/g,
+    extract: (m) => ({ person: m[2], title: m[3], company: m[1] }),
+  },
 ];
 
 export function extractMovesFromText(
@@ -336,7 +364,7 @@ export function extractMovesFromText(
     for (const patternDef of MOVE_PATTERNS) {
       for (const match of Array.from(scanText.matchAll(patternDef.regex))) {
         const { person, title: titleGroup, company: companyGroup } = patternDef.extract(match);
-        const personName = person?.trim();
+        const personName = normalizePersonCandidate(person);
         const titleVal = titleGroup?.trim();
         const companyVal = companyGroup?.trim();
 
@@ -374,6 +402,57 @@ export function extractMovesFromText(
  * Scan recent news articles for executive moves and store in DB.
  * Runs daily via cron scheduler.
  */
+/**
+ * Google News RSS as a second input (2026-09-10). Our RSS sources are outlets,
+ * not wires: a 21-day replay found only 3 appointment-shaped headlines in
+ * 1,571 articles, so the pipeline starved and the sentinel fired. Google News
+ * returns ~100 items per query; the known-company / industry-org gate in
+ * extractMovesFromText keeps the non-space ones out. Titles arrive as
+ * "Headline - Outlet"; the outlet becomes the source. Only headlines from the
+ * last WIRE_LOOKBACK_DAYS are used, and nothing is stored as a NewsArticle.
+ */
+const WIRE_QUERIES = [
+  '(space OR satellite OR aerospace OR launch OR spacecraft) (appoints OR appointed OR names OR named OR hires OR promotes OR joins) (CEO OR CFO OR CTO OR COO OR president OR chief OR "vice president" OR "director general")',
+  '(space OR satellite OR aerospace OR spacecraft) ("steps down" OR resigns OR "to step down" OR retires OR departs) (CEO OR president OR chief OR "director general")',
+];
+const WIRE_LOOKBACK_DAYS = 7;
+
+export interface WireHeadline { title: string; summary: string; source: string; url: string; publishedAt: Date }
+
+export function parseWireItem(item: { title?: string; link?: string; pubDate?: string; contentSnippet?: string; isoDate?: string }): WireHeadline | null {
+  const rawTitle = (item.title || '').trim();
+  if (!rawTitle || !item.link) return null;
+  const m = rawTitle.match(/^(.*?)\s+-\s+([^-]{2,60})$/);
+  const title = m ? m[1].trim() : rawTitle;
+  const source = m ? m[2].trim() : 'Google News';
+  const publishedAt = new Date(item.isoDate || item.pubDate || Date.now());
+  if (Number.isNaN(publishedAt.getTime())) return null;
+  return { title, summary: (item.contentSnippet || '').replace(/\s+/g, ' ').slice(0, 500), source, url: item.link, publishedAt };
+}
+
+export async function fetchWireHeadlines(now: Date = new Date()): Promise<WireHeadline[]> {
+  const { default: Parser } = await import('rss-parser');
+  const parser = new Parser({ timeout: 20000, headers: { 'User-Agent': 'SpaceNexus/1.0 (executive moves)' } });
+  const cutoff = now.getTime() - WIRE_LOOKBACK_DAYS * 24 * 60 * 60 * 1000;
+  const seen = new Set<string>();
+  const out: WireHeadline[] = [];
+  for (const q of WIRE_QUERIES) {
+    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-US&gl=US&ceid=US:en`;
+    try {
+      const feed = await parser.parseURL(url);
+      for (const item of feed.items || []) {
+        const h = parseWireItem(item);
+        if (!h || h.publishedAt.getTime() < cutoff || seen.has(h.url)) continue;
+        seen.add(h.url);
+        out.push(h);
+      }
+    } catch (err) {
+      logger.warn('executive-moves: Google News query failed', { error: String(err) });
+    }
+  }
+  return out;
+}
+
 export async function fetchAndStoreExecutiveMoves(): Promise<{ found: number; stored: number }> {
   try {
     // Get news articles from last 3 days
@@ -386,11 +465,12 @@ export async function fetchAndStoreExecutiveMoves(): Promise<{ found: number; st
     });
 
     const knownNames = await loadKnownCompanyNames();
+    const wire = await fetchWireHeadlines();
 
     let found = 0;
     let stored = 0;
 
-    for (const article of articles) {
+    for (const article of [...articles, ...wire]) {
       if (!isEligibleExecMoveArticle(article.title)) continue;
 
       const moves = extractMovesFromText(
@@ -432,7 +512,7 @@ export async function fetchAndStoreExecutiveMoves(): Promise<{ found: number; st
       }
     }
 
-    logger.info('Executive moves scan complete', { articlesScanned: articles.length, found, stored });
+    logger.info('Executive moves scan complete', { articlesScanned: articles.length, wireScanned: wire.length, found, stored });
     return { found, stored };
   } catch (err) {
     logger.error('Executive moves fetch error', { error: String(err) });
