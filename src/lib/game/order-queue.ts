@@ -15,7 +15,8 @@ import { getInterstellarCommandProgress } from './interstellar-commands';
 import { getActiveScienceMissions, getScienceMissionProgress, SCIENCE_PROGRAM_MAP } from './science-missions';
 import { SHIP_MAP } from './ships';
 import { REAL_SECONDS_PER_GAME_MONTH } from './server-time';
-import type { GameState } from './types';
+import type { GameState, GameTab } from './types';
+import { RESEARCH_MAP } from './research-tree';
 import { resolveIcon, type IconName } from './icons';
 
 // Clock unification (2026-09-02): ETAs are quoted on the world calendar
@@ -32,6 +33,8 @@ export interface OrderQueueItem {
   pct: number | null;      // null = no completion percentage (continuous op)
   etaSeconds: number | null;
   target: OrderQueueTarget;
+  /** Rows with no place on the map (research) open a tab instead (2026-09-12). */
+  tab?: GameTab;
 }
 
 export function buildOrderQueue(state: GameState): OrderQueueItem[] {
@@ -54,6 +57,26 @@ export function buildOrderQueue(state: GameState): OrderQueueItem[] {
       pct,
       etaSeconds: Math.max(0, total - elapsed),
       target: { kind: 'location', id: b.locationId },
+    });
+  }
+
+  // Research in progress (Jay, 2026-09-12): same countdown as construction,
+  // one row per active slot. Clicking opens the Research tab.
+  for (const [slot, r] of [['1', state.activeResearch], ['2', state.activeResearch2]] as const) {
+    if (!r) continue;
+    const def = RESEARCH_MAP.get(r.definitionId);
+    const elapsed = (nowMs - (r.startedAtMs || 0)) / 1000;
+    const total = r.realDurationSeconds || 1;
+    const pct = Math.max(0, Math.min(100, (elapsed / total) * 100));
+    items.push({
+      id: `research-${slot}-${r.definitionId}`,
+      icon: 'research',
+      label: def?.name || r.definitionId,
+      sub: slot === '2' ? 'Research · second lab' : 'Research',
+      pct,
+      etaSeconds: Math.max(0, total - elapsed),
+      target: { kind: 'location', id: 'earth' },
+      tab: 'research',
     });
   }
 

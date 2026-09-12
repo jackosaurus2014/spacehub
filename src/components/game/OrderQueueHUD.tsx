@@ -9,6 +9,7 @@
 // selection the canvas click / keyboard list use.
 
 import { formatCountdown } from '@/lib/game/formulas';
+import type { GameTab } from '@/lib/game/types';
 import type { GameState } from '@/lib/game/types';
 import GameIcon from './GameIcon';
 // V3 (docs/VISUAL_DEPTH_2026-08.md §V3): the derivation moved to
@@ -22,10 +23,12 @@ export type { OrderQueueTarget };
 interface OrderQueueHUDProps {
   state: GameState;
   onSelect: (target: OrderQueueTarget) => void;
+  /** Rows that live on a tab rather than the map (research). Without it such rows are not clickable. */
+  onOpenTab?: (tab: GameTab) => void;
   className?: string;
 }
 
-export default function OrderQueueHUD({ state, onSelect, className }: OrderQueueHUDProps) {
+export default function OrderQueueHUD({ state, onSelect, onOpenTab, className }: OrderQueueHUDProps) {
   const items = buildOrderQueue(state);
   if (items.length === 0) return null;
 
@@ -43,7 +46,8 @@ export default function OrderQueueHUD({ state, onSelect, className }: OrderQueue
           <button
             key={item.id}
             type="button"
-            onClick={() => onSelect(item.target)}
+            onClick={() => { if (item.tab) { onOpenTab?.(item.tab); } else onSelect(item.target); }}
+            disabled={!!item.tab && !onOpenTab}
             className="shrink-0 min-h-[44px] flex items-center gap-1.5 px-2 py-1 rounded-lg border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.08] hover:border-cyan-500/30 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-cyan-400"
             title={`${item.label} — ${item.sub}`}
           >

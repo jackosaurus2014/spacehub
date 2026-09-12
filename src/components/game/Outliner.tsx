@@ -167,7 +167,7 @@ function OutlinerBody({ state, now, onNavigateTab, onFocusMap }: OutlinerBodyPro
   const operations = useMemo(
     () => buildOrderQueue(state),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [state.buildings, state.ships, state.expeditions, now],
+    [state.buildings, state.ships, state.expeditions, state.activeResearch, state.activeResearch2, now],
   );
 
   const holdings = useMemo(
@@ -188,7 +188,7 @@ function OutlinerBody({ state, now, onNavigateTab, onFocusMap }: OutlinerBodyPro
     else onNavigateTab(item.tab);
   }, [onNavigateTab, onFocusMap]);
 
-  const activateOperation = useCallback((item: OrderQueueItem) => onFocusMap(item.target), [onFocusMap]);
+  const activateOperation = useCallback((item: OrderQueueItem) => { if (item.tab) onNavigateTab(item.tab); else onFocusMap(item.target); }, [onFocusMap, onNavigateTab]);
 
   const activateHolding = useCallback((locationId: string) => onFocusMap({ kind: 'location', id: locationId }), [onFocusMap]);
 

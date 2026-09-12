@@ -555,7 +555,7 @@ export default function MapCommandCenter({
       )}
 
       {/* Order Queue HUD — top-left */}
-      <OrderQueueHUD state={state} onSelect={handleOrderQueueSelect} className="absolute top-2 left-2 z-20 max-w-[calc(100%-1rem)]" />
+      <OrderQueueHUD state={state} onSelect={handleOrderQueueSelect} onOpenTab={onNavigateTab} className="absolute top-2 left-2 z-20 max-w-[calc(100%-1rem)]" />
 
       {/* Layer toggle — top-center */}
       <div
