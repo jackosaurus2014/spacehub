@@ -1,5 +1,6 @@
 'use client';
 
+import { registerSyncNow } from '@/lib/game/sync-bridge';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { TYCOON_EVENTS, trackTycoon, fireOnce } from '@/lib/game/funnel-events';
 import type { GameState } from '@/lib/game/types';
@@ -467,6 +468,14 @@ export function useGameSync(
   // this callback stays stable and the sync timers are never reset.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Expose an on-demand push for asset-client's insufficient_funds retry (sync-bridge.ts):
+  // the server validates purchases against its last-synced balance.
+  useEffect(() => {
+    if (!state) return;
+    registerSyncNow(doSync);
+    return () => registerSyncNow(null);
+  }, [doSync, !!state]);
 
   // Periodic sync
   useEffect(() => {

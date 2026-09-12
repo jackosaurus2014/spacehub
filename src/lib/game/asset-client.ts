@@ -17,6 +17,7 @@
 // "confirming" toast so the order still feels acknowledged.
 
 import { toast } from '@/lib/toast';
+import { pushSyncNow } from '@/lib/game/sync-bridge';
 
 export type AssetOpResult<T = Record<string, unknown>> =
   | { kind: 'ok'; data: T }
@@ -26,7 +27,25 @@ export type AssetOpResult<T = Record<string, unknown>> =
 export const PENDING_HINT_MS = 800;
 
 export async function requestAssetOp<T = Record<string, unknown>>(
-  path: 'build' | 'refit' | 'sell' | 'mothball' | 'reactivate' | 'repair' | 'research' | 'ship' | 'scrap' | 'unlock',
+  path: AssetOpPath,
+  body: Record<string, unknown>,
+  label: string,
+): Promise<AssetOpResult<T>> {
+  const first = await requestAssetOpOnce<T>(path, body, label);
+  // The server validates funds against its copy of the balance, which only
+  // moves on sync; the dashboard shows the client's live figure. On a funds
+  // refusal, push the current state and retry once (2026-09-12).
+  if (first.kind === 'fail' && first.code === 'insufficient_funds') {
+    const pushed = await pushSyncNow();
+    if (pushed) return requestAssetOpOnce<T>(path, body, label);
+  }
+  return first;
+}
+
+export type AssetOpPath = 'build' | 'refit' | 'sell' | 'mothball' | 'reactivate' | 'repair' | 'research' | 'ship' | 'scrap' | 'unlock';
+
+async function requestAssetOpOnce<T = Record<string, unknown>>(
+  path: AssetOpPath,
   body: Record<string, unknown>,
   label: string,
 ): Promise<AssetOpResult<T>> {
