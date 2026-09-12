@@ -22,9 +22,9 @@ export const dynamic = 'force-dynamic';
 const LAST_EDITED = '2026-09-06T00:00:00Z';
 
 export const metadata: Metadata = {
-  title: "How Much Does It Cost to Launch a Satellite? Falcon 9 $74M, $3,246/kg — Every Rocket's 2026 Price",
+  title: "How Much Does It Cost to Launch a Satellite in 2026? Falcon 9 $74M, Rideshare from $350k",
   description:
-    'A Falcon 9 lists at ~$74M (about $3,246/kg), rideshare starts at $350k for 50 kg, and an Electron runs ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
+    'Falcon 9 launch cost: ~$74M ($3,246/kg). SpaceX rideshare: $350k for 50 kg. Electron: ~$8M. Ariane 6, Vulcan, Starship and 12 more rockets compared, plus what a satellite really costs to fly.',
   keywords: [
     'space launch cost',
     'how much does it cost to launch a satellite',
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     'launch price 2026',
   ],
   openGraph: {
-    title: "How Much Does It Cost to Launch a Satellite? Falcon 9 $74M, $3,246/kg — Every Rocket's 2026 Price",
+    title: "How Much Does It Cost to Launch a Satellite in 2026? Falcon 9 $74M, Rideshare from $350k",
     description:
       'Falcon 9 ~$74M (about $3,246/kg), rideshare from $350k for 50 kg, Electron ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
     type: 'article',

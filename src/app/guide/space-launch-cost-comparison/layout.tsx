@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "How Much Does It Cost to Launch a Satellite? Falcon 9 $74M, $3,246/kg — Every Rocket's 2026 Price",
-  description: 'A Falcon 9 lists at ~$74M (about $3,246/kg), rideshare starts at $350k for 50 kg, and an Electron runs ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
+  title: "How Much Does It Cost to Launch a Satellite in 2026? Falcon 9 $74M, Rideshare from $350k",
+  description: 'Falcon 9 launch cost: ~$74M ($3,246/kg). SpaceX rideshare: $350k for 50 kg. Electron: ~$8M. Ariane 6, Vulcan, Starship and 12 more rockets compared, plus what a satellite really costs to fly.',
   alternates: {
     canonical: 'https://spacenexus.us/guide/space-launch-cost-comparison',
   },
   openGraph: {
-    title: 'Space Launch Cost 2026: From $3,246/kg | SpaceNexus',
-    description: 'A Falcon 9 lists at ~$74M (about $3,246/kg), rideshare starts at $350k for 50 kg, and an Electron runs ~$8M. Every rocket\'s launch cost compared, plus the hidden costs of getting a satellite to orbit.',
+    title: 'How Much Does It Cost to Launch a Satellite in 2026? Falcon 9 $74M, Rideshare from $350k | SpaceNexus',
+    description: 'Falcon 9 launch cost: ~$74M ($3,246/kg). SpaceX rideshare: $350k for 50 kg. Electron: ~$8M. Ariane 6, Vulcan, Starship and 12 more rockets compared, plus what a satellite really costs to fly.',
     images: [
       {
         url: '/api/og?title=Space+Launch+Cost+Comparison&subtitle=Cost+per+kilogram+data+for+SpaceX%2C+ULA%2C+Arianespace%2C+Rocket+Lab%2C+and+more&type=guide',

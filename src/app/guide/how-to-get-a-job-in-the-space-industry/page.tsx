@@ -371,7 +371,8 @@ export default async function HowToGetASpaceJobGuide() {
                 <ul className="space-y-2 text-sm">
                   <li><Link href="/jobs" className="text-cyan-400 hover:text-cyan-300">The live jobs board</Link> — every posting, filterable by category, company and remote.</li>
                   <li><Link href={`/hiring-index/${index?.month ?? latestEditionMonthKey()}`} className="text-cyan-400 hover:text-cyan-300">Space Hiring Index</Link> — who is expanding and contracting, month by month.</li>
-                  <li><Link href="/space-talent?tab=salaries" className="text-cyan-400 hover:text-cyan-300">Salary benchmarks</Link> — ranges by function and seniority.</li>
+                  <li><Link href="/guide/space-industry-salaries" className="text-cyan-400 hover:text-cyan-300">Space industry salaries</Link> — what 58 roles pay by level and city, next to the ranges employers state in live postings.</li>
+                  <li><Link href="/jobs/companies" className="text-cyan-400 hover:text-cyan-300">Companies hiring now</Link> — every employer with open roles, ranked by live positions.</li>
                   <li><Link href="/guide/itar-compliance-guide" className="text-cyan-400 hover:text-cyan-300">ITAR compliance guide</Link> — why the citizenship line is there.</li>
                 </ul>
                 <p className="text-xs text-slate-500 mt-4">

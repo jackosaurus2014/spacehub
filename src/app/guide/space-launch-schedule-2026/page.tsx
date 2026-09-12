@@ -31,9 +31,9 @@ export const dynamic = 'force-dynamic';
 const LAST_EDITED = '2026-09-06T00:00:00Z';
 
 export const metadata: Metadata = {
-  title: 'Cape Canaveral Launch Schedule: 150+ in 2026',
+  title: 'Cape Canaveral Launch Schedule 2026: Dates, Times & How to Watch (Updated Weekly)',
   description:
-    'See every Cape Canaveral rocket launch in 2026 -- SpaceX, ULA, and Blue Origin missions from SLC-40 and SLC-41, with dates, times, and how to watch live.',
+    'Every Cape Canaveral and Kennedy launch in 2026, month by month: SpaceX, ULA and Blue Origin missions from SLC-40, SLC-41 and LC-39A with dates, times, live streams and viewing spots. Plus the worldwide manifest.',
   keywords: [
     'cape canaveral launch schedule 2026',
     'space launch schedule 2026',
@@ -46,9 +46,9 @@ export const metadata: Metadata = {
     'orbital launch manifest',
   ],
   openGraph: {
-    title: 'Cape Canaveral Launch Schedule: 150+ in 2026',
+    title: 'Cape Canaveral Launch Schedule 2026: Dates, Times & How to Watch (Updated Weekly)',
     description:
-      'See every Cape Canaveral rocket launch in 2026 -- SpaceX, ULA, and Blue Origin missions, with dates, times, and how to watch live.',
+    'Every Cape Canaveral and Kennedy launch in 2026, month by month: SpaceX, ULA and Blue Origin missions from SLC-40, SLC-41 and LC-39A with dates, times, live streams and viewing spots. Plus the worldwide manifest.',
     type: 'article',
     publishedTime: '2026-02-14T00:00:00Z',
     authors: ['SpaceNexus'],

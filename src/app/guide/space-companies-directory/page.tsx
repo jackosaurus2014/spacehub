@@ -8,8 +8,8 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: 'Space Companies: The 50 Biggest Aerospace & Space Companies, Listed (2026 Directory)',
-  description: `Complete directory of space companies in 2026. SpaceX, Blue Origin, Rocket Lab, Planet Labs, and ${SITE_STATS.companies} aerospace companies with profiles, funding data, and market intelligence.`,
+  title: `Space Companies: ${SITE_STATS.companies}+ Aerospace & Space Companies Listed (2026 Directory)`,
+  description: `The biggest space companies and ${SITE_STATS.companies}+ more, in one list: SpaceX, Blue Origin, Rocket Lab, Planet Labs, Lockheed Martin, Northrop Grumman. Public and private, with funding, valuation and what each one does.`,
   keywords: ['space companies', 'aerospace companies', 'space companies list', 'top space companies 2026', 'commercial space companies', 'space startup companies', 'satellite companies'],
   alternates: { canonical: 'https://spacenexus.us/guide/space-companies-directory' },
   openGraph: {

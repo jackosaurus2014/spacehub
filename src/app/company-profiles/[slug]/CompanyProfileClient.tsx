@@ -1256,7 +1256,7 @@ function JobsTab({ companySlug, companyName }: { companySlug: string; companyNam
     <SectionCard title="Open Positions" count={jobs.length}>
       <HiringTrend companySlug={companySlug} className="mb-4" />
       <p className="text-[11px] text-slate-500 mb-3">
-        Listings mirror this company&apos;s own careers page, synced daily. Roles posted in multiple locations appear once per location.
+        Listings mirror this company&apos;s own careers page, synced daily. Roles posted in multiple locations appear once per location. <Link href={`/jobs?company=${encodeURIComponent(companyName)}`} className="text-cyan-300 hover:underline">Filter the jobs board</Link> · <Link href="/guide/space-industry-salaries" className="text-cyan-300 hover:underline">What these roles pay</Link>
       </p>
       <div className="space-y-3">
         {jobs.map((job, i) => {
