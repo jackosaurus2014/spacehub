@@ -641,13 +641,13 @@ export default function OrbitalCostsPage() {
             <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Related Reading</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Link
-                href="/blog/economics-satellite-launch-cost-per-kilogram"
+                href="/guide/space-launch-cost-comparison#cost-per-kg"
                 className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
               >
                 <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
                 <div>
-                  <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">The Economics of Satellite Launch: Cost Per Kilogram Explained</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                  <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">Cost per kilogram to orbit: every rocket compared Explained</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Guide</p>
                 </div>
               </Link>
               <Link

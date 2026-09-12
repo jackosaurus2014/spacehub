@@ -14,6 +14,7 @@ import { getLaunchCalendar, launchDisplayName } from '@/lib/launch-calendar';
 import { getSlipData, RECORDING_SINCE } from '@/lib/launch-slips';
 import { getRocketScorecard, fmtNextLaunch } from '@/lib/rocket-scorecard';
 import { formatLaunchDate } from '@/components/launches/LaunchRow';
+import { monthParam, isMonthInWindow } from '@/lib/launch-site-registry';
 import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
 import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
 
@@ -28,7 +29,7 @@ import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
 // no database.
 export const dynamic = 'force-dynamic';
 /** Bumped by hand when the prose changes. Live figures do not move it. */
-const LAST_EDITED = '2026-09-06T00:00:00Z';
+const LAST_EDITED = '2026-09-12T00:00:00Z';
 
 export const metadata: Metadata = {
   title: 'Cape Canaveral Launch Schedule 2026: Dates, Times & How to Watch (Updated Weekly)',
@@ -246,14 +247,18 @@ export default async function SpaceLaunchSchedule2026Page() {
               <section id="monthly">
                 <h2 className="text-2xl font-bold text-white mb-4">Month-by-Month Launch Schedule</h2>
                 <p className="text-slate-400 leading-relaxed mb-4">
-                  Launches that flew each month this year, and what is on the manifest for the months ahead. Manifests move constantly — the changes we record are further down — so the scheduled counts are a snapshot, not a promise, and a launch the feed only knows to the month is counted as “month-only” rather than as a date. For countdowns and streams, use{' '}
+                  Launches that flew each month this year, and what is on the manifest for the months ahead. Each month links to the Cape Canaveral schedule for that month, with every mission, its time and how to watch. Manifests move constantly — the changes we record are further down — so the scheduled counts are a snapshot, not a promise, and a launch the feed only knows to the month is counted as “month-only” rather than as a date. For countdowns and streams, use{' '}
                   <Link href="/mission-control" className="text-slate-300 hover:underline">Mission Control</Link>.
                 </p>
                 {calendar ? (
                   <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                     {calendar.months.map((m) => (
                       <div key={m.month} className={`card p-3 text-center ${m.isCurrent ? 'border-cyan-500/40' : ''}`}>
-                        <div className="text-sm font-semibold text-slate-300">{m.label} {calendar.year}</div>
+                        {isMonthInWindow(calendar.year, m.month) ? (
+                          <Link href={`/launches/cape-canaveral/${monthParam(calendar.year, m.month)}`} className="text-sm font-semibold text-slate-300 hover:text-cyan-300 underline decoration-dotted underline-offset-4" title={`Cape Canaveral launch schedule, ${m.label} ${calendar.year}`}>{m.label} {calendar.year}</Link>
+                        ) : (
+                          <div className="text-sm font-semibold text-slate-300">{m.label} {calendar.year}</div>
+                        )}
                         {m.isPast || m.isCurrent ? (
                           <>
                             <div className="text-lg font-bold text-white mt-1 tabular-nums">{m.flown}</div>

@@ -19,7 +19,7 @@ import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
 // rather than ISR because the Railway build container has no database.
 export const dynamic = 'force-dynamic';
 /** Bumped by hand when the prose changes. Live figures do not move it. */
-const LAST_EDITED = '2026-09-06T00:00:00Z';
+const LAST_EDITED = '2026-09-12T00:00:00Z';
 
 export const metadata: Metadata = {
   title: "How Much Does It Cost to Launch a Satellite in 2026? Falcon 9 $74M, Rideshare from $350k",
@@ -83,6 +83,18 @@ const FAQ_ITEMS = [
     a: 'On a cost-per-kilogram basis, SpaceX\'s Falcon 9 is currently the cheapest operational orbital launch vehicle, with published rideshare pricing of approximately $7,000 per kilogram to sun-synchronous orbit as of 2026. For dedicated missions, the Falcon 9 list price of approximately $74 million translates to roughly $3,250 per kilogram for a full 22,800 kg payload to LEO. SpaceX\'s Starship, which began deploying operational payloads in 2026, is expected to reduce costs further, potentially to $100-$500 per kilogram at mature flight rates.',
   },
   {
+    q: 'How much does a SpaceX launch cost?',
+    a: `It depends which SpaceX service. A dedicated Falcon 9 lists at about ${fmtUsdM(FALCON9_LIST_PRICE_USD)}; Falcon Heavy at about ${fmtUsdM(FALCON_HEAVY_LIST_PRICE_USD)}; and a slot on a Transporter rideshare starts at ${fmtUsd(RIDESHARE_MIN_PRICE_USD)} for ${RIDESHARE_MIN_KG} kg (${fmtUsd(RIDESHARE_PER_KG)} per kg). Starship has no published commercial price yet; SpaceX's stated goal is well under $100 per kg once it flies routinely.`,
+  },
+  {
+    q: "What is SpaceX's cost per kg to orbit?",
+    a: `About ${fmtUsd(FALCON9_DEDICATED_PER_KG)} per kg on a fully loaded Falcon 9 to low Earth orbit, and ${fmtUsd(RIDESHARE_PER_KG)} per kg on a rideshare, which is the cheapest way to fly a small satellite today. Those are list prices divided by payload capacity; a real mission rarely fills the rocket, so the effective figure is higher.`,
+  },
+  {
+    q: 'How much does it cost to send 1 kg to space?',
+    a: `From about ${fmtUsd(RIDESHARE_PER_KG)} on a SpaceX rideshare to ${fmtUsd(FALCON9_DEDICATED_PER_KG)} on a dedicated Falcon 9, and $10,000 to $25,000 per kg on small dedicated rockets such as Electron. For comparison the Space Shuttle worked out near $54,000 per kg. The table at the top of this page shows every priced vehicle.`,
+  },
+  {
     q: 'How much does a Falcon 9 launch cost?',
     a: 'SpaceX lists the Falcon 9 commercial launch price at approximately $74 million for a dedicated mission as of 2026. However, actual prices vary based on orbit, payload integration requirements, and contract terms. Rideshare missions on the Transporter series start at $350,000 for the first 50 kg, with additional mass priced at approximately $7,000 per kilogram. Government missions (e.g., for the U.S. Space Force) are priced higher, with National Security Space Launch (NSSL) contracts valued at $100 million or more per mission.',
   },
@@ -144,6 +156,9 @@ export default async function SpaceLaunchCostComparisonPage() {
   const starship = scorecard.find((r) => r.slug === 'starship');
   const priced = scorecard.filter((r) => r.costMillions != null && r.status !== 'Retired');
   const next = calendar?.nextLaunch ?? null;
+  // The vehicles people search for by name, in the order they search for them.
+  const HEADLINE = ['falcon-9', 'starship', 'falcon-heavy', 'electron', 'ariane-6', 'vulcan-centaur', 'new-glenn'];
+  const headline = HEADLINE.map((slug) => scorecard.find((r) => r.slug === slug)).filter((r): r is NonNullable<typeof r> => !!r && r.costMillions != null);
 
   return (
     <>
@@ -209,6 +224,28 @@ export default async function SpaceLaunchCostComparisonPage() {
               {starship?.nextLaunch ? <>; the next Starship flight is on our tracker for {formatLaunchDate(starship.nextLaunch, false)}</> : null}
               {next ? <>. The next orbital launch of any kind is {launchDisplayName(next.name, next.rocket)} on {formatLaunchDate(new Date(next.launchDate), false)}</> : null}.
             </p>
+          )}
+          {headline.length > 0 && (
+            <div className="mt-5 overflow-x-auto">
+              <table className="w-full text-sm min-w-[520px]" aria-label="What each rocket costs to launch">
+                <thead>
+                  <tr className="text-left text-[10px] uppercase tracking-wider text-[var(--ink-3)] border-b border-white/[0.08]">
+                    <th className="py-2 pr-3">Rocket</th><th className="py-2 pr-3 text-right">Launch price</th><th className="py-2 pr-3 text-right">$/kg to LEO</th><th className="py-2 pr-3 text-right">Flights in 2026</th><th className="py-2 text-right">Next launch</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {headline.map((r) => (
+                    <tr key={r.slug} className="border-b border-white/[0.06] last:border-0">
+                      <td className="py-2 pr-3 text-white"><Link href={`/rockets/${r.slug}`} className="hover:text-cyan-300">{r.name}</Link></td>
+                      <td className="py-2 pr-3 text-right text-white tabular-nums">{fmtPrice(r.costMillions)}</td>
+                      <td className="py-2 pr-3 text-right text-white tabular-nums">{fmtPerKg(r.costPerKgLeo)}</td>
+                      <td className="py-2 pr-3 text-right text-[var(--ink-2)] tabular-nums">{r.thisYear}</td>
+                      <td className="py-2 text-right text-[var(--ink-2)] whitespace-nowrap">{r.nextLaunch ? fmtNextLaunch(r.nextLaunch, r.nextLaunchPrecision) : r.status === 'In Development' ? 'Not yet flown' : '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
           <p className="text-[12px] text-[var(--ink-3)] mt-3">Prices as of {LAUNCH_COST_AS_OF} · {LAUNCH_COST_SOURCE}. Flight counts from our launch tracker at the moment you loaded the page.</p>
         </section>
@@ -1046,21 +1083,14 @@ export default async function SpaceLaunchCostComparisonPage() {
               {/* ──────────────────────────────────── */}
               {/* Newsletter CTA                       */}
               {/* ──────────────────────────────────── */}
-              <section className="card p-8 md:p-12 text-center glow-border">
-                <h2 className="text-display text-2xl md:text-3xl text-white mb-4">
-                  Optimize Your Launch Strategy
-                </h2>
-                <p className="text-star-200 text-lg mb-8 max-w-2xl mx-auto">
-                  Access mission planning tools, cost calculators, and launch market intelligence
-                  that help you make better decisions about getting to orbit.
+              <section className="card p-8 md:p-10 glow-border">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-3">Price your own mission</h2>
+                <p className="text-star-200 text-lg mb-6 max-w-2xl">
+                  Put your payload mass and target orbit into the <Link href="/orbital-costs" className="text-cyan-400 hover:text-cyan-300">Orbital Cost Calculator</Link> for a dedicated versus rideshare estimate, or follow the vehicles that matter to you: every rocket page has a launch alert, and the prices above update as the registry does.
                 </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Link href="/register" className="btn-primary">
-                    Create Free Account
-                  </Link>
-                  <Link href="/mission-cost" className="btn-secondary">
-                    Explore Mission Planning
-                  </Link>
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <Link href="/orbital-costs" className="btn-primary">Open the cost calculator</Link>
+                  <Link href="/rockets/falcon-9" className="btn-secondary">Falcon 9 launches &amp; alerts</Link>
                 </div>
               </section>
 

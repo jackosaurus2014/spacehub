@@ -148,7 +148,6 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'how-satellites-help-fight-climate-change': { tool: 'Satellite Tracker', path: '/satellites' },
   'space-industry-venture-capital-how-vcs-invest': { tool: 'Investor Dashboard', path: '/investors' },
   'ground-stations-invisible-infrastructure-space': { tool: 'Ground Stations', path: '/ground-stations' },
-  'economics-satellite-launch-cost-per-kilogram': { tool: 'Orbital Cost Calculator', path: '/orbital-costs' },
   'lunar-gateway-nasa-orbiting-moon-station': { tool: 'Space Stations', path: '/space-stations' },
   'how-spacex-catches-rockets-mechazilla': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
   'spectrum-management-space-who-controls-frequencies': { tool: 'Spectrum Intelligence', path: '/spectrum' },
