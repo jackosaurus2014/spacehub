@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getJobsByCompany } from '@/lib/jobs-by-company';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import { isSalaryEligible, salaryCompanySlug } from '@/lib/salaries-by-company';
 
 /**
  * /jobs/companies (2026-09-12): every employer with live space-industry
@@ -30,7 +31,7 @@ export default async function JobsByCompanyPage() {
         <nav className="hidden md:block text-sm text-slate-500 mb-4"><Link href="/jobs" className="hover:text-white">Jobs</Link> / Companies hiring</nav>
         <h1 className="text-3xl font-bold text-white">Space companies hiring now</h1>
         <p className="text-slate-400 mt-2 max-w-3xl">
-          {data.rows.length.toLocaleString('en-US')} employers with {data.totalActive.toLocaleString('en-US')} open roles, synced from company careers pages and updated daily. Click a company for its live listings, or see <Link href="/guide/space-industry-salaries" className="text-cyan-300 hover:underline">what these roles pay</Link>.
+          {data.rows.length.toLocaleString('en-US')} employers with {data.totalActive.toLocaleString('en-US')} open roles, synced from company careers pages and updated daily. Click a company for its live listings, open its <Link href="/salaries" className="text-cyan-300 hover:underline">salary page</Link> where it has three or more roles, or see <Link href="/guide/space-industry-salaries" className="text-cyan-300 hover:underline">what these roles pay</Link>.
         </p>
 
         {top.length > 0 && (
@@ -41,7 +42,7 @@ export default async function JobsByCompanyPage() {
                 <li key={c.name} className="card p-4 flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <Link href={`/jobs?company=${encodeURIComponent(c.name)}`} className="text-white font-semibold hover:text-cyan-300 block truncate">{c.name}</Link>
-                    <div className="text-xs text-slate-500 mt-0.5">{c.remoteCount > 0 ? `${c.remoteCount} remote-friendly` : 'On site'}{c.slug ? <> · <Link href={`/company-profiles/${c.slug}`} className="text-cyan-300 hover:underline">Profile</Link></> : null}</div>
+                    <div className="text-xs text-slate-500 mt-0.5">{c.remoteCount > 0 ? `${c.remoteCount} remote-friendly` : 'On site'}{c.slug ? <> · <Link href={`/company-profiles/${c.slug}`} className="text-cyan-300 hover:underline">Profile</Link></> : null}{isSalaryEligible(c) ? <> · <Link href={`/salaries/${salaryCompanySlug(c.name)}`} className="text-cyan-300 hover:underline">Salaries</Link></> : null}</div>
                   </div>
                   <div className="text-right"><div className="text-xl font-semibold text-white tabular-nums">{c.activeCount.toLocaleString('en-US')}</div><div className="text-[11px] text-slate-500">open roles</div></div>
                 </li>
@@ -57,7 +58,7 @@ export default async function JobsByCompanyPage() {
               {rest.map((c) => (
                 <li key={c.name} className="break-inside-avoid flex items-baseline justify-between gap-2 py-1 border-b border-white/[0.05]">
                   <Link href={`/jobs?company=${encodeURIComponent(c.name)}`} className="text-slate-200 hover:text-cyan-300 truncate">{c.name}</Link>
-                  <span className="text-slate-500 tabular-nums">{c.activeCount}</span>
+                  <span className="text-slate-500 tabular-nums whitespace-nowrap">{isSalaryEligible(c) ? <><Link href={`/salaries/${salaryCompanySlug(c.name)}`} className="text-cyan-300/80 hover:text-cyan-300 text-xs">Salaries</Link> · </> : null}{c.activeCount}</span>
                 </li>
               ))}
             </ul>

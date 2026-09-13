@@ -535,6 +535,13 @@ export const SLUG_EXISTENCE_CHECKS: Array<{
     existsApiPath: (date) => `/api/brief/am/${encodeURIComponent(date)}/exists`,
   },
   {
+    // Company salary pages (2026-09-13): a page exists only for employers
+    // with SALARY_PAGE_MIN_ROLES live roles, so the probe reuses the page's
+    // own resolver. /salaries itself (the index) has no trailing segment.
+    match: /^\/salaries\/([^/]+)\/?$/,
+    existsApiPath: (slug) => `/api/salaries/${encodeURIComponent(slug)}/exists`,
+  },
+  {
     // Episode slugs are unique only per show, so the probe carries both segments.
     match: /^\/podcasts\/([^/]+\/[^/]+)\/?$/,
     existsApiPath: (pair) => `/api/podcasts/${pair.split('/').map(encodeURIComponent).join('/')}/exists`,

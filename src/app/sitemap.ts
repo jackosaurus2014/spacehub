@@ -17,6 +17,8 @@ import { BLOG_POSTS } from '@/lib/blog-content';
 import { logger } from '@/lib/logger';
 import { JOB_LANDING_PAGES } from '@/lib/job-landing-pages';
 import { BALANCE_REPORTS } from '@/lib/game/balance-reports';
+import { getJobsByCompany } from '@/lib/jobs-by-company';
+import { SALARY_PAGE_MIN_ROLES, isSalaryEligible, salaryCompanySlug } from '@/lib/salaries-by-company';
 
 const BASE_URL = 'https://spacenexus.us';
 
@@ -92,6 +94,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/solar-exploration`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/jobs`, changeFrequency: 'daily' as const, priority: 0.9 },
     { url: `${BASE_URL}/jobs/companies`, changeFrequency: 'daily' as const, priority: 0.8 },
+    { url: `${BASE_URL}/salaries`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/space-talent`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/hiring-trends`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/launch-cadence`, changeFrequency: 'daily' as const, priority: 0.7 },
@@ -527,8 +530,15 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
   }));
 }
 
-// Segment 1: Company profiles from database
+// Segment 1: Company profiles from database, plus the company salary pages
+// (2026-09-13) — one per employer with SALARY_PAGE_MIN_ROLES live roles,
+// the same rule /salaries/[company] and its exists probe apply.
 async function getCompanyRoutes(): Promise<MetadataRoute.Sitemap> {
+  const [profiles, salaries] = await Promise.all([getCompanyProfileRoutes(), getCompanySalaryRoutes()]);
+  return [...profiles, ...salaries];
+}
+
+async function getCompanyProfileRoutes(): Promise<MetadataRoute.Sitemap> {
   try {
     const companyProfiles = await prisma.companyProfile.findMany({
       select: { slug: true, updatedAt: true },
@@ -542,6 +552,27 @@ async function getCompanyRoutes(): Promise<MetadataRoute.Sitemap> {
     }));
   } catch (error) {
     logger.error('Sitemap segment 1: Failed to fetch company profiles', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return [];
+  }
+}
+
+async function getCompanySalaryRoutes(): Promise<MetadataRoute.Sitemap> {
+  try {
+    const { rows, asOf } = await getJobsByCompany(SALARY_PAGE_MIN_ROLES);
+    const seen = new Set<string>();
+    const out: MetadataRoute.Sitemap = [];
+    for (const row of rows) {
+      if (!isSalaryEligible(row)) continue;
+      const slug = salaryCompanySlug(row.name);
+      if (!slug || seen.has(slug)) continue;
+      seen.add(slug);
+      out.push({ url: `${BASE_URL}/salaries/${slug}`, lastModified: asOf, changeFrequency: 'daily' as const, priority: 0.6 });
+    }
+    return out;
+  } catch (error) {
+    logger.error('Sitemap segment 1: Failed to list company salary pages', {
       error: error instanceof Error ? error.message : String(error),
     });
     return [];

@@ -26,7 +26,7 @@ const CANONICAL = `https://spacenexus.us/guide/${SLUG}`;
 const DESCRIPTION =
   `What space industry jobs pay in 2026: salary ranges for ${SALARY_ROLES.length} roles from propulsion engineer to mission director, by seniority and by city, plus the ranges employers state in live postings. How to read an estimate, what clearance adds, and how to negotiate.`;
 /** Bumped by hand when the prose changes; the figures are live or dated. */
-const LAST_EDITED = '2026-09-10T00:00:00Z';
+const LAST_EDITED = '2026-09-13T00:00:00Z';
 
 const getHub = cache(() => getJobsHubData());
 const getSalaries = cache(() => getSalaryBenchmarks());
@@ -313,6 +313,7 @@ export default async function SpaceIndustrySalariesGuide() {
                   <h2 className="text-lg font-bold text-white mb-3">Keep going</h2>
                   <ul className="space-y-2 text-sm">
                     <li><Link href="/jobs" className="text-cyan-400 hover:text-cyan-300">The live jobs board</Link> — every posting with its salary band, filterable by category, company and remote.</li>
+                    <li><Link href="/salaries" className="text-cyan-400 hover:text-cyan-300">Salaries by company</Link> — every employer with three or more open roles, with its median band by role family and location and how it sits against the benchmark.</li>
                     <li><Link href="/space-talent?tab=salaries" className="text-cyan-400 hover:text-cyan-300">Salary explorer</Link> — all {SALARY_ROLES.length} roles with skills, top employers and growth rate.</li>
                     <li><Link href="/guide/how-to-get-a-job-in-the-space-industry" className="text-cyan-400 hover:text-cyan-300">How to get a job in the space industry</Link> — where the jobs are and what the postings ask for.</li>
                     <li><Link href="/hire" className="text-cyan-400 hover:text-cyan-300">Hiring?</Link> — post a role with a stated range; postings with a range get more applicants.</li>

@@ -12,6 +12,7 @@ import ApplyForm from '@/components/jobs/ApplyForm';
 import JobDescription from '@/components/jobs/JobDescription';
 import { markdownToPlainText } from '@/lib/markdown-plain';
 import { salaryBandFor, formatBand } from '@/lib/salary-estimate';
+import { hasSalaryPage, salaryCompanySlug } from '@/lib/salaries-by-company';
 
 export const revalidate = 3600;
 
@@ -358,6 +359,8 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
   const salaryRange = formatSalaryRange(job.salaryMin, job.salaryMax);
   const band = salaryBandFor(job);
   void salaryRange;
+  // Company salary page (2026-09-13): only employers with three or more live roles have one.
+  const salaryPageSlug = (await hasSalaryPage(job.company).catch(() => false)) ? salaryCompanySlug(job.company) : null;
   const jsonLd = buildJobPostingJsonLd(job);
 
   return (
@@ -429,6 +432,9 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
                     <div className={`mt-1 font-medium ${band.source === 'posting' ? 'text-cyan-400' : 'text-slate-200'}`}>{formatBand(band)}/yr</div>
                     {band.source === 'estimate' && (
                       <div className="text-[11px] text-slate-500 mt-0.5">Based on {band.basis} benchmarks, adjusted for level and location. Guidance, not an offer.</div>
+                    )}
+                    {salaryPageSlug && (
+                      <Link href={`/salaries/${salaryPageSlug}`} className="text-[11px] text-cyan-400 hover:underline mt-0.5 inline-block">All {job.company} salaries &rarr;</Link>
                     )}
                   </div>
                 )}
