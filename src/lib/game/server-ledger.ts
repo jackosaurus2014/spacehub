@@ -23,6 +23,10 @@ import type { Prisma, PrismaClient } from '@prisma/client';
 const NPC_PROFILE_ID = '__NPC_MARKET_MAKER__';
 
 export type LedgerReason =
+  // Operator credit/debit (scripts/tycoon-ledger-credit.ts): restores money the
+  // sync ceiling wrongly rejected. Server-authored, so the client applies it
+  // as a pending delta on its next sync.
+  | 'admin_adjustment'
   | 'order_escrow'
   | 'order_escrow_refund'
   | 'order_fill_refund'
