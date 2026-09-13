@@ -25,6 +25,74 @@ export interface OriginalBlogPost {
 }
 
 export const BLOG_POSTS: OriginalBlogPost[] = [
+  {
+    slug: 'nasa-relativity-space-terran-r-nls-ii-contract',
+    title: "NASA Clears Relativity Space's Terran R to Bid on Missions — Before It Has Ever Flown",
+    excerpt: "NASA added Relativity Space's Terran R to its NLS II launch-services roster on September 9, making the still-unflown rocket eligible to compete for agency missions through 2032. It is the second NASA deal for Terran R this year, after a June Space Act Agreement to fly a Mars orbiter in 2028.",
+    category: 'market',
+    author: 'SpaceNexus Team',
+    authorRole: 'Market Intelligence',
+    publishedAt: '2026-09-12T14:00:00Z',
+    readingTime: 7,
+    keywords: ['Relativity Space', 'Terran R', 'NASA NLS II', 'launch services contract', 'Aeolus Mars mission', 'NASA on-ramp', 'commercial launch providers', 'Cape Canaveral LC-16', '3D printed rocket'],
+    content: `
+<p>On September 9, NASA added Relativity Space's Terran R to its NLS II launch-services contract, making the rocket eligible to bid on agency missions through 2032 — months before the vehicle has flown for the first time. It is the second NASA deal for Terran R in three months, following a June agreement to fly a Mars atmospheric science mission on the rocket in 2028. Together, the two moves show NASA betting operationally on a launcher that still has to prove itself on the pad.</p>
+
+<h2 id="what-happened">What NASA actually did</h2>
+
+<p>NLS II is NASA's Launch Services II contract — a multiple-award, indefinite-delivery/indefinite-quantity vehicle that the agency's Launch Services Program Office at Kennedy Space Center uses to buy rides for its Human Spaceflight, Science, and Research and Technology missions. It also lets NASA arrange launches on behalf of other federal agencies, including NOAA.</p>
+
+<p>The contract has an on-ramp provision: once a year, NASA can add new launch providers, or let existing contractors register vehicles that were not previously on the list. Terran R joined through that mechanism. The current ordering period runs through June 2030, with an overall period of performance through December 2032.</p>
+
+<p>Being on the NLS II roster is not a mission award. It is eligibility — the right to compete when NASA puts a specific payload out for bid under this contract vehicle. NASA has used the on-ramp this way before: Blue Origin's New Glenn was added to the same roster in December 2020, more than four years before it carried its first NASA payload.</p>
+
+<h2 id="unflown-rocket">A contract for a rocket that hasn't flown</h2>
+
+<p>Terran R is Relativity Space's medium-to-heavy-lift launcher, built with the company's Stargate metal 3D printers. It is a two-stage vehicle with a reusable first stage powered by 13 Aeon R engines, topped by an expendable second stage on a single Aeon Vac engine. Payload to low Earth orbit is rated at roughly 23,500 kg in reusable mode or 33,500 kg fully expended. It is set to fly from Launch Complex 16 at Cape Canaveral Space Force Station.</p>
+
+<p>The rocket has not reached the pad yet. Relativity has targeted a maiden flight by the end of 2026, with the first flight vehicle's second stage shipped to NASA's Stennis Space Center for testing earlier this year. That timeline leaves a narrow window before the calendar runs out on 2026 — and NASA's willingness to add Terran R to a multi-year contract vehicle now, rather than waiting for a successful debut, is itself a signal of how the agency is trying to diversify its launch options beyond its current roster.</p>
+
+<h2 id="aeolus">The Mars mission that came first</h2>
+
+<p>NASA's bet on Terran R actually predates this month's contract addition. In June, the agency announced a partnership with Relativity Space to fly Aeolus, an atmospheric-science mission to Mars, in 2028. NASA is supplying four science instruments — a Doppler wind and temperature sounder, a thermal limb sounder, a surface radiometric sensor package, and a wide-field context camera — while Relativity builds the spacecraft and supplies the Terran R launch vehicle and cruise operations. NASA has described the arrangement as its first six-year reimbursable Space Act Agreement of this kind. The goal is a global, near-daily view of Martian dust, wind, clouds and temperature, intended to support future robotic and human landings.</p>
+
+<p>That Mars commitment is a considerably bigger bet than an NLS II listing: it locks a specific mission, on a specific timeline, to a rocket that had not yet flown when the deal was signed. The September on-ramp addition reads as a logical follow-on — it lets NASA route other agency payloads to Terran R under the same contract vehicle it already uses for SpaceX, ULA, and Blue Origin, rather than negotiating a one-off arrangement each time.</p>
+
+<h3>Relativity's two 2026 NASA deals</h3>
+
+<table style="width:100%; border-collapse:collapse; margin:1.5rem 0;">
+<thead><tr><th style="text-align:left; border-bottom:1px solid #444; padding:0.5rem;">Deal</th><th style="text-align:left; border-bottom:1px solid #444; padding:0.5rem;">Announced</th><th style="text-align:left; border-bottom:1px solid #444; padding:0.5rem;">Mechanism</th><th style="text-align:left; border-bottom:1px solid #444; padding:0.5rem;">What it commits</th></tr></thead>
+<tbody>
+<tr><td style="padding:0.5rem; border-bottom:1px solid #333;">Aeolus Mars mission</td><td style="padding:0.5rem; border-bottom:1px solid #333;">June 2026</td><td style="padding:0.5rem; border-bottom:1px solid #333;">Six-year reimbursable Space Act Agreement</td><td style="padding:0.5rem; border-bottom:1px solid #333;">A named 2028 Mars launch on Terran R</td></tr>
+<tr><td style="padding:0.5rem;">NLS II on-ramp</td><td style="padding:0.5rem;">September 9, 2026</td><td style="padding:0.5rem;">Annual on-ramp to an existing IDIQ contract</td><td style="padding:0.5rem;">Eligibility to bid on future NASA and inter-agency missions through 2032</td></tr>
+</tbody>
+</table>
+
+<h2 id="competitive-field">Where Terran R fits in NASA's launch roster</h2>
+
+<p>NASA's launch-services roster already spans SpaceX (Falcon 9 and Falcon Heavy), ULA (Atlas V and Vulcan Centaur), and Blue Origin (New Glenn), alongside smaller-class providers. Terran R's addition gives NASA a second 3D-printed-manufacturing option in the medium-to-heavy class, and another domestic alternative as the agency works to avoid depending on any single launch provider for its science and human-spaceflight cargo. For a fuller picture of who is actually flying versus who is still on the manifest, see our <a href="/guide/rockets-flying-in-2026">live rocket scorecard</a> and the <a href="/blog/spacex-blue-origin-rocket-lab-comparison-2026">SpaceX vs. Blue Origin vs. Rocket Lab comparison</a>; Terran R's closest peer-in-development is Rocket Lab's Neutron, covered head-to-head in our <a href="/compare/rocket-lab-vs-relativity-space">Rocket Lab vs. Relativity Space</a> comparison.</p>
+
+<p>For business and investor readers tracking launch pricing, Terran R's addition to a federal contract vehicle is also a pricing signal worth watching: NASA's own <a href="/guide/space-launch-cost-comparison">launch cost comparison</a> and the site's <a href="/guide/space-launch-schedule-2026">2026 launch schedule guide</a> both track how new entrants shift per-kilogram pricing once they start flying paying customers. Relativity's own <a href="/company-profiles/relativity-space">company profile</a> and the <a href="/rockets/terran-r">Terran R vehicle page</a> carry the underlying registry data referenced here.</p>
+
+<h2 id="what-to-watch">What to watch</h2>
+
+<ul>
+<li><strong>Terran R's maiden flight.</strong> Targeted for late 2026 from Cape Canaveral's LC-16. Every month that passes without a launch date narrows the window before the on-ramp eligibility becomes the only tangible outcome of 2026 for the vehicle.</li>
+<li><strong>The next NLS II on-ramp cycle.</strong> The provision runs annually, so watch for further additions or vehicle updates from existing contractors in 2027.</li>
+<li><strong>A first specific NASA mission assignment for Terran R</strong> under the NLS II contract, distinct from the already-named Aeolus mission, which would be the first sign NASA is actually routing science or technology payloads to the rocket.</li>
+<li><strong>Aeolus mission milestones</strong> as the 2028 Mars launch date approaches — spacecraft construction, instrument integration, and any schedule changes tied to Terran R's own flight-test progress.</li>
+</ul>
+
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a href="https://www.nasa.gov/news-release/nasa-adds-relativity-spaces-terran-r-to-launch-services-contract/">NASA: "NASA Adds Relativity Space's Terran R to Launch Services Contract"</a> (September 9, 2026)</li>
+<li><a href="https://www.techtimes.com/articles/327236/20260910/nasa-approves-relativity-space-terran-r-bidding-rocket-holds-confirmed-mars-mission.htm">Tech Times: "NASA Approves Relativity Space Terran R for Bidding; Rocket Holds Confirmed Mars Mission"</a></li>
+<li><a href="https://www.technology.org/2026/06/18/nasa-relativity-space-mars-mission-2028/">Technology.org: "NASA Taps Eric Schmidt's Relativity Space for 2028 Mars Mission"</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Terran_R">Wikipedia: Terran R vehicle specifications</a></li>
+<li><a href="https://www.satellitetoday.com/government-military/2020/12/17/nasa-adds-blue-origins-new-glenn-rocket-to-its-launch-services-roster/">Via Satellite: "NASA Adds Blue Origin's New Glenn Rocket to its Launch Services Roster"</a> (December 17, 2020, for on-ramp precedent)</li>
+</ul>
+`,
+  },
   // ── Article: Introducing Space Tycoon (launch announcement) ──
   {
     slug: 'introducing-space-tycoon-economic-space-mmo',
