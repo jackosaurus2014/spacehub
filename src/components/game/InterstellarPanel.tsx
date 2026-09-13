@@ -244,7 +244,7 @@ export default function InterstellarPanel({
                         {system.jumpFuelRequired.toLocaleString()}
                       </div>
                       {readiness && readiness.fuelUnitsPurchased > 0 && (
-                        <div className="text-[9px] text-slate-500 mt-0.5">
+                        <div className="text-[10px] text-slate-500 mt-0.5">
                           {Math.ceil(readiness.fuelUnitsPurchased).toLocaleString()} to procure · {formatMoney(readiness.fuelPurchaseCost)}
                         </div>
                       )}

@@ -20,6 +20,7 @@ import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import { formatMoney } from '@/lib/game/formulas';
 import { Concept } from './HoloTip';
 import Image from 'next/image';
+import GameIcon from './GameIcon';
 
 interface Props {
   state: GameState;
@@ -52,7 +53,7 @@ export default function DiplomacyPanel({ state, onAccept, onDeliver }: Props) {
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
             <h2 className="text-white text-base font-bold flex items-center gap-2">
-              <span className="text-amber-400">⚐</span> Diplomacy &amp; Contracts
+              <GameIcon name="flag" size={14} className="text-amber-400" /> Diplomacy &amp; Contracts
             </h2>
             <p className="text-slate-500 text-xs mt-0.5">
               Binding resource-delivery contracts from the six factions. Accept to commit; fulfill to earn
@@ -63,13 +64,13 @@ export default function DiplomacyPanel({ state, onAccept, onDeliver }: Props) {
 
         <div className="flex gap-1 flex-wrap items-center">
           <TabButton active={tab === 'market'} onClick={() => setTab('market')}>
-            📄 Open Market ({pool.length})
+            <GameIcon name="scroll" size={13} className="mr-1" />Open Market ({pool.length})
           </TabButton>
           <TabButton active={tab === 'active'} onClick={() => setTab('active')}>
-            🔶 Active ({active.length})
+            <GameIcon name="diamond" size={13} className="mr-1" />Active ({active.length})
           </TabButton>
           <TabButton active={tab === 'history'} onClick={() => setTab('history')}>
-            📚 History ({completed.length})
+            <GameIcon name="archive" size={13} className="mr-1" />History ({completed.length})
           </TabButton>
           <DeliveryCapBadge capStatus={capStatus} now={now} />
         </div>
@@ -98,7 +99,7 @@ function DeliveryCapBadge({ capStatus, now }: { capStatus: DeliveryCapStatus; no
           : 'bg-white/[0.04] border-white/[0.08] text-slate-400'
       }`}
     >
-      {atCap && <span aria-hidden="true">⚠</span>}
+      {atCap && <GameIcon name="warning" size={14} />}
       <Concept id="delivery-cap">
         Contracts completed: <span className="font-mono">{completed}/{cap}</span>
         {atCap && <> — resets in {formatDeadline(now + resetInMs, now)}</>}
@@ -134,7 +135,7 @@ function MarketTab({ state, pool, now, onAccept }: { state: GameState; pool: Del
     <>
       {atActiveLimit && (
         <div className="card p-3 border border-amber-500/25 bg-amber-500/[0.06] text-amber-300 text-xs flex items-center gap-2">
-          <span aria-hidden="true">⛔</span>
+          <GameIcon name="ban" size={14} />
           Active contract slots full ({activeCount}/{activeLimit}) — deliver or let one expire before
           accepting more. Slots match your daily completion budget, so you can hold at most one
           day&apos;s worth of committed work.
@@ -243,7 +244,7 @@ function ActiveTab({
             }
             action={{
               label: capBlocked
-                ? `⚠ Daily cap reached (${capStatus.completed}/${capStatus.cap}) — next slot in ${formatDeadline(now + capStatus.resetInMs, now)}`
+                ? `Daily cap reached (${capStatus.completed}/${capStatus.cap}) — next slot in ${formatDeadline(now + capStatus.resetInMs, now)}`
                 : deliverable ? 'Deliver & Collect' : overdue ? 'Overdue — will default' : `Need ${(c.quantity - have).toLocaleString()} more`,
               onClick: deliverable ? () => onDeliver(c.id) : undefined,
               tone: deliverable ? 'primary' : overdue ? 'danger' : 'disabled',

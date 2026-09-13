@@ -256,7 +256,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource, onOp
                   className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-300 font-mono"
                   aria-label={`Expires in ${minutesRemaining(ev.expiresAtMs)} minutes`}
                 >
-                  ⏱ {minutesRemaining(ev.expiresAtMs)}m left
+                  <GameIcon name="clock" size={13} className="mr-1" />{minutesRemaining(ev.expiresAtMs)}m left
                 </span>
               </div>
             );
@@ -275,11 +275,11 @@ export default function MarketPanel({ state, onSellResource, onBuyResource, onOp
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
           <div className="flex items-center gap-1.5">
-            <span className="text-sm" aria-hidden="true">🔭</span>
+            <GameIcon name="discoveries" size={14} />
             <span className="font-hud text-cyan-300 text-[11px] font-semibold uppercase tracking-wide">
               Market Outlook — Next 48h
             </span>
-            <span className="text-slate-500 text-[9px] ml-auto">Public forecast · same for every trader</span>
+            <span className="text-slate-500 text-[10px] ml-auto">Public forecast · same for every trader</span>
           </div>
           <div className="space-y-1">
             {forecastMarketEvents.map(ev => {
@@ -318,7 +318,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource, onOp
             >
               <span className="hud-corner-bl" aria-hidden="true" />
               <span className="hud-corner-br" aria-hidden="true" />
-              <span className="text-sm" aria-hidden="true">🕵️</span>
+              <GameIcon name="espionage" size={14} />
               <span className="font-hud text-white text-xs font-semibold">Trade Route Intel Active</span>
               <span className="game-number text-[10px] px-1.5 py-0.5 rounded font-semibold bg-purple-500/15 text-purple-300">
                 −{Math.round(perk.discount * 100)}% broker fee
@@ -332,7 +332,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource, onOp
                 className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-300 font-mono"
                 aria-label={`Expires in ${minutesRemaining(perk.expiresAtMs)} minutes`}
               >
-                ⏱ {minutesRemaining(perk.expiresAtMs)}m left
+                <GameIcon name="clock" size={13} className="mr-1" />{minutesRemaining(perk.expiresAtMs)}m left
               </span>
             </div>
           ))}
@@ -502,7 +502,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource, onOp
             })()}
             {totals.remote > 0 && (
               <p className="text-amber-300/90 text-[10px] mb-2" role="note">
-                📦 {totals.remote.toLocaleString()} more unit{totals.remote === 1 ? '' : 's'} in remote stockpiles
+                <GameIcon name="package" size={13} className="mr-1" />{totals.remote.toLocaleString()} more unit{totals.remote === 1 ? '' : 's'} in remote stockpiles
                 {totals.remoteBreakdown[0] ? ` (most at ${totals.remoteBreakdown[0].locationId.replace(/_/g, ' ')})` : ''} —
                 only goods at Earth can clear the market. Freight them home from the Map or Fleet tab.
               </p>
@@ -640,7 +640,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource, onOp
                         title="Manufactured, not stocked: buy a player or NPC listing on the order book, or fabricate it yourself"
                         className="min-h-[44px] flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded bg-purple-500/10 text-purple-300 border border-purple-500/30 hover:bg-purple-500/20 transition-colors"
                       >
-                        🏭 Manufactured · Order book
+                        <GameIcon name="subsidiaries" size={13} className="mr-1" />Manufactured · Order book
                       </button>
                     )}
                     {onBuyResource && mineOnly && (
@@ -648,7 +648,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource, onOp
                         className="min-h-[44px] flex items-center px-2 py-0.5 text-[10px] font-medium rounded bg-white/[0.02] text-slate-500 border border-dashed border-white/[0.08]"
                         title="Mined only — not sold on the open market"
                       >
-                        ⛏ Mined only — not for sale
+                        <GameIcon name="ship-mining" size={13} className="mr-1" />Mined only — not for sale
                       </span>
                     )}
                     {onBuyResource && !mineOnly && !manufactured && (

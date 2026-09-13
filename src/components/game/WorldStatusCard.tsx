@@ -8,6 +8,7 @@
 
 import { useWorldState, useCompetitiveContracts, LOCATION_MILESTONE_MAP } from '@/hooks/useWorldState';
 import { formatMoney } from '@/lib/game/formulas';
+import GameIcon from './GameIcon';
 
 export default function WorldStatusCard({ companyName }: { companyName?: string }) {
   const { world, available: worldAvailable } = useWorldState();
@@ -17,7 +18,7 @@ export default function WorldStatusCard({ companyName }: { companyName?: string 
     return (
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-center">
         <p className="text-slate-500 text-[11px]">
-          🌐 Sign in to see the live world — other corporations&rsquo; colony claims, milestone races, and competitive contracts.
+          <GameIcon name="globe" size={13} className="mr-1" />Sign in to see the live world — other corporations&rsquo; colony claims, milestone races, and competitive contracts.
         </p>
       </div>
     );
@@ -41,7 +42,7 @@ export default function WorldStatusCard({ companyName }: { companyName?: string 
       <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-          <span aria-hidden="true">🌐</span> The Live World
+          <GameIcon name="globe" size={14} /> The Live World
         </h3>
         {world && (
           <span className="text-[10px] text-slate-500 font-mono">{world.world.totalColonists} colony claims across the system</span>
@@ -60,7 +61,7 @@ export default function WorldStatusCard({ companyName }: { companyName?: string 
                 <div key={locId} className={`text-[10px] px-2 py-1.5 rounded-lg border ${wonByYou ? 'border-amber-500/30 bg-amber-500/10' : 'border-white/[0.06] bg-white/[0.02]'}`}>
                   <span className="text-slate-300">{def.label}</span>
                   <div className={wonByYou ? 'text-amber-300 font-semibold' : 'text-slate-500'}>
-                    🏆 {wonByYou ? 'You claimed this!' : `Claimed by ${winner}`}
+                    <GameIcon name="trophy" size={13} className="mr-1" />{wonByYou ? 'You claimed this!' : `Claimed by ${winner}`}
                   </div>
                 </div>
               );
@@ -68,7 +69,7 @@ export default function WorldStatusCard({ companyName }: { companyName?: string 
             {openRaces.map(([locId, def]) => (
               <div key={locId} className="text-[10px] px-2 py-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/5">
                 <span className="text-slate-300">{def.label}</span>
-                <div className="text-emerald-300 font-semibold">🏁 OPEN — be first</div>
+                <div className="text-emerald-300 font-semibold"><GameIcon name="flag" size={13} className="mr-1" />OPEN — be first</div>
               </div>
             ))}
           </div>

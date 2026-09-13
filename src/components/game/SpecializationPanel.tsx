@@ -11,6 +11,7 @@ import {
 import type { SpecializationPath, SpecializationDefinition, SpecializationState } from '@/lib/game/specializations';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import GameIcon from './GameIcon';
 
 interface SpecializationPanelProps {
   state: GameState;
@@ -229,7 +230,7 @@ export default function SpecializationPanel({ state, onPurchaseTier, onRespec }:
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center gap-2">
-          <span className="text-base" aria-hidden="true">🎯</span>
+          <GameIcon name="target" size={16} />
           <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">Corporate Specialization</span>
         </div>
         <span className="text-[10px] text-slate-500">One primary path, one secondary — choose your edge</span>

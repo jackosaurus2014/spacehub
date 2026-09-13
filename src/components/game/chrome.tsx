@@ -16,7 +16,7 @@
 //    repeated items inside a ConsolePanel (building cards, roster rows, etc)
 //    that don't need their own header band.
 //  - <DataChip>       small pill for inline stat/status readouts, replacing
-//    the ad-hoc `<span className="text-[9px] px-1.5...">` stacks scattered
+//    the ad-hoc `<span className="text-[10px] px-1.5...">` stacks scattered
 //    through hub panels.
 
 import type { ReactNode } from 'react';
@@ -263,7 +263,7 @@ const CHIP_TONE: Record<NonNullable<DataChipProps['tone']>, string> = {
 };
 
 /** Small inline pill for a labeled stat/status readout — replaces ad-hoc
- *  `<span className="text-[9px] px-1.5...">` chip stacks. Text floor: 10px
+ *  `<span className="text-[10px] px-1.5...">` chip stacks. Text floor: 10px
  *  minimum (V8 canon) since these are frequently load-bearing (affordability,
  *  damage state, tier). */
 export function DataChip({ children, icon, tone = 'neutral', className = '', title }: DataChipProps) {

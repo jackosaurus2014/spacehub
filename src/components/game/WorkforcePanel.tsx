@@ -22,6 +22,7 @@ import { getMonthlyPayrollForState, getWageIndex, getPayrollAdjustedSalary, getH
 // Lever-discoverability pass (2026-09): the launcher is a shared component so
 // the Rivals panel can open it pre-targeted at a specific corporation.
 import PoachLauncher from './PoachLauncher';
+import GameIcon from './GameIcon';
 
 interface WorkforcePanelProps {
   state: GameState;
@@ -139,7 +140,7 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center gap-2">
-          <span className="text-base" aria-hidden="true">👷</span>
+          <GameIcon name="workforce" size={16} />
           <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">Crew Roster</span>
         </div>
         <span className="text-[10px] text-slate-500">Hire, train, and retain your workforce</span>
@@ -383,7 +384,7 @@ export default function WorkforcePanel({ state, onHire, onDismiss, onUpdateTrain
           <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider">Hire Crew</h3>
           {headhuntVoucher && (
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 flex items-center gap-1">
-              <span aria-hidden="true">🕵️</span>
+              <GameIcon name="espionage" size={14} />
               Headhunt intel active: −{Math.round(headhuntVoucher.discount * 100)}% next hire — expires in {headhuntMinutesLeft}m
             </span>
           )}
@@ -583,7 +584,7 @@ function PoachInbox({ state }: { state: GameState }) {
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
       <p className="font-hud text-red-300 text-xs font-bold mb-2 uppercase tracking-wider">
-        ⚠ Crew under offer — counteroffer window open
+        <GameIcon name="warning" size={13} className="mr-1" />Crew under offer — counteroffer window open
       </p>
       <div className="space-y-2">
         {offers.map(p => {

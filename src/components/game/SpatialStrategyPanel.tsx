@@ -16,6 +16,7 @@ import {
 } from '@/lib/game/spatial-strategy';
 import { formatMoney } from '@/lib/game/formulas';
 import { EFFECT_ASSETS } from '@/lib/game/assets';
+import GameIcon from './GameIcon';
 
 interface Props {
   state: GameState;
@@ -44,7 +45,7 @@ export default function SpatialStrategyPanel({ state }: Props) {
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
             <h2 className="font-hud text-white text-base font-bold flex items-center gap-2">
-              <span className="text-purple-400">✦</span> Spatial Strategy
+              <GameIcon name="megastructures" size={14} className="text-purple-400" /> Spatial Strategy
             </h2>
             <p className="text-slate-500 text-xs mt-0.5">
               Physical geography is strategy: delta-v costs, shipping-lane traffic, and finite orbital slots.
@@ -55,13 +56,13 @@ export default function SpatialStrategyPanel({ state }: Props) {
 
         <div className="game-tab-bar flex gap-1 overflow-x-auto" role="tablist" aria-label="Spatial strategy view">
           <TabButton active={tab === 'lanes'} onClick={() => setTab('lanes')}>
-            🛰️ Shipping Lanes ({traffic.filter(t => t.bothLocationsUnlocked).length})
+            <GameIcon name="bld-satellite" size={13} className="mr-1" />Shipping Lanes ({traffic.filter(t => t.bothLocationsUnlocked).length})
           </TabButton>
           <TabButton active={tab === 'chokepoints'} onClick={() => setTab('chokepoints')}>
-            ⚠ Chokepoints
+            <GameIcon name="warning" size={13} className="mr-1" />Chokepoints
           </TabButton>
           <TabButton active={tab === 'slots'} onClick={() => setTab('slots')}>
-            🛰 Orbital Slots
+            <GameIcon name="bld-satellite" size={13} className="mr-1" />Orbital Slots
           </TabButton>
         </div>
       </div>
@@ -131,7 +132,7 @@ function LanesTab({ traffic }: { traffic: LaneTraffic[] }) {
           <div className="mt-2 space-y-1">
             {locked.map(t => (
               <div key={t.laneId} className="text-[11px] text-slate-600 flex justify-between gap-2">
-                <span className="truncate">{locationName(t.lane.from)} ↔ {locationName(t.lane.to)}</span>
+                <span className="truncate">{locationName(t.lane.from)} to {locationName(t.lane.to)}</span>
                 <span className="text-slate-700 shrink-0">Δv {t.lane.deltaV.toLocaleString()} m/s</span>
               </div>
             ))}
@@ -149,7 +150,7 @@ function LaneRow({ traffic, accent }: { traffic: LaneTraffic; accent: { text: st
     <div className="route-card rounded bg-black/30 p-2.5">
       <div className="flex items-baseline justify-between gap-2">
         <div className="font-medium text-white text-sm truncate">
-          {locationName(lane.from)} <span className="text-slate-500">↔</span> {locationName(lane.to)}
+          {locationName(lane.from)} <span className="text-slate-500">to</span> {locationName(lane.to)}
         </div>
         <div className="flex gap-3 text-[10px] shrink-0">
           <span className={`game-number ${accent.text}`}>Δv {lane.deltaV.toLocaleString()}</span>

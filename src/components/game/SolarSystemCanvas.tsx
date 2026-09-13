@@ -46,6 +46,11 @@ import {
 } from '@/lib/game/map-camera';
 import GameIcon from './GameIcon';
 import { ConsolePanel, DataChip } from './chrome';
+// Graphics review 2026-09-12: Lanes/Ships/World visibility may be owned by
+// the shell (phone icon strip); 512px sprite variants on phones (item 11).
+import { DEFAULT_MAP_LAYERS, toggleMapLayer, type MapLayerVisibility, type MapLayerKey } from '@/lib/game/map-layers';
+import { getArtVariant } from '@/lib/game/assets';
+import { MAP_GLYPHS } from '@/lib/game/map-glyphs';
 
 /** Quadratic-bezier point at parameter u — shared by the ship-transit
  *  polyline and its engine-trail sample points (Wave V7). */
@@ -132,6 +137,13 @@ interface SolarSystemCanvasProps {
    *  an entry draw thicker, amber, and labelled with their count. Static —
    *  reduced-motion safe. */
   laneVolumes?: Record<string, { v: number; n: number }> | null;
+  /** Graphics review 2026-09-12 item 5 — controlled Lanes/Ships/World
+   *  visibility. When the shell passes these, the renderer's own toggle
+   *  column is hidden on phones (the shell's icon strip carries the
+   *  switches) and shown from md up; when absent the renderer keeps
+   *  private state exactly as before. */
+  layers?: MapLayerVisibility;
+  onToggleLayer?: (key: MapLayerKey) => void;
 }
 
 // Visual layout: positions per location (this flat projection's own geometry).
@@ -262,7 +274,7 @@ function useImageCache(urls: string[]): { cache: Map<string, HTMLImageElement>; 
   return { cache: cacheRef.current, loaded };
 }
 
-export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true, alwaysLabels = false, onZoomTierChange, laneVolumes }: SolarSystemCanvasProps) {
+export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true, alwaysLabels = false, onZoomTierChange, laneVolumes, layers, onToggleLayer }: SolarSystemCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -307,9 +319,18 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   const pinchRef = useRef<PinchState | null>(null);
   const dragRef = useRef<{ startX: number; startY: number; camX: number; camY: number } | null>(null);
   const movedRef = useRef(0); // px travelled since pointerdown — click-vs-drag guard
-  const [showLanes, setShowLanes] = useState(true);
-  const [showShips, setShowShips] = useState(true);
-  const [showWorld, setShowWorld] = useState(true);
+  // Lanes / Ships / World — controlled by the shell when it passes `layers`
+  // (graphics review item 5: the phone icon strip owns the switches), else
+  // private state as before.
+  const [localLayers, setLocalLayers] = useState<MapLayerVisibility>(DEFAULT_MAP_LAYERS);
+  const layerVis = layers ?? localLayers;
+  const showLanes = layerVis.lanes;
+  const showShips = layerVis.ships;
+  const showWorld = layerVis.world;
+  const toggleLayer = useCallback((key: MapLayerKey) => {
+    if (onToggleLayer) onToggleLayer(key);
+    else setLocalLayers(prev => toggleMapLayer(prev, key));
+  }, [onToggleLayer]);
   const animRef = useRef(0);
 
   // World presence (audit Change #3 / D1) — other corporations' colony
@@ -360,9 +381,22 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
   // Preload every planet sprite + every ship role sprite + nebula bg. Safe to
   // render before these resolve — we fall back to procedural circles/chevrons.
+  // Graphics review 2026-09-12 item 11: phones (<768px — the viewports this
+  // renderer is forced on to) load the 512px sprite siblings emitted by
+  // scripts/resize-art.ts instead of the 1024px originals (~1.6 MB → ~0.3
+  // MB). Resolved synchronously in the lazy initializer so the FIRST
+  // preload already asks for the small files — an effect would have kicked
+  // off the full-size fetches one render earlier. The value does not reach
+  // the markup, so SSR (false) cannot cause a hydration mismatch.
+  const [phoneSprites] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+  const spriteUrlFor = useCallback((base: string) => (phoneSprites ? getArtVariant(base, 512) : base), [phoneSprites]);
   const assetUrls = useMemo<string[]>(
-    () => Array.from(new Set<string>([...Object.values(LOCATION_SPRITE), ...Object.values(SHIP_SPRITE), BG_NEBULA])),
-    [],
+    () => Array.from(new Set<string>([
+      ...Object.values(LOCATION_SPRITE).map(spriteUrlFor),
+      ...Object.values(SHIP_SPRITE).map(spriteUrlFor),
+      BG_NEBULA,
+    ])),
+    [spriteUrlFor],
   );
   const imgs = useImageCache(assetUrls);
 
@@ -388,7 +422,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   // Resolve a location id to its layout, if present.
   const layoutOf = useCallback((locationId: string) => LOCATION_LAYOUT[locationId], []);
 
-  // W9 parity subset: zone standing glyph per location (♛ governor / ◆
+  // W9 parity subset: zone standing glyph per location (crown governor / diamond
   // stakeholder — text glyph, not color-only) and severe-hazard forecast
   // locations for the amber telegraph markers below.
   const standingByLoc = useMemo(() => {
@@ -684,7 +718,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
       // Body — prefer sprite (circular-clipped) when loaded, else gradient sphere.
       const spriteUrl = LOCATION_SPRITE[loc.id];
-      const sprite = spriteUrl ? imgs.cache.get(spriteUrl) : undefined;
+      const sprite = spriteUrl ? imgs.cache.get(spriteUrlFor(spriteUrl)) : undefined;
       ctx.globalAlpha = unlocked ? 1 : 0.45;
       if (sprite && sprite.complete && sprite.naturalWidth > 0) {
         ctx.save();
@@ -812,12 +846,12 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       }
 
       // Label — bigger and bolder. W9: zone-standing text glyph prefix
-      // (♛ governor / ◆ stakeholder) so standing is never color-only.
+      // (crown governor / diamond stakeholder) so standing is never color-only.
       const standing = standingByLoc[loc.id];
       // Wave V4 — mode glyph rides IN the label text (shape + text, never
       // color alone), and the mode badge draws as a second text row.
       const modeGlyphSuffix = showLens && modeVis?.glyph ? ` ${modeVis.glyph}` : '';
-      const standingPrefix = showLens && standing === 'governor' ? '♛ ' : showLens && standing === 'stakeholder' ? '◆ ' : '';
+      const standingPrefix = showLens && standing === 'governor' ? `${MAP_GLYPHS.governor} ` : showLens && standing === 'stakeholder' ? `${MAP_GLYPHS.stakeholder} ` : '';
       const labelText = standingPrefix + loc.name + modeGlyphSuffix;
       let labelRow = ly + r + 14 * zoom;
       if (showName) {
@@ -958,7 +992,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           const sx = px.x + Math.cos(angle) * orbitR;
           const sy = px.y + Math.sin(angle) * orbitR;
           const spriteUrl = def ? SHIP_SPRITE[def.role] : undefined;
-          const shipSprite = spriteUrl ? imgs.cache.get(spriteUrl) : undefined;
+          const shipSprite = spriteUrl ? imgs.cache.get(spriteUrlFor(spriteUrl)) : undefined;
           drawShip(ctx, sx, sy, angle + Math.PI / 2, color, 3.5 * zoom, shipSprite);
           continue;
         }
@@ -1032,7 +1066,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         const def = SHIP_MAP.get(ship.definitionId);
         const color = def ? SHIP_COLOR[def.role] || '#22d3ee' : '#22d3ee';
         const spriteUrl = def ? SHIP_SPRITE[def.role] : undefined;
-        const shipSprite = spriteUrl ? imgs.cache.get(spriteUrl) : undefined;
+        const shipSprite = spriteUrl ? imgs.cache.get(spriteUrlFor(spriteUrl)) : undefined;
         drawShip(ctx, bx, by, heading, color, 4 * zoom, shipSprite);
 
         // W9: arrival-countdown label above the transit marker (2D parity
@@ -1090,7 +1124,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
     // ─── Hazard FORECAST telegraphs (W9 parity subset) ────────────
     // Next-month severe warnings: constant-radius dashed amber ring with a
-    // slow pulse (static under reduced motion) + ⚠ glyph — distinct from the
+    // slow pulse (static under reduced motion) + warning glyph — distinct from the
     // expanding active-hazard rings above. Full warning text lives in the
     // context panel / selected-location details.
     const forecastWarnings = state.hazardWarnings || [];
@@ -1115,7 +1149,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         ctx.font = `bold ${10 * zoom}px Inter, sans-serif`;
         ctx.textAlign = 'center';
         ctx.fillStyle = 'rgba(251,191,36,0.95)';
-        ctx.fillText('⚠', px.x, px.y - rr - 4);
+        ctx.fillText(MAP_GLYPHS.warning, px.x, px.y - rr - 4);
       }
     }
 
@@ -1467,9 +1501,9 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                       <span className="flex items-center gap-1">
                         {!unlocked && <GameIcon name="lock" size={10} />}
                         <span className="truncate">{loc.name}</span>
-                        {standing === 'governor' && <span aria-hidden="true" className="text-amber-300 shrink-0">♛</span>}
+                        {standing === 'governor' && <GameIcon name="crown" size={12} className="text-amber-300 shrink-0" />}
                         {standing === 'stakeholder' && <span aria-hidden="true" className="text-cyan-300 shrink-0">◆</span>}
-                        {hasWarning && <span aria-hidden="true" className="text-amber-300 shrink-0">⚠</span>}
+                        {hasWarning && <GameIcon name="warning" size={12} className="text-amber-300 shrink-0" />}
                         {modeVis?.glyph && <span aria-hidden="true" className="text-slate-300 shrink-0">{modeVis.glyph}</span>}
                       </span>
                       <span className="sr-only">
@@ -1515,8 +1549,11 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         />
         <div ref={containerRef} className="absolute inset-0 pointer-events-none" />
 
-        {/* Zoom controls */}
-        <div className="hud-frame relative flex flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute top-2 right-2 z-20">
+        {/* Zoom controls. Same stray-`relative` fix as the layer column
+            below (the column used to lay out in normal flow on phones);
+            on phones it sits under the shell's icon strip (top-2 is the
+            strip's row), from md up it keeps the top-right corner. */}
+        <div className="hud-frame flex flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute top-[5.5rem] md:top-2 right-2 z-20">
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
           <button onClick={() => { const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom * BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in" aria-keyshortcuts="+">+</button>
@@ -1525,12 +1562,18 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         </div>
 
         {/* Layer toggles — moved to bottom-right in map-command mode so the
-            top-left corner stays free for the Order Queue HUD strip. */}
-        <div className="hud-frame relative flex flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute bottom-2 right-2 z-20">
+            top-left corner stays free for the Order Queue HUD strip.
+            2026-09-12: the stray `relative` that used to ride next to
+            `absolute` won the cascade, so on phones this column laid out in
+            normal flow as three full-width bars across the middle of the
+            map (graphics review item 5). Removed; and when the shell owns
+            the layer state its icon strip carries these switches on phones,
+            so the column only renders from md up. */}
+        <div className={`hud-frame ${onToggleLayer ? 'hidden md:flex' : 'flex'} flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute bottom-2 right-2 z-20`}>
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
           <button
-            onClick={() => setShowLanes(v => !v)}
+            onClick={() => toggleLayer('lanes')}
             aria-pressed={showLanes}
             className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
               showLanes ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
@@ -1539,7 +1582,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
             {showLanes ? '● Lanes' : '○ Lanes'}
           </button>
           <button
-            onClick={() => setShowShips(v => !v)}
+            onClick={() => toggleLayer('ships')}
             aria-pressed={showShips}
             className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
               showShips ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
@@ -1548,7 +1591,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
             {showShips ? '● Ships' : '○ Ships'}
           </button>
           <button
-            onClick={() => setShowWorld(v => !v)}
+            onClick={() => toggleLayer('world')}
             aria-pressed={showWorld}
             disabled={!worldAvailable}
             title={worldAvailable ? "Toggle other corporations' colony claims" : 'Sign in to see the live world'}
@@ -1626,11 +1669,11 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         </div>
 
         {/* Layer toggles */}
-        <div className="hud-frame relative flex flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute top-2 left-2">
+        <div className="hud-frame flex flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute top-2 left-2">
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
           <button
-            onClick={() => setShowLanes(v => !v)}
+            onClick={() => toggleLayer('lanes')}
             aria-pressed={showLanes}
             className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
               showLanes ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
@@ -1639,7 +1682,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
             {showLanes ? '● Lanes' : '○ Lanes'}
           </button>
           <button
-            onClick={() => setShowShips(v => !v)}
+            onClick={() => toggleLayer('ships')}
             aria-pressed={showShips}
             className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
               showShips ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
@@ -1648,7 +1691,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
             {showShips ? '● Ships' : '○ Ships'}
           </button>
           <button
-            onClick={() => setShowWorld(v => !v)}
+            onClick={() => toggleLayer('world')}
             aria-pressed={showWorld}
             disabled={!worldAvailable}
             title={worldAvailable ? "Toggle other corporations' colony claims" : 'Sign in to see the live world'}

@@ -38,6 +38,7 @@ import { SCIENCE_PROGRAMS } from '@/lib/game/science-missions';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { INTERSTELLAR_SYSTEM_MAP } from '@/lib/game/interstellar';
 import { formatMoney, formatCountdown } from '@/lib/game/formulas';
+import GameIcon from './GameIcon';
 
 interface Props {
   state: GameState;
@@ -463,7 +464,7 @@ function HiredCommanderCard({
           className="text-[10px] px-1.5 py-0.5 rounded border border-emerald-500/30 text-emerald-300 bg-emerald-500/5"
           title={`Specialty — ${specialty.name}: ${specialty.description}`}
         >
-          ★ {specialty.name}
+          <GameIcon name="star" size={13} className="mr-1" />{specialty.name}
         </span>
         <span
           className="text-[10px] px-1.5 py-0.5 rounded border border-amber-500/30 text-amber-300 bg-amber-500/5"
@@ -478,7 +479,7 @@ function HiredCommanderCard({
               className="text-[10px] px-1.5 py-0.5 rounded border border-sky-500/30 text-sky-300 bg-sky-500/5"
               title={`Program-earned specialty — ${bonusTrait.name}: ${bonusTrait.description}`}
             >
-              ★★ {bonusTrait.name}
+              <GameIcon name="star" size={10} /><GameIcon name="star" size={10} className="mr-1" />{bonusTrait.name}
             </span>
           );
         })()}
@@ -502,7 +503,7 @@ function HiredCommanderCard({
                 const daysLeft = Math.max(0, Math.ceil((etaMs - Date.now()) / (24 * 60 * 60 * 1000)));
                 return (
                   <div className="text-[10px] mt-0.5 text-fuchsia-400">
-                    🎖️ Retires in {daysLeft}d — reassigning to a different post resets this clock
+                    <GameIcon name="commanders" size={13} className="mr-1" />Retires in {daysLeft}d — reassigning to a different post resets this clock
                   </div>
                 );
               })()}

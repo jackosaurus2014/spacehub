@@ -9,6 +9,8 @@ import {
   sceneBodyRadius,
   planetDisplayPeriodSec,
   moonDisplayPeriodSec,
+  BODY_RADIUS_MIN,
+  BODY_RADIUS_MAX,
 } from '../game/orbital-elements';
 import { ALL_LOCATIONS } from '../game/solar-system';
 
@@ -30,11 +32,20 @@ describe('orbital-elements scene math', () => {
   it('body radii are clamped and ordered sensibly', () => {
     for (const b of ORBITAL_BODIES) {
       const r = sceneBodyRadius(b.radiusKm);
-      expect(r).toBeGreaterThanOrEqual(0.2);
-      expect(r).toBeLessThanOrEqual(1.5);
+      expect(r).toBeGreaterThanOrEqual(BODY_RADIUS_MIN);
+      expect(r).toBeLessThanOrEqual(BODY_RADIUS_MAX);
     }
     expect(sceneBodyRadius(69911)).toBeGreaterThan(sceneBodyRadius(6371)); // Jupiter > Earth
     expect(sceneBodyRadius(6371)).toBeGreaterThan(sceneBodyRadius(1737)); // Earth > Moon
+  });
+
+  it('graphics review 2026-09-12 item 9: Earth is large enough to read at the default view', () => {
+    // 0.8 scene units ≈ 16 px in diameter at the 1366×900 system-overview
+    // camera (517 px stage); the review measured ~6 px before the pass.
+    expect(sceneBodyRadius(6371)).toBeGreaterThanOrEqual(0.8);
+    // The LEO (1.5×) / GEO (2.0×) pips stay outside the 0.3 pick-sphere
+    // radius of each other: 0.5 × Earth's radius must exceed 0.3.
+    expect(0.5 * sceneBodyRadius(6371)).toBeGreaterThan(0.3);
   });
 
   it('display periods: Earth ≈ 10 real minutes, ordering preserved, retrograde sign kept', () => {

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import GameIcon from './GameIcon';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -226,7 +227,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
           <span className="hud-corner-br" aria-hidden="true" />
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="text-lg">🛡️</span>
+              <GameIcon name="shield" size={18} />
               <div>
                 <h3 className="text-white text-sm font-semibold">{myAlliance.name}</h3>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono font-bold">
@@ -251,7 +252,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
             <span className="hud-corner-bl" aria-hidden="true" />
             <span className="hud-corner-br" aria-hidden="true" />
             <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <span>⚡</span> Corporation Bonuses
+              <GameIcon name="power" size={14} /> Corporation Bonuses
             </h3>
             <div className="grid grid-cols-2 gap-2">
               {myAlliance.bonuses.map((bonus) => (
@@ -275,7 +276,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
           <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span>👥</span> Members ({myAlliance.members.length})
+            <GameIcon name="workforce" size={14} /> Members ({myAlliance.members.length})
           </h3>
           <div className="overflow-x-auto" role="table" aria-label="Corporation members">
             <div className="flex items-center justify-between py-1 px-3 mb-1" role="row">
@@ -292,9 +293,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
                   }`}
                 >
                   <div className="flex items-center gap-2" role="cell">
-                    <span className="text-sm" aria-hidden="true">
-                      {member.role === 'leader' ? '👑' : member.role === 'officer' ? '⭐' : '🧑‍🚀'}
-                    </span>
+                    <GameIcon name={member.role === 'leader' ? 'crown' : member.role === 'officer' ? 'star' : 'workforce'} size={14} />
                     <div>
                       <div className="flex items-center gap-1.5">
                         <span className={`text-xs font-medium ${member.isYou ? 'text-cyan-300' : 'text-white'}`}>
@@ -322,7 +321,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
             <span className="hud-corner-bl" aria-hidden="true" />
             <span className="hud-corner-br" aria-hidden="true" />
             <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <span>🏭</span> Shared Facilities
+              <GameIcon name="subsidiaries" size={14} /> Shared Facilities
             </h3>
             <div className="overflow-x-auto" role="table" aria-label="Shared corporation facilities">
               <div className="flex items-center justify-between py-1 px-2.5 mb-1" role="row">
@@ -381,7 +380,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
     <div className="space-y-4">
       {/* Not in Corporation Banner */}
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-center">
-        <span className="text-2xl block mb-2">🛡️</span>
+        <GameIcon name="shield" size={24} className="block mb-2" />
         <h3 className="text-white text-sm font-semibold mb-1">No Corporation</h3>
         <p className="text-slate-400 text-xs mb-3">
           Join or create a corporation to earn shared bonuses and access shared facilities.
@@ -398,7 +397,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
       {showCreateForm && (
         <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
           <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span>✨</span> Create New Corporation
+            <GameIcon name="sparkle" size={14} /> Create New Corporation
           </h3>
           <div className="space-y-3">
             <div>
@@ -446,7 +445,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-          <span>📋</span> Available Corporations
+          <GameIcon name="contracts" size={14} /> Available Corporations
         </h3>
         {listings.length === 0 ? (
           <p className="text-slate-500 text-xs text-center py-4">

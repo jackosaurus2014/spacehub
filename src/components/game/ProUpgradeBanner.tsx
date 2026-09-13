@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import GameIcon from './GameIcon';
 
 const STORAGE_KEY = 'spacetycoon_pro_banner_dismissed';
 
@@ -41,7 +42,7 @@ export default function ProUpgradeBanner({ completedResearch }: { completedResea
           <span aria-hidden="true">✕</span>
         </button>
         <div className="flex items-start gap-3">
-          <span className="text-2xl shrink-0">🛰️</span>
+          <GameIcon name="bld-satellite" size={24} className="shrink-0" />
           <div>
             <h4 className="text-white text-sm font-semibold mb-1">Love Space Tycoon?</h4>
             <p className="text-slate-400 text-xs leading-relaxed mb-3">

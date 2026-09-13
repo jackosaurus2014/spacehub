@@ -20,6 +20,8 @@ import {
 } from '@/lib/game/modules';
 import { SHIP_MAP, getShipDerivedStats } from '@/lib/game/ships';
 import { formatMoney } from '@/lib/game/formulas';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 interface Props {
   state: GameState;
@@ -36,8 +38,8 @@ const RARITY_ACCENT: Record<ModuleRarity, { text: string; border: string; bg: st
   legendary: { text: 'text-amber-300',  border: 'border-amber-500/40',   bg: 'bg-amber-500/10' },
 };
 
-const HARDPOINT_ICON: Record<string, string> = {
-  engine: '🚀', shield: '🛡', cargo: '📦', sensor: '📡', drone: '⚙️', utility: '🔧',
+const HARDPOINT_ICON: Record<string, IconName> = {
+  engine: 'fleet', shield: 'shield', cargo: 'package', sensor: 'services', drone: 'modules', utility: 'wrench',
 };
 
 export default function ModulesPanel({ state, setState }: Props) {
@@ -59,7 +61,7 @@ export default function ModulesPanel({ state, setState }: Props) {
             </div>
             <div>
               <h2 className="font-hud text-white text-base font-bold flex items-center gap-2">
-                <span className="text-cyan-400">⚙️</span> Ship Modules
+                <GameIcon name="modules" size={14} className="text-cyan-400" /> Ship Modules
               </h2>
               <p className="text-slate-500 text-xs mt-0.5">
                 Purchase modules at the fabrication shop, fit them to your ships for stat bonuses. Each ship has a fixed
@@ -70,9 +72,9 @@ export default function ModulesPanel({ state, setState }: Props) {
         </div>
 
         <div className="game-tab-bar flex gap-1 overflow-x-auto">
-          <TabButton active={tab === 'shop'} onClick={() => setTab('shop')}>🏪 Shop ({MODULES.length})</TabButton>
-          <TabButton active={tab === 'inventory'} onClick={() => setTab('inventory')}>📦 Inventory ({inventory.length})</TabButton>
-          <TabButton active={tab === 'fit'} onClick={() => setTab('fit')}>🔩 Fit ({builtShips.length} ships)</TabButton>
+          <TabButton active={tab === 'shop'} onClick={() => setTab('shop')}><GameIcon name="city" size={13} className="mr-1" />Shop ({MODULES.length})</TabButton>
+          <TabButton active={tab === 'inventory'} onClick={() => setTab('inventory')}><GameIcon name="package" size={13} className="mr-1" />Inventory ({inventory.length})</TabButton>
+          <TabButton active={tab === 'fit'} onClick={() => setTab('fit')}><GameIcon name="resource-component" size={13} className="mr-1" />Fit ({builtShips.length} ships)</TabButton>
         </div>
       </div>
 
@@ -121,7 +123,7 @@ function ShopTab({ state, setState }: { state: GameState; setState: Props['setSt
             onClick={() => setHardpointFilter(type)}
             className={`px-2 py-1 rounded ${hardpointFilter === type ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-white/[0.04] text-slate-400 hover:text-white'}`}
           >
-            {icon} {type}
+            <GameIcon name={icon} size={13} className="mr-1" />{type}
           </button>
         ))}
       </div>

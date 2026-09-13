@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import GameIcon from './GameIcon';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -184,7 +185,7 @@ export default function AllianceEventsPanel({ dailyMetrics }: AllianceEventsPane
         <>
           {activeEvents.length === 0 ? (
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
-              <span className="text-2xl block mb-2">🏁</span>
+              <GameIcon name="flag" size={24} className="block mb-2" />
               <p className="text-slate-400 text-xs">No active alliance events right now.</p>
               <p className="text-slate-600 text-[10px] mt-1">Check back for the next weekly Sprint!</p>
             </div>
@@ -401,7 +402,7 @@ function DailyTasksCard({ tasks, allCompleted, dailyMetrics }: { tasks: DailyTas
       <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-          <span>📋</span> Daily Alliance Tasks
+          <GameIcon name="contracts" size={14} /> Daily Alliance Tasks
         </h3>
         <span className={`game-number text-[10px] font-bold ${completedCount >= 3 ? 'text-green-400' : 'text-slate-500'}`}>
           {completedCount}/3 done
@@ -424,9 +425,7 @@ function DailyTasksCard({ tasks, allCompleted, dailyMetrics }: { tasks: DailyTas
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm">
-                    {task.completed ? '✅' : '⬜'}
-                  </span>
+                  <GameIcon name={task.completed ? 'check' : 'square'} size={14} className={task.completed ? 'text-green-300' : 'text-slate-500'} />
                   <span className={`text-xs ${task.completed ? 'text-green-300 line-through' : 'text-white'}`}>
                     {task.description}
                   </span>
@@ -486,7 +485,7 @@ function EventHistory({ history }: { history: EventHistoryItem[] }) {
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
       <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-        <span>📜</span> Recent Event Results
+        <GameIcon name="scroll" size={14} /> Recent Event Results
       </h3>
       <div className="space-y-2">
         {history.map(h => (

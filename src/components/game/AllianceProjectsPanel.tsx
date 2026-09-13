@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import type { GameState } from '@/lib/game/types';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -86,19 +88,19 @@ const RESOURCE_NAMES: Record<string, string> = {
   ethane: 'Ethane',
 };
 
-const RESOURCE_ICONS: Record<string, string> = {
-  iron: '🔩',
-  aluminum: '🪶',
-  titanium: '⚙️',
-  platinum_group: '💎',
-  gold: '🥇',
-  rare_earth: '🔬',
-  helium3: '⚛️',
-  exotic_materials: '✨',
-  lunar_water: '💧',
-  mars_water: '🧊',
-  methane: '⛽',
-  ethane: '🛢️',
+const RESOURCE_ICONS: Record<string, IconName> = {
+  iron: 'resource-component',
+  aluminum: 'resource-refined',
+  titanium: 'modules',
+  platinum_group: 'resource-precious',
+  gold: 'medal',
+  rare_earth: 'research',
+  helium3: 'resource-exotic',
+  exotic_materials: 'sparkle',
+  lunar_water: 'resource-water',
+  mars_water: 'resource-water',
+  methane: 'resource-hydrocarbon',
+  ethane: 'resource-industrial',
 };
 
 const BONUS_LABELS: Record<string, string> = {
@@ -287,7 +289,7 @@ export default function AllianceProjectsPanel({ state }: AllianceProjectsPanelPr
         <>
           {activeProjects.length === 0 ? (
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
-              <span className="text-2xl block mb-2">🏗️</span>
+              <GameIcon name="build" size={24} className="block mb-2" />
               <p className="text-slate-400 text-xs">No active projects.</p>
               <p className="text-slate-600 text-[10px] mt-1">
                 {isLeaderOrOfficer ? 'Propose a new project from the "New" tab!' : 'Ask a leader or officer to propose a project.'}
@@ -360,7 +362,7 @@ export default function AllianceProjectsPanel({ state }: AllianceProjectsPanelPr
         <>
           {completedProjects.length === 0 ? (
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
-              <span className="text-2xl block mb-2">🏆</span>
+              <GameIcon name="trophy" size={24} className="block mb-2" />
               <p className="text-slate-400 text-xs">No completed projects yet.</p>
             </div>
           ) : (
@@ -443,7 +445,7 @@ function ActiveProjectCard({
           {/* Money */}
           <ResourceProgressBar
             label="Money"
-            icon="💰"
+            icon="money"
             current={project.moneyFunded}
             target={project.moneyCost}
             formatValue={formatMoney}
@@ -537,7 +539,7 @@ function ResourceProgressBar({
   formatValue,
 }: {
   label: string;
-  icon: string;
+  icon: IconName;
   current: number;
   target: number;
   formatValue: (v: number) => string;
@@ -548,7 +550,7 @@ function ResourceProgressBar({
     <div>
       <div className="flex items-center justify-between mb-0.5">
         <span className="text-slate-400 text-[10px] flex items-center gap-1">
-          <span>{icon}</span> {label}
+          <GameIcon name={icon} size={12} /> {label}
         </span>
         <span className="game-number text-slate-300 text-[10px] font-mono">
           {formatValue(current)} / {formatValue(target)}
@@ -723,7 +725,7 @@ function AvailableProjectCard({
       {/* Costs */}
       <div className="flex flex-wrap gap-2 mb-2">
         <span className="game-number text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300 font-mono">
-          💰 {formatMoney(project.moneyCost)}
+          <GameIcon name="money" size={13} className="mr-1" />{formatMoney(project.moneyCost)}
         </span>
         {Object.entries(project.resourceCosts).map(([resourceId, qty]) => (
           <span key={resourceId} className="game-number text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-300 font-mono">

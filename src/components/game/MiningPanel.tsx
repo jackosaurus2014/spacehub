@@ -203,7 +203,7 @@ export default function MiningPanel({ state, onPlaceOrder, onSurveyProbe, onBuyP
             return (
               <button key={f.id} type="button" aria-pressed={f.id === field.id} onClick={() => { setFieldId(f.id); setRockId(''); }}
                 className={`${BTN} ${f.id === field.id ? 'border-[var(--ember)] text-[var(--ink)]' : ''}`}>
-                {f.name}{f.frontier ? ' · Frontier' : ''}{unlocked ? '' : ' 🔒'}
+                {f.name}{f.frontier ? ' · Frontier' : ''}{unlocked ? '' : ''}
               </button>
             );
           })}

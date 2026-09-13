@@ -158,6 +158,7 @@ export default function IndustryTicker() {
   return (
     <div
       className="w-full overflow-hidden border-b"
+      data-site-chrome="ticker"
       style={{
         background: 'linear-gradient(to right, rgba(9,9,11,0.95), rgba(15,15,20,0.95), rgba(9,9,11,0.95))',
         borderColor: 'rgba(99, 102, 241, 0.08)',

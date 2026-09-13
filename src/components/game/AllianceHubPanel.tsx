@@ -11,6 +11,8 @@ import AllianceDiplomacyPanel from '@/components/game/AllianceDiplomacyPanel';
 // Live-Service Wave LS5 (docs/LIVE_SERVICE_2026-08.md §LS5): Alliance Season
 // Charters — pledge board lives in the hub, its own tab beside Treasury.
 import AllianceCharterPanel from '@/components/game/AllianceCharterPanel';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -39,14 +41,14 @@ const TIER_LABELS: Record<number, { label: string; color: string }> = {
   5: { label: 'Diamond', color: 'text-purple-300' },
 };
 
-const HUB_TABS: { id: HubTab; label: string; icon: string }[] = [
-  { id: 'overview', label: 'Overview', icon: '🏠' },
-  { id: 'events', label: 'Events', icon: '🏁' },
-  { id: 'projects', label: 'Projects', icon: '🏗️' },
-  { id: 'research', label: 'Research', icon: '🧬' },
-  { id: 'treasury', label: 'Treasury', icon: '🏦' },
-  { id: 'charter', label: 'Charter', icon: '🤝' },
-  { id: 'diplomacy', label: 'Diplomacy', icon: '🕊️' },
+const HUB_TABS: { id: HubTab; label: string; icon: IconName }[] = [
+  { id: 'overview', label: 'Overview', icon: 'home' },
+  { id: 'events', label: 'Events', icon: 'flag' },
+  { id: 'projects', label: 'Projects', icon: 'build' },
+  { id: 'research', label: 'Research', icon: 'research' },
+  { id: 'treasury', label: 'Treasury', icon: 'bank' },
+  { id: 'charter', label: 'Charter', icon: 'handshake' },
+  { id: 'diplomacy', label: 'Diplomacy', icon: 'handshake' },
 ];
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -123,7 +125,7 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
           <span className="hud-corner-br" aria-hidden="true" />
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="text-lg">🛡️</span>
+              <GameIcon name="shield" size={18} />
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-white text-sm font-bold">{allianceInfo.name}</h3>
@@ -184,7 +186,7 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
                 : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
             }`}
           >
-            <span className="mr-0.5" aria-hidden="true">{t.icon}</span>
+            <GameIcon name={t.icon} size={14} className="mr-0.5" />
             <span className="hidden sm:inline" aria-hidden="true">{t.label}</span>
           </button>
         ))}

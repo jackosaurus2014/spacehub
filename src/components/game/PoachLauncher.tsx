@@ -33,6 +33,7 @@ import { getFeeIndexFactor } from '@/lib/game/fee-index';
 import { COMPETITIVE_TOOL_MAP } from '@/lib/game/competitive-posture';
 import { consumeSubViewRequest } from '@/lib/game/sub-view';
 import { Concept } from './HoloTip';
+import GameIcon from './GameIcon';
 
 interface LeaderboardLite {
   profileId?: string;
@@ -142,9 +143,9 @@ export default function PoachLauncher({
     >
       <div className="flex items-center justify-between gap-2">
         <h3 id={headingId} className="text-[11px] font-bold uppercase tracking-wider text-amber-200 flex items-center gap-1.5">
-          <span aria-hidden="true">🧲</span>
+          <GameIcon name="magnet" size={14} />
           <Concept id="talent-poaching">Talent poaching</Concept>
-          <span className="text-[9px] px-1 py-0.5 rounded border border-white/15 text-slate-400">Offense</span>
+          <span className="text-[10px] px-1 py-0.5 rounded border border-white/15 text-slate-400">Offense</span>
           {initialTargetName && <span className="normal-case tracking-normal text-slate-300">· {initialTargetName}</span>}
         </h3>
         <button

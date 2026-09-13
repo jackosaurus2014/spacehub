@@ -195,7 +195,7 @@ export default async function PublicCorpPage(props: { params: Promise<{ id: stri
               <p className="game-label">Capital Structure</p>
               {equity.openTenderCount > 0 && (
                 <span className="text-[10px] px-2 py-1 rounded-full bg-red-500/10 text-red-300 border border-red-500/25 font-bold">
-                  ⚑ {equity.openTenderCount} open tender {equity.openTenderCount === 1 ? 'offer' : 'offers'}
+                  <GameIcon name="flag" size={13} className="mr-1" />{equity.openTenderCount} open tender {equity.openTenderCount === 1 ? 'offer' : 'offers'}
                 </span>
               )}
             </div>

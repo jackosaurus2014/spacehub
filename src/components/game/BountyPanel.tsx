@@ -7,6 +7,7 @@ import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import Image from 'next/image';
+import GameIcon from './GameIcon';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -247,7 +248,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
           onClick={() => setShowPostForm(!showPostForm)}
           className="min-h-[44px] px-4 py-2 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-500 rounded-lg transition-colors"
         >
-          {showPostForm ? 'Cancel' : '📜 Post Bounty'}
+          {showPostForm ? 'Cancel' : 'Post Bounty'}
         </button>
       </div>
 
@@ -255,7 +256,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
       {showPostForm && (
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
           <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span>📜</span> Post New Bounty
+            <GameIcon name="scroll" size={14} /> Post New Bounty
           </h3>
           <p className="text-slate-400 text-[10px] mb-3">
             Request a resource from other players. You pay upfront; funds are held in escrow until filled.
@@ -352,7 +353,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-          <span>🎯</span> Active Bounties
+          <GameIcon name="target" size={14} /> Active Bounties
         </h3>
         {activeBounties.length === 0 ? (
           <p className="text-slate-500 text-xs text-center py-4">
@@ -475,7 +476,7 @@ export default function BountyPanel({ state }: BountyPanelProps) {
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
           <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span>📜</span> Recent History
+            <GameIcon name="scroll" size={14} /> Recent History
           </h3>
           <div className="space-y-1.5">
             {completedBounties.slice(0, 10).map((bounty) => {

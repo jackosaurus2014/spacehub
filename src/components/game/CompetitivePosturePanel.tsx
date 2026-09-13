@@ -86,7 +86,7 @@ export default function CompetitivePosturePanel({ state, onNavigate, compact }: 
         <>
           {posture.incoming.length > 0 && (
             <div className="rounded-lg border border-red-500/25 bg-red-500/[0.04] p-2.5">
-              <p className="text-[9px] uppercase tracking-wider font-bold text-red-300 mb-1">
+              <p className="text-[10px] uppercase tracking-wider font-bold text-red-300 mb-1">
                 Operations running against you
               </p>
               <ul className="space-y-1">
@@ -118,7 +118,7 @@ export default function CompetitivePosturePanel({ state, onNavigate, compact }: 
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         {/* Status as a literal word — greyscale-safe. */}
-                        <span className="text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-white/15 text-slate-300">
+                        <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-white/15 text-slate-300">
                           {sig.statusLabel}
                         </span>
                         <span className="text-[11px] font-bold text-slate-100">{sig.label}</span>
@@ -142,7 +142,7 @@ export default function CompetitivePosturePanel({ state, onNavigate, compact }: 
 
       {posture.availableTools.length > 0 && (
         <div className="pt-1 border-t border-white/[0.06]">
-          <p className="text-[9px] uppercase tracking-wider font-bold text-slate-500 mb-1.5">
+          <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500 mb-1.5">
             Competitive tools your corporation holds
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -156,7 +156,7 @@ export default function CompetitivePosturePanel({ state, onNavigate, compact }: 
               >
                 <GameIcon name={t.icon} size={12} />
                 {t.name}
-                <span className="text-[8px] uppercase tracking-wider text-slate-500">{t.posture}</span>
+                <span className="text-[10px] uppercase tracking-wider text-slate-500">{t.posture}</span>
               </button>
             ))}
           </div>
@@ -185,7 +185,7 @@ export default function CompetitivePosturePanel({ state, onNavigate, compact }: 
               Poach talent
             </button>
           </div>
-          <p className="text-[9px] text-slate-600 mt-1.5">
+          <p className="text-[10px] text-slate-600 mt-1.5">
             Using none of these is a valid strategy — solo growth stays fully viable. Mechanics:{' '}
             <Concept id="price-campaign">price campaigns</Concept>,{' '}
             <Concept id="talent-poaching">talent poaching</Concept>,{' '}

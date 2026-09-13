@@ -18,19 +18,19 @@
 // 4X wave W9 (overlay deepening — read-only state consumption):
 //   - ETA countdown labels on in-transit ships (canvas-sprite, 1 Hz refresh)
 //   - hazard FORECAST telegraphs (state.hazardWarnings): slow-pulse amber
-//     ring + ⚠ glyph, visually distinct from the expanding active-hazard
+//     ring + warning glyph, visually distinct from the expanding active-hazard
 //     rings; detail lives in MapContextPanel's existing warning chips
 //   - zone standing tint (state.zoneStandings): governor gold / stakeholder
-//     cyan glow behind every location in the zone, PLUS a ♛/◆ text glyph in
+//     cyan glow behind every location in the zone, PLUS a crown/diamond text glyph in
 //     the label so standing is never conveyed by color alone
-//   - science-mission presence: 🔬 instrument glyph on program target bodies
+//   - science-mission presence: instrument glyph on program target bodies
 //
 // Performance: single instanced mesh for the belt, sprite labels (no DOM, no
 // font network fetch), frameloop paused when the tab/page is hidden, DPR
 // capped at 1.5. Text labels are canvas sprites with sizeAttenuation:false so
 // they stay readable at Pluto range without DOM overlays.
 
-import { useRef, useState, useEffect, useMemo, useCallback, useLayoutEffect, lazy, Suspense } from 'react';
+import { useRef, useState, useEffect, useMemo, useCallback, useLayoutEffect, lazy, Suspense, createContext, useContext } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Stars, Billboard } from '@react-three/drei';
@@ -62,6 +62,13 @@ import {
 } from '@/lib/game/map-zoom';
 import { getAtmosphere, computeSlotRings, SLOT_SEGMENT_STYLE, type SlotRingModel } from '@/lib/game/map-bodies';
 import { REGION_LABELS, LOCATIONS_BY_REGION } from './SolarSystemCanvas';
+// Graphics review 2026-09-12: shell-owned Lanes/Ships/World (item 5), the
+// canvas-drawn glyph table (item 10 — DOM emoji are GameIcons now), and the
+// chrome kit for the in-transit chip.
+import { DEFAULT_MAP_LAYERS, toggleMapLayer, type MapLayerVisibility, type MapLayerKey } from '@/lib/game/map-layers';
+import { MAP_GLYPHS } from '@/lib/game/map-glyphs';
+import GameIcon from './GameIcon';
+import { DataChip } from './chrome';
 import {
   ORBITAL_BODIES,
   ORBITAL_PIPS,
@@ -116,6 +123,44 @@ interface SolarMap3DProps {
    *  2D preference and swaps renderers. NOT fired for the loss React Three
    *  Fiber itself forces on unmount (the listener is removed first). */
   onContextLost?: () => void;
+  /** Graphics review 2026-09-12 item 5 — controlled Lanes/Ships/World
+   *  visibility (the shell's phone icon strip owns the switches; this
+   *  renderer's own column shows from md up). Absent = private state. */
+  layers?: MapLayerVisibility;
+  onToggleLayer?: (key: MapLayerKey) => void;
+}
+
+// ── Graphics review 2026-09-12 item 9 — framing ─────────────────────────────
+// New games open on the Earth cluster: the camera sits HOME_DISTANCE scene
+// units from Earth, above the ecliptic, on the sunward side but 60° off the
+// Earth→Sun axis so the Sun stays out of frame while Earth shows a gibbous
+// lit face. Earth then reads ~40 px across at 1366×900 (was ~6 px at the old
+// system-overview default) and the camera is inside the 'detail' zoom tier,
+// so a first-hour player sees LEO / GEO / the Moon labelled. `R`/Home and
+// the reset button re-frame the LIVE Earth position (bodies orbit in real
+// time, so a saved camera pose would drift into empty space).
+const HOME_LOCATION_ID = 'earth_surface';
+const HOME_DISTANCE = 26;
+/** The intro dolly starts here and glides out to HOME_DISTANCE. */
+const INTRO_START_DISTANCE = 9;
+const INTRO_DURATION_MS = 2200;
+const MAP_INTRO_KEY = 'tycoon-map-intro-seen';
+
+/** Camera offset direction from Earth for the home frame. Mostly above
+ *  the ecliptic (the Sun is only 12.8 units from Earth, so from 26 units out
+ *  it can only leave the frame vertically — a high vantage puts it below
+ *  the bottom edge), tilted a little sideways for depth and a little
+ *  sunward so Earth shows a lit gibbous face. */
+function homeDirection(earthPos: readonly number[]): THREE.Vector3 {
+  const toSun = new THREE.Vector3(-earthPos[0], 0, -earthPos[2]);
+  if (toSun.lengthSq() < 1e-6) toSun.set(1, 0, 0);
+  toSun.normalize();
+  const side = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), toSun).normalize();
+  return new THREE.Vector3()
+    .addScaledVector(side, 0.35)
+    .addScaledVector(toSun, 0.25)
+    .add(new THREE.Vector3(0, 0.85, 0))
+    .normalize();
 }
 
 // Wave V4 feature flag — flip false if the bloom pass ever busts the perf
@@ -141,7 +186,10 @@ function NebulaSkybox() {
     const prevBg = scene.background;
     const prevIntensity = scene.backgroundIntensity;
     scene.background = tex;
-    scene.backgroundIntensity = 0.18;
+    // 0.18 → 0.14 with the item-8 tone pass (ACES + exposure 1.1 would
+    // otherwise lift the nebula into the mid-tones; the review asked for
+    // deeper blacks, not a brighter backdrop).
+    scene.backgroundIntensity = 0.14;
     return () => {
       scene.background = prevBg;
       scene.backgroundIntensity = prevIntensity;
@@ -181,10 +229,23 @@ function useSafeTexture(url?: string): THREE.Texture | null {
   return tex;
 }
 
+/** Label typeface. The review found labels asked for "Inter" — a face the
+ *  site never loads — so they fell back to system-ui while the HUD is DM
+ *  Sans / Orbitron. next/font exposes the body face under a hashed family
+ *  name, so read the resolved family off <body> once and draw with it. */
+let labelFontCache: string | null = null;
+function labelFontFamily(): string {
+  if (labelFontCache) return labelFontCache;
+  let fam = '';
+  try { fam = getComputedStyle(document.body).fontFamily; } catch { /* SSR / detached */ }
+  labelFontCache = fam && fam.length < 200 ? fam : 'system-ui, sans-serif';
+  return labelFontCache;
+}
+
 interface BadgeCounts { buildings: number; npc: number; world: number }
 
 /** W9: zone standing per location — never conveyed by color alone (text
- *  glyph ♛/◆ rides in the label; the tint sprite is reinforcement only). */
+ *  glyph crown/diamond rides in the label; the tint sprite is reinforcement only). */
 type ZoneStandingKind = 'governor' | 'stakeholder' | null;
 
 /** Wave V4 — mode-lens annotation baked into the label texture: a text glyph
@@ -194,18 +255,18 @@ interface ModeLabel { glyph: string; badge: string | null; color: string }
 /** Draw a name + badge row into a canvas and return a sprite texture. Labels
  *  are self-contained (no font fetch, no DOM) and match the 2D map's badge
  *  colors: cyan = your buildings, red = NPC presence, purple = other corps.
- *  W9: an optional standing glyph (♛ governor gold / ◆ stakeholder cyan)
+ *  W9: an optional standing glyph (crown governor gold / diamond stakeholder cyan)
  *  prefixes the name. V4: an optional mode glyph suffixes it, and a mode
  *  badge text row renders under the count badges. */
 function makeLabelTexture(name: string, unlocked: boolean, badges: BadgeCounts, standing: ZoneStandingKind = null, mode: ModeLabel | null = null): { tex: THREE.CanvasTexture; aspect: number } {
   const scale = 2; // supersample for crispness
-  const font = `600 ${13 * scale}px Inter, system-ui, sans-serif`;
-  const badgeFont = `700 ${11 * scale}px Inter, system-ui, sans-serif`;
-  const modeFont = `600 ${11 * scale}px Inter, system-ui, sans-serif`;
+  const font = `600 ${13 * scale}px ${labelFontFamily()}`;
+  const badgeFont = `700 ${11 * scale}px ${labelFontFamily()}`;
+  const modeFont = `600 ${11 * scale}px ${labelFontFamily()}`;
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d')!;
   ctx.font = font;
-  const glyph = standing === 'governor' ? '♛ ' : standing === 'stakeholder' ? '◆ ' : '';
+  const glyph = standing === 'governor' ? `${MAP_GLYPHS.governor} ` : standing === 'stakeholder' ? `${MAP_GLYPHS.stakeholder} ` : '';
   const glyphColor = standing === 'governor' ? '#fbbf24' : '#22d3ee';
   const glyphW = glyph ? ctx.measureText(glyph).width : 0;
   const nameW = ctx.measureText(name).width;
@@ -307,13 +368,92 @@ function ZoomTierTracker({ tierRef, onChange }: { tierRef: TierRef; onChange?: (
  *    system   — name + standing + mode glyph               (no badge rows)
  *  Visibility is chosen per frame by the allocation-free predicates in
  *  map-zoom.ts. `alwaysLabels` pins everything to the detail texture. */
-function LabelSprite({ name, unlocked, badges, yOffset, standing = null, mode = null, tierRef, locationId, alwaysLabels = false }: {
+// ── Graphics review 2026-09-12 item 9 — screen-space label declutter ────────
+// Labels are screen-constant sprites, so two bodies that sit a few pixels
+// apart on screen (Lunar Orbit / Moon, the Galilean moons) paint on top of
+// each other. Every LabelSprite registers its group + per-tier sprite size
+// here; LabelDeclutter (rendered inside the Canvas) projects each visible
+// label every 250 ms, keeps the higher-priority label of any overlapping
+// pair and lists the losers in `suppressed`, which the sprites consult in
+// their own per-frame visibility pass — so the result never depends on
+// useFrame ordering. Priority: selected body > holdings > major body >
+// pip > moon (see labelPriority). The 'alwaysLabels' accessibility override
+// bypasses the declutter entirely (it promises every label), and the
+// Location List stays the canonical, always-complete list.
+interface LabelRegistryEntry {
+  group: THREE.Object3D;
+  yOffset: number;
+  priority: number;
+  /** Sprite scale (x = width, y = height) per zoom tier, in the
+   *  sizeAttenuation:false units the sprites use. */
+  sizeByTier: Record<MapZoomTier, { w: number; h: number }>;
+  /** Written each frame by the sprite's own visibility pass. */
+  shown: boolean;
+  tier: MapZoomTier;
+}
+interface LabelRegistry {
+  entries: Map<string, LabelRegistryEntry>;
+  suppressed: Set<string>;
+}
+const LabelRegistryContext = createContext<LabelRegistry | null>(null);
+
+const DECLUTTER_INTERVAL_MS = 250;
+
+function LabelDeclutter({ registry, selectedLocationId, alwaysLabels }: { registry: LabelRegistry; selectedLocationId: string | null; alwaysLabels: boolean }) {
+  const lastRef = useRef(0);
+  const tmp = useMemo(() => new THREE.Vector3(), []);
+  useFrame(({ camera, size }) => {
+    if (alwaysLabels) { if (registry.suppressed.size) registry.suppressed.clear(); return; }
+    const now = performance.now();
+    if (now - lastRef.current < DECLUTTER_INTERVAL_MS) return;
+    lastRef.current = now;
+    // Sprite pixel extent for sizeAttenuation:false = scale × P[1][1] × H/2.
+    const p11 = (camera as THREE.PerspectiveCamera).projectionMatrix.elements[5];
+    const pxPerUnit = p11 * size.height / 2;
+    const rects: { id: string; x: number; y: number; w: number; h: number; priority: number }[] = [];
+    registry.entries.forEach((entry, id) => {
+      if (!entry.shown) return;
+      entry.group.getWorldPosition(tmp);
+      tmp.y += entry.yOffset;
+      tmp.project(camera);
+      if (tmp.z > 1 || tmp.z < -1) return; // behind the camera / beyond far plane
+      const s = entry.sizeByTier[entry.tier];
+      const w = s.w * pxPerUnit;
+      const h = s.h * pxPerUnit;
+      const cx = (tmp.x + 1) / 2 * size.width;
+      const cy = (1 - tmp.y) / 2 * size.height;
+      rects.push({ id, x: cx - w / 2, y: cy - h / 2, w, h, priority: id === selectedLocationId ? Number.POSITIVE_INFINITY : entry.priority });
+    });
+    rects.sort((a, b) => b.priority - a.priority);
+    const kept: typeof rects = [];
+    const next = new Set<string>();
+    for (const r of rects) {
+      const collides = kept.some(k => r.x < k.x + k.w && r.x + r.w > k.x && r.y < k.y + k.h && r.y + r.h > k.y);
+      if (collides) next.add(r.id); else kept.push(r);
+    }
+    registry.suppressed.clear();
+    next.forEach(id => registry.suppressed.add(id));
+  });
+  return null;
+}
+
+/** Declutter priority for a location label (higher wins a collision). */
+function labelPriority(locationId: string | undefined, kind: 'body' | 'pip', badges: BadgeCounts): number {
+  let p = kind === 'pip' ? 1 : (locationId && isMajorLocation(locationId)) ? 3 : 2;
+  if (badges.buildings > 0) p += 3;
+  return p;
+}
+
+function LabelSprite({ name, unlocked, badges, yOffset, standing = null, mode = null, tierRef, locationId, alwaysLabels = false, priority = 2 }: {
   name: string; unlocked: boolean; badges: BadgeCounts; yOffset: number; standing?: ZoneStandingKind;
-  mode?: ModeVisual | null; tierRef?: TierRef; locationId?: string; alwaysLabels?: boolean;
+  mode?: ModeVisual | null; tierRef?: TierRef; locationId?: string; alwaysLabels?: boolean; priority?: number;
 }) {
   const modeLabel: ModeLabel | null = mode ? { glyph: mode.glyph, badge: mode.badge, color: mode.tint } : null;
   const isMajor = locationId ? isMajorLocation(locationId) : true;
   const hasHoldings = badges.buildings > 0;
+  const registry = useContext(LabelRegistryContext);
+  const groupRef = useRef<THREE.Group>(null);
+  const registryId = locationId ?? name;
 
   const variants = useMemo(() => {
     const NO_BADGE_COUNTS: BadgeCounts = { buildings: 0, npc: 0, world: 0 };
@@ -341,6 +481,20 @@ function LabelSprite({ name, unlocked, badges, yOffset, standing = null, mode = 
 
   useEffect(() => () => { variants.unique.forEach(v => v.tex.dispose()); }, [variants]);
 
+  // Register with the declutter (item 9). Sizes are per tier so the check
+  // uses the sprite that is actually showing.
+  useEffect(() => {
+    const group = groupRef.current;
+    if (!registry || !group) return;
+    const sizeByTier = {} as Record<MapZoomTier, { w: number; h: number }>;
+    (['detail', 'location', 'system'] as MapZoomTier[]).forEach(tier => {
+      const v = variants.byTier[tier];
+      sizeByTier[tier] = { w: v.scale * v.aspect, h: v.scale };
+    });
+    registry.entries.set(registryId, { group, yOffset, priority, sizeByTier, shown: false, tier: 'detail' });
+    return () => { registry.entries.delete(registryId); registry.suppressed.delete(registryId); };
+  }, [registry, registryId, variants, yOffset, priority]);
+
   const refs = useRef<Partial<Record<MapZoomTier, THREE.Sprite | null>>>({});
   useFrame(() => {
     const tier = tierRef?.current ?? 'detail';
@@ -348,17 +502,20 @@ function LabelSprite({ name, unlocked, badges, yOffset, standing = null, mode = 
     const showDetail = detailVisibleAt(tier, alwaysLabels);
     const showLens = lensVisibleAt(tier, alwaysLabels);
     const pick: MapZoomTier = showDetail ? 'detail' : showLens ? 'location' : 'system';
+    const entry = registry?.entries.get(registryId);
+    if (entry) { entry.shown = showName; entry.tier = pick; }
+    const suppressed = !alwaysLabels && !!registry?.suppressed.has(registryId);
     const d = refs.current.detail;
     const l = refs.current.location;
     const s = refs.current.system;
-    if (d) d.visible = showName && pick === 'detail';
-    if (l) l.visible = showName && pick === 'location';
-    if (s) s.visible = showName && pick === 'system';
+    if (d) d.visible = showName && !suppressed && pick === 'detail';
+    if (l) l.visible = showName && !suppressed && pick === 'location';
+    if (s) s.visible = showName && !suppressed && pick === 'system';
   });
 
   const tiers: MapZoomTier[] = ['detail', 'location', 'system'];
   return (
-    <group>
+    <group ref={groupRef}>
       {tiers.map(tier => {
         const v = variants.byTier[tier];
         return (
@@ -378,11 +535,11 @@ function LabelSprite({ name, unlocked, badges, yOffset, standing = null, mode = 
   );
 }
 
-/** Small self-contained glyph sprite texture (⚠ forecast, 🔬 science). Same
+/** Small self-contained glyph sprite texture (forecast warning, science). Same
  *  no-DOM/no-font-fetch approach as makeLabelTexture. */
 function makeGlyphTexture(text: string, color: string): { tex: THREE.CanvasTexture; aspect: number } {
   const scale = 2;
-  const font = `700 ${14 * scale}px Inter, system-ui, sans-serif`;
+  const font = `700 ${14 * scale}px ${labelFontFamily()}`;
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d')!;
   ctx.font = font;
@@ -400,6 +557,86 @@ function makeGlyphTexture(text: string, color: string): { tex: THREE.CanvasTextu
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   return { tex, aspect: w / h };
+}
+
+// ── Framing rig (item 9) ─────────────────────────────────────────────────────
+
+type ControlsRef = React.MutableRefObject<OrbitControlsImpl | null>;
+
+/** Frames the home view (Earth cluster) once, after OrbitControls has
+ *  mounted — the Canvas `camera` prop is only a pre-frame fallback. */
+function HomeFramer({ frameHome }: { frameHome: () => void }) {
+  const framed = useRef(false);
+  useEffect(() => {
+    if (framed.current) return;
+    framed.current = true;
+    frameHome();
+  }, [frameHome]);
+  return null;
+}
+
+/** First-open dolly-out: from INTRO_START_DISTANCE to HOME_DISTANCE over
+ *  INTRO_DURATION_MS with an ease-out, tracking Earth's live position.
+ *  OrbitControls is disabled for the duration (≤2.2 s — the review's 2.5 s
+ *  input-block ceiling) and any pointer/key/Skip ends it early. Never
+ *  rendered under reduced motion (the shell decides via matchMedia at
+ *  mount) or after the first viewing (localStorage MAP_INTRO_KEY). */
+function IntroDolly({ controlsRef, posRef, onDone }: { controlsRef: ControlsRef; posRef: PositionsRef; onDone: () => void }) {
+  const startRef = useRef<number | null>(null);
+  const dirRef = useRef<THREE.Vector3 | null>(null);
+  const target = useMemo(() => new THREE.Vector3(), []);
+  useEffect(() => () => { const c = controlsRef.current; if (c) c.enabled = true; }, [controlsRef]);
+  useFrame(({ camera }) => {
+    const controls = controlsRef.current;
+    const anchor = posRef.current.anchors[HOME_LOCATION_ID];
+    if (!controls || !anchor) return;
+    if (startRef.current === null) {
+      startRef.current = performance.now();
+      dirRef.current = homeDirection(anchor.pos);
+      controls.enabled = false;
+    }
+    const t = Math.min(1, (performance.now() - startRef.current) / INTRO_DURATION_MS);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const d = INTRO_START_DISTANCE + (HOME_DISTANCE - INTRO_START_DISTANCE) * eased;
+    target.set(anchor.pos[0], anchor.pos[1], anchor.pos[2]);
+    controls.target.copy(target);
+    camera.position.copy(target).addScaledVector(dirRef.current!, d);
+    controls.update();
+    if (t >= 1) {
+      controls.enabled = true;
+      onDone();
+    }
+  });
+  return null;
+}
+
+/** Dev-only measurement hook for the graphics probes: Earth's on-screen
+ *  radius, camera distances and the zoom tier. Stripped from production
+ *  builds by the NODE_ENV guard. */
+function MapProbe({ posRef }: { posRef: PositionsRef }) {
+  const camera = useThree(s => s.camera);
+  const size = useThree(s => s.size);
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') return;
+    const w = window as unknown as { __solarMapProbe?: () => unknown };
+    w.__solarMapProbe = () => {
+      const a = posRef.current.anchors[HOME_LOCATION_ID];
+      const earth = new THREE.Vector3(a.pos[0], a.pos[1], a.pos[2]);
+      const d = camera.position.distanceTo(earth);
+      const p11 = (camera as THREE.PerspectiveCamera).projectionMatrix.elements[5];
+      const radiusPx = (a.r / d) * p11 * size.height / 2;
+      return {
+        earthRadiusPx: Math.round(radiusPx * 10) / 10,
+        earthDiameterPx: Math.round(radiusPx * 20) / 10,
+        cameraToEarth: Math.round(d * 10) / 10,
+        cameraToSun: Math.round(camera.position.length() * 10) / 10,
+        tier: zoomTierFromCameraDistance(camera.position.length()),
+        stage: { w: size.width, h: size.height },
+      };
+    };
+    return () => { delete w.__solarMapProbe; };
+  }, [camera, size, posRef]);
+  return null;
 }
 
 // ── Scene rig — owns scene time and the per-frame position table ─────────────
@@ -422,10 +659,13 @@ function Sun({ reduced }: { reduced: boolean }) {
     const c = document.createElement('canvas');
     c.width = c.height = 256;
     const ctx = c.getContext('2d')!;
+    // Item 8: a softer, longer corona — lower peak alpha, gentler falloff,
+    // drawn at 7× the disc (was a hot 0.9-alpha core at 6×).
     const g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-    g.addColorStop(0, 'rgba(254,240,138,0.9)');
-    g.addColorStop(0.3, 'rgba(251,191,36,0.45)');
-    g.addColorStop(0.65, 'rgba(245,158,11,0.12)');
+    g.addColorStop(0, 'rgba(254,240,138,0.62)');
+    g.addColorStop(0.22, 'rgba(251,191,36,0.3)');
+    g.addColorStop(0.5, 'rgba(245,158,11,0.1)');
+    g.addColorStop(0.8, 'rgba(245,158,11,0.025)');
     g.addColorStop(1, 'rgba(245,158,11,0)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 256, 256);
@@ -434,8 +674,18 @@ function Sun({ reduced }: { reduced: boolean }) {
     return t;
   }, []);
   useEffect(() => () => glowTex.dispose(), [glowTex]);
-  useFrame((_, delta) => {
+  const glowRef = useRef<THREE.Sprite>(null);
+  useFrame(({ camera }, delta) => {
     if (!reduced && meshRef.current) meshRef.current.rotation.y += delta * 0.02;
+    // The corona is sized for the system overview (camera ≥ 60 units out).
+    // From the Earth-cluster home frame the camera is ~22 units from the
+    // Sun and a full-size corona would wash out a third of the stage, so
+    // it shrinks with proximity (7× the disc far out, 2.5× up close).
+    if (glowRef.current) {
+      const d = camera.position.length();
+      const k = Math.min(7, Math.max(2.5, 7 * (d / 60)));
+      glowRef.current.scale.set(SUN_VISUAL_RADIUS * k, SUN_VISUAL_RADIUS * k, 1);
+    }
   });
   return (
     <group>
@@ -443,10 +693,17 @@ function Sun({ reduced }: { reduced: boolean }) {
         <sphereGeometry args={[SUN_VISUAL_RADIUS, 48, 48]} />
         <meshBasicMaterial map={tex ?? undefined} color={tex ? '#ffffff' : '#fde047'} toneMapped={false} />
       </mesh>
-      <sprite scale={[SUN_VISUAL_RADIUS * 6, SUN_VISUAL_RADIUS * 6, 1]} renderOrder={-1}>
+      <sprite ref={glowRef} scale={[SUN_VISUAL_RADIUS * 7, SUN_VISUAL_RADIUS * 7, 1]} renderOrder={-1}>
         <spriteMaterial map={glowTex} transparent depthWrite={false} blending={THREE.AdditiveBlending} />
       </sprite>
-      <pointLight position={[0, 0, 0]} intensity={2.4} distance={0} decay={0} color="#fff7e0" />
+      {/* Item 8: physically plausible falloff. three's lights are physical
+          (candela, inverse-square) since r155; decay 2 with intensity 170
+          gives Earth (12.8 units) irradiance ≈ 1.0, Mercury ≈ 3.6 (ACES
+          rolls it off), Jupiter ≈ 0.24, Pluto ≈ 0.08 — inner planets
+          bright, the outer system dim, exactly the sun-lit gradient the
+          old decay-0 light flattened. Ambient in the Canvas dropped 0.38 →
+          0.16 so the dark limbs and the belt read as space, not fog. */}
+      <pointLight position={[0, 0, 0]} intensity={170} distance={0} decay={2} color="#fff7e0" />
     </group>
   );
 }
@@ -591,7 +848,7 @@ function BodyMesh({ def, posRef, reduced, unlocked, badges, standing, mode, tier
         </>
       )}
       {def.ring && <PlanetRing texUrl={def.ring.texture} innerScale={def.ring.innerScale} outerScale={def.ring.outerScale} bodyR={r} />}
-      {def.locationId && <LabelSprite name={def.name} unlocked={unlocked} badges={badges} standing={standing} mode={mode} tierRef={tierRef} locationId={def.locationId} alwaysLabels={alwaysLabels} yOffset={-(r + 0.45)} />}
+      {def.locationId && <LabelSprite name={def.name} unlocked={unlocked} badges={badges} standing={standing} mode={mode} tierRef={tierRef} locationId={def.locationId} alwaysLabels={alwaysLabels} yOffset={-(r + 0.45)} priority={labelPriority(def.locationId, 'body', badges)} />}
     </group>
   );
 }
@@ -625,15 +882,16 @@ function PipMesh({ pip, posRef, unlocked, badges, standing, mode, tierRef, alway
       </mesh>
       {/* Generous invisible hit target for touch/pointer. Radius 0.3, NOT
           bigger: the tightest pip pair (LEO at 1.5× and GEO at 2.0× Earth's
-          0.66 visual radius) can close to ~0.33 scene units, so any radius
-          below that guarantees one pip's sphere never swallows its
-          neighbour's centre — the old 0.5 sphere could steal clicks aimed
-          dead-centre at the adjacent pip. */}
+          0.81 visual radius — orbital-elements.ts sceneBodyRadius) can
+          close to ~0.4 scene units, so any radius below that guarantees
+          one pip's sphere never swallows its neighbour's centre — the old
+          0.5 sphere could steal clicks aimed dead-centre at the adjacent
+          pip. (orbital-elements.test.ts pins 0.5 × Earth's radius > 0.3.) */}
       <mesh onClick={handleClick} visible={false}>
         <sphereGeometry args={[0.3, 8, 8]} />
         <meshBasicMaterial />
       </mesh>
-      <LabelSprite name={pip.label} unlocked={unlocked} badges={badges} standing={standing} mode={mode} tierRef={tierRef} locationId={pip.locationId} alwaysLabels={alwaysLabels} yOffset={-0.5} />
+      <LabelSprite name={pip.label} unlocked={unlocked} badges={badges} standing={standing} mode={mode} tierRef={tierRef} locationId={pip.locationId} alwaysLabels={alwaysLabels} yOffset={-0.5} priority={labelPriority(pip.locationId, 'pip', badges)} />
     </group>
   );
 }
@@ -823,7 +1081,7 @@ function TransitShip({ ship, posRef, reduced }: { ship: ShipInstanceLike; posRef
     if (!ctx) return;
     ctx.clearRect(0, 0, c.width, c.height);
     if (etaText) {
-      ctx.font = '600 22px Inter, system-ui, sans-serif';
+      ctx.font = `600 22px ${labelFontFamily()}`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.shadowColor = 'rgba(0,0,0,0.9)';
@@ -1081,7 +1339,7 @@ function ForecastRing({ locId, count, posRef, reduced }: { locId: string; count:
   const groupRef = useRef<THREE.Group>(null);
   const matRef = useRef<THREE.MeshBasicMaterial>(null);
   const glyphRef = useRef<THREE.Sprite>(null);
-  const glyph = useMemo(() => makeGlyphTexture(count > 1 ? `⚠︎×${count}` : '⚠︎', '#fbbf24'), [count]);
+  const glyph = useMemo(() => makeGlyphTexture(count > 1 ? `${MAP_GLYPHS.warning}×${count}` : MAP_GLYPHS.warning, '#fbbf24'), [count]);
   useEffect(() => () => glyph.tex.dispose(), [glyph]);
   useFrame(({ clock }) => {
     const a = posRef.current.anchors[locId];
@@ -1122,7 +1380,7 @@ function ForecastRing({ locId, count, posRef, reduced }: { locId: string; count:
 
 // ── Zone standing tint (W9) — state.zoneStandings ───────────────────────────
 // Soft glow behind every location of a zone the player holds standing in:
-// governor gold, stakeholder cyan. Reinforcement only — the ♛/◆ text glyph
+// governor gold, stakeholder cyan. Reinforcement only — the crown/diamond text glyph
 // in the location label carries the information (no color-only state).
 
 function makeTintTexture(rgb: string): THREE.CanvasTexture {
@@ -1266,14 +1524,30 @@ function SlotRing({ ring, posRef, tierRef, alwaysLabels }: {
   );
   useEffect(() => () => badge.tex.dispose(), [badge]);
 
+  // The occupancy badge joins the label declutter (item 9) at the lowest
+  // priority: three badges stacked over the LEO / GEO / Moon cluster used to
+  // paint on top of one another. The sprite IS the registered object (its
+  // position is set in world space each frame), so yOffset is 0.
+  const registry = useContext(LabelRegistryContext);
+  const registryId = `slot:${ring.locationId}`;
+  useEffect(() => {
+    const sprite = badgeRef.current;
+    if (!registry || !sprite) return;
+    const size = { w: 0.036 * badge.aspect, h: 0.036 };
+    registry.entries.set(registryId, { group: sprite, yOffset: 0, priority: 0, sizeByTier: { detail: size, location: size, system: size }, shown: false, tier: 'detail' });
+    return () => { registry.entries.delete(registryId); registry.suppressed.delete(registryId); };
+  }, [registry, registryId, badge.aspect]);
+
   useFrame(() => {
     const a = posRef.current.anchors[ring.locationId];
     const g = groupRef.current;
     const b = badgeRef.current;
     const visible = lensVisibleAt(tierRef.current, alwaysLabels);
+    const entry = registry?.entries.get(registryId);
     if (!a || !g) {
       if (g) g.visible = false;
       if (b) b.visible = false;
+      if (entry) entry.shown = false;
       return;
     }
     g.visible = visible;
@@ -1283,8 +1557,10 @@ function SlotRing({ ring, posRef, tierRef, alwaysLabels }: {
       g.scale.set(s, s, s);
     }
     if (b) {
-      b.visible = visible;
       if (visible) b.position.set(a.pos[0], a.pos[1] + a.r + 1.05, a.pos[2]);
+      if (entry) entry.shown = visible;
+      const suppressed = !alwaysLabels && !!registry?.suppressed.has(registryId);
+      b.visible = visible && !suppressed;
     }
   });
 
@@ -1330,7 +1606,7 @@ function SlotRing({ ring, posRef, tierRef, alwaysLabels }: {
 }
 
 // ── Science-mission presence (W9) — state.scienceMissions ───────────────────
-// Active flagship missions put a 🔬 instrument glyph on their target body.
+// Active flagship missions put an instrument glyph on their target body.
 // Order Queue HUD rows for the same missions focus the same location, and
 // MapContextPanel lists mission phase details on selection.
 
@@ -1356,7 +1632,7 @@ function ScienceMarkers({ posRef, state }: { posRef: PositionsRef; state: GameSt
 
 function ScienceMarker({ locId, count, posRef }: { locId: string; count: number; posRef: PositionsRef }) {
   const spriteRef = useRef<THREE.Sprite>(null);
-  const glyph = useMemo(() => makeGlyphTexture(count > 1 ? `🔬×${count}` : '🔬', '#a5f3fc'), [count]);
+  const glyph = useMemo(() => makeGlyphTexture(count > 1 ? `${MAP_GLYPHS.science}×${count}` : MAP_GLYPHS.science, '#a5f3fc'), [count]);
   useEffect(() => () => glyph.tex.dispose(), [glyph]);
   useFrame(() => {
     const sp = spriteRef.current;
@@ -1450,11 +1726,19 @@ function SelectionMarker({ posRef, selectedLocationId, reduced }: { posRef: Posi
 
 // ── Main component ───────────────────────────────────────────────────────────
 
-export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard', alwaysLabels = false, onZoomTierChange, laneVolumes, onContextLost }: SolarMap3DProps) {
+export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard', alwaysLabels = false, onZoomTierChange, laneVolumes, onContextLost, layers, onToggleLayer }: SolarMap3DProps) {
   const [selectedLoc, setSelectedLoc] = useState<string | null>(null);
-  const [showLanes, setShowLanes] = useState(true);
-  const [showShips, setShowShips] = useState(true);
-  const [showWorld, setShowWorld] = useState(true);
+  // Lanes / Ships / World — shell-controlled when `layers` is passed (item
+  // 5: the phone icon strip owns the switches), private state otherwise.
+  const [localLayers, setLocalLayers] = useState<MapLayerVisibility>(DEFAULT_MAP_LAYERS);
+  const layerVis = layers ?? localLayers;
+  const showLanes = layerVis.lanes;
+  const showShips = layerVis.ships;
+  const showWorld = layerVis.world;
+  const toggleLayer = useCallback((key: MapLayerKey) => {
+    if (onToggleLayer) onToggleLayer(key);
+    else setLocalLayers(prev => toggleMapLayer(prev, key));
+  }, [onToggleLayer]);
   const [listExpanded, setListExpanded] = useState(false);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const cameraRef = useRef<THREE.Camera | null>(null);
@@ -1587,6 +1871,49 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   }, []);
   focusExternalRef.current = focusCameraOn;
 
+  // Item 9 — home framing (Earth cluster), the first-open intro dolly, and
+  // the label declutter registry.
+  const frameHome = useCallback(() => {
+    const controls = controlsRef.current;
+    const cam = cameraRef.current;
+    const anchor = posRef.current.anchors[HOME_LOCATION_ID];
+    if (!controls || !cam || !anchor) return;
+    const target = new THREE.Vector3(anchor.pos[0], anchor.pos[1], anchor.pos[2]);
+    controls.target.copy(target);
+    cam.position.copy(target).addScaledVector(homeDirection(anchor.pos), HOME_DISTANCE);
+    controls.update();
+  }, []);
+  // Decided once at mount from matchMedia directly (the `reduced` state
+  // above settles in an effect that runs AFTER the children's), so the intro
+  // can never start under reduced motion.
+  const [intro, setIntro] = useState(false);
+  useEffect(() => {
+    let seen = true;
+    try { seen = localStorage.getItem(MAP_INTRO_KEY) === '1'; } catch { /* no storage → no intro */ }
+    const reducedNow = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!seen && !reducedNow) setIntro(true);
+  }, []);
+  const endIntro = useCallback(() => {
+    setIntro(false);
+    try { localStorage.setItem(MAP_INTRO_KEY, '1'); } catch { /* ignore */ }
+  }, []);
+  const skipIntro = useCallback(() => {
+    if (!intro) return;
+    endIntro();
+    const c = controlsRef.current;
+    if (c) c.enabled = true;
+    frameHome();
+  }, [intro, endIntro, frameHome]);
+  // Any input during the intro ends it (pointer via the root's capture
+  // handler below; keys here).
+  useEffect(() => {
+    if (!intro) return;
+    const onKey = () => skipIntro();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [intro, skipIntro]);
+  const labelRegistry = useMemo<LabelRegistry>(() => ({ entries: new Map(), suppressed: new Set() }), []);
+
   /**
    * @param anchor  Screen point to hang the radial command menu on.
    * @param opts.toggle  Whether re-picking the current selection clears it.
@@ -1708,9 +2035,12 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
     controls.update();
   }, []);
 
+  // Reset re-frames the LIVE Earth cluster (item 9) rather than restoring
+  // the mount-time pose: bodies orbit in real time, so a saved pose would
+  // point at where Earth was several minutes ago.
   const resetView = useCallback(() => {
-    controlsRef.current?.reset();
-  }, []);
+    frameHome();
+  }, [frameHome]);
 
   // Keyboard zoom — CLAUDE.md keyboard-only invariant, matching the 2D
   // canvas's bindings exactly (`+` / `=` in, `-` / `_` out, `R` / Home reset) with
@@ -1746,7 +2076,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
     <div
       ref={rootRef}
       className="relative w-full h-full"
-      onPointerDownCapture={e => { pointerDownRef.current = { x: e.clientX, y: e.clientY }; }}
+      onPointerDownCapture={e => { pointerDownRef.current = { x: e.clientX, y: e.clientY }; if (intro) skipIntro(); }}
     >
       <div
         className="absolute inset-0"
@@ -1759,12 +2089,18 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
           'default' (was 'high-performance', which forces a discrete-GPU
           device switch on every context creation on hybrid Windows
           laptops). */}
+      {/* Item 8 (lighting & tone): explicit ACES filmic tone mapping with a
+          tuned exposure (R3F's default is ACES at exposure 1; 1.1 lifts the
+          sun-lit hemispheres without clipping the sun sprite, which is
+          toneMapped={false}), and a true-black stage gradient instead of
+          the old blue-grey one. The camera prop is only the pre-frame pose:
+          HomeFramer re-frames on the Earth cluster once controls exist. */}
       <Canvas
         camera={{ position: [0, 30, 44], fov: 50, near: 0.1, far: 1200 }}
         dpr={[1, 1.5]}
         frameloop={running ? 'always' : 'never'}
-        gl={{ antialias: true, powerPreference: 'default' }}
-        style={{ background: 'linear-gradient(180deg, #030310 0%, #05051a 100%)' }}
+        gl={{ antialias: true, powerPreference: 'default', toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
+        style={{ background: 'linear-gradient(180deg, #000000 0%, #020208 100%)' }}
         onCreated={({ camera, gl }) => { cameraRef.current = camera; setGlCanvas(gl.domElement); }}
         onPointerMissed={e => {
           // Ignore "clicks" that were actually orbit drags.
@@ -1773,11 +2109,15 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
           deselect();
         }}
       >
-        <ambientLight intensity={0.38} />
+        <LabelRegistryContext.Provider value={labelRegistry}>
+        <ambientLight intensity={0.16} />
         <NebulaSkybox />
-        <Stars radius={420} depth={80} count={4200} factor={5} saturation={0} fade speed={reduced ? 0 : 0.6} />
+        {/* Item 8: more and larger stars (4,200 → 7,000, factor 5 → 6.5);
+            still monochrome and still static under reduced motion. */}
+        <Stars radius={420} depth={90} count={7000} factor={6.5} saturation={0} fade speed={reduced ? 0 : 0.5} />
         <SceneClock posRef={posRef} reduced={reduced} />
         <ZoomTierTracker tierRef={tierRef} onChange={handleTierChange} />
+        <MapProbe posRef={posRef} />
         <Sun reduced={reduced} />
         {ORBITAL_BODIES.filter(b => !b.parent).map(b => (
           <OrbitRing key={`orbit-${b.id}`} aAU={b.aAU!} inclinationDeg={b.inclinationDeg || 0} />
@@ -1814,6 +2154,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
             onPick={pickFromScene}
           />
         ))}
+        <LabelDeclutter registry={labelRegistry} selectedLocationId={selectedLoc} alwaysLabels={alwaysLabels} />
         <SlotRings posRef={posRef} rings={slotRings} tierRef={tierRef} alwaysLabels={alwaysLabels} />
         {showLanes && <LaneLines posRef={posRef} state={state} reduced={reduced} laneVolumes={laneVolumes} />}
         {showShips && transitShips.map(s => <TransitShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} />)}
@@ -1852,8 +2193,25 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
           maxDistance={160}
           maxPolarAngle={Math.PI * 0.49}
         />
+        {/* Rendered AFTER OrbitControls so its ref is populated when the
+            framer's effect runs (siblings commit refs before effects). */}
+        <HomeFramer frameHome={frameHome} />
+        {intro && <IntroDolly controlsRef={controlsRef} posRef={posRef} onDone={endIntro} />}
+        </LabelRegistryContext.Provider>
       </Canvas>
       </div>
+
+      {/* Intro skip — the dolly disables orbit input for ≤2.2 s; this (and
+          any pointer/key) ends it at once. */}
+      {intro && (
+        <button
+          type="button"
+          onClick={skipIntro}
+          className="absolute top-2 left-1/2 -translate-x-1/2 z-30 min-h-[44px] px-4 rounded-xl border border-white/[0.12] bg-black/70 text-[11px] font-hud font-semibold text-cyan-200 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+        >
+          Skip intro
+        </button>
+      )}
 
       {/* Zoom controls — same placement as the 2D embedded layout */}
       <div className="absolute top-2 right-2 flex flex-col gap-1 z-20">
@@ -1862,10 +2220,12 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         <button onClick={resetView} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="R Home">⟲</button>
       </div>
 
-      {/* Layer toggles — bottom-right, same as 2D embedded */}
-      <div className="absolute bottom-2 right-2 flex flex-col gap-1 z-20">
+      {/* Layer toggles — bottom-right, same as 2D embedded. When the shell
+          owns the layer state its phone icon strip carries these, so the
+          column only renders from md up (item 5). */}
+      <div className={`absolute bottom-2 right-2 ${onToggleLayer ? 'hidden md:flex' : 'flex'} flex-col gap-1 z-20`}>
         <button
-          onClick={() => setShowLanes(v => !v)}
+          onClick={() => toggleLayer('lanes')}
           aria-pressed={showLanes}
           className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
             showLanes ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
@@ -1874,7 +2234,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
           {showLanes ? '● Lanes' : '○ Lanes'}
         </button>
         <button
-          onClick={() => setShowShips(v => !v)}
+          onClick={() => toggleLayer('ships')}
           aria-pressed={showShips}
           className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
             showShips ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
@@ -1883,7 +2243,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
           {showShips ? '● Ships' : '○ Ships'}
         </button>
         <button
-          onClick={() => setShowWorld(v => !v)}
+          onClick={() => toggleLayer('world')}
           aria-pressed={showWorld}
           disabled={!worldAvailable}
           title={worldAvailable ? "Toggle other corporations' colony claims" : 'Sign in to see the live world'}
@@ -1920,7 +2280,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
           className="w-full flex items-center justify-between gap-2 px-3 py-2.5 min-h-[44px] text-left rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400"
         >
           <span className="font-hud text-xs font-semibold text-white flex items-center gap-2">
-            <span aria-hidden="true">📜</span> Location List
+            <GameIcon name="scroll" size={14} /> Location List
             <span className="text-slate-500 font-normal text-[10px] hidden sm:inline">— keyboard-accessible alternative to the map</span>
           </span>
           <span aria-hidden="true" className={`text-slate-400 transition-transform ${listExpanded ? 'rotate-180' : ''}`}>▾</span>
@@ -1964,11 +2324,11 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
                         }`}
                       >
                         <span className="flex items-center gap-1">
-                          <span aria-hidden="true">{unlocked ? '🔓' : '🔒'}</span>
+                          <GameIcon name={unlocked ? 'unlock' : 'lock'} size={12} className="text-slate-400" />
                           <span className="truncate">{loc.name}</span>
-                          {standing === 'governor' && <span aria-hidden="true" className="text-amber-300 shrink-0">♛</span>}
-                          {standing === 'stakeholder' && <span aria-hidden="true" className="text-cyan-300 shrink-0">◆</span>}
-                          {hasWarning && <span aria-hidden="true" className="text-amber-300 shrink-0">⚠</span>}
+                          {standing === 'governor' && <GameIcon name="crown" size={12} className="text-amber-300 shrink-0" />}
+                          {standing === 'stakeholder' && <GameIcon name="diamond" size={12} className="text-cyan-300 shrink-0" />}
+                          {hasWarning && <GameIcon name="warning" size={12} className="text-amber-300 shrink-0" />}
                           {modeVis?.glyph && <span aria-hidden="true" className="text-slate-300 shrink-0">{modeVis.glyph}</span>}
                         </span>
                         <span className="sr-only">
@@ -1990,8 +2350,8 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
       </div>
 
       {shipsInTransit > 0 && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 text-[10px] text-emerald-300 bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm pointer-events-none">
-          ⚡ {shipsInTransit} in transit
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+          <DataChip icon="ship-transport" tone="good">{shipsInTransit} in transit</DataChip>
         </div>
       )}
 

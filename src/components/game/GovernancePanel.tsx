@@ -23,6 +23,8 @@ import CorporateEraPanel from './CorporateEraPanel';
 // (capital raises and dividend policy are board decisions, and a hostile
 // tender is the ultimate board-politics event).
 import ShareRegistryPanel from './ShareRegistryPanel';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 interface GovernancePanelProps {
   state: GameState;
@@ -44,8 +46,8 @@ const MOOD_META: Record<ConstituencyMood, { glyph: string; label: string; barCol
   supportive: { glyph: '▲',  label: 'Supportive',  barColor: 'from-emerald-500 to-emerald-400' },
 };
 
-const DIRECTIVE_METRIC_ICON: Record<string, string> = {
-  growth: '📈', profit: '💰', safety: '🛡️',
+const DIRECTIVE_METRIC_ICON: Record<string, IconName> = {
+  growth: 'trending-up', profit: 'money', safety: 'shield',
 };
 
 export default function GovernancePanel({ state, onSwitchPolicy, onCharterEra }: GovernancePanelProps) {
@@ -63,7 +65,7 @@ export default function GovernancePanel({ state, onSwitchPolicy, onCharterEra }:
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center gap-2">
-          <span className="text-base" aria-hidden="true">🏛️</span>
+          <GameIcon name="governance" size={16} />
           <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">Corporate Doctrine &amp; Board Politics</span>
         </div>
         <span className="text-[10px] text-slate-500">Policies, constituencies, and quarterly board expectations</span>

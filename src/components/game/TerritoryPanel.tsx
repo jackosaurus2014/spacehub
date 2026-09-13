@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import type { GameState } from '@/lib/game/types';
 import { LOCATION_ASSETS } from '@/lib/game/assets';
+import GameIcon from './GameIcon';
 
 // Zone slug → location-art mapping (zone.zoneId is the DB zone slug, e.g. "zone_leo")
 const ZONE_ART: Record<string, string> = {
@@ -312,7 +313,7 @@ function ZoneCard({ zone, onClick }: { zone: ZoneData; onClick: () => void }) {
         </div>
         {isContested && (
           <span className="contested-chip text-red-300 bg-red-600/30 border-red-500/30 shrink-0">
-            <span aria-hidden="true">⚠</span> Contested
+            <GameIcon name="warning" size={14} /> Contested
           </span>
         )}
       </div>
@@ -445,7 +446,7 @@ function ZoneDetail({
           </div>
           {isContested && (
             <span className="contested-chip text-sm text-red-300 bg-red-600/20 border-red-500/30 px-3 py-1" style={{ fontSize: '12px' }}>
-              <span aria-hidden="true">⚠</span> Governance Contested
+              <GameIcon name="warning" size={14} /> Governance Contested
             </span>
           )}
         </div>

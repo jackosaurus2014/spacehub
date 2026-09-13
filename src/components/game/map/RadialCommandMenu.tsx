@@ -232,7 +232,7 @@ export default function RadialCommandMenu({
           aria-hidden="true"
         >
           <span className="text-[10px] leading-tight font-hud font-bold text-cyan-200 line-clamp-2">{name}</span>
-          <span className="text-[9px] text-slate-500 mt-0.5">Esc</span>
+          <span className="text-[10px] text-slate-500 mt-0.5">Esc</span>
         </div>
 
         <div

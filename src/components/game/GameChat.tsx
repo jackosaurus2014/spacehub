@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import GameIcon from './GameIcon';
 
 interface ChatMessage {
   id: string;
@@ -161,7 +162,7 @@ export default function GameChat({ companyName }: GameChatProps) {
             }}
           >
             <div className="flex items-center gap-2">
-              <span className="text-sm">💬</span>
+              <GameIcon name="chat" size={14} />
               <span className="text-sm font-semibold text-cyan-300">Global Chat</span>
               <span
                 className="text-[10px] px-1.5 py-0.5 rounded-full font-mono"
@@ -293,7 +294,7 @@ export default function GameChat({ companyName }: GameChatProps) {
               : 'Open chat'
         }
       >
-        <span className="text-lg" aria-hidden="true">{isOpen ? '✕' : '💬'}</span>
+        <GameIcon name={isOpen ? 'close' : 'chat'} size={18} />
 
         {/* Unread Badge */}
         {!isOpen && unreadCount > 0 && (

@@ -14,7 +14,7 @@
  *   2. HoloCard — `.holo-card` game-panel surface + hover lift, for repeated
  *      items inside a ConsolePanel (building cards, roster rows, queue items).
  *   3. DataChip — small inline pill for a labeled stat/status readout,
- *      replacing ad-hoc `text-[9px] px-1.5` chip spans.
+ *      replacing ad-hoc `text-[10px] px-1.5` chip spans.
  * Type floor (rides with V8): display 18 / HUD 12 / body 11 / label 10 /
  * micro 9 (tooltip-backed only) — nothing routed through chrome.tsx goes
  * below 10px for load-bearing text.
@@ -1164,6 +1164,41 @@ export default function GameStyles() {
         }
       }
 
+      /* Graphics review 2026-09-12 item 10 — type floor tokens. Body 12 /
+         label 11 / micro 10 in comfortable density; compact steps them down
+         by half the density factor and max() pins every tier at 10px, so no
+         load-bearing text in the game UI can render below the floor in any
+         mode (the review measured 7.2px and 9px leaf nodes). Use
+         text-[length:var(--type-body)] etc. for new surfaces; the type-
+         floor guard test (src/lib/game/__tests__/type-floor-guard.test.ts)
+         rejects any text-[<10px] literal under src/components/game and
+         src/app/space-tycoon. */
+      [data-density] {
+        --type-body: max(10px, calc(12px * (0.5 + 0.5 * var(--density-scale, 1))));
+        --type-label: max(10px, calc(11px * (0.5 + 0.5 * var(--density-scale, 1))));
+        --type-micro: 10px;
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         BRIDGE MODE (graphics review 2026-09-12 item 5, lib/game/bridge-mode.ts)
+         The shell mirrors data-bridge="on" on to <html>; every site-chrome
+         element the root layout mounts around the game (Navigation, launch
+         rail, live banner, ticker, breadcrumb, the phone site tab bar)
+         carries data-site-chrome. This stylesheet is only mounted with the
+         game shell, so the rule can only ever apply inside the game route.
+         The hub bar folds in a logo/back link (.bridge-plate) so the site is
+         always one action away.
+         ═══════════════════════════════════════════════════════════════════ */
+      :root[data-bridge="on"] [data-site-chrome] {
+        display: none !important;
+      }
+      /* The site's phone tab bar is gone with the rest of the chrome, so the
+         bottom padding reserved for it is not needed; the game's own bottom
+         nav keeps its spacer inside the shell. */
+      :root[data-bridge="on"] #main-content {
+        padding-bottom: 0 !important;
+      }
+
       .console-panel-pad {
         padding: calc(16px * var(--density-scale, 1));
       }
@@ -1521,7 +1556,10 @@ export default function GameStyles() {
          "big number, small unit" composition. */
       .mat-unit {
         font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
-        font-size: 0.72em;
+        /* Type floor (2026-09-12): 0.72em of a 10px figure was the 7.2px
+           leaf the graphics review measured; max() keeps the ratio on big
+           figures and pins the unit at the micro floor on small ones. */
+        font-size: max(10px, 0.72em);
         font-weight: 600;
         letter-spacing: 0.04em;
         color: #94a3b8;

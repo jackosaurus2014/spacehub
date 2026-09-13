@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { VICTORY_CONDITIONS, getVictoryProgress, getVictoryBonuses } from '@/lib/game/victory-conditions';
 import type { VictoryDefinition, VictoryProgress } from '@/lib/game/victory-conditions';
+import GameIcon from './GameIcon';
 
 interface VictoryPanelProps {
   state: GameState;
@@ -180,7 +181,7 @@ function HallOfFame({ earnedVictoryIds }: { earnedVictoryIds: string[] }) {
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-lg" aria-hidden="true">{'🏆'}</span>
+        <GameIcon name="trophy" size={18} />
         <h3 className="font-hud text-sm font-bold text-yellow-300">Hall of Fame</h3>
         <span className="text-[10px] text-yellow-300/50 ml-auto">
           {earned.length} / {VICTORY_CONDITIONS.length} victories
@@ -270,7 +271,7 @@ export default function VictoryPanel({ state }: VictoryPanelProps) {
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center gap-2">
-          <span className="text-base" aria-hidden="true">🥇</span>
+          <GameIcon name="medal" size={16} />
           <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">Victory Conditions</span>
         </div>
         <span className="text-[10px] text-slate-500">Permanent milestones — endgame achievements</span>

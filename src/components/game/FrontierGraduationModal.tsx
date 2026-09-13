@@ -51,7 +51,7 @@ export default function FrontierGraduationModal({ state, onClose, onNavigate }: 
 
         <div className="p-5 sm:p-6">
           <div className="text-center mb-4">
-            <div className="text-4xl mb-2" aria-hidden="true">🎓</div>
+            <div className="mb-2 flex justify-center"><GameIcon name="track-crew-cohort" size={36} /></div>
             <h2 id="graduation-title" className="text-white text-xl sm:text-2xl font-bold font-hud">
               Protected Frontier Complete
             </h2>
@@ -66,7 +66,7 @@ export default function FrontierGraduationModal({ state, onClose, onNavigate }: 
             {/* Risks now real */}
             <div className="rounded-lg bg-red-500/5 border border-red-500/20 p-3">
               <div className="text-[10px] uppercase tracking-wider text-red-300 font-bold mb-1.5 flex items-center gap-1.5">
-                <span aria-hidden="true">⚠</span> Now At Risk
+                <GameIcon name="warning" size={14} /> Now At Risk
               </div>
               <ul className="text-[11px] text-slate-300 space-y-1.5">
                 <li>Rival corporations can target your assets economically (never combat)</li>
@@ -80,7 +80,7 @@ export default function FrontierGraduationModal({ state, onClose, onNavigate }: 
             {/* Unlocked */}
             <div className="rounded-lg bg-cyan-500/5 border border-cyan-500/20 p-3">
               <div className="text-[10px] uppercase tracking-wider text-cyan-300 font-bold mb-1.5 flex items-center gap-1.5">
-                <span aria-hidden="true">🔓</span> Now Unlocked
+                <GameIcon name="unlock" size={14} /> Now Unlocked
               </div>
               <ul className="text-[11px] text-slate-300 space-y-1.5">
                 <li>You can scout, raid, and out-maneuver other graduated corporations</li>
@@ -106,7 +106,7 @@ export default function FrontierGraduationModal({ state, onClose, onNavigate }: 
               <ul className="space-y-1.5 mb-2" role="list">
                 {availableNow.map(t => (
                   <li key={t.id} className="text-[11px] text-slate-300 leading-relaxed">
-                    <span className="text-[9px] uppercase tracking-wider font-bold px-1 py-0.5 rounded border border-white/15 text-slate-400 mr-1.5">
+                    <span className="text-[10px] uppercase tracking-wider font-bold px-1 py-0.5 rounded border border-white/15 text-slate-400 mr-1.5">
                       {t.posture}
                     </span>
                     <span className="font-bold text-white">{t.name}</span> — {t.what}

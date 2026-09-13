@@ -16,6 +16,8 @@ import {
   FUTURES_MARGIN_RATE,
   type FuturesDirection,
 } from '@/lib/game/market-depth';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -206,7 +208,7 @@ export default function FuturesPanel({ state, setState }: Props) {
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
           <div>
             <h2 className="font-hud text-white text-base font-bold flex items-center gap-2">
-              <span className="text-cyan-400">📈</span> Futures Exchange
+              <GameIcon name="trending-up" size={14} className="text-cyan-400" /> Futures Exchange
             </h2>
             <p className="text-slate-500 text-xs mt-1 max-w-lg">
               Lock in a resource price today, settled against the live spot price at expiry.
@@ -234,9 +236,9 @@ export default function FuturesPanel({ state, setState }: Props) {
       {/* ── Sub-Tab Navigation ─────────────────────────────────────────────── */}
       <div className="game-tab-bar flex flex-wrap gap-1.5 overflow-x-auto">
         {([
-          { id: 'trade' as FuturesTab, label: 'Trade', icon: '💱' },
-          { id: 'positions' as FuturesTab, label: `Positions (${openContracts.length})`, icon: '📌' },
-          { id: 'history' as FuturesTab, label: `History (${settledContracts.length})`, icon: '🧾' },
+          { id: 'trade' as FuturesTab, label: 'Trade', icon: 'exchange' as IconName },
+          { id: 'positions' as FuturesTab, label: `Positions (${openContracts.length})`, icon: 'pin' as IconName },
+          { id: 'history' as FuturesTab, label: `History (${settledContracts.length})`, icon: 'scroll' as IconName },
         ]).map(t => (
           <button
             key={t.id}
@@ -247,7 +249,7 @@ export default function FuturesPanel({ state, setState }: Props) {
                 : 'bg-white/[0.04] text-slate-400 hover:text-white border border-transparent'
             }`}
           >
-            {t.icon} {t.label}
+            <GameIcon name={t.icon} size={13} className="mr-1" />{t.label}
           </button>
         ))}
       </div>

@@ -56,6 +56,8 @@ import BuildPanel from './BuildPanel';
 // occupancy, with engine-sourced vitals under it.
 import LocationDetailConsole from './map/LocationDetailConsole';
 import { useWorldState, getColonySlotCap, LOCATION_MILESTONE_MAP } from '@/hooks/useWorldState';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 export type MapSelection = { kind: 'location'; id: string } | { kind: 'system'; id: string };
 
@@ -99,16 +101,16 @@ interface MapContextPanelProps {
 // Friendly label + icon per building category — used to group "what you have
 // here" without inventing new data (BuildingCategory already exists on
 // every BuildingDefinition; this is presentation only).
-const CATEGORY_META: Record<string, { label: string; icon: string }> = {
-  launch_pad: { label: 'Launch Pads', icon: '🚀' },
-  rocket: { label: 'Rockets', icon: '🛸' },
-  satellite: { label: 'Satellites', icon: '🛰️' },
-  space_station: { label: 'Stations', icon: '🏗️' },
-  fabrication_facility: { label: 'Fabrication', icon: '🏭' },
-  datacenter: { label: 'Data Centers', icon: '💾' },
-  mining_enterprise: { label: 'Mining', icon: '⛏️' },
-  ground_station: { label: 'Ground Stations', icon: '📡' },
-  solar_farm: { label: 'Solar Farms', icon: '☀️' },
+const CATEGORY_META: Record<string, { label: string; icon: IconName }> = {
+  launch_pad: { label: 'Launch Pads', icon: 'fleet' },
+  rocket: { label: 'Rockets', icon: 'ship-survey' },
+  satellite: { label: 'Satellites', icon: 'bld-satellite' },
+  space_station: { label: 'Stations', icon: 'build' },
+  fabrication_facility: { label: 'Fabrication', icon: 'subsidiaries' },
+  datacenter: { label: 'Data Centers', icon: 'save' },
+  mining_enterprise: { label: 'Mining', icon: 'ship-mining' },
+  ground_station: { label: 'Ground Stations', icon: 'services' },
+  solar_farm: { label: 'Solar Farms', icon: 'sun' },
 };
 
 export default function MapContextPanel({
@@ -151,7 +153,7 @@ export default function MapContextPanel({
     if (view === 'plan-expedition') {
       const sys = INTERSTELLAR_SYSTEM_MAP.get(selection.id);
       return panelShell(
-        <PanelTitle icon="🌠" title="Plan Expedition" subtitle={sys?.name || selection.id} onBack={() => setView('overview')} />,
+        <PanelTitle icon="comet" title="Plan Expedition" subtitle={sys?.name || selection.id} onBack={() => setView('overview')} />,
         <ExpeditionPlanner
           state={state}
           systemId={selection.id}
@@ -176,14 +178,14 @@ export default function MapContextPanel({
 
   if (view === 'build') {
     return panelShell(
-      <PanelTitle icon="🏗️" title="Build" subtitle={loc?.name || locId} onBack={() => setView('overview')} />,
+      <PanelTitle icon="build" title="Build" subtitle={loc?.name || locId} onBack={() => setView('overview')} />,
       <BuildPanel state={state} onBuild={onBuild} onSellBuilding={onSellBuilding} onMothballBuilding={onMothballBuilding} onReactivateBuilding={onReactivateBuilding} onRushRepairBuilding={onRushRepairBuilding} onMarkUpgradeBuilding={onMarkUpgradeBuilding} onDispatchShip={onDispatchShip} initialLocationId={locId} lockLocation />
     );
   }
 
   if (view === 'dispatch') {
     return panelShell(
-      <PanelTitle icon="🛰️" title="Dispatch Ship" subtitle={`Target: ${loc?.name || locId}`} onBack={() => setView('overview')} />,
+      <PanelTitle icon="bld-satellite" title="Dispatch Ship" subtitle={`Target: ${loc?.name || locId}`} onBack={() => setView('overview')} />,
       <DispatchBody
         state={state}
         targetLocationId={locId}
@@ -209,7 +211,7 @@ export default function MapContextPanel({
   );
 }
 
-function PanelTitle({ icon, title, subtitle, onBack }: { icon: string; title: string; subtitle: string; onBack: () => void }) {
+function PanelTitle({ icon, title, subtitle, onBack }: { icon: IconName; title: string; subtitle: string; onBack: () => void }) {
   return (
     <div className="flex items-center gap-2 min-w-0">
       <button
@@ -221,7 +223,7 @@ function PanelTitle({ icon, title, subtitle, onBack }: { icon: string; title: st
         ←
       </button>
       <div className="min-w-0">
-        <div className="text-xs font-bold text-white flex items-center gap-1.5"><span aria-hidden="true">{icon}</span> {title}</div>
+        <div className="text-xs font-bold text-white flex items-center gap-1.5"><GameIcon name={icon} size={14} /> {title}</div>
         <div className="text-[10px] text-slate-500 truncate">{subtitle}</div>
       </div>
     </div>
@@ -250,7 +252,7 @@ function GalacticHeader({ systemId }: { systemId: string }) {
   const sys = INTERSTELLAR_SYSTEM_MAP.get(systemId);
   return (
     <div className="min-w-0">
-      <div className="text-xs font-bold text-white truncate flex items-center gap-1.5"><span aria-hidden="true">✴</span> {sys?.name || systemId}</div>
+      <div className="text-xs font-bold text-white truncate flex items-center gap-1.5"><GameIcon name="interstellar" size={14} /> {sys?.name || systemId}</div>
       <div className="text-[10px] text-slate-500 truncate">{sys ? `${sys.distanceLy.toFixed(2)} ly · Galactic Layer` : ''}</div>
     </div>
   );
@@ -291,7 +293,7 @@ function LocationOverview({
   const warningsHere = (state.hazardWarnings || []).filter(w => w.locationId === locationId);
 
   // W9: zone standing for the zone this location belongs to (matches the
-  // map's ♛/◆ label glyph + tint) — glyph + text, never color alone.
+  // map's crown/diamond label glyph + tint) — glyph + text, never color alone.
   const zoneSlug = LOCATION_TO_ZONE.get(locationId);
   const standingHere = zoneSlug
     ? (state.zoneStandings || []).find(z => z.zoneSlug === zoneSlug && (z.isGovernor || z.sharePct >= 1))
@@ -299,7 +301,7 @@ function LocationOverview({
   const zoneName = zoneSlug ? ZONE_MAP.get(zoneSlug)?.name || zoneSlug : '';
 
   // W9: active flagship science missions targeting this body (matches the
-  // map's 🔬 instrument glyph marker).
+  // map's science-instrument glyph marker).
   const missionsHere = getActiveScienceMissions(state).filter(
     m => SCIENCE_PROGRAM_MAP.get(m.programId)?.locationId === locationId,
   );
@@ -326,7 +328,7 @@ function LocationOverview({
               : 'bg-cyan-500/10 border-cyan-500/25 text-cyan-300'
           }`}
         >
-          <span aria-hidden="true">{standingHere.isGovernor ? '♛' : '◆'}</span>
+          <GameIcon name={standingHere.isGovernor ? 'crown' : 'diamond'} size={13} />
           <span>
             {standingHere.isGovernor ? 'Governor' : 'Stakeholder'} — {zoneName} · {standingHere.sharePct.toFixed(1)}% influence
           </span>
@@ -343,7 +345,7 @@ function LocationOverview({
             return (
               <div key={m.id} className="flex items-center justify-between gap-2 text-[11px] px-2 py-1.5 rounded-lg border border-cyan-500/15 bg-cyan-500/5">
                 <span className="text-slate-200 truncate flex items-center gap-1.5">
-                  <span aria-hidden="true">🔬</span> {program.name}
+                  <GameIcon name="research" size={14} /> {program.name}
                 </span>
                 <span className="text-cyan-300/90 text-[10px] shrink-0">
                   {progress.phaseLabel}
@@ -366,7 +368,7 @@ function LocationOverview({
                   : 'bg-white/[0.03] border-white/[0.08] text-slate-400'
               }`}
             >
-              <span aria-hidden="true">⚠️</span>
+              <GameIcon name="warning" size={14} />
               <span>{w.summary}</span>
             </div>
           ))}
@@ -403,10 +405,10 @@ function LocationOverview({
             ) : (
               <div className="space-y-1">
                 {Array.from(byCategory.entries()).map(([cat, counts]) => {
-                  const meta = CATEGORY_META[cat] || { label: cat.replace(/_/g, ' '), icon: '🏢' };
+                  const meta = CATEGORY_META[cat] || { label: cat.replace(/_/g, ' '), icon: 'alliance' };
                   return (
                     <div key={cat} className="flex items-center justify-between text-[11px] px-2 py-1 rounded bg-white/[0.02]">
-                      <span className="text-slate-300 flex items-center gap-1.5"><span aria-hidden="true">{meta.icon}</span> {meta.label}</span>
+                      <span className="text-slate-300 flex items-center gap-1.5"><GameIcon name={meta.icon} size={13} /> {meta.label}</span>
                       <span className="font-mono">
                         {counts.complete > 0 && <span className="text-cyan-300">{counts.complete}</span>}
                         {counts.building > 0 && <span className="text-amber-400 ml-1">+{counts.building} building</span>}
@@ -462,7 +464,7 @@ function LocationOverview({
             </div>
           </div>
           {npcCount > 0 && (
-            <p className="text-[10px] text-slate-500 italic">🤖 {npcCount} NPC {npcCount === 1 ? 'competitor operates' : 'competitors operate'} here — informational only.</p>
+            <p className="text-[10px] text-slate-500 italic"><GameIcon name="npc" size={13} className="mr-1" />{npcCount} NPC {npcCount === 1 ? 'competitor operates' : 'competitors operate'} here — informational only.</p>
           )}
 
           {/* Colony-slot claim fix (2026-09-03): the deliberate, presence-
@@ -479,14 +481,14 @@ function LocationOverview({
               onClick={() => { playSound('click'); onOpenBuild(); }}
               className="min-h-[44px] px-3 py-2 rounded-lg text-xs font-semibold bg-cyan-600 text-white hover:bg-cyan-500 transition-colors"
             >
-              🏗️ Build here
+              <GameIcon name="build" size={13} className="mr-1" />Build here
             </button>
             <button
               type="button"
               onClick={() => { playSound('click'); onOpenDispatch(); }}
               className="min-h-[44px] px-3 py-2 rounded-lg text-xs font-semibold bg-white/[0.06] text-white border border-white/10 hover:bg-white/[0.1] transition-colors"
             >
-              🛰️ Dispatch ship here
+              <GameIcon name="bld-satellite" size={13} className="mr-1" />Dispatch ship here
             </button>
             <button
               type="button"
@@ -578,7 +580,7 @@ function ClaimColonyBlock({
   return (
     <div className="rounded-lg border border-purple-500/15 bg-purple-500/5 p-2.5 space-y-1.5">
       <div className="text-[10px] uppercase tracking-wider text-purple-300 font-semibold flex items-center gap-1">
-        <span aria-hidden="true">🚩</span> Colony Claim
+        <GameIcon name="flag" size={14} /> Colony Claim
       </div>
       {capped && (
         <p className="text-[10px] text-slate-500">
@@ -598,11 +600,11 @@ function ClaimColonyBlock({
           disabled ? 'bg-white/[0.04] text-slate-600 cursor-not-allowed' : 'bg-purple-600 text-white hover:bg-purple-500'
         }`}
       >
-        {disabled ? '🔒 Claim Unavailable' : `🚩 Claim Colony Slot — ${formatMoney(claimCost)}`}
+        {disabled ? 'Claim Unavailable' : `Claim Colony Slot — ${formatMoney(claimCost)}`}
       </button>
       {disabled && reason ? (
         <p className="text-[10px] text-amber-400/80 flex items-center gap-1" role="status">
-          <span aria-hidden="true">⚠️</span> {reason}
+          <GameIcon name="warning" size={14} /> {reason}
         </p>
       ) : (
         <p className="text-[10px] text-slate-500">One-time, non-refundable fee — burned, not converted into building value.</p>
@@ -628,7 +630,7 @@ function LocalStockpileBlock({ state, locationId }: { state: GameState; location
   return (
     <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
       <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1 flex items-center gap-1">
-        <span aria-hidden="true">📦</span> {home ? 'Earth Pool (market inventory)' : 'Local Stockpile'}
+        <GameIcon name="package" size={14} /> {home ? 'Earth Pool (market inventory)' : 'Local Stockpile'}
       </div>
       {entries.length === 0 ? (
         <p className="text-[11px] text-slate-600">
@@ -669,7 +671,7 @@ function WorldPresenceBlock({ locationId }: { locationId: string }) {
   if (!available) {
     return (
       <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5 text-[10px] text-slate-500 italic">
-        🌐 Sign in to see the live world — other corporations&rsquo; presence here.
+        <GameIcon name="globe" size={13} className="mr-1" />Sign in to see the live world — other corporations&rsquo; presence here.
       </div>
     );
   }
@@ -685,7 +687,7 @@ function WorldPresenceBlock({ locationId }: { locationId: string }) {
   return (
     <div className="rounded-lg border border-purple-500/20 bg-purple-500/5 p-2.5 space-y-1">
       <div className="text-[10px] uppercase tracking-wider text-purple-300 font-semibold flex items-center gap-1">
-        <span aria-hidden="true">🌐</span> Live World
+        <GameIcon name="globe" size={14} /> Live World
       </div>
       {count > 0 ? (
         <p className="text-[11px] text-slate-300">
@@ -703,9 +705,9 @@ function WorldPresenceBlock({ locationId }: { locationId: string }) {
       {milestone && (
         <p className="text-[10px]">
           {milestoneClaimedBy ? (
-            <span className="text-amber-300">🏆 {milestone.label}: claimed by {milestoneClaimedBy}</span>
+            <span className="text-amber-300"><GameIcon name="trophy" size={13} className="mr-1" />{milestone.label}: claimed by {milestoneClaimedBy}</span>
           ) : (
-            <span className="text-emerald-300">🏁 {milestone.label}: OPEN — first to unlock wins it</span>
+            <span className="text-emerald-300"><GameIcon name="flag" size={13} className="mr-1" />{milestone.label}: OPEN — first to unlock wins it</span>
           )}
         </p>
       )}
@@ -808,7 +810,7 @@ function DispatchBody({
             )}
             <div className="text-[11px] text-slate-300">
               ETA: <span className="text-cyan-300 font-mono">{formatDuration(eta)}</span>
-              {isBoosted && <span className="text-cyan-300 ml-1" aria-label="speed boosted by modules, specialization, or workforce">⚡ boosted</span>}
+              {isBoosted && <span className="text-cyan-300 ml-1" aria-label="speed boosted by modules, specialization, or workforce"><GameIcon name="power" size={13} className="mr-1" />boosted</span>}
               <span className="text-slate-500"> · <Concept id="delta-v">Δv {deltaV.toLocaleString()} m/s</Concept></span>
             </div>
             <div className="text-[11px] text-slate-300">
@@ -948,7 +950,7 @@ function GalacticBody({
       {/* Colony summary — W9: production glyphs match the map's colony chip */}
       {colony && (
         <div className="rounded-lg border border-purple-500/25 bg-purple-500/5 p-2.5 text-[11px]">
-          <div className="text-purple-300 font-semibold mb-1">🏙️ {colony.name}</div>
+          <div className="text-purple-300 font-semibold mb-1"><GameIcon name="city" size={13} className="mr-1" />{colony.name}</div>
           <div className="grid grid-cols-2 gap-1 text-[10px] text-slate-400">
             <span>Population: <span className="text-white font-mono">{Math.floor(colony.population).toLocaleString()}</span></span>
             <span>Infrastructure: <span className="text-white font-mono">L{colony.infrastructureLevel}</span></span>
@@ -1005,7 +1007,7 @@ function GalacticBody({
               : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
           }`}
         >
-          🌠 Plan Expedition
+          <GameIcon name="comet" size={13} className="mr-1" />Plan Expedition
         </button>
         {ready && eligibleShips.length === 0 && (
           <p className="text-[10px] text-amber-300/90 text-center">
@@ -1190,7 +1192,7 @@ function ExpeditionPlanner({
                 : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
             }`}
           >
-            🚀 Launch Expedition
+            <GameIcon name="fleet" size={13} className="mr-1" />Launch Expedition
           </button>
         </div>
       )}

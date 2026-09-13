@@ -16,6 +16,7 @@ import {
 import type { SubsidiaryType, SubsidiaryInstance, UpgradeTrack } from '@/lib/game/subsidiaries';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import GameIcon from './GameIcon';
 
 interface SubsidiaryPanelProps {
   state: GameState;
@@ -241,7 +242,7 @@ export default function SubsidiaryPanel({ state, onCreate, onUpgrade, onDissolve
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center gap-2">
-          <span className="text-base" aria-hidden="true">🏭</span>
+          <GameIcon name="subsidiaries" size={16} />
           <span className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-medium">Corporate Governance — Subsidiaries</span>
         </div>
         <span className="text-[10px] text-slate-500">Diversify revenue through owned business units</span>

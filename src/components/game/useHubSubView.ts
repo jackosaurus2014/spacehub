@@ -1,6 +1,6 @@
 'use client';
 
-// ─── Hub panel ↔ shell sub-view binding (six-hub consolidation, 2026-09) ────
+// ─── Hub panel <-> shell sub-view binding (six-hub consolidation, 2026-09) ──
 // Hub panels (Markets, Contracts, Standings, Reports) keep their sub-tab in
 // local state. The shell's hub row now drives that state from OUTSIDE the
 // panel (a row click while the panel is already mounted) and needs to know

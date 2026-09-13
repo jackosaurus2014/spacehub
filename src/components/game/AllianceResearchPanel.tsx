@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { playSound } from '@/lib/game/sound-engine';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -43,13 +45,13 @@ interface AllianceResearchData {
   researchProgress: number | null;
 }
 
-const CATEGORY_CONFIG: { id: ResearchCategory; label: string; icon: string; color: string }[] = [
-  { id: 'logistics', label: 'Logistics', icon: '📦', color: 'cyan' },
-  { id: 'mining', label: 'Mining', icon: '⛏️', color: 'amber' },
-  { id: 'commerce', label: 'Commerce', icon: '💹', color: 'green' },
-  { id: 'military', label: 'Military', icon: '🛡️', color: 'red' },
-  { id: 'science', label: 'Science', icon: '🔬', color: 'purple' },
-  { id: 'infrastructure', label: 'Infra', icon: '🏗️', color: 'blue' },
+const CATEGORY_CONFIG: { id: ResearchCategory; label: string; icon: IconName; color: string }[] = [
+  { id: 'logistics', label: 'Logistics', icon: 'package', color: 'cyan' },
+  { id: 'mining', label: 'Mining', icon: 'ship-mining', color: 'amber' },
+  { id: 'commerce', label: 'Commerce', icon: 'market', color: 'green' },
+  { id: 'military', label: 'Military', icon: 'shield', color: 'red' },
+  { id: 'science', label: 'Science', icon: 'research', color: 'purple' },
+  { id: 'infrastructure', label: 'Infra', icon: 'build', color: 'blue' },
 ];
 
 const COLOR_MAP: Record<string, { bg: string; border: string; text: string; accent: string }> = {
@@ -169,7 +171,7 @@ export default function AllianceResearchPanel() {
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <h3 className="font-hud text-white text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <span>📊</span> Research Bonuses
+          <GameIcon name="dashboard" size={14} /> Research Bonuses
         </h3>
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {CATEGORY_CONFIG.map(cat => {
@@ -180,7 +182,7 @@ export default function AllianceResearchPanel() {
                 key={cat.id}
                 className={`p-2 rounded-lg ${catColors.bg} border ${catColors.border} text-center`}
               >
-                <span className="text-sm block">{cat.icon}</span>
+                <span className="block"><GameIcon name={cat.icon} size={14} /></span>
                 <p className={`game-number ${catColors.text} text-xs font-bold`}>
                   {bonusVal > 0 ? `+${bonusVal}%` : '0%'}
                 </p>
@@ -207,7 +209,7 @@ export default function AllianceResearchPanel() {
                   : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
               }`}
             >
-              <span className="mr-0.5">{cat.icon}</span> {cat.label}
+              <GameIcon name={cat.icon} size={13} className="mr-0.5" /> {cat.label}
             </button>
           );
         })}
@@ -219,7 +221,7 @@ export default function AllianceResearchPanel() {
         <span className="hud-corner-br" aria-hidden="true" />
         <div className="flex items-center justify-between mb-4">
           <h3 className={`font-hud text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${colors.text}`}>
-            <span>{activeCatConfig.icon}</span> {activeCatConfig.label} Research
+            <GameIcon name={activeCatConfig.icon} size={14} /> {activeCatConfig.label} Research
           </h3>
           <div className="text-right text-[10px] text-slate-500">
             <span className="game-number">Alliance Lv.{allianceLevel}</span>
@@ -360,7 +362,7 @@ function TierSlot({
             {/* Completed */}
             {isCompleted && (
               <div className="flex items-center gap-1.5">
-                <span className="text-green-400 text-sm">✅</span>
+                <GameIcon name="check" size={14} className="text-green-400" />
                 <span className="game-number text-green-300 text-[10px] font-bold">+{Math.round(item.bonusValue * 100)}% {item.bonusType}</span>
               </div>
             )}
@@ -407,7 +409,7 @@ function TierSlot({
             {/* Locked */}
             {isLocked && (
               <div className="flex items-center gap-1.5">
-                <span className="text-slate-600 text-sm">🔒</span>
+                <GameIcon name="lock" size={14} className="text-slate-600" />
                 <span className="text-slate-600 text-[10px]">
                   Requires Alliance Level {requiredLevel}
                 </span>
@@ -417,7 +419,7 @@ function TierSlot({
             {/* Available but below level */}
             {isAvailable && !meetsLevel && (
               <div className="flex items-center gap-1.5">
-                <span className="text-amber-500/60 text-sm">🔒</span>
+                <GameIcon name="lock" size={14} className="text-amber-500/60" />
                 <span className="text-amber-500/60 text-[10px]">
                   Requires Alliance Level {requiredLevel}
                 </span>
@@ -426,7 +428,7 @@ function TierSlot({
           </>
         ) : (
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-600 text-sm">🔒</span>
+            <GameIcon name="lock" size={14} className="text-slate-600" />
             <span className="text-slate-600 text-[10px]">Tier {tier} — Locked</span>
           </div>
         )}

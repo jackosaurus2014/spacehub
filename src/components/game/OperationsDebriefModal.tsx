@@ -5,6 +5,7 @@ import type { OperationsDebrief } from '@/lib/game/debrief';
 import { BG_ASSETS } from '@/lib/game/assets';
 import { playSound } from '@/lib/game/sound-engine';
 import { useModalA11y } from './useModalA11y';
+import GameIcon from './GameIcon';
 
 /**
  * OperationsDebriefModal — Live-Service Wave LS2 "Operations Debrief"
@@ -56,7 +57,7 @@ export default function OperationsDebriefModal({ debrief, onDismiss, onNavigate 
         className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[70] w-[min(92vw,26rem)] rounded-xl border border-cyan-500/25 bg-[#0a0a1a]/95 backdrop-blur-sm px-4 py-3 shadow-lg game-modal-card"
       >
         <div className="flex items-start gap-3">
-          <span className="text-lg shrink-0" aria-hidden="true">🌙</span>
+          <GameIcon name="moon" size={18} className="shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-white text-xs font-semibold">
               Away {debrief.timeAwayLabel} —
@@ -95,7 +96,7 @@ export default function OperationsDebriefModal({ debrief, onDismiss, onNavigate 
             <div className="cinematic-art absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${BG_ASSETS.starfield})` }} />
             <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(10,10,26,0.55) 65%, rgba(10,10,26,1) 100%)' }} />
             <div className="absolute inset-0 flex flex-col items-center justify-end pb-3 px-4 text-center">
-              <span className="text-3xl mb-1">🌙</span>
+              <GameIcon name="moon" size={30} className="mb-1" />
               <h3 id="debrief-title" className="cinematic-title font-hud text-lg sm:text-xl font-black uppercase text-cyan-300" style={{ textShadow: '0 0 20px rgba(34,211,238,0.8)' }}>
                 Operations Debrief
               </h3>
@@ -106,7 +107,7 @@ export default function OperationsDebriefModal({ debrief, onDismiss, onNavigate 
           <>
             <div className="h-1 bg-gradient-to-r from-green-500 via-cyan-500 to-green-500" aria-hidden="true" />
             <div className="pt-5 px-6 text-center">
-              <span className="text-3xl block mb-2" aria-hidden="true">🌙</span>
+              <GameIcon name="moon" size={30} className="block mb-2" />
               <h3 id="debrief-title" className="text-lg font-bold text-white">Operations Debrief</h3>
               <p className="text-slate-400 text-xs mt-1">
                 Your empire ran for <span className="text-white font-medium">{debrief.timeAwayLabel}</span> while you were away.
@@ -132,16 +133,16 @@ export default function OperationsDebriefModal({ debrief, onDismiss, onNavigate 
             <div className="rounded-xl bg-cyan-500/5 border border-cyan-500/20 p-3 text-left space-y-1">
               <p className="text-cyan-300 text-xs font-semibold uppercase tracking-wide">Completed while away</p>
               {debrief.queueExecuted.length > 0 && (
-                <p className="text-slate-300 text-xs">🌙 {debrief.queueExecuted.length} queued order{debrief.queueExecuted.length === 1 ? '' : 's'} auto-started: {debrief.queueExecuted.map(q => q.label).slice(0, 3).join(', ')}{debrief.queueExecuted.length > 3 ? '…' : ''}</p>
+                <p className="text-slate-300 text-xs"><GameIcon name="moon" size={13} className="mr-1" />{debrief.queueExecuted.length} queued order{debrief.queueExecuted.length === 1 ? '' : 's'} auto-started: {debrief.queueExecuted.map(q => q.label).slice(0, 3).join(', ')}{debrief.queueExecuted.length > 3 ? '…' : ''}</p>
               )}
               {debrief.queueSkipped.length > 0 && (
-                <p className="text-amber-400 text-xs">⚠ {debrief.queueSkipped.length} queued order{debrief.queueSkipped.length === 1 ? '' : 's'} couldn't start.</p>
+                <p className="text-amber-400 text-xs"><GameIcon name="warning" size={13} className="mr-1" />{debrief.queueSkipped.length} queued order{debrief.queueSkipped.length === 1 ? '' : 's'} couldn't start.</p>
               )}
               {debrief.directiveActionsSummary.slice(0, 3).map((a, i) => (
                 <p key={i} className="text-slate-400 text-[11px]">{a}</p>
               ))}
               {debrief.directiveFeesCharged > 0 && (
-                <p className="text-slate-400 text-[11px]">🤖 Standing directives: -{formatMoney(debrief.directiveFeesCharged)} ops overhead</p>
+                <p className="text-slate-400 text-[11px]"><GameIcon name="npc" size={13} className="mr-1" />Standing directives: -{formatMoney(debrief.directiveFeesCharged)} ops overhead</p>
               )}
             </div>
           )}
@@ -151,7 +152,7 @@ export default function OperationsDebriefModal({ debrief, onDismiss, onNavigate 
             <div className="rounded-xl bg-red-500/5 border border-red-500/20 p-3 text-left space-y-1">
               <p className="text-red-400 text-xs font-semibold uppercase tracking-wide">Hazards weathered</p>
               {debrief.hazardsApplied.slice(0, 4).map((h, i) => (
-                <p key={i} className="text-slate-300 text-[11px]">⚠ {h.summary}</p>
+                <p key={i} className="text-slate-300 text-[11px]"><GameIcon name="warning" size={13} className="mr-1" />{h.summary}</p>
               ))}
             </div>
           )}
@@ -169,7 +170,7 @@ export default function OperationsDebriefModal({ debrief, onDismiss, onNavigate 
           {/* Returning Commander */}
           {debrief.isLapsedReturn && (
             <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-3 text-left space-y-1">
-              <p className="text-amber-300 text-xs font-semibold uppercase tracking-wide">🎖 Returning Commander</p>
+              <p className="text-amber-300 text-xs font-semibold uppercase tracking-wide"><GameIcon name="commanders" size={13} className="mr-1" />Returning Commander</p>
               <p className="text-slate-200 text-xs">
                 Welcome back after {debrief.lapseDays} day{debrief.lapseDays === 1 ? '' : 's'}. You received a {formatMoney(debrief.reentryStipend)} re-entry stipend and a decaying earnings boost.
               </p>

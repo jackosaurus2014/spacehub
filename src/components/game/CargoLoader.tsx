@@ -21,6 +21,7 @@ import {
 } from '@/lib/game/cargo-logistics';
 import { playSound } from '@/lib/game/sound-engine';
 import type { GameState } from '@/lib/game/types';
+import GameIcon from './GameIcon';
 
 interface CargoLoaderProps {
   state: GameState;
@@ -101,7 +102,7 @@ export default function CargoLoader({ state, shipInstanceId, cargo, onChange }: 
         />
       </div>
       {isTanker && (
-        <p className="text-[11px] text-sky-300/80">⛽ Tanker hull: water &amp; hydrocarbons count at half weight (2x liquid capacity).</p>
+        <p className="text-[11px] text-sky-300/80"><GameIcon name="resource-hydrocarbon" size={13} className="mr-1" />Tanker hull: water &amp; hydrocarbons count at half weight (2x liquid capacity).</p>
       )}
 
       {stockEntries.length === 0 ? (

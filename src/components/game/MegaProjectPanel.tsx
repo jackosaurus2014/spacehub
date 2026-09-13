@@ -12,6 +12,8 @@ import {
   formatMPP,
   formatNumber,
 } from '@/lib/game/mega-projects';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 // Rank → medal frame class (top-3 get a glowing circular mount; matches Wave-3
 // Leaderboard/League treatment for cross-panel consistency).
@@ -349,7 +351,7 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
   if (!data?.project) {
     return (
       <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-8 text-center">
-        <p className="text-4xl mb-3">🚀</p>
+        <p className="mb-3 flex justify-center"><GameIcon name="fleet" size={36} /></p>
         <p className="text-white font-semibold text-lg">No Active Mega-Project</p>
         <p className="text-slate-400 text-sm mt-2">
           {data?.message || 'Check back soon -- the next galaxy-wide construction project will be announced.'}
@@ -472,10 +474,10 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
       {/* ── Sub-Tab Navigation ─────────────────────────────────────────────── */}
       <div className="game-tab-bar flex flex-wrap gap-1.5 overflow-x-auto">
         {([
-          { id: 'overview' as SubTab, label: 'Overview', icon: '📊' },
-          { id: 'contribute' as SubTab, label: 'Contribute', icon: '🔨' },
-          { id: 'leaderboard' as SubTab, label: 'Leaderboard', icon: '🏆' },
-          { id: 'progress' as SubTab, label: 'My Progress', icon: '📈' },
+          { id: 'overview' as SubTab, label: 'Overview', icon: 'dashboard' },
+          { id: 'contribute' as SubTab, label: 'Contribute', icon: 'crafting' },
+          { id: 'leaderboard' as SubTab, label: 'Leaderboard', icon: 'trophy' },
+          { id: 'progress' as SubTab, label: 'My Progress', icon: 'trending-up' },
         ]).map(tab => (
           <button
             key={tab.id}
@@ -486,7 +488,7 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
                 : 'bg-white/[0.04] text-slate-400 hover:text-white border border-transparent'
             }`}
           >
-            {tab.icon} {tab.label}
+            <GameIcon name={tab.icon as IconName} size={13} className="mr-1" />{tab.label}
           </button>
         ))}
       </div>
@@ -864,14 +866,10 @@ export default function MegaProjectPanel({ state }: MegaProjectPanelProps) {
             <span className="hud-corner-br" aria-hidden="true" />
             <div className="flex items-center gap-3 mb-3">
               <div className="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-lg">
-                {player.tier === 0 ? '👁' :
-                 player.tier === 1 ? '🔧' :
-                 player.tier === 2 ? '🔧' :
-                 player.tier === 3 ? '🔧' :
-                 player.tier === 4 ? '🔧' :
-                 player.tier === 5 ? '💎' :
-                 player.tier === 6 ? '💠' :
-                 '⭐'}
+                <GameIcon
+                  name={player.tier === 0 ? 'espionage' : player.tier <= 4 ? 'wrench' : player.tier === 5 ? 'resource-precious' : player.tier === 6 ? 'diamond' : 'star'}
+                  size={20}
+                />
               </div>
               <div>
                 <p className="text-amber-300 font-bold text-lg">{player.tierName}</p>

@@ -7,6 +7,8 @@ import { stakeClaim, formatAnomalyRewards, rollAnomalyDiscovery, recordDiscovery
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { formatMoney } from '@/lib/game/formulas';
 import { PLANET_ASSETS, EFFECT_ASSETS } from '@/lib/game/assets';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 const KIND_ART: Record<AnomalyKind, string> = {
   rich_deposit: PLANET_ASSETS.asteroid_field,
@@ -23,14 +25,14 @@ interface Props {
   setState: (fn: (prev: GameState | null) => GameState | null) => void;
 }
 
-const KIND_ICON: Record<AnomalyKind, string> = {
-  rich_deposit: '⛏️',
-  ancient_artifact: '🗿',
-  derelict_ship: '🚀',
-  uncharted_asteroid: '☄️',
-  hazard_zone: '⚠️',
-  alien_signal: '📡',
-  gravitational_lens: '🔭',
+const KIND_ICON: Record<AnomalyKind, IconName> = {
+  rich_deposit: 'ship-mining',
+  ancient_artifact: 'archive',
+  derelict_ship: 'fleet',
+  uncharted_asteroid: 'comet',
+  hazard_zone: 'warning',
+  alien_signal: 'services',
+  gravitational_lens: 'discoveries',
 };
 
 const KIND_ACCENT: Record<AnomalyKind, string> = {
@@ -65,7 +67,7 @@ export default function AnomaliesPanel({ state, setState }: Props) {
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
             <h2 className="font-hud text-white text-base font-bold flex items-center gap-2">
-              <span className="text-sky-400">🔭</span> Discoveries & Claims
+              <GameIcon name="discoveries" size={14} className="text-sky-400" /> Discoveries & Claims
             </h2>
             <p className="text-slate-500 text-xs mt-0.5">
               Survey ships discover anomalies at their destinations. Stake a claim within 30 days to lock in rewards
@@ -76,9 +78,9 @@ export default function AnomaliesPanel({ state, setState }: Props) {
         </div>
 
         <div className="game-tab-bar flex gap-1 flex-wrap overflow-x-auto">
-          <TabButton active={tab === 'known'} onClick={() => setTab('known')}>🔍 Unclaimed ({known.length})</TabButton>
-          <TabButton active={tab === 'claimed'} onClick={() => setTab('claimed')}>📌 Claimed ({claimed.length})</TabButton>
-          <TabButton active={tab === 'manual'} onClick={() => setTab('manual')}>🎲 Dev tools</TabButton>
+          <TabButton active={tab === 'known'} onClick={() => setTab('known')}><GameIcon name="search" size={13} className="mr-1" />Unclaimed ({known.length})</TabButton>
+          <TabButton active={tab === 'claimed'} onClick={() => setTab('claimed')}><GameIcon name="pin" size={13} className="mr-1" />Claimed ({claimed.length})</TabButton>
+          <TabButton active={tab === 'manual'} onClick={() => setTab('manual')}><GameIcon name="dice" size={13} className="mr-1" />Dev tools</TabButton>
         </div>
       </div>
 
@@ -133,12 +135,12 @@ function KnownTab({ state, setState, anomalies, now }: { state: GameState; setSt
                 {art ? (
                   <Image src={art} alt="" width={48} height={48} className="w-11 h-11 object-cover rounded" />
                 ) : (
-                  <span className="text-3xl" aria-hidden="true">{KIND_ICON[kind]}</span>
+                  <GameIcon name={KIND_ICON[kind]} size={30} />
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className={`text-[10px] uppercase tracking-wider font-bold ${KIND_ACCENT[kind].split(' ').find(c => c.startsWith('text-'))}`}>
-                  <span aria-hidden="true">{KIND_ICON[kind]}</span> {kind.replace(/_/g, ' ')}
+                  <GameIcon name={KIND_ICON[kind]} size={12} /> {kind.replace(/_/g, ' ')}
                 </div>
                 <h3 className="text-white text-sm font-bold leading-tight">{a.title}</h3>
                 <p className="text-slate-500 text-[10px]">{locName}</p>
@@ -194,7 +196,7 @@ function ClaimedTab({ anomalies }: { anomalies: NonNullable<GameState['knownAnom
                 {art ? (
                   <Image src={art} alt="" width={36} height={36} className="w-9 h-9 object-cover rounded" />
                 ) : (
-                  <span className="text-2xl" aria-hidden="true">{KIND_ICON[kind]}</span>
+                  <GameIcon name={KIND_ICON[kind]} size={24} />
                 )}
               </div>
               <div className="flex-1 min-w-0">

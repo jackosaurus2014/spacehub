@@ -401,6 +401,9 @@ export default function Navigation() {
   return (
     <nav
       aria-label="Main navigation"
+      // Space Tycoon bridge mode (src/lib/game/bridge-mode.ts) hides every
+      // [data-site-chrome] element while the game shell has `data-bridge="on"`.
+      data-site-chrome="nav"
       className={`nav-persistent sticky top-0 z-50 transition-all duration-200 safe-area-pt ${navHidden ? '-translate-y-full' : 'translate-y-0'}`}
       style={{
         background: 'var(--bg-void, #09090b)',

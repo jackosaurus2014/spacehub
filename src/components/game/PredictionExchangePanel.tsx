@@ -6,6 +6,8 @@ import type { GameState } from '@/lib/game/types';
 import { formatMoney, formatCountdown } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import { PREDICTION_STAKE_MIN, PREDICTION_STAKE_MAX, PREDICTION_PAYOUT_MULTIPLIER } from '@/lib/game/prediction-exchange';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 // ─── Types (mirrors the API response shape) ─────────────────────────────────
 
@@ -47,10 +49,10 @@ interface PredictionExchangePanelProps {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const CATEGORY_META: Record<string, { icon: string; label: string }> = {
-  launch: { icon: '🚀', label: 'Launch' },
-  stocks: { icon: '📈', label: 'Market' },
-  milestone: { icon: '🎯', label: 'Milestone' },
+const CATEGORY_META: Record<string, { icon: IconName; label: string }> = {
+  launch: { icon: 'fleet', label: 'Launch' },
+  stocks: { icon: 'trending-up', label: 'Market' },
+  milestone: { icon: 'target', label: 'Milestone' },
 };
 
 function poolTotal(pool: Record<string, number>): number {
@@ -186,7 +188,7 @@ export default function PredictionExchangePanel({ state }: PredictionExchangePan
         <span className="hud-corner-bl" aria-hidden="true" />
         <span className="hud-corner-br" aria-hidden="true" />
         <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-          <span>🔮</span> Open Questions
+          <GameIcon name="predictions" size={14} /> Open Questions
         </h3>
 
         {sortedOpen.length === 0 ? (
@@ -197,7 +199,7 @@ export default function PredictionExchangePanel({ state }: PredictionExchangePan
         ) : (
           <div className="space-y-3">
             {sortedOpen.map((q) => {
-              const meta = CATEGORY_META[q.category] || { icon: '❔', label: q.category };
+              const meta = CATEGORY_META[q.category] || { icon: 'help' as IconName, label: q.category };
               const remainingMs = new Date(q.closesAt).getTime() - now;
               const isPending = q.status === 'pending' || remainingMs <= 0;
               const total = poolTotal(q.poolByOption);
@@ -210,7 +212,7 @@ export default function PredictionExchangePanel({ state }: PredictionExchangePan
                   {/* Top row */}
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="flex items-start gap-2">
-                      <span className="text-sm mt-0.5" aria-hidden="true">{meta.icon}</span>
+                      <GameIcon name={meta.icon} size={14} className="mt-0.5" />
                       <div>
                         <span className="text-[10px] uppercase tracking-wider text-cyan-400/80 font-semibold">{meta.label}</span>
                         <p className="text-white text-xs font-medium leading-snug">{q.question}</p>
@@ -318,11 +320,11 @@ export default function PredictionExchangePanel({ state }: PredictionExchangePan
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
           <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span>📜</span> Recently Resolved
+            <GameIcon name="scroll" size={14} /> Recently Resolved
           </h3>
           <div className="space-y-1.5">
             {sortedResolved.slice(0, 10).map((q) => {
-              const meta = CATEGORY_META[q.category] || { icon: '❔', label: q.category };
+              const meta = CATEGORY_META[q.category] || { icon: 'help' as IconName, label: q.category };
               const outcomeLabel = q.options.find(o => o.id === q.outcomeOptionId)?.label || q.outcomeOptionId;
               const yourResult = q.yourStake
                 ? (q.yourStake.payout && q.yourStake.payout > 0
@@ -332,7 +334,7 @@ export default function PredictionExchangePanel({ state }: PredictionExchangePan
               return (
                 <div key={q.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/[0.02] transition-colors gap-2">
                   <div className="min-w-0">
-                    <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mr-1.5">{meta.icon} {meta.label}</span>
+                    <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mr-1.5"><GameIcon name={meta.icon} size={11} className="mr-1" />{meta.label}</span>
                     <p className="text-slate-300 text-[11px] truncate">{q.question}</p>
                     <p className="text-slate-500 text-[10px]">Outcome: <span className="text-white">{outcomeLabel}</span></p>
                   </div>

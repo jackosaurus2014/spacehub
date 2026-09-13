@@ -134,7 +134,7 @@ export default function CompetitiveAlertLayer({ state, onNavigate }: Props) {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1">
                   {/* Meaning as a WORD first — never colour alone. */}
-                  <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/20 text-white">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/20 text-white">
                     {urgent ? 'Decision required' : 'Under economic attack'}
                   </span>
                   {a.respondByMs !== undefined && (
@@ -164,7 +164,7 @@ export default function CompetitiveAlertLayer({ state, onNavigate }: Props) {
                     Dismiss
                   </button>
                 </div>
-                <p className="text-[9px] text-slate-500 mt-1.5">
+                <p className="text-[10px] text-slate-500 mt-1.5">
                   Dismissing hides this banner only — the entry stays in your Situation Log.
                 </p>
               </div>

@@ -7,6 +7,7 @@ import {
   getReturningCommanderMultiplier,
   isReturningCommanderTrackActive,
 } from '@/lib/game/returning-commander';
+import GameIcon from './GameIcon';
 
 /**
  * ReturningCommanderWidget — Live-Service Wave LS2 "Returning Commander"
@@ -38,7 +39,7 @@ export default function ReturningCommanderWidget({ state }: { state: GameState }
   return (
     <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3 hud-frame hud-frame-amber">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-amber-300 text-xs font-semibold uppercase tracking-wide">🎖 Returning Commander</span>
+        <span className="text-amber-300 text-xs font-semibold uppercase tracking-wide"><GameIcon name="commanders" size={13} className="mr-1" />Returning Commander</span>
         {boostPct > 0 && (
           <span className="text-[10px] font-mono text-green-400">+{boostPct}% revenue boost</span>
         )}
@@ -51,7 +52,7 @@ export default function ReturningCommanderWidget({ state }: { state: GameState }
           <ul className="space-y-1">
             {objectives.map(o => (
               <li key={o.id} className="flex items-center gap-2 text-[11px]">
-                <span aria-hidden="true">{o.done ? '✅' : '⬜'}</span>
+                <GameIcon name={o.done ? 'check' : 'square'} size={12} className={o.done ? 'text-green-300' : 'text-slate-500'} />
                 <span className={o.done ? 'text-slate-500 line-through' : 'text-slate-300'}>{o.label}</span>
                 <span className="text-slate-600 text-[10px] uppercase ml-auto">{o.loop}</span>
               </li>

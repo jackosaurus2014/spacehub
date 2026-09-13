@@ -331,6 +331,7 @@ export default function MobileTabBar() {
       {/* ── Bottom tab bar ── */}
       <nav
         aria-label="Mobile navigation"
+        data-site-chrome="mobile-tabs"
         className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
         style={{
           background: 'rgba(0, 0, 0, 0.97)',

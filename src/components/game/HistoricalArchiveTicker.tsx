@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { shapeArchiveHeadlines, type ArchiveHeadline } from '@/lib/game/archive-feed';
 import { getLoreYearOffset } from '@/lib/game/lore-year';
 import { usePrefersReducedMotion } from '@/hooks/useWorldState';
+import GameIcon from './GameIcon';
 
 const ROTATE_MS = 8000;
 const REFRESH_MS = 5 * 60 * 1000; // matches /api/news's own 5-minute cache
@@ -71,7 +72,7 @@ export default function HistoricalArchiveTicker() {
       <span className="hud-corner-bl" aria-hidden="true" />
       <span className="hud-corner-br" aria-hidden="true" />
       <span className="game-label !text-cyan-400/70 shrink-0 whitespace-nowrap" aria-hidden="true">
-        {'📜'} Sol Historical Archive
+        <GameIcon name="scroll" size={13} className="mr-1" />Sol Historical Archive
       </span>
 
       {reducedMotion && hasMultiple && (

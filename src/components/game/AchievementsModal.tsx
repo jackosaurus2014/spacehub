@@ -4,6 +4,8 @@ import { useState } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { ACHIEVEMENTS, getAchievementBadgeUrl } from '@/lib/game/achievements';
 import { useModalA11y } from './useModalA11y';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 interface AchievementsModalProps {
   state: GameState;
@@ -11,14 +13,14 @@ interface AchievementsModalProps {
   onClose: () => void;
 }
 
-const CATEGORIES = [
-  { id: 'all', label: 'All', icon: '🏆' },
-  { id: 'wealth', label: 'Wealth', icon: '💰' },
-  { id: 'building', label: 'Building', icon: '🏗️' },
-  { id: 'research', label: 'Research', icon: '🔬' },
-  { id: 'exploration', label: 'Exploration', icon: '🗺️' },
-  { id: 'market', label: 'Market', icon: '📊' },
-  { id: 'milestone', label: 'Milestones', icon: '⭐' },
+const CATEGORIES: { id: string; label: string; icon: IconName }[] = [
+  { id: 'all', label: 'All', icon: 'trophy' },
+  { id: 'wealth', label: 'Wealth', icon: 'money' },
+  { id: 'building', label: 'Building', icon: 'build' },
+  { id: 'research', label: 'Research', icon: 'research' },
+  { id: 'exploration', label: 'Exploration', icon: 'map' },
+  { id: 'market', label: 'Market', icon: 'dashboard' },
+  { id: 'milestone', label: 'Milestones', icon: 'star' },
 ];
 
 export default function AchievementsModal({ state, unlockedIds, onClose }: AchievementsModalProps) {
@@ -50,7 +52,7 @@ export default function AchievementsModal({ state, unlockedIds, onClose }: Achie
         {/* Header */}
         <div className="p-4 border-b border-white/[0.06]">
           <div className="flex items-center justify-between mb-3">
-            <h3 id="achievements-title" className="text-white font-bold text-lg flex items-center gap-2">🏆 Achievements</h3>
+            <h3 id="achievements-title" className="text-white font-bold text-lg flex items-center gap-2"><GameIcon name="trophy" size={13} className="mr-1" />Achievements</h3>
             <button
               onClick={onClose}
               aria-label="Close achievements"
@@ -89,7 +91,7 @@ export default function AchievementsModal({ state, unlockedIds, onClose }: Achie
                     : 'bg-white/[0.04] text-slate-500 hover:text-white'
                 }`}
               >
-                {cat.icon} {cat.label}
+                <GameIcon name={cat.icon} size={13} className="mr-1" />{cat.label}
               </button>
             ))}
           </div>
@@ -120,7 +122,7 @@ export default function AchievementsModal({ state, unlockedIds, onClose }: Achie
                       <span>{a.icon}</span>
                     )
                   ) : (
-                    <span className="grayscale opacity-70">🔒</span>
+                    <GameIcon name="lock" size={14} className="opacity-70" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

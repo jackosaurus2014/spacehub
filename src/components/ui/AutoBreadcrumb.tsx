@@ -73,6 +73,7 @@ export default function AutoBreadcrumb() {
       {/* Visible breadcrumb trail */}
       <nav
         aria-label="Breadcrumb"
+        data-site-chrome="breadcrumb"
         className="container mx-auto px-4 pt-3 pb-1"
       >
         <ol className="flex items-center gap-1.5 text-sm text-slate-400 overflow-x-auto scrollbar-hide">

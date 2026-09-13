@@ -84,7 +84,15 @@ export type IconName =
   | 'scroll' | 'sparkle' | 'external-link' | 'arrow-up' | 'arrow-down'
   | 'calendar' | 'clock' | 'shield' | 'city' | 'comet' | 'cargo-truck'
   | 'lock' | 'idea' | 'balance' | 'alien' | 'archive' | 'globe' | 'wrench' | 'idle'
-  | 'edit' | 'power' | 'npc';
+  | 'edit' | 'power' | 'npc'
+  // ── Graphics review 2026-09-12 item 10 — the emoji-migration finish and
+  //    the bridge-mode / phone map-strip controls. Every glyph is shape-
+  //    first; paired states (bridge/bridge-exit, lock/unlock, play/pause)
+  //    differ in silhouette, never colour alone. ──────────────────────────
+  | 'bridge' | 'bridge-exit' | 'sun' | 'unlock' | 'keyboard' | 'crown'
+  | 'diamond' | 'label' | 'route' | 'flag' | 'star' | 'gift' | 'chat'
+  | 'moon' | 'pin' | 'exchange' | 'search' | 'dice' | 'ban' | 'bank'
+  | 'home' | 'square' | 'magnet' | 'pause' | 'play' | 'trophy';
 
 type El =
   | { e: 'path'; d: string; fill?: 'currentColor' | 'none' }
@@ -286,6 +294,36 @@ export const ICONS: Record<IconName, IconDef> = {
   edit: { meaning: 'Edit / rename', els: [p('M15 3l6 6-11 11H4v-6z'), l(14, 4, 20, 10)] },
   power: { meaning: 'Electrical power / energy grid', els: [pg('13,2 4,14 11,14 9,22 20,9 12,9 13,2')] },
   npc: { meaning: 'Automated NPC / AI-driven activity', els: [r(6, 8, 12, 9, 2), l(9, 8, 9, 5), l(15, 8, 15, 5), c(9.5, 12.5, 1, 'currentColor'), c(14.5, 12.5, 1, 'currentColor'), l(3, 12, 6, 12), l(18, 12, 21, 12)] },
+
+  // ── Graphics review 2026-09-12 (item 10 icon finish + item 5 bridge) ──
+  // Bridge: four outward corner arrows (the stage expanding); exit: the
+  // same corners pointing inward. Distinct silhouettes for the two states.
+  bridge: { meaning: 'Bridge mode — hide the site navigation so the map fills the screen', els: [pl('3,9 3,3 9,3'), pl('15,3 21,3 21,9'), pl('21,15 21,21 15,21'), pl('9,21 3,21 3,15'), l(3, 3, 9, 9), l(21, 3, 15, 9), l(21, 21, 15, 15), l(3, 21, 9, 15)] },
+  'bridge-exit': { meaning: 'Exit bridge mode — restore the site navigation', els: [pl('9,3 9,9 3,9'), pl('15,3 15,9 21,9'), pl('21,15 15,15 15,21'), pl('3,15 9,15 9,21'), l(9, 9, 3, 3), l(15, 9, 21, 3), l(15, 15, 21, 21), l(9, 15, 3, 21)] },
+  sun: { meaning: 'The Sun / solar-system layer', els: [c(12, 12, 4, 'none'), l(12, 2, 12, 5), l(12, 19, 12, 22), l(2, 12, 5, 12), l(19, 12, 22, 12), l(5, 5, 7, 7), l(17, 17, 19, 19), l(5, 19, 7, 17), l(17, 7, 19, 5)] },
+  unlock: { meaning: 'Unlocked / available', els: [r(5, 11, 14, 10, 2), p('M8 11V7a4 4 0 0 1 7.5-2'), c(12, 16, 1, 'currentColor')] },
+  keyboard: { meaning: 'Keyboard shortcut legend', els: [r(2, 6, 20, 12, 2), l(6, 10, 6, 10), l(10, 10, 10, 10), l(14, 10, 14, 10), l(18, 10, 18, 10), l(7, 14, 17, 14)] },
+  crown: { meaning: 'Zone governor', els: [pg('3,18 3,8 8,12 12,5 16,12 21,8 21,18', 'none'), l(3, 18, 21, 18)] },
+  diamond: { meaning: 'Zone stakeholder', els: [pg('12,3 21,12 12,21 3,12', 'none')] },
+  label: { meaning: 'Labels — show every map label at every zoom', els: [p('M3 12V4h8l10 10-8 8z'), c(7, 8, 1.2, 'currentColor')] },
+  route: { meaning: 'Shipping lanes', els: [c(5, 6, 2.5, 'none'), c(19, 18, 2.5, 'none'), p('M7 8c4 0 4 8 8 8h2')] },
+  flag: { meaning: 'Flag / milestone / claim', els: [l(5, 3, 5, 21), p('M5 4h14l-3 4 3 4H5')] },
+  star: { meaning: 'Star rating / highlight', els: [p('M12 3l2.4 5 5.6.6-4.2 3.8 1.2 5.5L12 15l-5 2.9 1.2-5.5-4.2-3.8 5.6-.6z')] },
+  gift: { meaning: 'Bonus / reward', els: [r(3, 10, 18, 11, 1), r(3, 6, 18, 4, 1), l(12, 6, 12, 21), p('M12 6c-2-4-6-4-6-1s4 1 6 1z'), p('M12 6c2-4 6-4 6-1s-4 1-6 1z')] },
+  chat: { meaning: 'Chat / message', els: [p('M4 5h16v11H9l-5 4z')] },
+  moon: { meaning: 'Away / while you were gone', els: [p('M19 13a7 7 0 1 1-8-9.9A7 7 0 0 0 19 13z')] },
+  pin: { meaning: 'Pinned / marked location', els: [p('M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z'), c(12, 10, 2, 'none')] },
+  exchange: { meaning: 'Exchange / swap', els: [pl('4,8 18,8'), pl('14,4 18,8 14,12'), pl('20,16 6,16'), pl('10,12 6,16 10,20')] },
+  search: { meaning: 'Search / survey', els: [c(10, 10, 6, 'none'), l(15, 15, 21, 21)] },
+  dice: { meaning: 'Chance / random outcome', els: [r(3, 3, 18, 18, 3), c(8, 8, 1.2, 'currentColor'), c(16, 8, 1.2, 'currentColor'), c(12, 12, 1.2, 'currentColor'), c(8, 16, 1.2, 'currentColor'), c(16, 16, 1.2, 'currentColor')] },
+  ban: { meaning: 'Blocked / not allowed', els: [c(12, 12, 9, 'none'), l(5.6, 5.6, 18.4, 18.4)] },
+  bank: { meaning: 'Treasury / bank', els: [l(3, 21, 21, 21), pg('3,8 12,3 21,8', 'none'), l(3, 8, 21, 8), l(6, 8, 6, 18), l(12, 8, 12, 18), l(18, 8, 18, 18), l(4, 18, 20, 18)] },
+  home: { meaning: 'Home / overview', els: [p('M3 11l9-8 9 8'), p('M5 10v10h14V10'), r(10, 14, 4, 6)] },
+  square: { meaning: 'Unchecked / not yet done', els: [r(4, 4, 16, 16, 2)] },
+  magnet: { meaning: 'Poach / attract talent', els: [p('M6 3v8a6 6 0 0 0 12 0V3'), l(6, 3, 10, 3), l(14, 3, 18, 3), l(6, 8, 10, 8), l(14, 8, 18, 8)] },
+  pause: { meaning: 'Paused', els: [r(6, 4, 4, 16, 1), r(14, 4, 4, 16, 1)] },
+  play: { meaning: 'Play / resume', els: [pg('6,4 20,12 6,20', 'none')] },
+  trophy: { meaning: 'Trophy / first place', els: [p('M7 4h10v5a5 5 0 0 1-10 0z'), p('M7 5H4a3 3 0 0 0 3 5'), p('M17 5h3a3 3 0 0 1-3 5'), l(12, 14, 12, 18), l(8, 21, 16, 21), l(9, 18, 15, 18)] },
 };
 
 /** Best-effort emoji → IconName bridge for data-sourced glyphs (season

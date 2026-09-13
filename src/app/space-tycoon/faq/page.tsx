@@ -50,13 +50,13 @@ Once construction finishes, services activate automatically and revenue starts f
         a: `Three common reasons:
 
 1. **Construction isn't finished yet.** Buildings take months to build. Check the Dashboard for "Under Construction" items — they show completion dates. Revenue only starts when construction is complete.
-2. **The game is paused.** Make sure you've pressed a speed button (1x, 2x, 5x, or 10x). The ⏸ button pauses time.
+2. **The game is paused.** Make sure you've pressed a speed button (1x, 2x, 5x, or 10x). The Pause button pauses time.
 3. **The building doesn't generate revenue.** Check the Build panel — buildings that generate revenue show which service they enable. Some buildings (like solar farms) provide support but don't directly earn money.`,
       },
       {
         q: 'What does each speed setting do?',
         a: `Speed controls how fast in-game time passes:
-- **⏸ Pause** — Time stops. Use this to plan your next moves.
+- **Pause** — Time stops. Use this to plan your next moves.
 - **1x** — 1 game month every 2 real seconds
 - **2x** — 1 game month every 1 second
 - **5x** — 1 game month every 0.4 seconds
@@ -217,7 +217,7 @@ Rule of thumb: Keep at least 6 months of operating costs in reserve. If your mon
       },
       {
         q: 'Does the game save automatically?',
-        a: `Yes! The game auto-saves every 30 seconds. You can also manually save by clicking the 💾 button in the tab bar. Your save is stored in your browser's local storage.
+        a: `Yes! The game auto-saves every 30 seconds. You can also manually save by clicking the Save button in the tab bar. Your save is stored in your browser's local storage.
 
 Warning: Clearing your browser data will delete your save. Use the same browser to continue playing.`,
       },

@@ -691,7 +691,7 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                       <span className="text-[var(--ink)] text-xs inline-flex items-center gap-1.5">
                         {def.name}
                         {getMarkLevel(bld) > 1 && (
-                          <span className="text-[9px] font-bold tracking-wider font-mono text-[var(--signal)] border border-[var(--line-2)] rounded-[var(--radius-badge)] px-1 py-px align-middle" aria-label={MARK_NAMES[getMarkLevel(bld)]}>
+                          <span className="text-[10px] font-bold tracking-wider font-mono text-[var(--signal)] border border-[var(--line-2)] rounded-[var(--radius-badge)] px-1 py-px align-middle" aria-label={MARK_NAMES[getMarkLevel(bld)]}>
                             MK {getMarkLevel(bld) === 3 ? 'III' : 'II'}
                           </span>
                         )}

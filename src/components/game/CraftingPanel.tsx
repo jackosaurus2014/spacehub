@@ -16,6 +16,8 @@ import { formatMoney, formatDuration, formatCountdown } from '@/lib/game/formula
 import { playSound } from '@/lib/game/sound-engine';
 import { BUILDING_ASSETS } from '@/lib/game/assets';
 import Image from 'next/image';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 interface CraftingPanelProps {
   state: GameState;
@@ -96,11 +98,11 @@ export default function CraftingPanel({ state, onStartCrafting, onCancelQueued, 
     b.isComplete && BUILDING_MAP.get(b.definitionId)?.category === 'fabrication_facility'
   ).length;
 
-  const tiers = [
-    { tier: 1, label: 'Raw Processing', icon: '🔩', color: 'slate' },
-    { tier: 2, label: 'Components', icon: '⚙️', color: 'cyan' },
-    { tier: 3, label: 'Products', icon: '🏗️', color: 'purple' },
-    { tier: 4, label: 'Advanced', icon: '✨', color: 'amber' },
+  const tiers: { tier: number; label: string; icon: IconName; color: string }[] = [
+    { tier: 1, label: 'Raw Processing', icon: 'resource-component', color: 'slate' },
+    { tier: 2, label: 'Components', icon: 'modules', color: 'cyan' },
+    { tier: 3, label: 'Products', icon: 'build', color: 'purple' },
+    { tier: 4, label: 'Advanced', icon: 'sparkle', color: 'amber' },
   ];
 
   // Active crafting — apply fabrication speed multiplier to duration
@@ -151,7 +153,7 @@ export default function CraftingPanel({ state, onStartCrafting, onCancelQueued, 
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
           <h3 className="font-hud text-amber-400 text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span>📦</span> Finished Goods — List on the Order Book
+            <GameIcon name="package" size={14} /> Finished Goods — List on the Order Book
           </h3>
           <div className="space-y-1.5">
             {craftedHeld.map(({ id, qty }) => {
@@ -166,7 +168,9 @@ export default function CraftingPanel({ state, onStartCrafting, onCancelQueued, 
               return (
                 <div key={id} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm" aria-hidden="true">{recipe?.icon || def?.icon || '📦'}</span>
+                    {recipe?.icon || def?.icon
+                      ? <span className="text-sm" aria-hidden="true">{recipe?.icon || def?.icon}</span>
+                      : <GameIcon name="package" size={14} />}
                     <div>
                       <span className="text-white text-xs">{def?.name || id.replace(/_/g, ' ')}</span>
                       <span className="text-slate-500 text-[10px] ml-1.5">×{qty}</span>
@@ -264,7 +268,7 @@ export default function CraftingPanel({ state, onStartCrafting, onCancelQueued, 
         return (
           <div key={tier}>
             <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <span>{icon}</span> Tier {tier}: {label}
+              <GameIcon name={icon} size={14} /> Tier {tier}: {label}
             </h3>
             {availableRecipes.length === 0 ? (
               <p className="text-slate-600 text-xs mb-4">Requires fabrication buildings and research to unlock.</p>
@@ -305,7 +309,7 @@ export default function CraftingPanel({ state, onStartCrafting, onCancelQueued, 
                           return (
                             <span key={resId} className={`text-[10px] px-1 py-0.5 rounded border ${
                               short ? 'text-red-400 border-red-500/20' : 'text-slate-400 border-white/[0.06]'
-                            }`}>{short ? '⚠ ' : ''}{resId.replace(/_/g, ' ')} {have}/{qty}</span>
+                            }`}>{short && <GameIcon name="warning" size={10} className="mr-0.5" />}{resId.replace(/_/g, ' ')} {have}/{qty}</span>
                           );
                         })}
                         <span className="text-slate-600 text-[10px]">→</span>
@@ -354,7 +358,7 @@ export default function CraftingPanel({ state, onStartCrafting, onCancelQueued, 
                     <div key={recipe.id} className="relative p-3 rounded-lg bg-white/[0.01] border border-dashed border-white/[0.08] opacity-70">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-slate-400 text-xs">{recipe.icon} {recipe.name}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20">🔒 research</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20"><GameIcon name="lock" size={13} className="mr-1" />research</span>
                       </div>
                       <p className="text-[10px] text-slate-500 mt-1">
                         Makes {recipe.outputQuantity}× {recipe.outputId.replace(/_/g, ' ')}. Unlocks with{' '}

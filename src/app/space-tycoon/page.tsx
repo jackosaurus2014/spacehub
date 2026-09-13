@@ -28,6 +28,12 @@ import GlobalEffectsLayer from '@/components/game/GlobalEffectsLayer'; // Wave V
 import { mapPing } from '@/lib/game/map-ping'; // Wave V7 — order-ack beacon event bus
 import { hapticAck } from '@/lib/game/haptics'; // Wave V7 — order-ack haptic tap
 import { getGameDensity, type GameDensity } from '@/lib/game/density'; // Wave V8 — density mode
+// Graphics review 2026-09-12 item 5 — bridge mode (site chrome collapses to
+// one plate so the map stage gets the height back). Pure helpers.
+import {
+  readBridgePreference, writeBridgePreference, shouldShowBridgeHint, markBridgeHintSeen,
+  bridgeKeyAction, applyBridgeAction, BRIDGE_TOGGLE_KEY, BRIDGE_LAYOUT_EVENT,
+} from '@/lib/game/bridge-mode';
 import GameIcon from '@/components/game/GameIcon';
 import HoloTip, { Concept } from '@/components/game/HoloTip';
 import type { IconName } from '@/lib/game/icons';
@@ -622,7 +628,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                           {active && <span className="text-purple-400 text-xs animate-pulse motion-reduce:animate-none">◉</span>}
                           {locked && <span className="text-slate-600"><GameIcon name="lock" size={12} /></span>}
                           {!locked && disp.doctrineLocked && <span className="text-amber-400"><GameIcon name="balance" size={12} /></span>}
-                          {canStart && !disp.doctrineLocked && <span className="text-purple-400 text-xs">▶</span>}
+                          {canStart && !disp.doctrineLocked && <GameIcon name="play" size={12} className="text-purple-400" />}
                           {unlockedCantAfford && <span className="text-amber-400/70 text-xs">◎</span>}
                           <span className={`text-xs font-medium ${
                             completed ? 'text-green-300' :
@@ -1017,6 +1023,59 @@ export default function SpaceTycoonPage() {
   // which GameStyles.tsx's CSS custom properties key off of.
   const [density, setDensityState] = useState<GameDensity>('comfortable');
   useEffect(() => { setDensityState(getGameDensity()); }, []);
+  // Graphics review 2026-09-12 item 5 — bridge mode. `data-bridge` goes on
+  // the shell (below) AND on <html>, because the site chrome it hides is
+  // mounted by the root layout, outside this tree. GameStyles.tsx carries the
+  // `:root[data-bridge="on"] [data-site-chrome] { display: none }` rule and is
+  // only mounted with the game shell, so the chrome can only vanish inside
+  // the game route; the effect's cleanup strips the attribute on unmount.
+  const [bridge, setBridge] = useState(false);
+  const [bridgeHint, setBridgeHint] = useState(false);
+  useEffect(() => {
+    const storage = typeof localStorage !== 'undefined' ? localStorage : null;
+    setBridge(readBridgePreference(storage));
+    setBridgeHint(shouldShowBridgeHint(storage));
+  }, []);
+  const setBridgeMode = useCallback((next: boolean) => {
+    const storage = typeof localStorage !== 'undefined' ? localStorage : null;
+    setBridge(next);
+    writeBridgePreference(storage, next);
+    setBridgeHint(false);
+    markBridgeHintSeen(storage);
+  }, []);
+  const inGame = !!state;
+  useEffect(() => {
+    if (!inGame) return;
+    document.documentElement.setAttribute('data-bridge', bridge ? 'on' : 'off');
+    // The map measures its own height from its top edge to the viewport
+    // bottom (MapCommandCenter); hiding ~90px of chrome above it moves that
+    // edge without any resize event, so tell it to re-measure.
+    window.dispatchEvent(new Event(BRIDGE_LAYOUT_EVENT));
+    return () => { document.documentElement.removeAttribute('data-bridge'); };
+  }, [inGame, bridge]);
+  // `F` toggles, Escape exits (lowest-priority Escape on the page: a modal's
+  // own Escape, the panel overlay's Escape-to-map, and anything that already
+  // called preventDefault all win — see bridgeKeyAction).
+  const bridgeOverlayOpen = inGame && desktopStage && tab !== 'map';
+  useEffect(() => {
+    if (!inGame) return;
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      const inTextField = !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
+      const action = bridgeKeyAction(e, {
+        bridge,
+        inTextField,
+        modalOpen: !!document.querySelector('[aria-modal="true"]'),
+        overlayOpen: bridgeOverlayOpen,
+      });
+      if (!action) return;
+      e.preventDefault();
+      playSound('click');
+      setBridgeMode(applyBridgeAction(bridge, action));
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [inGame, bridge, bridgeOverlayOpen, setBridgeMode]);
   const [showMenu, setShowMenu] = useState(false);
   // Cloud save offer (2026-09-09): fetched once per mount for signed-in
   // players; offered when there is no local save or the cloud copy is newer.
@@ -1796,7 +1855,7 @@ export default function SpaceTycoonPage() {
               id: generateId(),
               date: prev.gameDate,
               type: 'milestone' as const,
-              title: `🥇 Victory: ${v.name}`,
+              title: `Victory: ${v.name}`,
               description: `Title earned: "${v.title}". Permanent bonus applied — it now shows on your leaderboard row.`,
             })),
             ...prev.eventLog,
@@ -1837,7 +1896,7 @@ export default function SpaceTycoonPage() {
               id: generateId(),
               date: prev.gameDate,
               type: 'milestone' as const,
-              title: `📋 Contract Complete: ${cDef.name}`,
+              title: `Contract Complete: ${cDef.name}`,
               description: `Reward: ${formatMoney(cDef.reward.money || 0)} + ${boost.label}`,
             }, ...prev.eventLog].slice(0, 50),
           };
@@ -2443,7 +2502,7 @@ export default function SpaceTycoonPage() {
           ...prev,
           surveyProbes: probes,
           asteroidIntel: { ...(prev.asteroidIntel || {}), [asteroidId]: { ...intel, surveyedAtMs: Date.now(), via: 'probe' as const } },
-          eventLog: [{ id: generateId(), date: prev.gameDate, type: 'random_event' as const, title: `🔭 Probe surveyed ${rock.name}`, description: `Grade ${intel.grade.toFixed(2)}, reserve ${intel.reserve.toLocaleString()} units, rubble risk ${(intel.risk * 100).toFixed(0)}%.` }, ...prev.eventLog].slice(0, 50),
+          eventLog: [{ id: generateId(), date: prev.gameDate, type: 'random_event' as const, title: `Probe surveyed ${rock.name}`, description: `Grade ${intel.grade.toFixed(2)}, reserve ${intel.reserve.toLocaleString()} units, rubble risk ${(intel.risk * 100).toFixed(0)}%.` }, ...prev.eventLog].slice(0, 50),
         };
       });
     });
@@ -2684,7 +2743,7 @@ export default function SpaceTycoonPage() {
   const dailyBonusWants = !!dailyBonusProbe?.claimable && !dailyBonusDone && !isEarlyOnboarding(state);
 
   return (
-    <div className="min-h-screen bg-space-900 flex flex-col relative hud-scanlines bezel-shell" data-density={density}>
+    <div className="min-h-screen bg-space-900 flex flex-col relative hud-scanlines bezel-shell" data-density={density} data-bridge={bridge ? 'on' : 'off'}>
       {/* Subtle starfield background */}
       <Image
         src="/game/bg-starfield.webp"
@@ -2778,7 +2837,22 @@ export default function SpaceTycoonPage() {
           (raised when idle, pressed when active). Purely a paint change —
           no padding, height or spacing was altered, so the row occupies
           exactly the pixels it did before. */}
-      <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1 game-tab-bar bezel-selector">
+      <div className="relative bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1 game-tab-bar bezel-selector">
+        {/* Bridge mode (graphics review item 5): with the site chrome hidden
+            this row is the only plate above the stage, so it carries the
+            way back to the site — a logo/back link folded in ahead of the
+            hubs. Hidden when bridge is off (the site nav is there instead). */}
+        {bridge && (
+          <Link
+            href="/"
+            className="bridge-plate shrink-0 inline-flex items-center gap-1.5 min-h-[44px] px-2 mr-1 rounded-lg border border-white/[0.08] text-[11px] font-hud font-semibold text-[var(--ink-2)] hover:text-[var(--ink)] hover:bg-white/[0.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ember)]"
+            title="Back to SpaceNexus"
+          >
+            <Image src="/spacenexus-logo.png" alt="" width={160} height={80} className="h-4 w-auto opacity-90" />
+            <span className="sr-only">SpaceNexus home</span>
+            <span className="hidden lg:inline" aria-hidden="true">SpaceNexus</span>
+          </Link>
+        )}
         <HubBar {...hubNavProps} />
 
         <div className="flex-1" />
@@ -2787,6 +2861,20 @@ export default function SpaceTycoonPage() {
             carries the same gap the tab bar used between these buttons, so
             spacing is unchanged. */}
         <div className="bezel-utility flex items-center gap-0.5 sm:gap-1 shrink-0">
+        <button
+          type="button"
+          onClick={() => { playSound('click'); setBridgeMode(!bridge); }}
+          aria-pressed={bridge}
+          aria-keyshortcuts={BRIDGE_TOGGLE_KEY}
+          title={bridge
+            ? `Exit bridge mode (${BRIDGE_TOGGLE_KEY} or Escape) — bring the site navigation back`
+            : `Bridge mode (${BRIDGE_TOGGLE_KEY}) — hide the site navigation so the map fills the screen`}
+          className={`px-1.5 sm:px-2 py-1 inline-flex items-center gap-1 text-[10px] transition-colors whitespace-nowrap shrink-0 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ember)] ${
+            bridge ? 'text-cyan-300 bg-cyan-500/10' : 'text-slate-500 hover:text-cyan-400'
+          }`}
+        >
+          <GameIcon name={bridge ? 'bridge-exit' : 'bridge'} size={14} /><span className="hidden sm:inline"> Bridge</span>
+        </button>
         <button
           onClick={handleRestartTutorial}
           className="px-1.5 sm:px-2 py-1 text-[10px] text-slate-500 hover:text-cyan-400 transition-colors whitespace-nowrap shrink-0"
@@ -2830,6 +2918,27 @@ export default function SpaceTycoonPage() {
           <GameIcon name="quit" size={14} /> Quit
         </button>
         </div>
+        {/* One-time discovery chip for bridge mode. Text, not colour, carries
+            the message; dismissed by its own button, by pressing F, or by
+            the Bridge switch above (all three mark it seen). */}
+        {bridgeHint && !bridge && (
+          <div
+            data-bridge-hint=""
+            role="status"
+            className="hud-frame absolute right-2 top-full mt-1 z-40 inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-[#050510]/95 backdrop-blur-sm px-2.5 py-1 text-[11px] text-slate-200 animate-reveal-up"
+          >
+            <GameIcon name="bridge" size={13} />
+            <span>Press <kbd className="px-1 rounded border border-white/15 bg-white/[0.06] font-mono text-[11px] text-white">{BRIDGE_TOGGLE_KEY}</kbd> for bridge mode — the map fills the screen</span>
+            <button
+              type="button"
+              onClick={() => { setBridgeHint(false); markBridgeHintSeen(typeof localStorage !== 'undefined' ? localStorage : null); }}
+              className="w-8 h-8 -mr-1 flex items-center justify-center rounded text-slate-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+              aria-label="Dismiss bridge mode hint"
+            >
+              <GameIcon name="close" size={12} />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Six-hub consolidation: the active hub's sub-view row. Locked

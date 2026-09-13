@@ -139,7 +139,7 @@ export default function LocationDetailConsole({ state, locationId, onNavigate }:
     : undefined;
   const zoneName = zoneSlug ? ZONE_MAP.get(zoneSlug)?.name || zoneSlug : '';
   // Rim tint by standing — ALWAYS paired with the glyph + wording below, never
-  // the only carrier (governor ♛ / stakeholder ◆, matching the map's labels).
+  // the only carrier (governor crown / stakeholder diamond, matching the map's labels).
   const rimColor = standing ? (standing.isGovernor ? '#f59e0b' : '#22d3ee') : null;
 
   const slots = vitals.slots;
@@ -314,7 +314,7 @@ export default function LocationDetailConsole({ state, locationId, onNavigate }:
         {standing && (
           <div className="absolute right-2 top-2 text-[10px] px-1.5 py-0.5 rounded border"
                style={{ color: rimColor || undefined, borderColor: `${rimColor}55` }}>
-            <span aria-hidden="true">{standing.isGovernor ? '♛' : '◆'}</span>{' '}
+            <GameIcon name={standing.isGovernor ? 'crown' : 'diamond'} size={12} />{' '}
             {standing.isGovernor ? 'Governor' : 'Stakeholder'} · {zoneName}
           </div>
         )}

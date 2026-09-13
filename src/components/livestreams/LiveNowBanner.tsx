@@ -94,6 +94,7 @@ export default function LiveNowBanner() {
     <div
       role="status"
       aria-live="polite"
+      data-site-chrome="live-banner"
       className="w-full border-b border-white/10 text-white"
       style={{
         backgroundColor: '#0a0000',

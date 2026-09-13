@@ -14,6 +14,7 @@ import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import { getDeliveryCapStatus } from '@/lib/game/delivery-contracts';
 import HoloTip, { Concept } from './HoloTip';
 import Image from 'next/image';
+import GameIcon from './GameIcon';
 
 /** "2h 05m" style formatter for the cap-reset countdown. */
 function formatMsShort(ms: number): string {
@@ -274,7 +275,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
       {/* Competitive Milestones */}
       <div>
         <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3">
-          🏆 Competitive Milestones
+          <GameIcon name="trophy" size={13} className="mr-1" />Competitive Milestones
         </h3>
         <div className="space-y-1.5" role="list" aria-label="Competitive milestones">
           {MILESTONES.map(m => {
@@ -298,7 +299,7 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
                 <div className="text-right">
                   {claimed ? (
                     <span className={`text-[10px] ${isPlayer ? 'text-green-400' : 'text-red-400/60'}`}>
-                      {isPlayer ? '✓ You' : `🤖 ${claimed}`}
+                      {isPlayer ? '✓ You' : `${claimed}`}
                     </span>
                   ) : (
                     <span className="text-slate-600 text-[10px]">{formatMoney(m.reward)}</span>

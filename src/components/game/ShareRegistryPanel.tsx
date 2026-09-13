@@ -21,6 +21,7 @@ import {
   TAKEOVER_MIN_ACTIVE_CORPS,
   type EquitySnapshot,
 } from '@/lib/game/share-registry';
+import GameIcon from './GameIcon';
 
 interface Listing {
   id: string;
@@ -207,7 +208,7 @@ export default function ShareRegistryPanel({ state }: { state: GameState }) {
             <div>
               <p className="text-slate-500 text-[10px] uppercase">Market valuation</p>
               <p className="text-white font-semibold">{formatMoney(reg.valuation)}</p>
-              <p className="text-[9px] text-slate-600">book × {reg.marketPremium.toFixed(2)} premium</p>
+              <p className="text-[10px] text-slate-600">book × {reg.marketPremium.toFixed(2)} premium</p>
             </div>
             <div>
               <p className="text-slate-500 text-[10px] uppercase">Fair value / share</p>
@@ -235,7 +236,7 @@ export default function ShareRegistryPanel({ state }: { state: GameState }) {
           )}
           {reg.distressMonths > 0 && (
             <p className="text-[11px] text-amber-300">
-              ⚠ Cash-negative {reg.distressMonths} of {DISTRESS_MONTHS_REQUIRED} months — at {DISTRESS_MONTHS_REQUIRED}, a
+              <GameIcon name="warning" size={13} className="mr-1" />Cash-negative {reg.distressMonths} of {DISTRESS_MONTHS_REQUIRED} months — at {DISTRESS_MONTHS_REQUIRED}, a
               10-share tranche auto-auctions at a discount. Restore positive cash to reset the clock.
             </p>
           )}
@@ -412,7 +413,7 @@ export default function ShareRegistryPanel({ state }: { state: GameState }) {
                 Buy diligence report
               </button>
             </div>
-            <p className="text-[9px] text-slate-600">
+            <p className="text-[10px] text-slate-600">
               Escrow price × shares + a burned 2% arbitration fee. Minimum price = fair value + 20%
               control premium. Frontier corporations cannot be targeted; contested targets carry a
               30-day cooldown.
@@ -447,7 +448,7 @@ export default function ShareRegistryPanel({ state }: { state: GameState }) {
                   List at fair value −10%
                 </button>
               </div>
-              <p className="text-[9px] text-slate-600">Real financing with real dilution: sold shares become float a rival can accumulate. 90-day cooldown.</p>
+              <p className="text-[10px] text-slate-600">Real financing with real dilution: sold shares become float a rival can accumulate. 90-day cooldown.</p>
             </div>
             <div className="space-y-1">
               <p className="font-hud text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Dividend policy</p>
@@ -466,7 +467,7 @@ export default function ShareRegistryPanel({ state }: { state: GameState }) {
                   Set policy
                 </button>
               </div>
-              <p className="text-[9px] text-slate-600">Minority holders who decline a tender hold and collect — dividends pay out of each newly published quarterly.</p>
+              <p className="text-[10px] text-slate-600">Minority holders who decline a tender hold and collect — dividends pay out of each newly published quarterly.</p>
             </div>
           </div>
         </div>

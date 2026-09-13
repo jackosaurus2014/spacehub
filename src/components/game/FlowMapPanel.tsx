@@ -82,7 +82,7 @@ function TraderTable({ table, side, onOpenOrderBook }: { table: ResourceTraderTa
               <td className="px-1 py-1 font-mono text-slate-400">{r.rank}</td>
               <td className="px-1 py-1 text-slate-200">
                 {r.companyName}
-                {r.isNpc && <span className="ml-1 text-[9px] uppercase tracking-wider text-slate-500">npc</span>}
+                {r.isNpc && <span className="ml-1 text-[10px] uppercase tracking-wider text-slate-500">npc</span>}
               </td>
               <td className="px-1 py-1 text-right font-mono text-slate-200">{rowText(r)}</td>
               <td className="px-1 py-1 text-right font-mono text-slate-300">{valueText(r)}</td>
@@ -235,7 +235,7 @@ export default function FlowMapPanel({ selectedResource, onOpenOrderBook, onDecl
                       const tollTotal = tolls.reduce((s, z) => s + (z?.tollPaid || 0), 0);
                       return (
                         <tr key={l.laneKey} className="border-t border-white/[0.05]">
-                          <td className="px-1 py-1.5 text-slate-200 whitespace-nowrap">{l.fromName} ↔ {l.toName}</td>
+                          <td className="px-1 py-1.5 text-slate-200 whitespace-nowrap">{l.fromName} to {l.toName}</td>
                           <td className="px-1 py-1.5">
                             <div className="flex items-center gap-2 min-w-[140px]">
                               <div className="flex-1 h-2.5 rounded bg-white/[0.05] overflow-hidden" aria-hidden="true">
@@ -275,10 +275,10 @@ export default function FlowMapPanel({ selectedResource, onOpenOrderBook, onDecl
               <ul className="space-y-1.5">
                 {report.chokepoints.map(c => (
                   <li key={`${c.laneKey}:${c.rule}`} className="text-[11px] text-slate-200 flex flex-wrap items-baseline gap-x-2">
-                    <span className="text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-amber-500/40 text-amber-200">
+                    <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-amber-500/40 text-amber-200">
                       {c.rule === 'volume_p80' ? 'Volume' : 'Concentration'}
                     </span>
-                    <span className="font-semibold">{c.fromName} ↔ {c.toName}</span>
+                    <span className="font-semibold">{c.fromName} to {c.toName}</span>
                     <span className="text-slate-400">{c.detail}</span>
                   </li>
                 ))}

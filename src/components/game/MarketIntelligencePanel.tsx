@@ -1226,7 +1226,7 @@ function NpcForecastTab({ selectedResource, onOpenOrderBook }: { selectedResourc
                       <td className="px-1 py-1.5 text-slate-400 whitespace-nowrap">{formatWindow(it.windowStartIso, it.windowEndIso)}</td>
                       <td className="px-1 py-1.5 text-white whitespace-nowrap">
                         {it.npcName}
-                        {it.source === 'drive' && <span className="ml-1 text-[9px] uppercase tracking-wider text-slate-500">drive</span>}
+                        {it.source === 'drive' && <span className="ml-1 text-[10px] uppercase tracking-wider text-slate-500">drive</span>}
                       </td>
                       <td className="px-1 py-1.5 text-slate-200 whitespace-nowrap">
                         {onOpenOrderBook ? (
@@ -1242,14 +1242,14 @@ function NpcForecastTab({ selectedResource, onOpenOrderBook }: { selectedResourc
                       </td>
                       <td className="px-1 py-1.5 whitespace-nowrap">
                         {/* Side as a literal word — never colour alone. */}
-                        <span className={`text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${it.side === 'buy' ? 'border-emerald-500/40 text-emerald-300' : 'border-red-500/40 text-red-300'}`}>
+                        <span className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${it.side === 'buy' ? 'border-emerald-500/40 text-emerald-300' : 'border-red-500/40 text-red-300'}`}>
                           {it.side === 'buy' ? 'Buys' : 'Sells'}
                         </span>
                       </td>
                       <td className="px-1 py-1.5 text-right font-mono text-slate-200">{it.quantity.toLocaleString()}</td>
                       <td className="px-1 py-1.5 text-right font-mono text-slate-300">{it.priceCap ? formatMoney(it.priceCap) : '—'}</td>
                       <td className="px-1 py-1.5 whitespace-nowrap">
-                        <span className="text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-white/15 text-slate-300">
+                        <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-white/15 text-slate-300">
                           {it.confidence === 'scheduled' ? 'Scheduled' : 'Projected'}
                         </span>
                       </td>

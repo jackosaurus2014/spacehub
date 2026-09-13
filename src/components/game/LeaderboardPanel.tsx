@@ -7,6 +7,8 @@ import { getNPCTitle, isNpcDormant, NPC_SEEDS } from '@/lib/game/npc-companies';
 import { formatMoney } from '@/lib/game/formulas';
 import ShareButton from '@/components/ui/ShareButton';
 import { APP_URL } from '@/lib/constants';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 // Rank 1-3 reuse existing achievement badge art as holo rank medals — escalating
 // wealth-tier badges read naturally as gold/silver/bronze without new art.
@@ -31,11 +33,11 @@ interface LeaderboardEntry {
 
 type SortField = 'netWorth' | 'totalEarned' | 'buildingCount' | 'researchCount';
 
-const SORT_OPTIONS: { field: SortField; label: string; icon: string }[] = [
-  { field: 'netWorth', label: 'Net Worth', icon: '💰' },
-  { field: 'totalEarned', label: 'Total Earned', icon: '📈' },
-  { field: 'buildingCount', label: 'Buildings', icon: '🏗️' },
-  { field: 'researchCount', label: 'Research', icon: '🔬' },
+const SORT_OPTIONS: { field: SortField; label: string; icon: IconName }[] = [
+  { field: 'netWorth', label: 'Net Worth', icon: 'money' },
+  { field: 'totalEarned', label: 'Total Earned', icon: 'trending-up' },
+  { field: 'buildingCount', label: 'Buildings', icon: 'build' },
+  { field: 'researchCount', label: 'Research', icon: 'research' },
 ];
 
 interface LeaderboardPanelProps {
@@ -127,7 +129,7 @@ export default function LeaderboardPanel({ state }: LeaderboardPanelProps) {
               sortBy === opt.field ? 'game-tab-active bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-white/[0.04] text-slate-400 hover:text-white border border-transparent'
             }`}
           >
-            {opt.icon} {opt.label}
+            <GameIcon name={opt.icon} size={13} className="mr-1" />{opt.label}
           </button>
         ))}
       </div>
@@ -198,7 +200,7 @@ export default function LeaderboardPanel({ state }: LeaderboardPanelProps) {
 
       {/* Competition info */}
       <p className="text-slate-600 text-[10px] text-center">
-        NPC companies 🤖 mine resources, research tech, and expand across the solar system alongside you.
+        NPC companies mine resources, research tech, and expand across the solar system alongside you.
         Outperform them to climb the ranks!
       </p>
     </div>

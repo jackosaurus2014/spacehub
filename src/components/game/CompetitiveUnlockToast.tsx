@@ -115,7 +115,7 @@ export default function CompetitiveUnlockToast({ tool, onDismiss, onNavigate }: 
             </h3>
             {/* The posture is a WORD, and the border colour above merely
                 echoes it — greyscale and screen readers lose nothing. */}
-            <span className="text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-white/15 text-slate-300">
+            <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border border-white/15 text-slate-300">
               {tool.posture}
             </span>
           </div>
@@ -124,15 +124,15 @@ export default function CompetitiveUnlockToast({ tool, onDismiss, onNavigate }: 
 
           <dl className="space-y-1.5 mb-3">
             <div>
-              <dt className="text-[9px] uppercase tracking-wider text-slate-500 font-bold">What it costs</dt>
+              <dt className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">What it costs</dt>
               <dd className="text-[11px] text-slate-400 leading-relaxed">{tool.cost}</dd>
             </div>
             <div>
-              <dt className="text-[9px] uppercase tracking-wider text-slate-500 font-bold">When it is worth it</dt>
+              <dt className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">When it is worth it</dt>
               <dd className="text-[11px] text-slate-400 leading-relaxed">{tool.whenRational}</dd>
             </div>
             <div>
-              <dt className="text-[9px] uppercase tracking-wider text-slate-500 font-bold">What the other side can do</dt>
+              <dt className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">What the other side can do</dt>
               <dd className="text-[11px] text-slate-400 leading-relaxed">{tool.counterplay}</dd>
             </div>
           </dl>
@@ -153,7 +153,7 @@ export default function CompetitiveUnlockToast({ tool, onDismiss, onNavigate }: 
               Not now
             </button>
           </div>
-          <p className="text-[9px] text-slate-600 mt-2">
+          <p className="text-[10px] text-slate-600 mt-2">
             Shown once. You are never required to use any of this — solo play stays fully viable.
           </p>
         </div>

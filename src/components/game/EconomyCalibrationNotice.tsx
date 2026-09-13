@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import GameIcon from './GameIcon';
 
 /**
  * Economy calibration notice — clock unification (2026-09-02).
@@ -38,7 +39,7 @@ export default function EconomyCalibrationNotice() {
       className="relative z-20 border-b border-purple-500/30 bg-gradient-to-r from-purple-500/[0.12] via-purple-500/[0.06] to-transparent px-3 sm:px-4 py-2.5"
     >
       <div className="max-w-5xl mx-auto flex items-start sm:items-center gap-3">
-        <span className="text-lg shrink-0" aria-hidden="true">🕰️</span>
+        <GameIcon name="clock" size={18} className="shrink-0" />
         <div className="flex-1 text-xs sm:text-[13px] leading-relaxed text-purple-100">
           <span className="font-bold uppercase tracking-wider text-purple-300 mr-2">
             Economy calibration

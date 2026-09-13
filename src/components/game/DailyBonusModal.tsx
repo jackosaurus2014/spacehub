@@ -5,6 +5,7 @@ import { canClaimBonus, claimDailyBonus, getCurrentStreak, getBonusSchedule } fr
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import { useModalA11y } from './useModalA11y';
+import GameIcon from './GameIcon';
 
 /** What the probe learned. `null` from useDailyBonusProbe means "still
  *  resolving" (or disabled) — the shell treats that as "does not want the
@@ -181,7 +182,7 @@ export default function DailyBonusModal({ probe, onClaim, onClose, corporationTi
             <>
               {/* Header */}
               <div className="text-center mb-5">
-                <span className="text-3xl block mb-2" aria-hidden="true">🎁</span>
+                <GameIcon name="gift" size={30} className="block mb-2" />
                 <h3 id="daily-bonus-title" className="text-xl font-bold text-white">Daily Bonus</h3>
                 <p className="text-slate-400 text-sm mt-1">
                   {streak > 0 ? `${streak}-day streak!` : 'Welcome back!'} Claim your reward.
@@ -215,10 +216,10 @@ export default function DailyBonusModal({ probe, onClaim, onClose, corporationTi
                       </p>
                       <span className="sr-only">{isPast ? ' (claimed)' : isToday ? ' (today)' : ''}</span>
                       {isPast && (
-                        <span className="absolute -top-1 -right-1 text-[10px]" aria-hidden="true">✅</span>
+                        <GameIcon name="check" size={12} className="absolute -top-1 -right-1 text-[10px]" />
                       )}
                       {isToday && (
-                        <span className="absolute -top-1 -right-1 text-[10px] animate-pulse motion-reduce:animate-none" aria-hidden="true">⭐</span>
+                        <GameIcon name="star" size={12} className="absolute -top-1 -right-1 text-[10px] animate-pulse motion-reduce:animate-none" />
                       )}
                     </div>
                   );
@@ -245,7 +246,7 @@ export default function DailyBonusModal({ probe, onClaim, onClose, corporationTi
           ) : (
             /* Claimed state */
             <div className="text-center py-4" role="status" aria-live="polite">
-              <span className="text-5xl block mb-3" aria-hidden="true">💰</span>
+              <GameIcon name="money" size={48} className="block mb-3" />
               <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300 mb-1">
                 +{formatMoney(claimedAmount)}
               </h3>

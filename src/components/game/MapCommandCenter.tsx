@@ -71,8 +71,40 @@ import {
   type HotkeyEntry,
 } from '@/lib/game/map-hotkeys';
 import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
+// Graphics review 2026-09-12 item 5: the shell owns Lanes/Ships/World so the
+// phone icon strip and the renderers' desktop columns drive one state.
+import { DEFAULT_MAP_LAYERS, toggleMapLayer, type MapLayerVisibility, type MapLayerKey } from '@/lib/game/map-layers';
+import { useWorldState } from '@/hooks/useWorldState';
+import { BRIDGE_LAYOUT_EVENT } from '@/lib/game/bridge-mode';
 
 type Layer = 'solar' | 'galactic';
+
+/** One 44px icon key of the phone map strip. Pressed state is a fill PLUS
+ *  an underline bar (shape, not colour alone); the accessible name is the
+ *  full label since the key shows only its glyph. */
+function StripButton({ icon, label, pressed, onClick, disabled, controls, expanded }: {
+  icon: IconName; label: string; pressed: boolean; onClick: () => void; disabled?: boolean; controls?: string; expanded?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={pressed}
+      aria-label={label}
+      aria-controls={controls}
+      aria-expanded={expanded}
+      title={label}
+      disabled={disabled}
+      className={`relative min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0 border-l first:border-l-0 border-white/[0.08] transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed ${
+        pressed ? 'bg-cyan-500/20 text-cyan-200' : 'text-slate-400'
+      }`}
+    >
+      <GameIcon name={icon} size={18} />
+      {pressed && <span className="absolute bottom-1 h-0.5 w-4 rounded bg-current" aria-hidden="true" />}
+    </button>
+  );
+}
 
 // ── 3D renderer gating (4X W7) ──────────────────────────────────────────────
 // The WebGL map is the DEFAULT on capable desktops; the 2D canvas remains the
@@ -204,7 +236,7 @@ export default function MapCommandCenter({
         const max = lanes[0]?.dispatches || 0;
         const map: Record<string, { v: number; n: number }> = {};
         for (const l of lanes) if (l.dispatches > 0) map[l.laneKey] = { v: max > 0 ? l.dispatches / max : 0, n: l.dispatches };
-        setLaneVolumes({ map, top: lanes.slice(0, 4).map(l => `${l.fromName}↔${l.toName} ${Math.round(l.dispatches)}`), windowDays: d?.windowDays || 7 });
+        setLaneVolumes({ map, top: lanes.slice(0, 4).map(l => `${l.fromName} to ${l.toName} ${Math.round(l.dispatches)}`), windowDays: d?.windowDays || 7 });
       })
       .catch(() => { if (!cancelled) setLaneVolumes({ map: {}, top: [], windowDays: 7 }); });
     return () => { cancelled = true; };
@@ -222,6 +254,16 @@ export default function MapCommandCenter({
   }, []);
   // A panel overlay covering the map must not leave a floating arc behind it.
   useEffect(() => { if (covered) setRadial(null); }, [covered]);
+
+  // Item 5 — Lanes / Ships / World visibility, owned here and handed to
+  // whichever solar renderer is mounted (survives a 3D→2D swap). The phone
+  // icon strip below and the renderers' own desktop columns toggle it.
+  const [layers, setLayers] = useState<MapLayerVisibility>(DEFAULT_MAP_LAYERS);
+  const toggleLayer = useCallback((key: MapLayerKey) => {
+    playSound('click');
+    setLayers(prev => toggleMapLayer(prev, key));
+  }, []);
+  const { available: worldAvailable } = useWorldState();
 
   // Wave V4 — map mode ("Stellaris lens"). Pure recolor/re-badge of existing
   // data via map-modes.ts, consumed by BOTH renderers. Keyboard: `M` cycles.
@@ -324,11 +366,15 @@ export default function MapCommandCenter({
     measure();
     window.addEventListener('resize', measure);
     window.visualViewport?.addEventListener('resize', measure);
+    // Bridge mode (item 5) hides ~90px of site chrome above the stage: the
+    // top edge moves but nothing resizes, so the shell announces it.
+    window.addEventListener(BRIDGE_LAYOUT_EVENT, measure);
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
     if (rootRef.current) ro?.observe(rootRef.current);
     return () => {
       window.removeEventListener('resize', measure);
       window.visualViewport?.removeEventListener('resize', measure);
+      window.removeEventListener(BRIDGE_LAYOUT_EVENT, measure);
       ro?.disconnect();
     };
   }, []);
@@ -570,6 +616,8 @@ export default function MapCommandCenter({
             onZoomTierChange={setZoomTier}
             laneVolumes={showVolume ? laneVolumes?.map : null}
             onContextLost={handleContextLost}
+            layers={layers}
+            onToggleLayer={toggleLayer}
           />
         ) : (
           <SolarSystemCanvas
@@ -583,6 +631,8 @@ export default function MapCommandCenter({
             alwaysLabels={labelsAlways}
             onZoomTierChange={setZoomTier}
             laneVolumes={showVolume ? laneVolumes?.map : null}
+            layers={layers}
+            onToggleLayer={toggleLayer}
           />
         )
       ) : (
@@ -595,11 +645,58 @@ export default function MapCommandCenter({
       )}
 
       {/* Order Queue HUD — top-left */}
-      <OrderQueueHUD state={state} onSelect={handleOrderQueueSelect} onOpenTab={onNavigateTab} className="absolute top-2 left-2 z-20 max-w-[calc(100%-1rem)]" />
+      <OrderQueueHUD state={state} onSelect={handleOrderQueueSelect} onOpenTab={onNavigateTab} className="absolute top-14 md:top-2 left-2 z-20 max-w-[calc(100%-1rem)]" />
 
-      {/* Layer toggle — top-center */}
+      {/* Item 5 — PHONE icon strip (<768px): the layer toggle, mode strip,
+          zoom/labels/volume row and the renderers' Lanes/Ships/World column
+          collapse into ONE horizontally-scrollable row of 44px icon keys, so
+          the 2D system underneath is actually visible. The active lens and
+          zoom tier are still stated in text on the status line beneath it.
+          Desktop keeps the three rows below (hidden md:flex). */}
+      <div className="md:hidden absolute top-2 inset-x-2 z-20 flex flex-col items-center gap-1 pointer-events-none">
+        <div
+          className="hud-frame pointer-events-auto flex max-w-full overflow-x-auto rounded-xl border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm"
+          role="toolbar"
+          aria-label="Map controls"
+        >
+          <StripButton icon="sun" label="Solar system layer" pressed={layer === 'solar'} onClick={() => { playSound('click'); setLayer('solar'); setSelection(null); setRadial(null); setDetail(null); }} />
+          <StripButton icon="interstellar" label="Galactic layer" pressed={layer === 'galactic'} onClick={() => { playSound('click'); setLayer('galactic'); setSelection(null); setRadial(null); setDetail(null); }} />
+          {layer === 'solar' && (
+            <>
+              <StripButton
+                icon={MAP_MODE_MAP.get(mapMode)?.icon ?? 'map'}
+                label={`Map lens: ${MAP_MODE_MAP.get(mapMode)?.label ?? mapMode}. Tap to cycle lenses`}
+                pressed={mapMode !== 'standard'}
+                onClick={() => setMode(cycleMapMode(mapMode, 1))}
+              />
+              <StripButton icon="label" label={labelsAlways ? 'Labels: all, at every zoom' : 'Labels: by zoom level'} pressed={labelsAlways} onClick={toggleLabelsAlways} />
+              <StripButton icon="cargo-truck" label="Lane volume layer (last 7 days)" pressed={showVolume} onClick={() => { playSound('click'); setShowVolume(v => !v); }} />
+              <StripButton icon="route" label="Shipping lanes" pressed={layers.lanes} onClick={() => toggleLayer('lanes')} />
+              <StripButton icon="fleet" label="Your ships" pressed={layers.ships} onClick={() => toggleLayer('ships')} />
+              <StripButton icon="globe" label={worldAvailable ? "Other corporations' colony claims" : 'World layer — sign in to see the live world'} pressed={layers.world && worldAvailable} disabled={!worldAvailable} onClick={() => toggleLayer('world')} />
+            </>
+          )}
+          <StripButton icon="activity" label="Galactic activity feed" pressed={showActivity} expanded={showActivity} controls="map-activity-feed-popover" onClick={() => { playSound('click'); setShowActivity(v => !v); }} />
+          {spatialUnlocked && (
+            <StripButton icon="megastructures" label="Spatial strategy overlay" pressed={showSpatial} expanded={showSpatial} controls="map-spatial-strategy-popover" onClick={() => { playSound('click'); setShowSpatial(v => !v); }} />
+          )}
+        </div>
+        {layer === 'solar' && (
+          <p className="pointer-events-auto hud-frame rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm px-2.5 py-1 text-[10px] text-slate-300 max-w-full text-center" role="status" aria-live="polite">
+            <span className="text-cyan-300 font-semibold">{MAP_MODE_MAP.get(mapMode)?.label}</span> lens · Zoom: <span className="text-cyan-300 font-semibold">{MAP_ZOOM_TIER_LABEL[zoomTier]}</span>
+            {mapMode !== 'standard' && <> — {MAP_MODE_MAP.get(mapMode)?.legend}</>}
+            {showVolume && (
+              <> · {!laneVolumes ? 'Loading lane volume…'
+                : laneVolumes.top.length === 0 ? `No freight in ${laneVolumes.windowDays}d`
+                : `Busiest: ${laneVolumes.top.join(' · ')}`}</>
+            )}
+          </p>
+        )}
+      </div>
+
+      {/* Layer toggle — top-center (desktop/tablet) */}
       <div
-        className="hud-frame absolute top-2 left-1/2 -translate-x-1/2 z-20 flex rounded-xl border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm overflow-hidden"
+        className="hud-frame absolute top-2 left-1/2 -translate-x-1/2 z-20 hidden md:flex rounded-xl border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm overflow-hidden"
         role="group"
         aria-label="Map layer"
       >
@@ -611,7 +708,7 @@ export default function MapCommandCenter({
             layer === 'solar' ? 'bg-cyan-500/20 text-cyan-200' : 'text-slate-400 hover:text-white'
           }`}
         >
-          ☉ Solar System
+          <GameIcon name="sun" size={13} className="mr-1" />Solar System
         </button>
         <button
           type="button"
@@ -621,7 +718,7 @@ export default function MapCommandCenter({
             layer === 'galactic' ? 'bg-indigo-500/20 text-indigo-200' : 'text-slate-400 hover:text-white'
           }`}
         >
-          ✴ Galactic
+          <GameIcon name="interstellar" size={13} className="mr-1" />Galactic
         </button>
         {THREE_D_ENABLED && capable3D === true && layer === 'solar' && (
           <button
@@ -646,7 +743,7 @@ export default function MapCommandCenter({
             showActivity ? 'bg-purple-500/20 text-purple-200' : 'text-slate-400 hover:text-white'
           }`}
         >
-          📡 Activity
+          <GameIcon name="activity" size={13} className="mr-1" />Activity
         </button>
         {spatialUnlocked && (
           <button
@@ -659,7 +756,7 @@ export default function MapCommandCenter({
               showSpatial ? 'bg-amber-500/20 text-amber-200' : 'text-slate-400 hover:text-white'
             }`}
           >
-            ✦ Spatial
+            <GameIcon name="megastructures" size={13} className="mr-1" />Spatial
           </button>
         )}
       </div>
@@ -670,7 +767,7 @@ export default function MapCommandCenter({
           the SOLAR renderers only, so the strip hides on the galactic layer.
           44px targets, horizontally scrollable on phones. */}
       {layer === 'solar' && (
-        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 max-w-[94vw]">
+        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-20 hidden md:flex flex-col items-center gap-1 max-w-[94vw]">
           <div
             className="hud-frame flex rounded-xl border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm overflow-x-auto max-w-full"
             role="radiogroup"
@@ -779,7 +876,7 @@ export default function MapCommandCenter({
           <span className="hud-corner-br" aria-hidden="true" />
           <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.06]">
             <span className="text-[11px] font-hud font-bold text-white flex items-center gap-1.5">
-              <span aria-hidden="true">📡</span> Galactic Activity
+              <GameIcon name="activity" size={13} /> Galactic Activity
             </span>
             <button
               type="button"
@@ -805,7 +902,7 @@ export default function MapCommandCenter({
           <span className="hud-corner-br" aria-hidden="true" />
           <div className="sticky top-0 flex items-center justify-between px-3 py-2 border-b border-white/[0.06] bg-[#050510]/95 backdrop-blur-md z-10">
             <span className="text-[11px] font-hud font-bold text-white flex items-center gap-1.5">
-              <span aria-hidden="true">✦</span> Spatial Strategy
+              <GameIcon name="megastructures" size={13} /> Spatial Strategy
             </span>
             <button
               type="button"
@@ -874,7 +971,7 @@ export default function MapCommandCenter({
                       <kbd className="shrink-0 w-6 h-6 flex items-center justify-center rounded border border-white/15 bg-white/[0.06] font-mono text-[11px] text-white">
                         {entry.digit}
                       </kbd>
-                      <span aria-hidden="true" className="shrink-0">{layer === 'solar' ? (locked ? '🔒' : '🔓') : '✴'}</span>
+                      <GameIcon name={layer === 'solar' ? (locked ? 'lock' : 'unlock') : 'interstellar'} size={12} className="shrink-0 text-slate-400" />
                       <span className="truncate">{entry.name}</span>
                       <span className="sr-only">
                         {locked ? ', locked' : ''}{isSelected ? ', currently selected' : ''}. Press {describeBinding(entry)}.
@@ -893,7 +990,7 @@ export default function MapCommandCenter({
           title={`Jump to a map body by number key. 1-9 and 0 select the ten bodies of the active bank${hotkeyBanks > 1 ? `; ${BANK_CYCLE_KEY} pages between the ${hotkeyBanks} banks` : ''}.`}
           className="hud-frame min-h-[36px] px-3 rounded-xl border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm text-[10px] font-semibold text-slate-300 hover:text-white flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-400"
         >
-          <span aria-hidden="true">⌨</span>
+          <GameIcon name="keyboard" size={13} />
           <span>Jump <span className="font-mono text-cyan-300">1</span>–<span className="font-mono text-cyan-300">0</span></span>
           {hotkeyBanks > 1 && <span className="text-slate-500">bank {hotkeyBank + 1}/{hotkeyBanks}</span>}
           <span aria-hidden="true" className={`text-slate-500 transition-transform ${jumpOpen ? '' : 'rotate-180'}`}>▾</span>

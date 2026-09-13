@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import GameIcon from './GameIcon';
 import {
   WORLD_EPOCH,
   WORLD_RESET_AT,
@@ -58,7 +59,7 @@ export default function WorldResetNotice() {
       className={`relative z-20 border-b ${tone.border} bg-gradient-to-r ${tone.bg} to-transparent px-3 sm:px-4 py-2.5`}
     >
       <div className="max-w-5xl mx-auto flex items-start sm:items-center gap-3">
-        <span className="text-lg shrink-0" aria-hidden="true">{pending ? '🌍' : '🚀'}</span>
+        <GameIcon name={pending ? 'globe' : 'fleet'} size={18} className="shrink-0" />
         <div className={`flex-1 text-xs sm:text-[13px] leading-relaxed ${tone.body}`}>
           {pending ? (
             <>

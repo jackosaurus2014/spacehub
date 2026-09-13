@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import GameIcon from './GameIcon';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -176,7 +177,7 @@ export default function AllianceTreasuryPanel() {
             <p className="font-hud text-amber-300/70 text-[10px] font-bold uppercase tracking-wider mb-1">Alliance Treasury</p>
             <p className="game-number text-amber-300 text-2xl font-bold">{formatMoney(treasury)}</p>
           </div>
-          <span className="text-3xl">🏦</span>
+          <GameIcon name="bank" size={30} />
         </div>
 
         {/* Deposit Section */}
@@ -204,7 +205,7 @@ export default function AllianceTreasuryPanel() {
       {/* Level Gate Warning */}
       {levelGated && (
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 flex items-center gap-2">
-          <span className="text-lg">🔒</span>
+          <GameIcon name="lock" size={18} />
           <div>
             <p className="font-hud text-amber-300 text-xs font-semibold">Alliance Level 8 Required</p>
             <p className="text-slate-500 text-[10px]">
@@ -236,7 +237,7 @@ export default function AllianceTreasuryPanel() {
         <>
           {activePerks.length === 0 ? (
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
-              <span className="text-2xl block mb-2">✨</span>
+              <GameIcon name="sparkle" size={24} className="block mb-2" />
               <p className="text-slate-400 text-xs">No active perks.</p>
               <p className="text-slate-600 text-[10px] mt-1">Activate perks from the Shop tab to boost your alliance.</p>
             </div>
@@ -310,7 +311,7 @@ export default function AllianceTreasuryPanel() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-[10px]">
                   <span className={`game-number ${treasury >= perk.treasuryCost ? 'text-amber-300' : 'text-red-400'}`}>
-                    {treasury >= perk.treasuryCost ? '' : '⚠ '}{formatMoney(perk.treasuryCost)}
+                    {treasury < perk.treasuryCost && <GameIcon name="warning" size={10} className="mr-0.5" />}{formatMoney(perk.treasuryCost)}
                   </span>
                   <span className="text-slate-600">|</span>
                   <span className="text-slate-500">{perk.durationHours}h</span>
@@ -345,7 +346,7 @@ export default function AllianceTreasuryPanel() {
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
           <h3 className="font-hud text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span>📜</span> Transaction History
+            <GameIcon name="scroll" size={14} /> Transaction History
           </h3>
           {recentLogs.length === 0 ? (
             <p className="text-slate-500 text-xs text-center py-4">No transactions yet.</p>
@@ -365,9 +366,7 @@ export default function AllianceTreasuryPanel() {
                     className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/[0.02] transition-colors border-b border-white/[0.04] last:border-0"
                   >
                     <div role="cell" className="flex items-center gap-2">
-                      <span className="text-sm">
-                        {log.type === 'treasury_deposit' ? '📥' : log.type === 'perk_activated' ? '✨' : '📤'}
-                      </span>
+                      <GameIcon name={log.type === 'treasury_deposit' ? 'arrow-down' : log.type === 'perk_activated' ? 'sparkle' : 'arrow-up'} size={14} />
                       <div>
                         <p className="text-white text-xs">{log.title}</p>
                         <p className="text-slate-600 text-[10px]">

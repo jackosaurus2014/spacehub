@@ -11,7 +11,7 @@ export default async function LiveRail() {
   const rocket = next?.rocket ? next.rocket.replace(/ Block 5$/, '') : null;
   const site = next?.location ? next.location.split(',')[0] : null;
   return (
-    <div className="w-full border-b border-white/[0.06] bg-[#0B0A09] text-[12px] leading-none" role="region" aria-label="Next launch">
+    <div className="w-full border-b border-white/[0.06] bg-[#0B0A09] text-[12px] leading-none" role="region" aria-label="Next launch" data-site-chrome="launch-rail">
       <div className="container mx-auto px-4 h-8 flex items-center gap-2 overflow-hidden whitespace-nowrap">
         <span className="relative flex h-2 w-2 flex-shrink-0" aria-hidden="true">
           <span className={`absolute inline-flex h-full w-full rounded-full ${next ? 'bg-[#56F000] opacity-75 animate-ping motion-reduce:animate-none' : 'bg-slate-600'}`} />

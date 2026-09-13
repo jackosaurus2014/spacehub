@@ -161,7 +161,7 @@ export default function MissionCalendarPanel({ state }: Props) {
           setMyAllianceCharter({
             id: json.charter.id,
             name: json.charter.def?.name || 'Season Charter',
-            icon: json.charter.def?.icon || '🤝',
+            icon: json.charter.def?.icon || '',
             endsAtMs: json.charter.endsAt,
           });
         } else {

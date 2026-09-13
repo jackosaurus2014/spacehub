@@ -12,6 +12,7 @@ import {
   activityRequirementsMet,
 } from '@/lib/game/mini-activities';
 import type { MiniActivityReward } from '@/lib/game/mini-activities';
+import GameIcon from './GameIcon';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -182,7 +183,7 @@ export default function MiniActivitiesWidget({ state, onExecute }: MiniActivitie
         style={{ borderBottom: isCollapsed ? 'none' : '1px solid var(--border-subtle, rgba(255,255,255,0.06))' }}
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm">🎯</span>
+          <GameIcon name="target" size={14} />
           <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary, #e5e7eb)' }}>
             Quick Activities
           </span>

@@ -56,6 +56,7 @@ import {
   SOL_POSITION,
   type SystemIdentity,
 } from '@/lib/game/galactic-map';
+import GameIcon from './GameIcon';
 
 /** Self-contained reduced-motion flag — this view has no parent-supplied one
  *  (unlike SolarMap3D/SolarSystemCanvas, which track it for orbit/pulse
@@ -310,7 +311,7 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
   const expeditions = (state.expeditions || []).filter(e => ACTIVE_PHASES.includes(e.phase));
 
   // In-transit expeditions (outbound/returning) — position along a curved
-  // Sol↔system arc (W9: bezier progress arcs, parity with the solar map).
+  // Sol-to-system arc (W9: bezier progress arcs, parity with the solar map).
   const transitMarkers = expeditions
     .filter(e => e.phase === 'outbound' || e.phase === 'returning')
     .map(e => {
@@ -619,9 +620,9 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
                 lives in the button's aria-label above) */}
             {colony && colony.localResources.length > 0 && (
               <span className="flex items-center gap-0.5 text-[10px] bg-black/50 px-1 py-0.5 rounded backdrop-blur-sm" aria-hidden="true">
-                <span>🏙️</span>
+                <GameIcon name="city" size={14} />
                 {colony.localResources.slice(0, 4).map(r => (
-                  <span key={r}>{RESOURCE_MAP.get(r as ResourceId)?.icon || '▪'}</span>
+                  <span key={r}>{RESOURCE_MAP.get(r as ResourceId)?.icon || '·'}</span>
                 ))}
                 {inbound > 0 && <span className="ml-0.5 text-amber-300 font-mono">→{inbound}</span>}
               </span>
@@ -634,7 +635,7 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
           These are informational markers, so they open the DOSSIER directly
           rather than the command arc (no anchor passed). */}
       {transitMarkers.map(m => {
-        const icon = m.shipDef?.icon || '🌠';
+        const icon = m.shipDef?.icon;
         const monthsLeft = m.progress ? Math.max(0, Math.round(m.progress.monthsRemaining)) : null;
         const label = m.progress ? `${m.progress.phaseLabel} · ${m.progress.systemName} · ${monthsLeft} months remaining` : m.expedition.targetSystemId;
         return (
@@ -647,7 +648,7 @@ export default function GalacticMapView({ state, selectedSystemId, onSelectSyste
             className="absolute flex items-center justify-center min-w-[28px] min-h-[28px] w-7 h-7 rounded-full bg-[#050510]/90 border border-cyan-400/50 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 hover:scale-125 transition-transform"
             style={{ left: `${m.pos.x * 100}%`, top: `${m.pos.y * 100}%`, transform: 'translate(-50%, -50%)', boxShadow: '0 0 10px 2px rgba(34,211,238,0.35)' }}
           >
-            <span aria-hidden="true">{icon}</span>
+            {icon ? <span aria-hidden="true">{icon}</span> : <GameIcon name="comet" size={14} />}
             {monthsLeft !== null && (
               <span
                 className="absolute top-full mt-0.5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-cyan-200 bg-black/60 px-1 rounded whitespace-nowrap pointer-events-none"

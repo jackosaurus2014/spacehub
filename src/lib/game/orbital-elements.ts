@@ -76,10 +76,19 @@ export function sceneOrbitRadius(aAU: number): number {
   return 10 * Math.log(1 + aAU / MERCURY_AU);
 }
 
+/** Visual body radius clamp (scene units). Graphics review 2026-09-12
+ *  item 9 raised the floor and the curve: Earth 0.66 → 0.81 (16.5 px in
+ *  diameter at the old 1366×900 default view instead of 13), Jupiter 1.09 →
+ *  1.31, Enceladus/Ceres 0.20 → 0.28. Moon orbits and pip rings are
+ *  multiples of the parent's radius, so clusters spread proportionally and
+ *  the LEO/GEO pip separation stays above the 0.3 pick-sphere radius. */
+export const BODY_RADIUS_MIN = 0.28;
+export const BODY_RADIUS_MAX = 1.8;
+
 /** Log-scaled visual body radius from real km. */
 export function sceneBodyRadius(radiusKm: number): number {
-  const r = 0.32 + 0.42 * Math.log10(Math.max(1, radiusKm) / 1000);
-  return Math.min(1.5, Math.max(0.2, r));
+  const r = 0.42 + 0.48 * Math.log10(Math.max(1, radiusKm) / 1000);
+  return Math.min(BODY_RADIUS_MAX, Math.max(BODY_RADIUS_MIN, r));
 }
 
 /** Heliocentric display period in seconds: Earth ≈ 600 s (10 min). */

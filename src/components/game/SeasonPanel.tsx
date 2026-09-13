@@ -20,6 +20,8 @@ import { SEASONAL_ASSETS, getActiveHoliday } from '@/lib/game/assets';
 // imports above.
 import { getSuperCycleForSeason, getThemeHeadlines } from '@/lib/game/economic-seasons';
 import type { SeasonChronicleRecord, PrestigeTitle } from '@/lib/game/season-chronicle';
+import GameIcon from './GameIcon';
+import type { IconName } from '@/lib/game/icons';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -995,7 +997,9 @@ function LeaderboardTab({
 
 // ─── History Tab (Live-Service Wave LS7 — Season Chronicle) ─────────────────
 
-const CHRONICLE_RANK_ICON: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
+/** Rank 1-3 wear the medal glyph; the rank NUMBER stays alongside (never
+ *  a medal colour alone). */
+const CHRONICLE_RANK_ICON: Record<number, IconName> = { 1: 'medal', 2: 'medal', 3: 'medal' };
 
 function HistoryTab({ data }: { data: ChronicleData | null }) {
   if (!data) {
@@ -1054,7 +1058,7 @@ function HistoryTab({ data }: { data: ChronicleData | null }) {
               <div className="space-y-1 mb-2">
                 {record.topPlacements.map(p => (
                   <div key={p.rank} className="flex items-center gap-2 text-[11px]">
-                    <span className="w-5">{CHRONICLE_RANK_ICON[p.rank] || p.rank}</span>
+                    <span className="w-8 inline-flex items-center gap-0.5">{CHRONICLE_RANK_ICON[p.rank] && <GameIcon name={CHRONICLE_RANK_ICON[p.rank]} size={12} />}{p.rank}</span>
                     <span className="flex-1 text-slate-300 truncate">{p.companyName}</span>
                     <span className="text-slate-500">{Math.round(p.totalScore).toLocaleString()} pts</span>
                   </div>
