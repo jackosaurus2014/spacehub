@@ -18,6 +18,8 @@ import { CONTRACT_POOL, STATIC_CONTRACT_TIER_MULT, applyContractReward } from '.
 import { REPUTATION_THRESHOLDS } from '../reputation';
 import { MAX_CONTRACT_PAY_BONUS, getWorkforceBonuses } from '../workforce';
 import { WORLD_EVENT_CONTRACT_PAYOUT_BONUS_CAP } from '../server-effects';
+// CC-2 (Pass 11): the Earth Operations Center's +10% contract term joins the bound.
+import { maxHqBonus } from '../headquarters';
 import { getNewGameState } from '../save-load';
 import type { GameState } from '../types';
 
@@ -39,7 +41,8 @@ describe('maxima are derived from the game\'s own constants', () => {
 
   it('the product is tier x reputation x (1 + negotiator cap) x (1 + world-event cap)', () => {
     expect(MAX_STATIC_CONTRACT_PAYOUT_MULT).toBeCloseTo(
-      MAX_STATIC_CONTRACT_TIER_MULT * MAX_REPUTATION_CONTRACT_MULT * (1 + MAX_CONTRACT_PAY_BONUS) * (1 + WORLD_EVENT_CONTRACT_PAYOUT_BONUS_CAP),
+      MAX_STATIC_CONTRACT_TIER_MULT * MAX_REPUTATION_CONTRACT_MULT * (1 + MAX_CONTRACT_PAY_BONUS) * (1 + WORLD_EVENT_CONTRACT_PAYOUT_BONUS_CAP)
+      * maxHqBonus('contractPayoutMult'), // CC-2: Earth HQ +10%
       9,
     );
   });
@@ -79,7 +82,7 @@ describe('computeContractCredit', () => {
     const ladderTop = computeContractCredit([FIRST], []);
     expect(tier1.headroomCredit).toBe(maxStaticContractPayout(def, 1));
     expect(tier1.headroomCredit).toBeLessThan(ladderTop.headroomCredit);
-    expect(tier1.headroomCredit).toBe(Math.round(def.reward.money * MAX_REPUTATION_CONTRACT_MULT * (1 + MAX_CONTRACT_PAY_BONUS) * (1 + WORLD_EVENT_CONTRACT_PAYOUT_BONUS_CAP)));
+    expect(tier1.headroomCredit).toBe(Math.round(def.reward.money * MAX_REPUTATION_CONTRACT_MULT * (1 + MAX_CONTRACT_PAY_BONUS) * (1 + WORLD_EVENT_CONTRACT_PAYOUT_BONUS_CAP) * maxHqBonus('contractPayoutMult')));
     // A bogus factor above the ladder is clamped to the ladder top, never beyond.
     expect(maxStaticContractPayout(def, 999)).toBe(maxStaticContractPayout(def));
   });

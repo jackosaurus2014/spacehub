@@ -27,6 +27,9 @@ import {
   POOL_SIZE,
 } from '../delivery-contracts';
 import type { DeliveryContract } from '../delivery-contracts';
+// CC-2 (Pass 11): a new corporation is seated on Earth — deliveries pay +10% there.
+import { getHqBonuses } from '../headquarters';
+const EARTH_CONTRACT = getHqBonuses('earth_ops').contractPayoutMult;
 import { RESOURCE_MAP, type ResourceId } from '../resources';
 
 function baseState(overrides: Partial<GameState> = {}): GameState {
@@ -212,7 +215,7 @@ describe('delivery-contracts — canDeliver / deliverContract', () => {
       money: 100,
     });
     const after = deliverContract(s, c.id, 5000);
-    expect(after.money).toBe(100 + c.paymentMoney);
+    expect(after.money).toBe(100 + Math.round(c.paymentMoney * EARTH_CONTRACT));
     expect(after.resources[c.resourceId]).toBe(50);
     expect(after.activeDeliveries).toHaveLength(0);
     expect(after.completedDeliveries).toHaveLength(1);
@@ -260,7 +263,7 @@ describe('delivery-contracts — canDeliver / deliverContract', () => {
       active.id,
       5000,
     );
-    expect(delivered.money).toBe(active.paymentMoney);
+    expect(delivered.money).toBe(Math.round(active.paymentMoney * EARTH_CONTRACT));
   });
 
   it('deliverContract shifts faction reputation on complete', () => {
@@ -481,7 +484,7 @@ describe('delivery-contracts — cap enforcement in deliverContract', () => {
     });
     const after = deliverContract(s, c.id, now);
     expect(after.activeDeliveries).toHaveLength(0);
-    expect(after.money).toBe(100 + c.paymentMoney);
+    expect(after.money).toBe(100 + Math.round(c.paymentMoney * EARTH_CONTRACT));
   });
 
   it('does not block accepting new contracts or normal deadline processing while at cap', () => {

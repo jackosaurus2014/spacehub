@@ -31,10 +31,11 @@ describe('HQ_STAGES registry', () => {
     }
   });
 
-  it('only Earth has plates today; the rest are comingSoon', () => {
+  it('only Earth has plates today; CC-2 opens LEO and Luna, the rest stay comingSoon', () => {
     expect(hqStagesWithPlates().map(s => s.id)).toEqual(['earth_ops']);
     for (const s of HQ_STAGES) {
-      if (s.id !== 'earth_ops') expect(s.comingSoon).toBe(true);
+      if (s.id === 'earth_ops' || s.id === 'orbital_deck' || s.id === 'lunar_hq') expect(!!s.comingSoon).toBe(false);
+      else expect(s.comingSoon).toBe(true);
     }
     expect(HQ_STAGE_MAP.get('earth_ops')?.plates?.dir).toBe('/game/hq/earth/');
   });

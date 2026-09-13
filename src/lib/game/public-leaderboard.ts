@@ -13,7 +13,10 @@
 import prisma from '@/lib/db';
 import { notQaProfile } from '@/lib/qa-accounts';
 import { CORPORATION_TIERS } from './corporation-tiers';
-import { hqLabelForLocationId } from './headquarters';
+import { hqLabelForLocationId, hqSeatLabel, hqStageForLocationId } from './headquarters';
+// CC-2: the held seat ("LEO seat 7") is public; the relocation project is
+// NOT — loadPublicHqSeatIndex reads only the current stage's seat.
+import { loadPublicHqSeatIndex } from './hq-relocation-server';
 
 export interface PublicLeaderboardEntry {
   id: string;
@@ -26,6 +29,8 @@ export interface PublicLeaderboardEntry {
   allianceName: string | null;
   /** CC-1: headquarters seat label, e.g. "Earth Operations Center". */
   hqLabel: string;
+  /** CC-2: the held seat, e.g. "LEO seat 7" (null on Earth). */
+  hqSeat: string | null;
 }
 
 export interface PublicMilestone {
@@ -52,6 +57,8 @@ export interface PublicCorp {
   foundedAt: Date;
   /** CC-1: headquarters seat label ("HQ: Earth Operations Center"). */
   hqLabel: string;
+  /** CC-2: the held seat, e.g. "LEO seat 7" (null on Earth). */
+  hqSeat: string | null;
 }
 
 /**
@@ -92,6 +99,7 @@ export async function getPublicLeaderboard(limit = 50): Promise<PublicLeaderboar
     },
   });
 
+  const seatIndex = await loadPublicHqSeatIndex(profiles.map(p => ({ id: p.id, hqLocationId: p.hqLocationId })));
   return profiles.map((p, i) => ({
     id: p.id,
     rank: i + 1,
@@ -102,6 +110,7 @@ export async function getPublicLeaderboard(limit = 50): Promise<PublicLeaderboar
     allianceTag: p.allianceMembership?.alliance?.tag ?? null,
     allianceName: p.allianceMembership?.alliance?.name ?? null,
     hqLabel: hqLabelForLocationId(p.hqLocationId),
+    hqSeat: hqSeatLabel(hqStageForLocationId(p.hqLocationId).id, seatIndex.get(p.id)),
   }));
 }
 
@@ -207,6 +216,7 @@ export async function getPublicCorp(id: string): Promise<PublicCorp | null> {
   const rankAbove = await prisma.gameProfile.count({
     where: { netWorth: { gt: profile.netWorth } },
   });
+  const seatIndex = await loadPublicHqSeatIndex([{ id: profile.id, hqLocationId: profile.hqLocationId }]);
 
   return {
     id: profile.id,
@@ -226,5 +236,6 @@ export async function getPublicCorp(id: string): Promise<PublicCorp | null> {
     allianceRole: profile.allianceMembership?.role ?? null,
     foundedAt: profile.createdAt,
     hqLabel: hqLabelForLocationId(profile.hqLocationId),
+    hqSeat: hqSeatLabel(hqStageForLocationId(profile.hqLocationId).id, seatIndex.get(profile.id)),
   };
 }

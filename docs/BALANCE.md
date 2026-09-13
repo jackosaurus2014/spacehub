@@ -3707,3 +3707,154 @@ for the new stickers: `mark-upgrades.test.ts`, `sim-month-grid.test.ts`,
 - Saves mid-chain on v2 step 5 (the old contract step) resume at
   `first_trade` rather than re-walking the contract step — a one-time
   cohort of a few players; documented in `onboarding.ts`.
+
+## Pass 11 — HQ relocation (2026-09-13)
+
+### What shipped (CC-2 of `docs/COMMAND_CENTER_DESIGN_2026-09-13.md`)
+
+The headquarters is now a **place a corporation can move**, on the
+campaign loop, with the four founder calls of design §8 built in: ±10–15%
+seat bonuses, ONE HQ per corporation, rivals' seat public, the relocation
+project hidden until it completes. Earth → LEO (Orbital Command Deck) and
+Earth/LEO → Luna (Lunar Gateway HQ) are open; Mars, Jovian/Saturnian,
+deep-space and interstellar stay `comingSoon`, but every table below is
+generic so CC-3/CC-4 add rows, not mechanisms.
+
+Files: `headquarters.ts` (numbers + bonus profiles), `hq-relocation.ts`
+(pure requirements / quotes / transitions / mail), `hq-relocation-server.ts`
+(HqSeat / HqRelocation rows, completion + renewal passes),
+`/api/space-tycoon/hq` (ladder) and `/api/space-tycoon/hq/relocate`
+(server-authoritative start), `HqRelocationConsole.tsx` on the Bridge,
+`BridgeStage.tsx` chip ladder, `order-queue.ts` Outliner row,
+`public-leaderboard.ts` seat label, the `hq_relocated` timeline entry,
+`scripts/sim-hq-relocation.ts`.
+
+### Requirements (design §3)
+
+| Target | Tier | Station at the destination (complete) | Seat | Project |
+|---|---|---|---|---|
+| Earth Operations Center | — | — | none (unlimited) | 1 game-month, 25% of the departing stage's fee |
+| Orbital Command Deck (LEO) | 2 | Orbital Outpost in LEO (`space_station_small`) | LEO pool, 24 seats | 2 game-months (12 h real) |
+| Lunar Gateway HQ | 3 | Lunar Gateway (`space_station_lunar`) or Lunar Habitat (`habitat_lunar`) | Lunar pool, 12 seats | 4 game-months (24 h real) |
+| Mars / Jovian / Saturnian / deep space / interstellar | 4–7 | defined (`HQ_STAGE_REQUIREMENTS`) | 8 / 4 / 4 / 2 / — | 6 / 8 / 8 / 12 / 18 months — unreachable until CC-3/4 |
+
+Server-side the tier comes from `tierFromProfileScalars` and the station
+from the ServerAsset registry — never from the client's claim. QA
+profiles (`notQaProfile`) are refused with `qa_profile`.
+
+### Costs (money sinks — every dollar below is burned)
+
+| Item | LEO deck | Lunar HQ | Notes |
+|---|---|---|---|
+| Relocation project | **$45M** | $220M | `HQ_RELOCATION`; debited at start (`hq_relocation` ledger reason) |
+| Seat, empty pool | **$25M** | $150M | `HQ_SEAT_BASE_PRICE`; posted price = base × (1 + 2·(occupied/total)^1.5) → the last seat lists at 3× base; burned like a slot-auction win (`hq_seat_lease`) |
+| Upkeep | **$1.0M / mo** | $3.5M / mo | `HQ_UPKEEP_MONTHLY`, charged flat on the corporate-overhead line (tick §1b, P&L, sim harness) — rent is rent, it does not ride the maintenance-reduction stack |
+| Return to Earth | 25% of the departing fee, 1 month | | `HQ_RETURN_COST_FRACTION` |
+
+Seat lease: 6 game-months, **auto-renews while the HQ stays** (or its
+pending project targets that stage), released to the pool at the posted
+price the moment the corporation is seated elsewhere. The seat's own
+clearing-price tape lives on the row (`priceHistory`). Two corporations
+racing for the last seat: the `updateMany … holderProfileId: null` guard
+inside the relocation transaction makes the loser roll back cleanly
+(`no_seat`, 409).
+
+### Bonus profiles (design §8 call 1: ±10–15%, "where is my business")
+
+| Seat | Terms | Wired at (client) | Wired at (server) |
+|---|---|---|---|
+| Earth | hiring cost −10%, contract payout +10% | `labor-market.ts getHireCostWithWageIndex`; `contracts.ts applyContractReward`, `delivery-contracts.ts completeDelivery` | `contract-credit.ts MAX_STATIC_CONTRACT_PAYOUT_MULT` (headroom bound) |
+| LEO deck | launch-service revenue +12%, satellite-ops operating cost −10% | `game-engine.ts §1` (revenue product + `hqOpsCostMult`), `economy-report.ts` (same two terms), `DashboardPanel` Key Metrics | `resource-plausibility.ts computeServerMonthlyGrossDetailed({ hqStage })` — the sync settles a due relocation for the profile and passes its persisted seat, so the ceiling and the client agree within one sync (the 2026-09-12 lesson) |
+| Lunar HQ | mining-order fuel −12% per leg, belt rock Δv surcharge −10% | `mining-orders.ts quoteLeg(…, logistics)` via `planMiningOrder({ hqLogistics })` from `MiningPanel` / `page.tsx` | the same pure planner in `/assets/mining` with `hqMiningLogisticsForLocationId(profile.hqLocationId)` |
+| Mars … interstellar | colony throughput +12% / Martian contracts +10%; outer extraction +12% / science +10%; expedition returns +15% | defined in `HQ_BONUS_TABLE`, **unwired** until their stage opens | — |
+
+"Satellite ops" is derived, not listed: every service a `satellite`-category
+building enables (`HQ_SATELLITE_SERVICE_IDS`).
+
+Baseline note: every corporation is seated on Earth today, so the Earth
+terms are a live +10% on contract payouts and −10% on signing bonuses for
+everyone — the price of leaving, expressed as the design words it ("Earth
+= cheapest hiring and contract negotiation"). Six golden-number suites
+were updated to read the term from `getHqBonuses('earth_ops')` rather than
+hardcode it.
+
+**Frontier interaction rule.** An HQ revenue bonus never stacks
+multiplicatively with the Frontier ×2.0 on the same term beyond **×2.3**
+(`hqRevenueMultUnderFrontier`): the client engine, the P&L and the server
+ceiling all call it. Today 2.0 × 1.12 = 2.24, so nothing is trimmed; the
+rule binds automatically if either constant grows.
+
+### Sim delta (`scripts/sim-hq-relocation.ts`, 24 game-months, Frontier off)
+
+Established fleets pre-built (no capex in the window), $500M cash, so the
+pair differs ONLY by the move. The first run with LEO at $60M + $40M seat +
+$1.2M/mo upkeep came out **−0.1% / −4.4% / −9.6%** for moves at months
+1 / 6 / 12 — the +12% never paid back inside two years. Tuned the LEO
+COSTS, not the bonus (the ±10–15% band is the founder's call):
+relocation $60M → **$45M**, seat base $40M → **$25M**, upkeep $1.2M →
+**$1.0M/mo**. After tuning:
+
+| corp | move at | seated from | Δ cash @ 24 mo | net/mo stay → move |
+|---|---|---|---|---|
+| launch-heavy (2 small + 2 medium pads, 3 LEO sats, outpost) → LEO | 1 | 3 | **+$33.4M (+6.1%)** | $2.0M → $6.9M |
+| same | 6 | 8 | +$8.9M (+1.6%) | |
+| same | 12 | 14 | −$20.6M (−3.8%) | |
+| mining (6 lunar rigs, habitat) → Luna | 1 | 5 | −$434M (−69.7%) | $2.5M → −$0.9M |
+| same | 6 | 10 | −$417M (−67.0%) | |
+
+Reads as intended: a launch-heavy corporation that moves EARLY clears the
++5–15% target; a late move does not pay within the window (the decision
+has a clock); a building-mining corporation gains nothing on the service
+ledger from Luna — its upside is on the Mining-Order loop, which the
+building-based harness does not model. Measured there directly: a
+Prospector Barge's Inner Belt round trip from Luna bills $4.4M on Earth
+terms vs $3.8M seated on Luna (**−12.4%**); the $3.5M/mo upkeep pays back
+at ≈ 6.4 belt round trips a month, and the $370M up-front is a tier-3
+decision (a tier-3 corporation has earned ≥ $10B).
+
+### Invariants checked
+
+- Meaningful decision: money + time + a finite seat + upkeep against a
+  ±10–15% profile that favours ONE line of business. No dominant move.
+- Supply/demand: seat price rises with occupancy; vacated seats re-list at
+  the pool's posted price; every seat and relocation dollar is burned.
+- Time loop: relocation = campaign; lease = weekly; upkeep = daily.
+- No pay-to-win: nothing here is purchasable for real money.
+- Intelligence: the seated stage and seat number are public (corp page,
+  leaderboard, `hq_relocated` on the diplomacy timeline); the project in
+  flight is not (`loadPublicHqSeatIndex` reads the CURRENT stage's seat
+  only; no public reader selects `HqRelocation`).
+- Server truth: `GameProfile.hqLocationId` is written only by
+  `completeDueHqRelocations` (cron every 5 min + lazily by the sync and
+  the two HQ routes); the sync no longer mirrors the client's value and
+  answers with a `headquarters` block the client adopts.
+
+### Tests
+
+`src/lib/game/__tests__/hq-relocation.test.ts` (21 tests): seat counts /
+posted-price curve / lease term / seat label; cost and time constants
+including the return leg; the §3 requirement table and every
+`checkHqRelocationRequest` refusal; start → not due → due, the charter mail
+posted exactly once across the local flip and the server block;
+`adoptServerHeadquarters` authority and garbage-tolerance; the ±10–15%
+band on every profile; the ×2.3 Frontier cap; tick / P&L / server-ceiling
+parity for a LEO deck (+12% on the launch line, upkeep on the overhead
+line, `hqStage: 'unknown'` bound); Luna neutral on the service ledger;
+Earth hiring −10% and contract +10% with the headroom bound; `quoteLeg`
+fuel / belt-Δv terms; the Outliner row; the CLIENT_APPLIED ledger
+contract; save migration for seat-less and malformed saves.
+`headquarters.test.ts` updated for the opened stages.
+
+### Risks / watch
+
+- The LEO deck's +12% is worth ~$5M/mo to a four-pad corporation; watch
+  whether launch-heavy corporations cluster in LEO and the 24-seat pool
+  fills in the first week (the posted price climbs to $75M at the last
+  seat; if it fills anyway, CC-3's auction comes forward).
+- Upkeep is client-charged (costs are never ceiling-restricted); a
+  hand-edited save could skip it. Cheap to move server-side later — the
+  amount is one table lookup on the persisted seat.
+- The Lunar seat is priced for tier 3. If the Mining-Order loop's fuel
+  share of a mining corporation's P&L turns out small on live telemetry,
+  the Luna terms should broaden to freight legs (cargo-logistics.ts) before
+  the price moves.

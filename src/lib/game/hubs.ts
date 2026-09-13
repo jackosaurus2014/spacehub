@@ -67,6 +67,10 @@ export const HUB_CATALOG: readonly HubDef[] = [
     subViews: [
       { id: 'dashboard', label: 'Dashboard', icon: 'dashboard', tab: 'dashboard' },
       { id: 'pnl', label: 'P&L', icon: 'money', tab: 'reports', subView: 'reports:quarterly' },
+      // CC-2: the Relocate console (HqRelocationConsole.tsx) docks on the
+      // Bridge; this entry scrolls to and focuses it. Third slot — P&L keeps
+      // the review's second-slot promotion.
+      { id: 'hq', label: 'Headquarters', icon: 'dashboard', tab: 'dashboard', subView: 'dashboard:hq' },
       { id: 'log', label: 'Situation Log', icon: 'warning', tab: 'reports', subView: 'reports:log' },
       { id: 'mail', label: 'Mail', icon: 'reports', tab: 'reports', subView: 'reports:mail' },
       { id: 'emergency', label: 'Emergency', icon: 'cal-systemic-crisis', tab: 'reports', subView: 'reports:emergency' },

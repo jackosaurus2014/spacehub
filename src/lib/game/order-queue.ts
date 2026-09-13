@@ -21,6 +21,9 @@ import { resolveIcon, type IconName } from './icons';
 // Mining Phase A (2026-09-12): one row per active Mining Order.
 import { describeMiningOrder } from './mining-orders';
 import { getAsteroid } from './asteroids';
+// CC-2: the headquarters relocation project (campaign loop) as one row.
+import { getHeadquarters, getHqStage, isHqStageId } from './headquarters';
+import { hqProjectProgress } from './hq-relocation';
 
 // Clock unification (2026-09-02): ETAs are quoted on the world calendar
 // (server-time.ts, 6 real hours per game-month) — the shadow "30 ticks x 2 s"
@@ -81,6 +84,28 @@ export function buildOrderQueue(state: GameState): OrderQueueItem[] {
       target: { kind: 'location', id: 'earth' },
       tab: 'research',
     });
+  }
+
+  // CC-2 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md): the headquarters
+  // relocation project — one row, same countdown as construction, clicking
+  // opens the Bridge (dashboard) where the Relocate console lives.
+  {
+    const hq = getHeadquarters(state);
+    const p = hq.project;
+    if (p && isHqStageId(p.targetStage)) {
+      const target = getHqStage(p.targetStage);
+      const prog = hqProjectProgress(p, nowMs);
+      items.push({
+        id: `hq-relocation-${p.targetStage}-${p.startedAtMs}`,
+        icon: 'dashboard',
+        label: `Relocating HQ → ${target.shortLabel}`,
+        sub: `Headquarters · ${target.label}`,
+        pct: prog.pct,
+        etaSeconds: prog.etaSeconds,
+        target: { kind: 'location', id: target.locationId },
+        tab: 'dashboard',
+      });
+    }
   }
 
   for (const s of state.ships || []) {

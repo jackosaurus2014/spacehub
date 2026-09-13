@@ -53,6 +53,9 @@ import {
   scaledBuildingCost,
 } from '../src/lib/game/formulas';
 import { BOOK_VALUE_DEPRECIATION_FACTOR, applyGraduationGlide, GRADUATION_GLIDE_MS, FRONTIER_DURATION_MS, FRONTIER_REVENUE_MULTIPLIER, frontierRevenueMultiplierFor } from '../src/lib/game/frontier';
+// CC-2 / Balance Pass 11 (2026-09-13): the seated HQ's bonus terms and
+// upkeep, applied exactly where game-engine.ts §1/§1b apply them.
+import { HQ_UPKEEP_MONTHLY, getHqBonuses, hqRevenueMultUnderFrontier, isHqSatelliteOpsService, type HqStageId } from '../src/lib/game/headquarters';
 import {
   computePoolAggregates,
   getServiceCategory,
@@ -218,6 +221,15 @@ export interface SimPlayer {
    *  the RUNNER's responsibility (it owns the research schedule). Absent =
    *  no refits (every legacy table byte-identical). */
   refitPlan?: (p: SimPlayer, month: number) => RefitOrder[];
+  /** Balance Pass 11 (CC-2, 2026-09-13): the seated headquarters stage.
+   *  Applies headquarters.ts getHqBonuses where the engine does — LEO deck
+   *  +12% on launch_payload service revenue (under the Frontier stacking
+   *  cap) and −10% on satellite-ops operating cost — and charges the
+   *  stage's HQ_UPKEEP_MONTHLY flat with the overhead line. The runner
+   *  mutates it between months (scripts/sim-hq-relocation.ts charges the
+   *  relocation + seat and flips it when the project completes). Absent /
+   *  'earth_ops' = every legacy table byte-identical. */
+  hqStage?: HqStageId;
   history: MonthRow[];
 }
 
@@ -787,6 +799,9 @@ export function stepMonth(world: SimWorld, month: number): void {
     const glideFrac = glideFractionAtMonth(p.graduationGlide, month);
     // Pass 10: Frontier revenue doubling (1.0 unless the runner opted in).
     const frontierMult = frontierRevenueMultAtMonth(p, month);
+    // Pass 11: the seated HQ's terms (neutral on Earth / when absent).
+    const hqB = getHqBonuses(p.hqStage ?? 'earth_ops');
+    const hqLaunchMult = hqRevenueMultUnderFrontier(hqB.launchRevenueMult, frontierMult);
     let revenue = 0, operating = 0, maintenance = 0;
     const effVals: number[] = [];
     // D4: per-building lines (opt-in) — mirrors build-preview.ts's
@@ -817,8 +832,10 @@ export function stepMonth(world: SimWorld, month: number): void {
         const bucketKey = `${svcId}@${b.locationId}`;
         const pos = saturationCounts.get(bucketKey) || 0;
         saturationCounts.set(bucketKey, pos + 1);
-        operating += sDef.operatingCostPerMonth;
-        if (lines) lineOf(b.instanceId).operating += sDef.operatingCostPerMonth;
+        // Pass 11: LEO deck runs satellite ops 10% cheaper (engine §1 hqOpsCostMult).
+        const svcOperating = sDef.operatingCostPerMonth * (isHqSatelliteOpsService(svcId) ? hqB.satelliteOpsCostMult : 1);
+        operating += svcOperating;
+        if (lines) lineOf(b.instanceId).operating += svcOperating;
         if (sDef.type === 'mining_output') continue; // priced in §5 below (fabrication_output byproduct producers stay on this flat/pool path)
         const cat = getServiceCategory(svcId);
         // Balance Pass 6 (C1): the REAL engine glide blend (frontier.ts) —
@@ -831,6 +848,7 @@ export function stepMonth(world: SimWorld, month: number): void {
         const svcRevenue = sDef.revenuePerMonth
           * rMult
           * frontierMult // Pass 10
+          * (sDef.type === 'launch_payload' ? hqLaunchMult : 1) // Pass 11: LEO deck +12% on launch services
           * serviceSaturationMultiplier(pos)
           * poolMult
           * powerRatio
@@ -1054,7 +1072,8 @@ export function stepMonth(world: SimWorld, month: number): void {
       }
       payroll = Math.round(payroll);
     }
-    const overhead = corporateOverheadMonthly(p.buildings.length);
+    // Pass 11: HQ upkeep rides the overhead line, flat (engine §1b).
+    const overhead = corporateOverheadMonthly(p.buildings.length) + HQ_UPKEEP_MONTHLY[p.hqStage ?? 'earth_ops'];
     // M1/F4: exec comp keys off BOOK net worth now (asset-aware), matching
     // game-engine.ts's §1c. bookNetWorth reads p.money BEFORE this month's
     // grossIn/grossOut settle below — same "up-to-date running cash, current

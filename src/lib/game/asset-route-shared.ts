@@ -48,6 +48,10 @@ export interface AssetProfileRow {
   researchCount: number;
   serviceCount: number;
   locationsUnlocked: number;
+  /** CC-2: the headquarters seat (headquarters.ts locationId) — written only
+   *  by the relocation completion pass; read here so the mining route can
+   *  price a Lunar HQ's logistics bonus from the persisted column. */
+  hqLocationId: string;
 }
 
 export class InsufficientFundsError extends Error {}
@@ -70,6 +74,7 @@ export async function loadAssetProfile(routeKey: string = 'assets'): Promise<{ r
       shipsData: true, activeServicesData: true,
       totalEarned: true, buildingCount: true, researchCount: true,
       serviceCount: true, locationsUnlocked: true,
+      hqLocationId: true,
     },
   });
   if (!profile) {

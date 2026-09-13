@@ -6,6 +6,9 @@ import { completeDueAssets } from '@/lib/game/server-assets';
 // Mining Phase A (2026-09-12): the same 5-minute pass settles due Mining
 // Orders — the only path that creates ore for a synced profile.
 import { completeDueMiningOrders } from '@/lib/game/server-mining';
+// CC-2 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md): the same pass completes
+// due headquarters relocations and renews / releases seat leases.
+import { completeDueHqRelocations, renewHqSeatLeases } from '@/lib/game/hq-relocation-server';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,9 +29,11 @@ export async function POST(request: NextRequest) {
   try {
     const completed = await completeDueAssets(prisma);
     const miningSettled = await completeDueMiningOrders(prisma);
+    const hqRelocated = await completeDueHqRelocations(prisma);
+    const hqSeats = await renewHqSeatLeases(prisma);
     const durationMs = Date.now() - startedAt;
-    logger.info('assets-complete cron completed', { completed, miningSettled, durationMs });
-    return NextResponse.json({ success: true, completed, miningSettled, durationMs });
+    logger.info('assets-complete cron completed', { completed, miningSettled, hqRelocated, hqSeats, durationMs });
+    return NextResponse.json({ success: true, completed, miningSettled, hqRelocated, hqSeats, durationMs });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     logger.error('assets-complete cron failed', { error: msg });

@@ -7655,6 +7655,69 @@ model OrbitalSlotLease {
   @@index([status, expiresAt])
 }
 
+// ─── Space Tycoon CC-2: Headquarters seats + relocation projects ─────────────
+// docs/COMMAND_CENTER_DESIGN_2026-09-13.md §2-3 (Jay 2026-09-13: ONE HQ per
+// corporation, ±10-15% seat bonuses, rivals' HQ public, the relocation
+// project hidden until complete). Plain profileId strings, no GameProfile
+// relations (the Wave M6 precedent) — purely additive; the assets-complete
+// cron reconciles orphans (a deleted holder's seat returns to the pool).
+//
+// HqSeat: one row per finite anchorage per HQ stage per world epoch
+// (headquarters.ts HQ_SEAT_COUNTS — 24 LEO, 12 Lunar in Epoch 2). Claimed
+// first-come at a posted price that rises with occupancy (hq-relocation.ts
+// postedSeatPrice), BURNED like a slot-auction win; 6-game-month term that
+// auto-renews while the HQ stays and is released to the pool when the
+// corporation moves. `priceHistory` is the seat's own clearing-price tape.
+model HqSeat {
+  id              String    @id @default(cuid())
+  epoch           Int
+  stage           String
+  index           Int
+  holderProfileId String?
+  leaseUntil      DateTime?
+  // Price the current holder paid (0 while vacant).
+  leasePrice      Float     @default(0)
+  // The last clearing price this seat changed hands at — what the pool
+  // re-lists it at when vacated (design §2 "sells it at market").
+  lastPrice       Float     @default(0)
+  // [{ at: ISO, price, event: 'claimed' | 'released' | 'renewed' }]
+  priceHistory    Json      @default("[]")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([epoch, stage, index])
+  @@index([stage, holderProfileId])
+  @@index([holderProfileId])
+  @@index([leaseUntil])
+}
+
+// A relocation project on the campaign loop (2 game-months to LEO, 4 to
+// Luna — headquarters.ts HQ_RELOCATION). Money is debited at start through
+// the One-Wallet ledger ('hq_relocation' + 'hq_seat_lease'); completion by
+// the assets-complete cron (also run lazily by the sync) flips status,
+// writes GameProfile.hqLocationId, releases the seats the corporation held
+// elsewhere and posts the public 'hq_relocated' PlayerActivity. Pending rows
+// are never selected by any public reader.
+model HqRelocation {
+  id          String    @id @default(cuid())
+  profileId   String
+  fromStage   String
+  toStage     String
+  seatId      String?
+  cost        Float     @default(0)
+  seatPrice   Float     @default(0)
+  status      String    @default("pending") // pending, complete
+  startedAt   DateTime  @default(now())
+  completesAt DateTime
+  completedAt DateTime?
+  ledgerSeq   Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([profileId, status])
+  @@index([status, completesAt])
+}
+
 // ─── Space Tycoon Wave M6: Share Registry & Hostile Takeovers ───────────────
 // docs/MEANINGFUL_2026-08.md §M6 / §3.2 O1. Server-side truth for every
 // corporation's capital structure. Deliberately uses PLAIN profileId strings

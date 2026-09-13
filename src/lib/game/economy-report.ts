@@ -26,6 +26,10 @@ import { getResearchBonuses } from './research-tree';
 import { DEFAULT_LEGACY, getLegacyBonuses } from './legacy-system';
 import { getActiveEraModifiers } from './corporate-eras';
 import { getTierBonuses } from './corporation-tiers';
+// CC-2 (Pass 11): the seated HQ's bonus terms — mirrored from game-engine.ts
+// §1/§1b so the P&L never disagrees with the tick.
+import { getHqBonusesForState, hqRevenueMultUnderFrontier, isHqSatelliteOpsService } from './headquarters';
+import { hqUpkeepMonthly } from './hq-relocation';
 import { getMegastructureBonuses } from './personal-megastructures';
 import { getReputationBonuses } from './reputation';
 import { getActiveMultipliers } from './random-events';
@@ -238,6 +242,9 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     frontier:      getFrontierRevenueMultiplier(state, now),
     combined: 1,
   };
+  // CC-2 (Pass 11): HQ seat terms, exactly as game-engine.ts §1 applies them.
+  const hqBonuses = getHqBonusesForState(state);
+  const hqLaunchRevenueMult = hqRevenueMultUnderFrontier(hqBonuses.launchRevenueMult, revMult.frontier);
   revMult.combined =
     revMult.workforce * revMult.research * revMult.legacy * revMult.era *
     revMult.corporationTier * revMult.megastructure * revMult.reputation *
@@ -292,7 +299,8 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
       * revMult.combined
       * supplyMult
       * powerRatio
-      * (1 + stationBonus),
+      * (1 + stationBonus)
+      * (def.type === 'launch_payload' ? hqLaunchRevenueMult : 1), // CC-2: LEO deck +12% on launch services
     );
     const realized = Math.round(baseRevenue * saturationMult);
     // Balance Pass 6 (H4): duty-cycle opex scaling for mining_output —
@@ -313,7 +321,8 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
       * (1 - tierBonuses.maintenanceReduction)
       * (megaBonuses.maintenanceMultiplier || 1)
       * repBonuses.maintenanceMultiplier
-      * miningOpexMult,
+      * miningOpexMult
+      * (isHqSatelliteOpsService(svc.definitionId) ? hqBonuses.satelliteOpsCostMult : 1), // CC-2: LEO deck −10% satellite ops
     );
     totalOperatingCost += operatingCost;
 
@@ -395,7 +404,9 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     * (1 - tierBonuses.maintenanceReduction)
     * (megaBonuses.maintenanceMultiplier || 1)
     * repBonuses.maintenanceMultiplier,
-  );
+  )
+    // CC-2 (Pass 11): HQ upkeep rides the overhead line, flat (game-engine.ts §1b).
+    + hqUpkeepMonthly(state);
   const executiveCompensation = Math.round(
     executiveCompensationMonthly(runningNetWorth)
     * eventMultipliers.costMultiplier

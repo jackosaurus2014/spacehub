@@ -41,6 +41,7 @@ import { SHIP_MAP, type MiningOrderMode, type MiningThenAction } from '@/lib/gam
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
 import { getFuelEfficiencyMultiplier, getShipCargoCapacity, isHomeLocation } from '@/lib/game/cargo-logistics';
+import { hqMiningLogisticsForState } from '@/lib/game/headquarters';
 import { formatCountdown, formatMoney } from '@/lib/game/formulas';
 import { ConsolePanel, StatReadout } from './chrome';
 import DataTable, { type DataTableColumn } from '@/components/ui/DataTable';
@@ -121,10 +122,12 @@ export default function MiningPanel({ state, onPlaceOrder, onSurveyProbe, onBuyP
       def: selectedDef, cargoCapacity: capacity, mode, rock: selectedRock, intel: rockIntel,
       fillUnits, thenAction, originId: selectedShip.currentLocation,
       heldOre: selectedShip.heldOre ?? null, hullDamagePct: selectedShip.hullDamagePct,
-      fuelEfficiencyMult: getFuelEfficiencyMultiplier(state), nowMs: Date.now(),
+      fuelEfficiencyMult: getFuelEfficiencyMultiplier(state),
+      hqLogistics: hqMiningLogisticsForState(state), // CC-2: Lunar HQ logistics terms
+      nowMs: Date.now(),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedShip, selectedDef, capacity, mode, selectedRock, rockIntel, fillUnits, thenAction, state.completedResearch]);
+  }, [selectedShip, selectedDef, capacity, mode, selectedRock, rockIntel, fillUnits, thenAction, state.completedResearch, state.headquarters?.stage]);
 
   const canPlace = !!plan?.ok && !!selectedShip && canTakeMiningOrder(selectedShip) && (mode !== 'mine' || parentUnlocked) && (plan.ok ? state.money >= plan.order.fuelCost : false);
 

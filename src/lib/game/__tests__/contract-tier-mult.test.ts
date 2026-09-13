@@ -5,6 +5,9 @@
  * BALANCE.md Pass 5 decade tables, extrapolated above T4).
  */
 import { getNewGameState } from '../save-load';
+// CC-2 (Pass 11): a new corporation is seated on Earth — contracts pay +10% there.
+import { getHqBonuses } from '../headquarters';
+const EARTH_CONTRACT = getHqBonuses('earth_ops').contractPayoutMult;
 import type { GameState } from '../types';
 import {
   applyContractReward,
@@ -38,10 +41,10 @@ describe('static contract tier multiplier (row 9)', () => {
     const t3 = applyContractReward(state({ corporationTier: 3, money: 0, totalEarned: 0 }), reward);
     const t4 = applyContractReward(state({ corporationTier: 4, money: 0, totalEarned: 0 }), reward);
     const t7 = applyContractReward(state({ corporationTier: 7, money: 0, totalEarned: 0 }), reward);
-    expect(t3.money).toBe(1_000_000_000);
-    expect(t4.money).toBe(2_200_000_000);
-    expect(t7.money).toBe(23_400_000_000);
-    expect(t4.totalEarned).toBe(2_200_000_000);
+    expect(t3.money).toBe(Math.round(1_000_000_000 * EARTH_CONTRACT));
+    expect(t4.money).toBe(Math.round(2_200_000_000 * EARTH_CONTRACT));
+    expect(t7.money).toBe(Math.round(23_400_000_000 * EARTH_CONTRACT));
+    expect(t4.totalEarned).toBe(Math.round(2_200_000_000 * EARTH_CONTRACT));
     expect(t4.resources.titanium).toBe(t3.resources.titanium);
   });
 

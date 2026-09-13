@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { TYCOON_EVENTS, trackTycoon, fireOnce } from '@/lib/game/funnel-events';
 import type { GameState } from '@/lib/game/types';
 import { getHeadquarters } from '@/lib/game/headquarters';
+import type { ServerHeadquartersBlock } from '@/lib/game/hq-relocation';
 import {
   queueServerReconciliation,
   queueMoneyCorrection,
@@ -102,6 +103,10 @@ export function useGameSync(
     orbitalSlotOccupancy?: Record<string, { occupiedCount: number; bucket: string }> | null;
     /** Balance Pass 4: this player's active orbital-slot leases (slot-gate). */
     orbitalSlotLeases?: { locationId: string; expiresAtMs: number }[] | null;
+    /** CC-2: the server's headquarters block (seat, stage, the owner's
+     *  pending project) — adopted via hq-relocation.ts
+     *  adoptServerHeadquarters. null = schema lagging (keep the client's). */
+    headquarters?: ServerHeadquartersBlock | null;
   }) => void,
 ): SyncStatus {
   const [status, setStatus] = useState<SyncStatus>({
@@ -255,6 +260,9 @@ export function useGameSync(
         // headquarters seat, mirrored to GameProfile.hqLocationId for the
         // public corp page / leaderboard. Sanitized server-side to a
         // registered headquarters.ts stage.
+        // CC-2: still sent for telemetry / older servers; the server no
+        // longer writes it (GameProfile.hqLocationId is owned by the
+        // relocation completion pass) and answers with `headquarters`.
         hqLocationId: getHeadquarters(state).locationId,
         // One Wallet (audit A1): ack cursor — highest server ledger seq this
         // state has already applied. The server only reconciles/returns
@@ -493,6 +501,9 @@ export function useGameSync(
             // don't collapse it to undefined like the object snapshots above.
             orbitalSlotLeases: Array.isArray(data.orbitalSlotLeases) ? data.orbitalSlotLeases : undefined,
             megaProjectBonuses: data.megaProjectBonuses || undefined,
+            // CC-2: server-authoritative headquarters (object = adopt; null /
+            // absent = the server had nothing to say this sync).
+            headquarters: data.headquarters && typeof data.headquarters === 'object' ? (data.headquarters as ServerHeadquartersBlock) : undefined,
           });
         }
 

@@ -30,6 +30,9 @@ export const DIPLOMACY_ACTIVITY = {
   contract_arbitrated: 'contract_arbitrated',
   pact_signed: 'pact_signed',
   pact_broken: 'pact_broken',
+  // CC-2 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md §8 call 4): a completed
+  // headquarters move is public intelligence on the same timeline.
+  hq_relocated: 'hq_relocated',
 } as const;
 
 export type DiplomacyActivityType = (typeof DIPLOMACY_ACTIVITY)[keyof typeof DIPLOMACY_ACTIVITY];

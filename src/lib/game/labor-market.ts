@@ -37,6 +37,8 @@ import type { WorkerType, WorkforceState, RequiredCrew } from './workforce';
 import { WORKER_TYPES, WORKER_MAP, getHireCost, getRequiredCrew } from './workforce';
 import { BUILDING_MAP, getBuildingDerivedStats } from './buildings';
 import { isInFrontier } from './frontier';
+// CC-2 (Pass 11): the Earth Operations Center hires 10% cheaper.
+import { getHqBonusesForState } from './headquarters';
 import type { GameState } from './types';
 
 export const WAGE_INDEX_MIN = 0.8;
@@ -357,7 +359,8 @@ export function getHireCostWithWageIndex(
   type: WorkerType,
   nowMs: number = Date.now(),
 ): number {
-  return Math.round(getHireCost(type, state, nowMs) * getHireWageIndex(state, type, nowMs));
+  // CC-2: × the seated HQ's hiring-cost term (Earth 0.90, elsewhere 1.0).
+  return Math.round(getHireCost(type, state, nowMs) * getHireWageIndex(state, type, nowMs) * getHqBonusesForState(state).hiringCostMult);
 }
 
 // ─── Balance Pass 9: Frontier PAYROLL shield (docs/BALANCE.md "Pass 9") ─────

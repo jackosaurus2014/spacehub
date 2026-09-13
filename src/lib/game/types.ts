@@ -557,8 +557,21 @@ export interface HeadquartersState {
   locationId: string;
   /** Real-clock ms the corporation moved in (founding for the Earth default). */
   movedAtMs: number;
-  /** CC-2: relocation project in flight (hidden from rivals until complete). */
-  project?: { targetStage: string; startedAtMs: number; completesAtMs: number };
+  /** CC-2: the held seat's 1-based index in the stage's pool (HqSeat row);
+   *  absent on Earth (unlimited) and on pre-CC-2 saves. */
+  seatIndex?: number;
+  /** CC-2: relocation project in flight (hidden from rivals until complete).
+   *  Mirrors the server's HqRelocation row; the client tick flips the stage
+   *  itself at completesAtMs and the next sync confirms it. */
+  project?: {
+    targetStage: string;
+    startedAtMs: number;
+    completesAtMs: number;
+    /** The seat reserved at the target (claimed at start, live on arrival). */
+    seatIndex?: number;
+    /** Server HqRelocation id, when the project was started server-side. */
+    relocationId?: string;
+  };
 }
 
 // ─── Game State ─────────────────────────────────────────────────────────────

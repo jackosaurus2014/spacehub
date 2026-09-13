@@ -65,6 +65,11 @@ import StatusPip, { type PipState } from '@/components/ui/StatusPip';
 import Telemetry from '@/components/ui/Telemetry';
 import GameIcon from '@/components/game/GameIcon';
 import type { IconName } from '@/lib/game/icons';
+// CC-2: the Relocate console docks on the Bridge; HQ seat terms join the
+// at-a-glance financials so Key Metrics agrees with the tick.
+import HqRelocationConsole from '@/components/game/HqRelocationConsole';
+import { getHqBonusesForState, isHqSatelliteOpsService } from '@/lib/game/headquarters';
+import { hqUpkeepMonthly, type ServerHeadquartersBlock } from '@/lib/game/hq-relocation';
 
 /** state.recentHazards[].type → icon (mirrors HazardAlertLayer.tsx's HAZARD_META mapping). */
 const HAZARD_ICON: Record<string, IconName> = {
@@ -578,7 +583,7 @@ const TONE_VAR: Record<IncomeRow['tone'], string> = {
   go: 'var(--go)', crit: 'var(--crit)', caution: 'var(--caution)', signal: 'var(--signal)', violet: 'var(--violet)', ink: 'var(--ink)',
 };
 
-export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate, onSetInsuranceActive, onResolveChapterEpilogue }: { state: GameState; onUpdateCompanyName?: (name: string) => void; onNavigate?: (tab: string) => void; onSetInsuranceActive?: (active: boolean) => void; onResolveChapterEpilogue?: (participationCount: number) => void }) {
+export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate, onSetInsuranceActive, onResolveChapterEpilogue, onHeadquartersUpdate, onLocalRelocation }: { state: GameState; onUpdateCompanyName?: (name: string) => void; onNavigate?: (tab: string) => void; onSetInsuranceActive?: (active: boolean) => void; onResolveChapterEpilogue?: (participationCount: number) => void; onHeadquartersUpdate?: (block: ServerHeadquartersBlock) => void; onLocalRelocation?: (next: GameState['headquarters'], debit: number) => void }) {
   const completedBuildings = state.buildings.filter(b => b.isComplete);
   const inProgress = state.buildings.filter(b => !b.isComplete);
   // W10: rare techs the corp hasn't discovered yet don't count toward the
@@ -599,6 +604,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
     const collectedDemandMults: number[] = [];
     let revenue = 0, opCosts = 0, maintenance = 0;
     let hasPowerDeficit = false;
+    const hqBonuses = getHqBonusesForState(state); // CC-2 seat terms
     for (const svc of state.activeServices) {
       const def = SERVICE_MAP.get(svc.definitionId);
       if (!def) continue;
@@ -618,9 +624,11 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
         * (1 + resBonuses.serviceRevenueBonus)
         * supplyMult
         * powerRatio
+        * (def.type === 'launch_payload' ? hqBonuses.launchRevenueMult : 1) // CC-2
       );
-      opCosts += def.operatingCostPerMonth;
+      opCosts += Math.round(def.operatingCostPerMonth * (isHqSatelliteOpsService(svc.definitionId) ? hqBonuses.satelliteOpsCostMult : 1)); // CC-2
     }
+    opCosts += hqUpkeepMonthly(state); // CC-2: off-Earth seat upkeep
     for (const bld of state.buildings) {
       if (!bld.isComplete) continue;
       const def = BUILDING_MAP.get(bld.definitionId);
@@ -785,6 +793,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName, onNavigate,
       {!newcomer && <WorldStatusCard companyName={state.companyName} />}
       {/* Empire Overview — visual summary at the top */}
       <EmpireOverview state={state} onUpdateCompanyName={onUpdateCompanyName} />
+      {/* CC-2 — Headquarters: the relocation ladder, seats, the project in flight. Newcomer-gated (tier 2 is the first move anyway). */}
+      {!newcomer && <HqRelocationConsole state={state} onHeadquartersUpdate={onHeadquartersUpdate} onLocalRelocation={onLocalRelocation} />}
       {/* HUD-styled at-a-glance viz — revenue breakdown, fleet status, infrastructure mix */}
       <DashboardVizBlock state={state} />
 

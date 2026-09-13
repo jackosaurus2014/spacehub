@@ -39,6 +39,12 @@ import { rollTimedEvent, calculateEventReward, EVENT_TEMPLATES } from './timed-e
 import { getFactionLicenseBonuses } from './factions';
 import { DEFAULT_LEGACY, getLegacyBonuses, checkLegacyMilestones, checkStretchProgress, getLegacyPower, getLegacyDisplayTier, LEGACY_MILESTONE_MAP, accrueLegacyTrackers, sumMinedUnits } from './legacy-system';
 import { checkCorporationTier, getTierBonuses } from './corporation-tiers';
+// CC-2 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md, BALANCE.md Pass 11): the
+// seated headquarters' ±10-15% bonus profile — LEO launch revenue +12% and
+// satellite ops −10% at §1, HQ upkeep at §1b, and the tick's own project
+// completion at the top of processFullTick.
+import { getHqBonusesForState, hqRevenueMultUnderFrontier, isHqSatelliteOpsService } from './headquarters';
+import { applyDueHqProject, hqUpkeepMonthly } from './hq-relocation';
 import { getMegastructureBonuses, checkMegastructureCompletion } from './personal-megastructures';
 import { getReputationBonuses, addReputation } from './reputation';
 import { computeCommanderBonuses, processCommanderMonthTick, processLeaderRetirements, computeCommanderUpkeepMonthly } from './commanders';
@@ -490,6 +496,12 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
   // away-operations.ts, economy-report.ts, ResourceBar.tsx and the server's
   // resource-plausibility.ts ceiling.
   const frontierRevenueMult = getFrontierRevenueMultiplier(state);
+  // CC-2 (Pass 11): the seated HQ's bonus profile. The launch-revenue term
+  // is capped against the Frontier ×2 (hqRevenueMultUnderFrontier — no
+  // stacking beyond ×2.3 on the same term); the server ceiling
+  // (resource-plausibility.ts) applies the identical pair.
+  const hqBonuses = getHqBonusesForState(state);
+  const hqLaunchRevenueMult = hqRevenueMultUnderFrontier(hqBonuses.launchRevenueMult, frontierRevenueMult);
 
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
@@ -645,12 +657,16 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
       * returningCommanderRevMult // LS2: decaying re-entry boost, 1.3x -> 1.0x over 14 days
       * staffingEfficiency        // Row 6: crew shortfall, 0.5-1.0 (0.7 floor in Frontier)
       * frontierRevenueMult      // Pass 10: Frontier x2.0, gliding to 1.0 after graduation
+      * (def.type === 'launch_payload' ? hqLaunchRevenueMult : 1) // CC-2: LEO deck +12% on launch services
       * DEV_REVENUE_MULTIPLIER
     );
     // Specialization maintenance_reduction (§1b) applies to operating costs.
     // Balance Pass 6 (H4): × miningOpexMult — duty-cycle opex scaling for
     // mining_output services on depleted deposits (1.0 for everything else).
-    const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) * miningOpexMult);
+    // CC-2: the LEO deck runs satellite operations 10% cheaper (services a
+    // satellite-category building enables — headquarters.ts derives the set).
+    const hqOpsCostMult = isHqSatelliteOpsService(svc.definitionId) ? hqBonuses.satelliteOpsCostMult : 1;
+    const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) * miningOpexMult * hqOpsCostMult);
     money += revenue - cost;
     totalEarned += revenue;
     totalSpent += cost;
@@ -679,6 +695,16 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
       money -= overhead;
       totalSpent += overhead;
       monthlyCosts += overhead;
+    }
+    // CC-2 (Pass 11): HQ upkeep — a flat monthly sink for an off-Earth seat
+    // (headquarters.ts HQ_UPKEEP_MONTHLY; Earth pays nothing). Deliberately
+    // NOT run through the maintenance-reduction stack: rent is rent. The
+    // P&L (economy-report.ts) folds the same figure into corporateOverhead.
+    const hqUpkeep = Math.round(hqUpkeepMonthly(state) * fraction);
+    if (hqUpkeep > 0) {
+      money -= hqUpkeep;
+      totalSpent += hqUpkeep;
+      monthlyCosts += hqUpkeep;
     }
   }
 
@@ -1759,6 +1785,10 @@ export function processFullTick(state: GameState): GameState {
   // one atomic state update. Idempotent: applyReconciliationToState no-ops
   // unless the reconciliation covers seqs beyond state.serverLedgerAck.
   let workingState = state;
+  // CC-2: a relocation project whose clock has run out moves the
+  // headquarters in (and posts the charter mail) before this tick prices
+  // anything — the same instant the server's completion pass would.
+  workingState = applyDueHqProject(workingState);
   try {
     const rec = consumeServerReconciliation();
     if (rec) {

@@ -51,6 +51,10 @@ import { getWorkforceBonuses, getStaffingEfficiency, STAFFING_FLOOR } from './wo
 import { getMiningRevenueScale } from './mining-pricing';
 import { SUBSIDIARY_DEFS } from './subsidiaries';
 import { frontierRevenueMultiplierUpperBound } from './frontier';
+// CC-2 (Pass 11): the seated HQ's launch-revenue term must be in the
+// ceiling too, or a LEO deck's +12% would read as implausible on sync (the
+// 2026-09-12 Frontier lesson). Same helper, same Frontier cap as the client.
+import { getHqBonuses, hqRevenueMultUnderFrontier, maxHqBonus, DEFAULT_HQ_STAGE, type HqStageId } from './headquarters';
 
 // ─── Tunables ────────────────────────────────────────────────────────────────
 
@@ -318,6 +322,10 @@ export interface ServerMonthlyGrossInputs {
   createdAtMs?: number;
   /** Wall clock for the Frontier bound; defaults to Date.now(). */
   nowMs?: number;
+  /** CC-2: the seated headquarters stage (GameProfile.hqLocationId →
+   *  headquarters.ts). Absent = Earth (neutral launch term). Pass
+   *  'unknown' to take the ladder's largest launch bonus as the bound. */
+  hqStage?: HqStageId | 'unknown';
 }
 
 export interface ServerMonthlyGrossReport {
@@ -328,6 +336,9 @@ export interface ServerMonthlyGrossReport {
   subsidiaries: number;
   /** Pass 10: the Frontier multiplier bound applied to `services`. */
   frontierRevenueMult: number;
+  /** CC-2: the HQ launch-revenue term applied to launch_payload services
+   *  (after the Frontier stacking cap). */
+  hqLaunchRevenueMult: number;
 }
 
 const stationBonusAt = (state: GameState, locationId: string): number => {
@@ -370,6 +381,15 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
     } catch { workforceMult = MAX_WORKFORCE_SERVICE_REVENUE_MULT; }
   }
 
+  // Pass 10: Frontier service-revenue doubling, bounded from createdAt (see
+  // frontier.ts). Without this term every new corporation's doubled income
+  // would be rejected as implausible on sync.
+  const frontierRevenueMult = frontierRevenueMultiplierUpperBound(inputs.createdAtMs, inputs.nowMs ?? Date.now());
+  // CC-2: the seated HQ's launch term under the same Frontier cap the
+  // client applies (headquarters.ts hqRevenueMultUnderFrontier).
+  const hqLaunchRaw = inputs.hqStage === 'unknown' ? maxHqBonus('launchRevenueMult') : getHqBonuses(inputs.hqStage ?? DEFAULT_HQ_STAGE).launchRevenueMult;
+  const hqLaunchRevenueMult = hqRevenueMultUnderFrontier(hqLaunchRaw, frontierRevenueMult);
+
   let services = 0;
   for (const svc of state.activeServices || []) {
     if (!svc || typeof svc.definitionId !== 'string') continue;
@@ -405,12 +425,9 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
       base = Math.max(base, valued * scale * MAX_BUILDING_MINING_CLIENT_MULT);
     }
     services += base * instMult * upgradeBoost * researchMult * workforceMult
-      * (1 + stationBonusAt(state, svc.locationId)) * MAX_SERVICE_REVENUE_CLIENT_MULT;
+      * (1 + stationBonusAt(state, svc.locationId)) * MAX_SERVICE_REVENUE_CLIENT_MULT
+      * (def.type === 'launch_payload' ? hqLaunchRevenueMult : 1); // CC-2: LEO deck +12% on launch services
   }
-  // Pass 10: Frontier service-revenue doubling, bounded from createdAt (see
-  // frontier.ts). Without this term every new corporation's doubled income
-  // would be rejected as implausible on sync.
-  const frontierRevenueMult = frontierRevenueMultiplierUpperBound(inputs.createdAtMs, inputs.nowMs ?? Date.now());
   services *= frontierRevenueMult;
 
   // Megastructure passive income — client-only; allowed per definition once
@@ -434,6 +451,7 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
     gross: Number.isFinite(gross) && gross > 0 ? Math.round(gross) : 0,
     services: Math.round(services), megastructurePassive: Math.round(megastructurePassive), subsidiaries: Math.round(subsidiaries),
     frontierRevenueMult,
+    hqLaunchRevenueMult,
   };
 }
 

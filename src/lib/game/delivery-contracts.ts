@@ -11,6 +11,8 @@ import { RESOURCES, RESOURCE_MAP, type ResourceId } from './resources';
 import { isInFrontier, FRONTIER_CONTRACT_PAYOUT_MULTIPLIER } from './frontier';
 import { getReputationBonuses } from './reputation';
 import { getWorkforceBonuses } from './workforce';
+// CC-2 (Pass 11): the Earth Operations Center negotiates contracts +10%.
+import { getHqBonusesForState } from './headquarters';
 // Live-Service Wave LS9 (docs/LIVE_SERVICE_2026-08.md §LS9): quarterly
 // Realignment posture — contract-generosity multiplier + procurement-focus
 // category, both bounded within POSTURE_BAND. Pure/DB-free (see
@@ -581,6 +583,7 @@ export function deliverContract(state: GameState, contractId: string, now: numbe
     * frontierBonus
     * repBonuses.contractRewardMultiplier
     * (1 + wfBonuses.contractPayBonus)
+    * getHqBonusesForState(state).contractPayoutMult // CC-2: Earth HQ +10%
   );
 
   const completed: DeliveryContract = {

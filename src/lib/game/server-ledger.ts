@@ -200,6 +200,10 @@ export type LedgerReason =
   // posture as the building reasons.
   | 'research_start'
   | 'research_start_resources'
+  // CC-2 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md): relocation project money
+  // and the burned seat-lease price (hq-relocation-server.ts).
+  | 'hq_relocation'
+  | 'hq_seat_lease'
   | 'ship_build'
   | 'ship_build_resources'
   | 'ship_scrap_recovery'

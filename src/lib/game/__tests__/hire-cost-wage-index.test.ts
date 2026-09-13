@@ -25,6 +25,7 @@ import {
   WAGE_INDEX_MAX,
 } from '../labor-market';
 import { isInFrontier } from '../frontier';
+import { getHqBonuses } from '../headquarters';
 
 const NOW = 10_000_000; // deterministic clock for every call
 
@@ -48,6 +49,9 @@ const laborMarket = (engineerIndex: number) =>
   ({ index: { engineer: engineerIndex }, asOf: NOW });
 
 const ENGINEER_BASE_HIRE = WORKER_MAP.get('engineer')!.salary * 6;
+// CC-2 (Pass 11): a new corporation is seated on Earth — hiring is 10% cheaper there
+// (headquarters.ts getHqBonuses('earth_ops').hiringCostMult), applied after the index.
+const EARTH_HIRE = getHqBonuses('earth_ops').hiringCostMult;
 
 describe('getHireWageIndex — the index hiring actually pays', () => {
   it('neutral 1.0 with no labor-market snapshot', () => {
@@ -82,17 +86,17 @@ describe('getHireWageIndex — the index hiring actually pays', () => {
 
 describe('getHireCostWithWageIndex — the REAL charged hire price', () => {
   it('no snapshot: identical to the pre-Pass-4 base cost (opt-safe)', () => {
-    expect(getHireCostWithWageIndex(baseState(), 'engineer', NOW)).toBe(ENGINEER_BASE_HIRE);
+    expect(getHireCostWithWageIndex(baseState(), 'engineer', NOW)).toBe(Math.round(ENGINEER_BASE_HIRE * EARTH_HIRE));
   });
 
   it('scales by the live index (graduated)', () => {
     const s = baseState({ laborMarket: laborMarket(1.6) });
-    expect(getHireCostWithWageIndex(s, 'engineer', NOW)).toBe(Math.round(ENGINEER_BASE_HIRE * 1.6));
+    expect(getHireCostWithWageIndex(s, 'engineer', NOW)).toBe(Math.round(ENGINEER_BASE_HIRE * 1.6 * EARTH_HIRE));
   });
 
   it('Frontier corp never pays above base at a hot index', () => {
     const s = baseState({ frontierStatus: 'active', frontierEnteredAtMs: NOW - 1000, laborMarket: laborMarket(1.6) });
-    expect(getHireCostWithWageIndex(s, 'engineer', NOW)).toBe(ENGINEER_BASE_HIRE);
+    expect(getHireCostWithWageIndex(s, 'engineer', NOW)).toBe(Math.round(ENGINEER_BASE_HIRE * EARTH_HIRE));
   });
 
   it('composes with the espionage headhunt voucher (A8) — voucher THEN index', () => {
@@ -102,7 +106,7 @@ describe('getHireCostWithWageIndex — the REAL charged hire price', () => {
     });
     const discountedBase = getHireCost('engineer', s, NOW); // voucher applied
     expect(discountedBase).toBe(Math.round(ENGINEER_BASE_HIRE * 0.5));
-    expect(getHireCostWithWageIndex(s, 'engineer', NOW)).toBe(Math.round(discountedBase * 1.6));
+    expect(getHireCostWithWageIndex(s, 'engineer', NOW)).toBe(Math.round(discountedBase * 1.6 * EARTH_HIRE));
   });
 
   it('Pass 9 — PAYROLL shield: getPayrollWageIndex mirrors getHireWageIndex exactly', () => {
@@ -150,7 +154,8 @@ describe('getHireCostWithWageIndex — the REAL charged hire price', () => {
     const s = baseState({ laborMarket: laborMarket(idx) });
     const rehirePerHead = getHireCostWithWageIndex(s, 'engineer', NOW);
     const retentionPerHead = WORKER_MAP.get('engineer')!.salary * 6 * idx * 1.5 * 0.75;
-    expect(rehirePerHead).toBe(Math.round(ENGINEER_BASE_HIRE * idx));
-    expect(retentionPerHead / rehirePerHead).toBeCloseTo(1.125, 5);
+    expect(rehirePerHead).toBe(Math.round(ENGINEER_BASE_HIRE * idx * EARTH_HIRE));
+    // CC-2: an Earth-seated corporation rehires 10% cheaper still (1.125 / 0.9).
+    expect(retentionPerHead / rehirePerHead).toBeCloseTo(1.125 / EARTH_HIRE, 5);
   });
 });

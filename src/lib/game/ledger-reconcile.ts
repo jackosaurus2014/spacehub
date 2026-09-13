@@ -95,6 +95,10 @@ export const CLIENT_APPLIED_LEDGER_REASONS = [
   'ship_build_resources',
   'ship_scrap_recovery',
   'location_unlock',
+  // CC-2: the HQ relocation project + burned seat lease — the client debits
+  // locally on the 2xx (HqRelocationConsole.tsx), same contract.
+  'hq_relocation',
+  'hq_seat_lease',
 ] as const;
 /** Every reason the client's pending-delta query must exclude. */
 export const PENDING_EXCLUDED_LEDGER_REASONS = [

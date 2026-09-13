@@ -11,6 +11,7 @@ import {
   getFieldsForShipTier,
 } from '@/lib/game/asteroids';
 import { planMiningOrder, MINING_PLAN_ERROR_TEXT } from '@/lib/game/mining-orders';
+import { hqMiningLogisticsForLocationId } from '@/lib/game/headquarters';
 import { getResearchBonuses } from '@/lib/game/research-tree';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
 import {
@@ -219,6 +220,9 @@ export async function POST(request: NextRequest) {
     // Cargo capacity: hull only (module bonuses are client-owned condition;
     // the client's preview can only be LARGER, which the min() below caps).
     const cargoCapacity = def.cargoCapacity;
+    // CC-2: the seated HQ's logistics terms from the PERSISTED seat column
+    // (never the client's claim) — the same pure planner the preview ran.
+    const hqLogistics = hqMiningLogisticsForLocationId(profile.hqLocationId);
 
     let plan;
     let rockRow: Awaited<ReturnType<typeof loadAsteroidRow>> = null;
@@ -231,7 +235,7 @@ export async function POST(request: NextRequest) {
         def, cargoCapacity, mode: 'return', originId,
         destinationId: destinationRaw || 'earth_surface', thenAction,
         heldOre: { oreId: held.oreId, units: held.fillUnits, asteroidId: held.asteroidId, fieldId: held.fieldId },
-        hullDamagePct, fuelEfficiencyMult, nowMs: now.getTime(),
+        hullDamagePct, fuelEfficiencyMult, hqLogistics, nowMs: now.getTime(),
       });
     } else {
       const asteroidId = typeof body.asteroidId === 'string' ? body.asteroidId : '';
@@ -258,7 +262,7 @@ export async function POST(request: NextRequest) {
         // silently (the client learns the real fill from the response).
         fillUnits: mode === 'mine' ? Math.min(fillUnits, Math.max(1, Math.floor(rockRow.reserve))) : 0,
         thenAction, originId, destinationId: destinationRaw,
-        hullDamagePct, fuelEfficiencyMult, nowMs: now.getTime(),
+        hullDamagePct, fuelEfficiencyMult, hqLogistics, nowMs: now.getTime(),
       });
       if (mode === 'survey' && surveyed) return badRequest('That rock is already surveyed.', 'already_surveyed');
     }

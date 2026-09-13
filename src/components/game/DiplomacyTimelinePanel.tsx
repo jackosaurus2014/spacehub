@@ -26,6 +26,7 @@ export function diplomacyKindPip(kind: string): { state: PipState; label: string
     case 'pact_broken': return { state: 'scrub', label: 'BROKEN', icon: 'scroll' };
     case 'alliance_treaty': return { state: 'go', label: 'TREATY', icon: 'alliance' };
     case 'alliance_war': return { state: 'scrub', label: 'WAR', icon: 'swords' };
+    case 'hq_relocated': return { state: 'flew', label: 'HQ MOVED', icon: 'dashboard' };
     default: return { state: 'hold', label: kind.replace(/_/g, ' ').toUpperCase().slice(0, 12), icon: 'activity' };
   }
 }

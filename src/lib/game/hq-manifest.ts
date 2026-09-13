@@ -240,3 +240,14 @@ const REGISTRY: Partial<Record<HqStageId, HqManifest | null>> = {
 export function getHqManifest(stage: HqStageId): HqManifest | null {
   return REGISTRY[stage] ?? null;
 }
+
+/** CC-2: the manifest to DRAW for a stage. A reachable stage whose plates
+ *  have not landed yet (LEO, Luna) renders the Earth plate with
+ *  `fallback: true` so BridgeStage can overlay a "window plates coming"
+ *  label instead of a blank band. null only if not even Earth parsed. */
+export function resolveHqManifest(stage: HqStageId): { manifest: HqManifest; fallback: boolean } | null {
+  const own = REGISTRY[stage];
+  if (own) return { manifest: own, fallback: false };
+  const earth = REGISTRY.earth_ops;
+  return earth ? { manifest: earth, fallback: true } : null;
+}

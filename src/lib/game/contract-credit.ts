@@ -26,6 +26,8 @@ import { CONTRACT_POOL, STATIC_CONTRACT_TIER_MULT, getStaticContractTierMultipli
 import { REPUTATION_THRESHOLDS } from './reputation';
 import { MAX_CONTRACT_PAY_BONUS } from './workforce';
 import { WORLD_EVENT_CONTRACT_PAYOUT_BONUS_CAP } from './server-effects';
+// CC-2 (Pass 11): the Earth HQ's +10% contract term joins the bound.
+import { maxHqBonus } from './headquarters';
 
 export const CONTRACT_DEFINITION_MAP: ReadonlyMap<string, ContractDefinition> =
   new Map(CONTRACT_POOL.map(c => [c.id, c]));
@@ -51,7 +53,8 @@ export const MAX_STATIC_CONTRACT_PAYOUT_MULT =
   MAX_STATIC_CONTRACT_TIER_MULT
   * MAX_REPUTATION_CONTRACT_MULT
   * (1 + MAX_CONTRACT_PAY_BONUS)
-  * (1 + WORLD_EVENT_CONTRACT_PAYOUT_BONUS_CAP);
+  * (1 + WORLD_EVENT_CONTRACT_PAYOUT_BONUS_CAP)
+  * maxHqBonus('contractPayoutMult'); // CC-2: Earth Operations Center +10%
 
 /** Maximum cash a client could legitimately have credited itself for
  *  completing `def` (resources are unscaled and not money — ignored). */

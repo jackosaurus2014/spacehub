@@ -32,6 +32,9 @@ import {
   type AsteroidRock,
 } from './asteroids';
 import { FREIGHT_CARGO_FUEL_RATE, FREIGHT_MIN_FUEL_COST, creditArrivalCargo, getRouteDeltaV } from './cargo-logistics';
+// CC-2 (Pass 11): the Lunar HQ's logistics terms — −12% fuel per leg and
+// −10% on a belt rock's Δv surcharge (headquarters.ts hqMiningLogisticsFor).
+import { HQ_BELT_LOCATIONS, type HqMiningLogistics } from './headquarters';
 import { MAX_EVENT_LOG } from './constants';
 import { generateId } from './formulas';
 import { RESOURCE_MAP, type ResourceId } from './resources';
@@ -96,6 +99,12 @@ export function computeExtractionRate(
 
 export interface LegCost { deltaV: number; seconds: number; fuel: number }
 
+/** CC-2: per-leg logistics terms from the seated HQ. `deltaVMult` scales
+ *  the ROCK's Δv surcharge only (the lane Δv is physics); `fuelMult`
+ *  scales the whole fuel bill. Transit time is unchanged — the bonus is a
+ *  cheaper burn, not a faster one. */
+export interface LegLogistics { fuelMult?: number; deltaVMult?: number }
+
 /** One leg between a location and a rock. `loadedUnits` is the ore aboard. */
 export function quoteLeg(
   fromLocationId: string,
@@ -104,13 +113,24 @@ export function quoteLeg(
   hullTier: number,
   loadedUnits: number,
   fuelEfficiencyMult: number = 1,
+  logistics: LegLogistics = {},
 ): LegCost {
   const laneDv = getRouteDeltaV(fromLocationId, toLocationId);
-  const deltaV = laneDv + Math.max(0, rockDeltaVExtra);
+  const dvMult = typeof logistics.deltaVMult === 'number' && Number.isFinite(logistics.deltaVMult) ? Math.max(0.5, Math.min(1, logistics.deltaVMult)) : 1;
+  const fuelMult = typeof logistics.fuelMult === 'number' && Number.isFinite(logistics.fuelMult) ? Math.max(0.5, Math.min(1, logistics.fuelMult)) : 1;
+  const deltaV = laneDv + Math.max(0, rockDeltaVExtra) * dvMult;
   const seconds = Math.round((fromLocationId === toLocationId ? 0 : getTravelTime(fromLocationId, toLocationId)) + rockDeltaVExtra * TRANSIT_SECONDS_PER_DELTA_V);
   const raw = deltaV * (MINING_HULL_FUEL_RATE * Math.max(1, hullTier) + FREIGHT_CARGO_FUEL_RATE * ORE_LOAD_WEIGHT * Math.max(0, loadedUnits));
-  const fuel = Math.max(FREIGHT_MIN_FUEL_COST, Math.round(raw * Math.max(0.5, Math.min(1, fuelEfficiencyMult))));
+  const fuel = Math.max(FREIGHT_MIN_FUEL_COST, Math.round(raw * Math.max(0.5, Math.min(1, fuelEfficiencyMult)) * fuelMult));
   return { deltaV, seconds, fuel };
+}
+
+/** The leg terms for a field: the belt Δv term applies only to rocks in
+ *  a belt field (HQ_BELT_LOCATIONS); the fuel term applies everywhere. */
+export function legLogisticsFor(hq: HqMiningLogistics | null | undefined, parentLocationId: string | null | undefined): LegLogistics {
+  if (!hq) return {};
+  const belt = !!parentLocationId && HQ_BELT_LOCATIONS.includes(parentLocationId);
+  return { fuelMult: hq.fuelMult, deltaVMult: belt ? hq.beltDeltaVMult : 1 };
 }
 
 // ─── Planner ─────────────────────────────────────────────────────────────────
@@ -145,6 +165,10 @@ export interface MiningPlanInput {
   heldOre?: HeldOre | null;
   hullDamagePct?: number;
   fuelEfficiencyMult?: number;
+  /** CC-2: the seated HQ's logistics terms (headquarters.ts
+   *  hqMiningLogisticsForState on the client, …ForLocationId on the
+   *  server). Absent = neutral. */
+  hqLogistics?: HqMiningLogistics | null;
   nowMs: number;
 }
 
@@ -189,7 +213,7 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
     const parent = field?.parentLocationId || originId;
     const destinationId = input.destinationId || 'earth_surface';
     const rock = held.asteroidId ? getAsteroid(held.asteroidId) : undefined;
-    const back = quoteLeg(parent, destinationId, rock?.deltaVExtra ?? 0, tier, held.units, eff);
+    const back = quoteLeg(parent, destinationId, rock?.deltaVExtra ?? 0, tier, held.units, eff, legLogisticsFor(input.hqLogistics, field?.parentLocationId));
     const thenAction: MiningThenAction = input.thenAction === 'return_sell' ? 'return_sell' : 'return_store';
     const price = RESOURCE_MAP.get(held.oreId as ResourceId)?.baseMarketPrice ?? 0;
     return {
@@ -212,7 +236,8 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
   if (!field) return { ok: false, error: 'unknown_rock' };
   if (!getFieldsForShipTier(tier).some(f => f.id === field.id)) return { ok: false, error: 'field_out_of_reach' };
   const parent = field.parentLocationId;
-  const out = quoteLeg(originId, parent, rock.deltaVExtra, tier, 0, eff);
+  const legs = legLogisticsFor(input.hqLogistics, parent);
+  const out = quoteLeg(originId, parent, rock.deltaVExtra, tier, 0, eff, legs);
   const oreId = oreForRock(rock);
 
   if (mode === 'survey') {
@@ -246,7 +271,7 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
   const extractionSeconds = Math.ceil((fill / rate) * 3600);
   const thenAction: MiningThenAction = input.thenAction ?? 'return_store';
   const destinationId = thenAction === 'hold' ? parent : (input.destinationId || originId);
-  const back = thenAction === 'hold' ? null : quoteLeg(parent, destinationId, rock.deltaVExtra, tier, fill, eff);
+  const back = thenAction === 'hold' ? null : quoteLeg(parent, destinationId, rock.deltaVExtra, tier, fill, eff, legs);
   const arrivesAtMs = nowMs + out.seconds * 1000;
   const miningEndsAtMs = arrivesAtMs + extractionSeconds * 1000;
   const completesAtMs = miningEndsAtMs + (back ? back.seconds * 1000 : 0);

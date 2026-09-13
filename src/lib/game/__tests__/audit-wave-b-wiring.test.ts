@@ -28,6 +28,9 @@ import {
 import { applyMiniActivityBonus } from '../mini-activities';
 import { getHireCost, consumeHeadhuntVoucher } from '../workforce';
 import { applyContractReward } from '../contracts';
+// CC-2 (Pass 11): a new corporation is seated on Earth — contracts pay +10% there.
+import { getHqBonuses } from '../headquarters';
+const EARTH_CONTRACT = getHqBonuses('earth_ops').contractPayoutMult;
 import { deliverContract } from '../delivery-contracts';
 import {
   getShipMiningRateMultiplier,
@@ -435,9 +438,9 @@ describe('contract payout wiring — reputation + negotiators', () => {
   it('applyContractReward scales cash by reputation contractRewardMultiplier', () => {
     const plain = applyContractReward(baseState(), { money: 100_000_000 });
     const reputable = applyContractReward(baseState({ reputation: 25_000 }), { money: 100_000_000 });
-    expect(plain.money - 50_000_000).toBe(100_000_000);
+    expect(plain.money - 50_000_000).toBe(Math.round(100_000_000 * EARTH_CONTRACT));
     // Space Baron threshold: contractRewardMultiplier 1.20
-    expect(reputable.money - 50_000_000).toBe(120_000_000);
+    expect(reputable.money - 50_000_000).toBe(Math.round(120_000_000 * EARTH_CONTRACT));
   });
 
   it('negotiators add contractPayBonus on top', () => {
@@ -446,7 +449,7 @@ describe('contract payout wiring — reputation + negotiators', () => {
       { money: 100_000_000 },
     );
     // 2 negotiators × 0.10 × bonusScale 1.0 = +20%
-    expect(negotiated.money - 50_000_000).toBe(120_000_000);
+    expect(negotiated.money - 50_000_000).toBe(Math.round(120_000_000 * EARTH_CONTRACT));
   });
 
   it('deliverContract pays more with reputation', () => {

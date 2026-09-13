@@ -5,6 +5,8 @@
 import type { GameState, GameDate } from './types';
 import { getReputationBonuses } from './reputation';
 import { getWorkforceBonuses } from './workforce';
+// CC-2 (Pass 11): the Earth Operations Center negotiates contracts +10%.
+import { getHqBonusesForState } from './headquarters';
 import { clampWorldEventBonuses } from './server-effects';
 
 export interface ContractRequirement {
@@ -352,6 +354,7 @@ export function applyContractReward(state: GameState, reward: ContractReward): G
     * repBonuses.contractRewardMultiplier
     * (1 + wfBonuses.contractPayBonus)
     * (1 + (worldEventB?.contractPayoutBonus || 0))
+    * getHqBonusesForState(state).contractPayoutMult // CC-2: Earth HQ +10%
   );
   return {
     ...state,

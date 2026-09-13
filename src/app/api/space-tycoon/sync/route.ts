@@ -47,9 +47,16 @@ import {
   type ValidatedSyncEconomics,
   type SyncService,
   type SyncShip,
-  sanitizeHqLocationId,
 } from '@/lib/game/sync-validation';
 import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
+// CC-2 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md): the sync settles a due
+// HQ relocation for THIS profile before its monthly-gross ceiling is
+// computed (so the server-side seat bonus and the persisted seat agree),
+// and hands the client the server's headquarters block. The column
+// GameProfile.hqLocationId is written ONLY by that completion pass — the
+// client's claim is no longer mirrored.
+import { hqStageForLocationId } from '@/lib/game/headquarters';
+import { completeDueHqRelocations, loadHeadquartersBlock } from '@/lib/game/hq-relocation-server';
 // Money desync fix (2026-09-12): verifiable one-shot contract income widens
 // the money clamp's headroom, each CONTRACT_POOL id credited once per profile
 // (GameProfile.creditedContractIds).
@@ -211,12 +218,7 @@ export async function POST(request: Request) {
       // stash-in-workforceData pattern (and same client-claimed trust level,
       // clamped at read time) as factionReputation above.
       factionLicenses = null,
-      // CC-1 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md §4): the client's
-      // headquarters seat, sanitized to a registered stage below. Public on
-      // the corp page / leaderboard. CC-2's relocation route takes over.
-      hqLocationId = null,
     } = body;
-    const safeHqLocationId = sanitizeHqLocationId(hqLocationId);
 
     // Audit Wave B (§1c commander marketPriceMultiplier): stash the hired
     // commander roster inside workforceData so market/trade can recompute
@@ -276,6 +278,8 @@ export async function POST(request: Request) {
       creditedContractIds?: unknown;
       /** Pass 10: bounds the Frontier revenue doubling on the money ceiling. */
       createdAt?: Date;
+      /** CC-2: the seated headquarters (server-written) for the ceiling. */
+      hqLocationId?: string;
     } | null = null;
     let elapsedSinceLastSyncMs = 0;
     // Money desync fix: the contract credit computed for this sync (null
@@ -289,6 +293,8 @@ export async function POST(request: Request) {
         select: {
           id: true, money: true, netWorth: true, totalEarned: true, lastSyncAt: true,
           createdAt: true,
+          // CC-2: the seated headquarters (server-written) feeds the ceiling.
+          hqLocationId: true,
           resources: true, buildingsData: true, shipsData: true,
           activeServicesData: true, completedResearchList: true, workforceData: true,
           serverResources: true,
@@ -313,6 +319,15 @@ export async function POST(request: Request) {
         // by a $500K/s backstop. A malformed row degrades to gross 0 (only
         // ledger-mediated income passes), never to an unbounded ceiling.
         let serverMonthlyGross = 0;
+        // CC-2: settle a due relocation first, then read the seat the
+        // ceiling should price (a LEO deck's +12% launch revenue).
+        let hqStageForCeiling = hqStageForLocationId(existingProfile.hqLocationId).id;
+        try {
+          if (await completeDueHqRelocations(prisma, existingProfile.id, new Date()) > 0) {
+            const moved = await prisma.gameProfile.findUnique({ where: { id: existingProfile.id }, select: { hqLocationId: true } });
+            hqStageForCeiling = hqStageForLocationId(moved?.hqLocationId).id;
+          }
+        } catch { /* table may lag — Earth default */ }
         try {
           serverMonthlyGross = computeServerMonthlyGross(
             buildServerFlowState({
@@ -324,7 +339,9 @@ export async function POST(request: Request) {
             }),
             { workforceData: existingProfile.workforceData, totalEarned: existingProfile.totalEarned,
               // Pass 10: the Frontier revenue doubling is bounded from createdAt.
-              createdAtMs: existingProfile.createdAt instanceof Date ? existingProfile.createdAt.getTime() : undefined },
+              createdAtMs: existingProfile.createdAt instanceof Date ? existingProfile.createdAt.getTime() : undefined,
+              // CC-2 (Pass 11): the seated HQ's launch-revenue bonus.
+              hqStage: hqStageForCeiling },
           );
         } catch (grossError) {
           logger.error('Server monthly gross computation failed — zero headroom this sync', { error: String(grossError) });
@@ -1277,7 +1294,6 @@ export async function POST(request: Request) {
       money: reconciledMoney, totalEarned, totalSpent, netWorth,
       creditedContractIds: creditedContractIdsToPersist,
       buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear,
-      hqLocationId: safeHqLocationId,
       resources: reconciledResources as object,
       buildingsData: safeBuildings as unknown as object,
       activeServicesData: safeServices as unknown as object,
@@ -2312,9 +2328,22 @@ export async function POST(request: Request) {
       }));
     } catch { /* lease table may not exist yet (pre-migration) — gate falls back open only where occupancy is also absent */ }
 
+    // CC-2: the server's headquarters block (seat + the owner's pending
+    // project). Best-effort — a lagging schema hands the client nothing and
+    // it keeps its own block.
+    let headquartersBlock = null;
+    try {
+      headquartersBlock = await loadHeadquartersBlock({ id: profile.id, hqLocationId: profile.hqLocationId, createdAt: profile.createdAt }, prisma, new Date());
+    } catch (hqError) {
+      logger.warn('Headquarters block unavailable this sync', { error: String(hqError) });
+    }
+
     return NextResponse.json({
       success: true,
       profileId: profile.id,
+      // CC-2: server-authoritative headquarters (adopted by useGameSync →
+      // hq-relocation.ts adoptServerHeadquarters).
+      headquarters: headquartersBlock,
       // C-1: the first sync of a profile persists the server kit, not the
       // body — the client is told so it can reconcile against the server
       // figures if it wants to.

@@ -224,6 +224,8 @@ import MiningPanel from '@/components/game/MiningPanel';
 import { getAsteroid, rollAsteroidIntel, LOCAL_INTEL_SALT, SURVEY_PROBE_COST, type AsteroidIntel } from '@/lib/game/asteroids';
 import { planMiningOrder, materializeOrder, canTakeMiningOrder, MINING_PLAN_ERROR_TEXT, type MiningOrderRequest } from '@/lib/game/mining-orders';
 import { getShipCargoCapacity, getFuelEfficiencyMultiplier } from '@/lib/game/cargo-logistics';
+import { hqMiningLogisticsForState } from '@/lib/game/headquarters';
+import { adoptServerHeadquarters, type ServerHeadquartersBlock } from '@/lib/game/hq-relocation';
 import type { MiningOrder } from '@/lib/game/ships';
 import MapCommandCenter from '@/components/game/MapCommandCenter';
 // Wave V3 (docs/VISUAL_DEPTH_2026-08.md §V3) — persistent right-rail
@@ -1184,6 +1186,12 @@ export default function SpaceTycoonPage() {
         orbitalSlotLeases: serverData.orbitalSlotLeases ?? prev.orbitalSlotLeases,
       };
     });
+    // CC-2: the server's headquarters block is authoritative (seat, stage,
+    // the owner's pending project); a completed move the client had not
+    // flipped yet posts its charter mail here.
+    if (serverData.headquarters !== undefined) {
+      setState(prev => prev ? adoptServerHeadquarters(prev, serverData.headquarters as ServerHeadquartersBlock | null) : prev);
+    }
   });
 
   // Load or show new game prompt
@@ -2452,7 +2460,9 @@ export default function SpaceTycoonPage() {
     const localPlan = planMiningOrder({
       def, cargoCapacity: getShipCargoCapacity(cur, ship.instanceId), mode: req.mode, rock, intel,
       fillUnits: req.fillUnits, thenAction: req.thenAction, originId: ship.currentLocation, destinationId: req.destinationId,
-      heldOre: ship.heldOre ?? null, hullDamagePct: ship.hullDamagePct, fuelEfficiencyMult: getFuelEfficiencyMultiplier(cur), nowMs: Date.now(),
+      heldOre: ship.heldOre ?? null, hullDamagePct: ship.hullDamagePct, fuelEfficiencyMult: getFuelEfficiencyMultiplier(cur),
+      hqLogistics: hqMiningLogisticsForState(cur), // CC-2: Lunar HQ logistics terms
+      nowMs: Date.now(),
     });
     if (!localPlan.ok) { reportAssetFailure({ message: MINING_PLAN_ERROR_TEXT[localPlan.error] }, 'Mining', () => playSound('error')); return; }
     if (cur.money < localPlan.order.fuelCost) { reportAssetFailure({ message: `Fuel bill is ${formatMoney(localPlan.order.fuelCost)} — not enough cash.` }, 'Mining', () => playSound('error')); return; }
@@ -3045,6 +3055,18 @@ export default function SpaceTycoonPage() {
           }}
           onResolveChapterEpilogue={(participationCount) => {
             setState(prev => prev ? resolveChapterEpilogue(prev, participationCount, Date.now()) : prev);
+          }}
+          // CC-2: the Relocate console adopts the server's headquarters block
+          // (adoptServerHeadquarters) and, on a 2xx or an anonymous local
+          // project, debits the cost locally (CLIENT_APPLIED ledger contract).
+          onHeadquartersUpdate={(block) => setState(prev => prev ? adoptServerHeadquarters(prev, block) : prev)}
+          onLocalRelocation={(next, debit) => {
+            playSound('build_start');
+            setState(prev => {
+              if (!prev) return prev;
+              const money = prev.money - Math.max(0, debit);
+              return { ...prev, money, totalSpent: prev.totalSpent + Math.max(0, debit), ...(next ? { headquarters: next } : {}) };
+            });
           }}
         />}
         {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onOpenSourcing={() => { playSound('click'); navigateToTab('markets:sourcing'); }} onMothballBuilding={handleMothballBuilding} onReactivateBuilding={handleReactivateBuilding} onRushRepairBuilding={handleRushRepairBuilding} onMarkUpgradeBuilding={handleMarkUpgradeBuilding} onDispatchShip={handleDispatchShip} />}
