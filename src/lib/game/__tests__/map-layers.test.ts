@@ -12,14 +12,24 @@ describe('map layers', () => {
       expect(DEFAULT_MAP_LAYERS[key]).toBe(true);
       expect(MAP_LAYER_LABEL[key].length).toBeGreaterThan(0);
     }
-    expect(MAP_LAYER_ORDER).toEqual(['lanes', 'ships', 'world']);
+    expect(MAP_LAYER_ORDER).toEqual(['lanes', 'ships', 'contacts', 'world']);
   });
 
   it('toggle flips exactly one key and never mutates its input', () => {
     const before = { ...DEFAULT_MAP_LAYERS };
     const next = toggleMapLayer(before, 'ships');
-    expect(next).toEqual({ lanes: true, ships: false, world: true });
+    expect(next).toEqual({ lanes: true, ships: false, contacts: true, world: true });
     expect(before).toEqual(DEFAULT_MAP_LAYERS);
     expect(toggleMapLayer(next, 'ships')).toEqual(DEFAULT_MAP_LAYERS);
+  });
+
+  // Ship traffic layer (2026-09-13): other corporations' anonymised
+  // contacts default ON and toggle independently of "Your ships".
+  it('contacts layer defaults ON and toggles independently of ships', () => {
+    expect(DEFAULT_MAP_LAYERS.contacts).toBe(true);
+    const off = toggleMapLayer(DEFAULT_MAP_LAYERS, 'contacts');
+    expect(off).toEqual({ lanes: true, ships: true, contacts: false, world: true });
+    expect(off.ships).toBe(true);
+    expect(MAP_LAYER_LABEL.contacts).toBe('Contacts');
   });
 });

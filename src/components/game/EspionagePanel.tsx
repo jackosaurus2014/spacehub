@@ -8,6 +8,7 @@ import { playSound } from '@/lib/game/sound-engine';
 import { EFFECT_ASSETS } from '@/lib/game/assets';
 import {
   ESPIONAGE_ACTIONS,
+  fleetRevealGameMonths,
   SECURITY_LEVELS,
   getActionCost,
   getSecurityUpgradeCost,
@@ -135,6 +136,7 @@ const ACTION_ICONS: Record<string, string> = {
   disinformation: 'D',
   supply_chain_analysis: 'F',
   trade_route_intel: 'T',
+  fleet_tracking: 'FT',
   research_theft_attempt: 'A',
   employee_headhunt: 'H',
   counter_intelligence: 'CI',
@@ -548,6 +550,13 @@ function OperationsTab({
                       </span>
                     )}
                   </div>
+                  {/* Ship traffic layer (2026-09-13): the earning path for
+                      identities on the map's Contacts layer is this card. */}
+                  {fleetRevealGameMonths(actionType) !== null && (
+                    <p className="mt-1.5 text-[11px] text-cyan-300/90">
+                      Reveals this corporation&apos;s ship identities on the map for {fleetRevealGameMonths(actionType)} game-months.
+                    </p>
+                  )}
 
                   <button
                     onClick={() => onExecute(actionType)}

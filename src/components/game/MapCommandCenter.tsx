@@ -76,6 +76,9 @@ import type { IconName } from '@/lib/game/icons';
 // phone icon strip and the renderers' desktop columns drive one state.
 import { DEFAULT_MAP_LAYERS, toggleMapLayer, type MapLayerVisibility, type MapLayerKey } from '@/lib/game/map-layers';
 import { useWorldState } from '@/hooks/useWorldState';
+// Ship traffic layer (2026-09-13): other corporations' ships as anonymised
+// contacts, polled here once for whichever solar renderer is mounted.
+import { useShipTraffic } from '@/hooks/useShipTraffic';
 import { BRIDGE_LAYOUT_EVENT } from '@/lib/game/bridge-mode';
 
 type Layer = 'solar' | 'galactic';
@@ -264,6 +267,12 @@ export default function MapCommandCenter({
     setLayers(prev => toggleMapLayer(prev, key));
   }, []);
   const { available: worldAvailable } = useWorldState();
+  // Ship traffic feed — polls every 60 s only while the solar layer is up,
+  // the Contacts layer is on and the map is not covered by a panel overlay
+  // (the hook also pauses on a hidden tab). Anonymous games get a 401 and
+  // `available` stays false: the toggle then explains why.
+  const traffic = useShipTraffic(layer === 'solar' && layers.contacts && !covered);
+  const contactsAvailable = traffic.available;
 
   // Wave V4 — map mode ("Stellaris lens"). Pure recolor/re-badge of existing
   // data via map-modes.ts, consumed by BOTH renderers. Keyboard: `M` cycles.
@@ -618,6 +627,8 @@ export default function MapCommandCenter({
             onContextLost={handleContextLost}
             layers={layers}
             onToggleLayer={toggleLayer}
+            contacts={traffic.contacts}
+            contactsAsOfMs={traffic.asOfMs}
           />
         ) : (
           <SolarSystemCanvas
@@ -633,6 +644,8 @@ export default function MapCommandCenter({
             laneVolumes={showVolume ? laneVolumes?.map : null}
             layers={layers}
             onToggleLayer={toggleLayer}
+            contacts={traffic.contacts}
+            contactsAsOfMs={traffic.asOfMs}
           />
         )
       ) : (
@@ -673,6 +686,14 @@ export default function MapCommandCenter({
               <StripButton icon="cargo-truck" label="Lane volume layer (last 7 days)" pressed={showVolume} onClick={() => { playSound('click'); setShowVolume(v => !v); }} />
               <StripButton icon="route" label="Shipping lanes" pressed={layers.lanes} onClick={() => toggleLayer('lanes')} />
               <StripButton icon="fleet" label="Your ships" pressed={layers.ships} onClick={() => toggleLayer('ships')} />
+              <StripButton
+                icon="target"
+                label={contactsAvailable
+                  ? `Other corporations' ships: ${traffic.contacts.length} contact${traffic.contacts.length === 1 ? '' : 's'} (anonymised; identities need an active Fleet Tracking reveal)`
+                  : "Other corporations' ships (contacts) — sign in to see live traffic"}
+                pressed={layers.contacts}
+                onClick={() => toggleLayer('contacts')}
+              />
               <StripButton icon="globe" label={worldAvailable ? "Other corporations' colony claims" : 'World layer — sign in to see the live world'} pressed={layers.world && worldAvailable} disabled={!worldAvailable} onClick={() => toggleLayer('world')} />
             </>
           )}

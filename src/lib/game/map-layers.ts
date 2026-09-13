@@ -13,19 +13,24 @@ export interface MapLayerVisibility {
   lanes: boolean;
   /** Your ships: in-transit arcs and station dots. */
   ships: boolean;
+  /** Other corporations' ships as anonymised contacts + NPC backdrop
+   *  traffic (ship-traffic.ts; identities only with an active fleet reveal —
+   *  docs/POLICY.md "Ship visibility"). Needs the signed-in traffic feed. */
+  contacts: boolean;
   /** Other corporations' colony claims (needs the live world feed). */
   world: boolean;
 }
 
 export type MapLayerKey = keyof MapLayerVisibility;
 
-export const DEFAULT_MAP_LAYERS: MapLayerVisibility = { lanes: true, ships: true, world: true };
+export const DEFAULT_MAP_LAYERS: MapLayerVisibility = { lanes: true, ships: true, contacts: true, world: true };
 
-export const MAP_LAYER_ORDER: MapLayerKey[] = ['lanes', 'ships', 'world'];
+export const MAP_LAYER_ORDER: MapLayerKey[] = ['lanes', 'ships', 'contacts', 'world'];
 
 export const MAP_LAYER_LABEL: Record<MapLayerKey, string> = {
   lanes: 'Lanes',
   ships: 'Ships',
+  contacts: 'Contacts',
   world: 'World',
 };
 

@@ -125,6 +125,21 @@ For large player-to-player transactions (see `Diplomacy` system design):
 
 ---
 
+## Ship Visibility
+
+Space is a shared place, and the map shows it honestly.
+
+- **Every ship in the solar system is visible to every player** — including other corporations' ships. On the map they appear as anonymised **contacts**: a hull class ("Freighter", "Mining ship"), the lane or location they are on, and their progress along it. Nothing else.
+- **Identity is earned, never free.** A contact's corporation, cargo and destination are shown only to players who hold an active fleet reveal on that corporation — a successful *Fleet Tracking* mission (7 game-months) or *Trade Route Intercept* (4 game-months) from the espionage system. When the reveal expires, the contact goes anonymous again.
+- **Contacts cannot be tracked across days.** Contact identifiers rotate every UTC day and never contain a ship or account identifier, so a watcher cannot build a history of a specific hull without paying for the reveal each window.
+- **Your own ships are never in anyone's feed as identified hulls** without that reveal. Being tracked is visible to you the same way any espionage is — detected missions show in your counter-intelligence log.
+- **NPC faction traffic** is drawn on the same layer and always labelled as NPC.
+- **Seeing is not touching.** Contacts are information. There is no combat, interception or blockade mechanic against another player's ship — the "No Combat" rule of the design brief applies to the traffic layer exactly as everywhere else.
+
+Real money never buys a reveal, a longer reveal, or a way to hide your ships.
+
+---
+
 ## Data and Privacy
 
 Space Tycoon stores per-player game state, chat messages (if you participate in corporate or alliance chat), and basic account information.

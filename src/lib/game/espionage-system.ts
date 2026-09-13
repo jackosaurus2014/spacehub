@@ -26,6 +26,10 @@ import { getDetectionBonusFromBuildingList } from './building-capabilities';
 // Balance Pass 9: quarterly offense-fee-index applied to the M5 intel
 // products (see getActionCost).
 import { applyFeeIndex } from './fee-index';
+// Ship traffic layer: fleet_tracking's manifest counts hulls by role.
+import { SHIPS } from './ships';
+
+const SHIP_ROLE_LOOKUP = new Map(SHIPS.map(s => [s.id, s.role] as const));
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -165,7 +169,13 @@ export type EspionageActionType =
   // target-side harm — the 8 prohibitions above hold unchanged.
   | 'pool_share_trend'
   | 'input_dependency_report'
-  | 'labor_roster_report';
+  | 'labor_roster_report'
+  // Ship traffic layer (2026-09-13, docs/GRAPHICS_REVIEW_2026-09-12.md
+  // addendum point 3): other corporations' ships are anonymised contacts on
+  // the solar map; this product tags one corporation's hulls so their
+  // identity, cargo and destination show for the reveal window. Info-only —
+  // the 8 prohibitions above hold unchanged.
+  | 'fleet_tracking';
 
 export interface EspionageActionDef {
   id: EspionageActionType;
@@ -281,6 +291,18 @@ export const ESPIONAGE_ACTIONS: Record<EspionageActionType, EspionageActionDef> 
     unlockRequirement: 'signals_intelligence',
     category: 'reconnaissance',
   },
+  fleet_tracking: {
+    id: 'fleet_tracking',
+    name: 'Fleet Tracking',
+    description: 'Tags the target\'s hulls. For the reveal window their ships on the solar map show corporation, cargo and destination instead of an anonymous contact, and you receive a fleet manifest (hull classes, ships in transit).',
+    baseCost: 8_000_000,
+    bracketCostMultiplier: 12_000_000,
+    baseSuccessRate: 0.70,
+    cooldownHours: 6,
+    intelDurationHours: 42, // 7 game-months (server-time.ts: one game-month = 6 real hours)
+    unlockRequirement: 'signals_intelligence',
+    category: 'reconnaissance',
+  },
   research_theft_attempt: {
     id: 'research_theft_attempt',
     name: 'Strategic Assessment',
@@ -366,6 +388,26 @@ export const ESPIONAGE_ACTIONS: Record<EspionageActionType, EspionageActionDef> 
 export const FEE_INDEXED_ESPIONAGE_PRODUCTS: ReadonlySet<EspionageActionType> = new Set([
   'pool_share_trend', 'input_dependency_report', 'labor_roster_report',
 ] as EspionageActionType[]);
+
+/** Ship traffic layer (2026-09-13): the espionage products whose active
+ *  (unexpired, succeeded) mission reveals the target's ship identities on
+ *  the solar map — `fleet_tracking` is the dedicated product; the older
+ *  `trade_route_intel` ("Trade Route Intercept") carries the same reveal for
+ *  its own shorter window because intercepting a corporation's trade routes
+ *  is, literally, knowing where its ships go. The map feed
+ *  (src/lib/game/ship-traffic-server.ts) reads EspionageMission rows with
+ *  these action types and `intelExpiresAt > now`. */
+export const FLEET_REVEAL_ACTIONS: ReadonlySet<EspionageActionType> = new Set([
+  'fleet_tracking', 'trade_route_intel',
+] as EspionageActionType[]);
+
+/** How long a fleet reveal from `actionType` lasts, in game-months (one
+ *  game-month = 6 real hours, server-time.ts). Null when the product does
+ *  not reveal ships. Shown on the espionage target cards. */
+export function fleetRevealGameMonths(actionType: EspionageActionType): number | null {
+  if (!FLEET_REVEAL_ACTIONS.has(actionType)) return null;
+  return Math.round(ESPIONAGE_ACTIONS[actionType].intelDurationHours / 6);
+}
 
 /**
  * Charged/displayed action cost. `feeIndexFactor` (default 1) multiplies
@@ -605,6 +647,27 @@ export function getIntelReward(
           discount: ESPIONAGE_CONSTANTS.TRADE_INTERCEPT_DISCOUNT,
           durationHours: ESPIONAGE_CONSTANTS.TRADE_INTERCEPT_DISCOUNT_DURATION_HOURS,
           resources: tradedResources.slice(0, 5),
+        },
+      };
+    }
+
+    case 'fleet_tracking': {
+      // Fleet manifest — category counts only; the live positions come from
+      // the traffic feed while the reveal is active.
+      const ships = (targetProfile.shipsData || []) as Array<{ definitionId?: string; status?: string; isBuilt?: boolean }>;
+      const built = ships.filter(s => s && s.isBuilt !== false && s.status !== 'building');
+      const byRole: Record<string, number> = {};
+      for (const s of built) {
+        const role = (s.definitionId && SHIP_ROLE_LOOKUP.get(s.definitionId)) || 'unknown';
+        byRole[role] = (byRole[role] || 0) + 1;
+      }
+      return {
+        intelData: {
+          companyName: targetProfile.companyName,
+          fleetSize: built.length,
+          shipsInTransit: built.filter(s => s.status === 'in_transit').length,
+          hullsByRole: byRole,
+          note: 'Their ships are identified on the solar map (Contacts layer) until this report expires.',
         },
       };
     }

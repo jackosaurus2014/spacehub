@@ -49,6 +49,18 @@ import { ConsolePanel, DataChip } from './chrome';
 // Graphics review 2026-09-12: Lanes/Ships/World visibility may be owned by
 // the shell (phone icon strip); 512px sprite variants on phones (item 11).
 import { DEFAULT_MAP_LAYERS, toggleMapLayer, type MapLayerVisibility, type MapLayerKey } from '@/lib/game/map-layers';
+// Ship traffic layer (2026-09-13): other corporations' ships as anonymised
+// contacts (+ NPC backdrop); same placement maths as the 3D renderer.
+import {
+  placeContacts,
+  contactLabel,
+  contactDetail,
+  corpRingColor,
+  FACTION_CONTACT_TINT,
+  ANON_CONTACT_COLOR,
+  type TrafficContact,
+  type ContactAnchor,
+} from '@/lib/game/ship-traffic';
 import { getArtVariant } from '@/lib/game/assets';
 import { MAP_GLYPHS } from '@/lib/game/map-glyphs';
 
@@ -144,6 +156,11 @@ interface SolarSystemCanvasProps {
    *  private state exactly as before. */
   layers?: MapLayerVisibility;
   onToggleLayer?: (key: MapLayerKey) => void;
+  /** Ship traffic layer — other corporations' anonymised contacts + NPC
+   *  backdrop (shell-polled /api/space-tycoon/traffic). Empty when the
+   *  layer is off or the feed is unavailable. */
+  contacts?: TrafficContact[];
+  contactsAsOfMs?: number;
 }
 
 // Visual layout: positions per location (this flat projection's own geometry).
@@ -274,7 +291,9 @@ function useImageCache(urls: string[]): { cache: Map<string, HTMLImageElement>; 
   return { cache: cacheRef.current, loaded };
 }
 
-export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true, alwaysLabels = false, onZoomTierChange, laneVolumes, layers, onToggleLayer }: SolarSystemCanvasProps) {
+const NO_CONTACTS: TrafficContact[] = [];
+
+export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true, alwaysLabels = false, onZoomTierChange, laneVolumes, layers, onToggleLayer, contacts = NO_CONTACTS, contactsAsOfMs = 0 }: SolarSystemCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -326,12 +345,18 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   const layerVis = layers ?? localLayers;
   const showLanes = layerVis.lanes;
   const showShips = layerVis.ships;
+  const showContacts = layerVis.contacts;
   const showWorld = layerVis.world;
   const toggleLayer = useCallback((key: MapLayerKey) => {
     if (onToggleLayer) onToggleLayer(key);
     else setLocalLayers(prev => toggleMapLayer(prev, key));
   }, [onToggleLayer]);
   const animRef = useRef(0);
+  // Ship traffic: last-drawn contact pixels (for the tap hit-test) and the
+  // tapped contact's tag. Written by draw(), read by handleClick.
+  const contactPxRef = useRef<{ x: number; y: number; contact: TrafficContact }[]>([]);
+  const [contactTag, setContactTag] = useState<{ contact: TrafficContact; x: number; y: number } | null>(null);
+  useEffect(() => { if (!showContacts || contacts.length === 0) setContactTag(null); }, [showContacts, contacts.length]);
 
   // World presence (audit Change #3 / D1) — other corporations' colony
   // claims per location, shared/cached across every consumer of the hook.
@@ -1083,6 +1108,55 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       }
     }
 
+    // ─── Ship contacts (other corporations, anonymised; NPC backdrop) ──
+    // Same placeContacts() as SolarMap3D: dim dots for anonymised hulls,
+    // small diamonds for NPC traffic (shape, not just tint), and a corp-
+    // coloured ring around every REVEALED contact.
+    contactPxRef.current = [];
+    if (showContacts && contacts.length > 0) {
+      const anchors: Record<string, ContactAnchor> = {};
+      for (const loc of LOCATIONS) {
+        const px = locationPx[loc.id];
+        const layout = layoutOf(loc.id);
+        if (px && layout) anchors[loc.id] = { pos: [px.x, px.y, 0], r: layout.radius * zoom };
+      }
+      const placed = placeContacts(contacts, anchors, Date.now(), {
+        asOfMs: contactsAsOfMs, plane: 'xy', staticOrbit: reducedMotion, orbitGap: 9 + 5 * zoom, bendCap: 30,
+      });
+      const dotR = Math.max(1.6, 2 * zoom);
+      for (const p of placed) {
+        const c = p.contact;
+        const x = p.pos[0], y = p.pos[1];
+        contactPxRef.current.push({ x, y, contact: c });
+        if (c.npc) {
+          ctx.fillStyle = c.factionHint ? FACTION_CONTACT_TINT[c.factionHint] : ANON_CONTACT_COLOR;
+          ctx.globalAlpha = 0.6;
+          ctx.beginPath();
+          ctx.moveTo(x, y - dotR * 1.4);
+          ctx.lineTo(x + dotR, y);
+          ctx.lineTo(x, y + dotR * 1.4);
+          ctx.lineTo(x - dotR, y);
+          ctx.closePath();
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        } else {
+          ctx.fillStyle = c.intel ? '#cbd5e1' : ANON_CONTACT_COLOR;
+          ctx.globalAlpha = c.intel ? 0.95 : 0.7;
+          ctx.beginPath();
+          ctx.arc(x, y, dotR, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          if (c.intel) {
+            ctx.strokeStyle = corpRingColor(c.intel.corpId);
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(x, y, dotR + 3, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
     // ─── Wave V7: order-ack / completion pings ─────────────────────
     // Expanding ring at the target location — cyan for a just-issued order,
     // green for a just-finished one. Reduced motion collapses to a single
@@ -1154,7 +1228,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     }
 
     animRef.current = requestAnimationFrame(draw);
-  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc, modeVisuals, zoomTier, alwaysLabels, slotRings, laneVolumes]);
+  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, showContacts, contacts, contactsAsOfMs, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc, modeVisuals, zoomTier, alwaysLabels, slotRings, laneVolumes]);
 
   // Canvas sizing — re-scale on container resize
   useEffect(() => {
@@ -1285,9 +1359,22 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     if (hit) {
       // The radial menu only exists in the map-command shell; the legacy
       // stacked layout keeps its original click-to-toggle behavior.
+      setContactTag(null);
       selectLocation(hit, embedded ? { x: mx, y: my } : undefined);
       return;
     }
+    // Ship traffic: a tap on a contact opens its tag (bodies win ties above).
+    let nearest: { x: number; y: number; contact: TrafficContact } | null = null;
+    let nearestD = 14 * 14;
+    for (const c of contactPxRef.current) {
+      const d = (c.x - mx) * (c.x - mx) + (c.y - my) * (c.y - my);
+      if (d < nearestD) { nearestD = d; nearest = c; }
+    }
+    if (nearest) {
+      setContactTag({ contact: nearest.contact, x: nearest.x, y: nearest.y });
+      return;
+    }
+    setContactTag(null);
     setSelectedLoc(null);
     onSelectLocation?.(null);
   }, [zoom, offset, onSelectLocation, selectLocation, embedded]);
@@ -1591,6 +1678,16 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
             {showShips ? '● Ships' : '○ Ships'}
           </button>
           <button
+            onClick={() => toggleLayer('contacts')}
+            aria-pressed={showContacts}
+            title="Toggle other corporations' ships (anonymised contacts; identities need an active Fleet Tracking reveal)"
+            className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+              showContacts ? 'bg-slate-500/20 text-slate-200 border-slate-400/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
+            }`}
+          >
+            {showContacts ? '● Contacts' : '○ Contacts'}
+          </button>
+          <button
             onClick={() => toggleLayer('world')}
             aria-pressed={showWorld}
             disabled={!worldAvailable}
@@ -1614,10 +1711,29 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           {locationListBody}
         </div>
 
-        {shipsInTransit.length > 0 && (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-            <DataChip icon="ship-transport" tone="good">{shipsInTransit.length} in transit</DataChip>
+        {(shipsInTransit.length > 0 || (showContacts && contacts.length > 0)) && (
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none flex gap-1.5">
+            {shipsInTransit.length > 0 && <DataChip icon="ship-transport" tone="good">{shipsInTransit.length} in transit</DataChip>}
+            {showContacts && contacts.length > 0 && (
+              <DataChip icon="target">{contacts.length} contact{contacts.length === 1 ? '' : 's'}</DataChip>
+            )}
           </div>
+        )}
+        {contactTag && showContacts && (
+          <div
+            role="tooltip"
+            className="absolute z-30 pointer-events-none max-w-[240px] rounded-lg border border-white/[0.14] bg-[#050510]/95 px-2.5 py-1.5 text-[11px] leading-snug text-slate-100 shadow-lg backdrop-blur-sm"
+            style={{ left: Math.max(4, contactTag.x + 10), top: Math.max(4, contactTag.y - 6) }}
+          >
+            <div className="font-hud font-semibold text-cyan-200">{contactLabel(contactTag.contact)}</div>
+            <div className="text-slate-400">{contactDetail(contactTag.contact, Date.now(), contactsAsOfMs)}</div>
+          </div>
+        )}
+        {showContacts && contacts.length > 0 && (
+          <ul className="sr-only" aria-label="Ship contacts near your holdings (other corporations, anonymised unless you hold a fleet reveal)">
+            {contacts.slice(0, 40).map(c => <li key={c.id}>{contactLabel(c)}</li>)}
+            {contacts.length > 40 && <li>and {contacts.length - 40} more contacts</li>}
+          </ul>
         )}
 
         <p id="solar-system-canvas-hint" className="sr-only">
@@ -1691,6 +1807,16 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
             {showShips ? '● Ships' : '○ Ships'}
           </button>
           <button
+            onClick={() => toggleLayer('contacts')}
+            aria-pressed={showContacts}
+            title="Toggle other corporations' ships (anonymised contacts; identities need an active Fleet Tracking reveal)"
+            className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+              showContacts ? 'bg-slate-500/20 text-slate-200 border-slate-400/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
+            }`}
+          >
+            {showContacts ? '● Contacts' : '○ Contacts'}
+          </button>
+          <button
             onClick={() => toggleLayer('world')}
             aria-pressed={showWorld}
             disabled={!worldAvailable}
@@ -1714,6 +1840,9 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           <DataChip><span className="w-1.5 h-1.5 rounded-full bg-purple-400" /> Survey ship</DataChip>
           {shipsInTransit.length > 0 && (
             <DataChip icon="ship-transport" tone="good">{shipsInTransit.length} in transit</DataChip>
+          )}
+          {showContacts && contacts.length > 0 && (
+            <DataChip icon="target">{contacts.length} contact{contacts.length === 1 ? '' : 's'}</DataChip>
           )}
         </div>
       </div>

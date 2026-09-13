@@ -66,6 +66,19 @@ import { REGION_LABELS, LOCATIONS_BY_REGION } from './SolarSystemCanvas';
 // canvas-drawn glyph table (item 10 — DOM emoji are GameIcons now), and the
 // chrome kit for the in-transit chip.
 import { DEFAULT_MAP_LAYERS, toggleMapLayer, type MapLayerVisibility, type MapLayerKey } from '@/lib/game/map-layers';
+// Ship traffic layer (2026-09-13): other corporations' ships as anonymised
+// contacts (+ NPC backdrop), identities only with an active fleet reveal.
+// Placement maths shared verbatim with the 2D canvas (ship-traffic.ts).
+import {
+  placeContacts,
+  contactLabel,
+  contactDetail,
+  corpRingColor,
+  FACTION_CONTACT_TINT,
+  ANON_CONTACT_COLOR,
+  TRAFFIC_RENDER_CAP,
+  type TrafficContact,
+} from '@/lib/game/ship-traffic';
 import { MAP_GLYPHS } from '@/lib/game/map-glyphs';
 import GameIcon from './GameIcon';
 import { DataChip } from './chrome';
@@ -128,6 +141,12 @@ interface SolarMap3DProps {
    *  renderer's own column shows from md up). Absent = private state. */
   layers?: MapLayerVisibility;
   onToggleLayer?: (key: MapLayerKey) => void;
+  /** Ship traffic layer — other corporations' anonymised contacts + NPC
+   *  backdrop from /api/space-tycoon/traffic (shell-polled). Empty when the
+   *  layer is off or the feed is unavailable (anonymous game). */
+  contacts?: TrafficContact[];
+  /** Feed time the contacts' progress/ETA refer to (extrapolated per frame). */
+  contactsAsOfMs?: number;
 }
 
 // ── Graphics review 2026-09-12 item 9 — framing ─────────────────────────────
@@ -1019,6 +1038,7 @@ function LaneLines({ posRef, state, reduced, laneVolumes }: { posRef: PositionsR
 // ── Ships ────────────────────────────────────────────────────────────────────
 
 type ShipInstanceLike = NonNullable<GameState['ships']>[number];
+const NO_CONTACTS: TrafficContact[] = [];
 
 // Fixed ETA-label canvas geometry — one size for every transit ship so the
 // texture is allocated once per ship and only repainted (1 Hz), never resized.
@@ -1211,6 +1231,153 @@ function StationShip({ ship, posRef, reduced }: { ship: ShipInstanceLike; posRef
       <sphereGeometry args={[0.07, 8, 8]} />
       <meshBasicMaterial color={color} />
     </mesh>
+  );
+}
+
+// ── Ship traffic: other corporations' contacts (instanced) ──────────────────
+// Three instanced draws, never per-contact meshes: anonymised player hulls
+// (dim octahedra), NPC backdrop hulls (flattened faction-tinted slabs — a
+// different SHAPE, so NPC vs player never rests on colour alone) and a
+// corp-coloured ring under every REVEALED contact (again shape, not just
+// colour). Positions come from placeContacts() every frame — the same
+// function the 2D canvas calls — extrapolated from the feed's asOf. Capacity
+// is allocated in steps and `count` trimmed per frame so a feed that grows
+// by one contact does not rebuild the buffers.
+
+export interface ContactHover { contact: TrafficContact; x: number; y: number }
+
+const CONTACT_CAPACITY_STEP = 256;
+const CONTACT_ANON_COLOR = new THREE.Color(ANON_CONTACT_COLOR);
+const CONTACT_REVEALED_COLOR = new THREE.Color('#cbd5e1');
+
+function contactCapacity(n: number): number {
+  return Math.max(CONTACT_CAPACITY_STEP, Math.ceil(Math.min(n, TRAFFIC_RENDER_CAP) / CONTACT_CAPACITY_STEP) * CONTACT_CAPACITY_STEP);
+}
+
+function ensureInstanceColor(mesh: THREE.InstancedMesh, capacity: number): THREE.InstancedBufferAttribute {
+  if (!mesh.instanceColor || mesh.instanceColor.count < capacity) {
+    mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(capacity * 3), 3);
+  }
+  return mesh.instanceColor;
+}
+
+function ContactsLayer({ contacts, asOfMs, posRef, reduced, onHover }: {
+  contacts: TrafficContact[];
+  asOfMs: number;
+  posRef: PositionsRef;
+  reduced: boolean;
+  onHover: (h: ContactHover | null) => void;
+}) {
+  const playersRef = useRef<THREE.InstancedMesh>(null);
+  const npcRef = useRef<THREE.InstancedMesh>(null);
+  const ringsRef = useRef<THREE.InstancedMesh>(null);
+  const split = useMemo(() => {
+    const players: TrafficContact[] = [];
+    const npcs: TrafficContact[] = [];
+    for (const c of contacts) {
+      if (players.length + npcs.length >= TRAFFIC_RENDER_CAP) break;
+      if (c.npc) npcs.push(c); else players.push(c);
+    }
+    const revealed = players.filter(c => !!c.intel);
+    return { players, npcs, revealed };
+  }, [contacts]);
+  const capPlayers = contactCapacity(split.players.length);
+  const capNpc = contactCapacity(split.npcs.length);
+  const capRings = contactCapacity(split.revealed.length);
+
+  // Colours change only when the contact set does — not per frame.
+  useLayoutEffect(() => {
+    const tmp = new THREE.Color();
+    const paint = (mesh: THREE.InstancedMesh | null, list: TrafficContact[], cap: number, pick: (c: TrafficContact) => THREE.Color) => {
+      if (!mesh) return;
+      const attr = ensureInstanceColor(mesh, cap);
+      list.forEach((c, i) => { const col = pick(c); attr.setXYZ(i, col.r, col.g, col.b); });
+      attr.needsUpdate = true;
+    };
+    paint(playersRef.current, split.players, capPlayers, c => c.intel ? CONTACT_REVEALED_COLOR : CONTACT_ANON_COLOR);
+    paint(npcRef.current, split.npcs, capNpc, c => tmp.set(c.factionHint ? FACTION_CONTACT_TINT[c.factionHint] : ANON_CONTACT_COLOR));
+    paint(ringsRef.current, split.revealed, capRings, c => tmp.set(corpRingColor(c.intel!.corpId)));
+  }, [split, capPlayers, capNpc, capRings]);
+
+  const m4 = useMemo(() => new THREE.Matrix4(), []);
+  const q = useMemo(() => new THREE.Quaternion(), []);
+  const up = useMemo(() => new THREE.Vector3(0, 1, 0), []);
+  const dir = useMemo(() => new THREE.Vector3(), []);
+  const one = useMemo(() => new THREE.Vector3(1, 1, 1), []);
+  const posV = useMemo(() => new THREE.Vector3(), []);
+  useFrame(() => {
+    const anchors = posRef.current.anchors;
+    const now = Date.now();
+    const opts = { asOfMs, plane: 'xz' as const, staticOrbit: reduced };
+    const fill = (mesh: THREE.InstancedMesh | null, list: TrafficContact[], scale: number, orient: boolean) => {
+      if (!mesh) return;
+      const placed = placeContacts(list, anchors, now, opts);
+      let n = 0;
+      for (const p of placed) {
+        posV.set(p.pos[0], p.pos[1], p.pos[2]);
+        if (orient && p.heading) { dir.set(p.heading[0], p.heading[1], p.heading[2]); q.setFromUnitVectors(up, dir); }
+        else q.identity();
+        m4.compose(posV, q, one.set(scale, scale, scale));
+        mesh.setMatrixAt(n++, m4);
+      }
+      mesh.count = n;
+      mesh.instanceMatrix.needsUpdate = true;
+    };
+    fill(playersRef.current, split.players, 1, true);
+    fill(npcRef.current, split.npcs, 1, true);
+    fill(ringsRef.current, split.revealed, 1, false);
+  });
+
+  const hoverFor = useCallback((list: TrafficContact[]) => (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    const c = typeof e.instanceId === 'number' ? list[e.instanceId] : undefined;
+    if (!c) return;
+    document.body.style.cursor = 'help';
+    onHover({ contact: c, x: e.clientX, y: e.clientY });
+  }, [onHover]);
+  const leave = useCallback((e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    document.body.style.cursor = 'auto';
+    onHover(null);
+  }, [onHover]);
+  const tapFor = useCallback((list: TrafficContact[]) => (e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation();
+    if (e.delta > 6) return;
+    const c = typeof e.instanceId === 'number' ? list[e.instanceId] : undefined;
+    if (c) onHover({ contact: c, x: e.clientX, y: e.clientY });
+  }, [onHover]);
+
+  return (
+    <group>
+      <instancedMesh
+        key={`players-${capPlayers}`}
+        ref={playersRef}
+        args={[undefined, undefined, capPlayers]}
+        frustumCulled={false}
+        onPointerOver={hoverFor(split.players)}
+        onPointerOut={leave}
+        onClick={tapFor(split.players)}
+      >
+        <octahedronGeometry args={[0.085, 0]} />
+        <meshBasicMaterial transparent opacity={0.8} depthWrite={false} toneMapped={false} />
+      </instancedMesh>
+      <instancedMesh
+        key={`npc-${capNpc}`}
+        ref={npcRef}
+        args={[undefined, undefined, capNpc]}
+        frustumCulled={false}
+        onPointerOver={hoverFor(split.npcs)}
+        onPointerOut={leave}
+        onClick={tapFor(split.npcs)}
+      >
+        <boxGeometry args={[0.07, 0.16, 0.07]} />
+        <meshBasicMaterial transparent opacity={0.55} depthWrite={false} toneMapped={false} />
+      </instancedMesh>
+      <instancedMesh key={`rings-${capRings}`} ref={ringsRef} args={[undefined, undefined, capRings]} frustumCulled={false} raycast={() => null}>
+        <torusGeometry args={[0.2, 0.022, 6, 24]} />
+        <meshBasicMaterial transparent opacity={0.95} depthWrite={false} toneMapped={false} />
+      </instancedMesh>
+    </group>
   );
 }
 
@@ -1726,7 +1893,7 @@ function SelectionMarker({ posRef, selectedLocationId, reduced }: { posRef: Posi
 
 // ── Main component ───────────────────────────────────────────────────────────
 
-export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard', alwaysLabels = false, onZoomTierChange, laneVolumes, onContextLost, layers, onToggleLayer }: SolarMap3DProps) {
+export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard', alwaysLabels = false, onZoomTierChange, laneVolumes, onContextLost, layers, onToggleLayer, contacts = NO_CONTACTS, contactsAsOfMs = 0 }: SolarMap3DProps) {
   const [selectedLoc, setSelectedLoc] = useState<string | null>(null);
   // Lanes / Ships / World — shell-controlled when `layers` is passed (item
   // 5: the phone icon strip owns the switches), private state otherwise.
@@ -1734,11 +1901,21 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   const layerVis = layers ?? localLayers;
   const showLanes = layerVis.lanes;
   const showShips = layerVis.ships;
+  const showContacts = layerVis.contacts;
   const showWorld = layerVis.world;
   const toggleLayer = useCallback((key: MapLayerKey) => {
     if (onToggleLayer) onToggleLayer(key);
     else setLocalLayers(prev => toggleMapLayer(prev, key));
   }, [onToggleLayer]);
+  // Ship traffic: the hover/tap tag for a contact (container-relative px).
+  const [contactHover, setContactHover] = useState<ContactHover | null>(null);
+  const handleContactHover = useCallback((h: ContactHover | null) => {
+    if (!h) { setContactHover(null); return; }
+    const root = rootRef.current;
+    const r = root?.getBoundingClientRect();
+    setContactHover(r ? { contact: h.contact, x: h.x - r.left, y: h.y - r.top } : h);
+  }, []);
+  useEffect(() => { if (!showContacts || contacts.length === 0) setContactHover(null); }, [showContacts, contacts.length]);
   const [listExpanded, setListExpanded] = useState(false);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const cameraRef = useRef<THREE.Camera | null>(null);
@@ -2159,6 +2336,9 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         {showLanes && <LaneLines posRef={posRef} state={state} reduced={reduced} laneVolumes={laneVolumes} />}
         {showShips && transitShips.map(s => <TransitShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} />)}
         {showShips && stationShips.map(s => <StationShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} />)}
+        {showContacts && contacts.length > 0 && (
+          <ContactsLayer contacts={contacts} asOfMs={contactsAsOfMs} posRef={posRef} reduced={reduced} onHover={handleContactHover} />
+        )}
         <MapPings3D posRef={posRef} reduced={reduced} />
         <HazardRings posRef={posRef} state={state} />
         <ForecastMarkers posRef={posRef} state={state} reduced={reduced} />
@@ -2241,6 +2421,16 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
           }`}
         >
           {showShips ? '● Ships' : '○ Ships'}
+        </button>
+        <button
+          onClick={() => toggleLayer('contacts')}
+          aria-pressed={showContacts}
+          title="Toggle other corporations' ships (anonymised contacts; identities need an active Fleet Tracking reveal)"
+          className={`min-h-[44px] px-2 py-1 rounded text-[10px] font-medium border backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+            showContacts ? 'bg-slate-500/20 text-slate-200 border-slate-400/30' : 'bg-black/60 text-slate-500 border-white/10 hover:text-white'
+          }`}
+        >
+          {showContacts ? '● Contacts' : '○ Contacts'}
         </button>
         <button
           onClick={() => toggleLayer('world')}
@@ -2349,10 +2539,32 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         )}
       </div>
 
-      {shipsInTransit > 0 && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-          <DataChip icon="ship-transport" tone="good">{shipsInTransit} in transit</DataChip>
+      {(shipsInTransit > 0 || (showContacts && contacts.length > 0)) && (
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none flex gap-1.5">
+          {shipsInTransit > 0 && <DataChip icon="ship-transport" tone="good">{shipsInTransit} in transit</DataChip>}
+          {showContacts && contacts.length > 0 && (
+            <DataChip icon="target">{contacts.length} contact{contacts.length === 1 ? '' : 's'}</DataChip>
+          )}
         </div>
+      )}
+
+      {/* Ship traffic: hover/tap tag. Screen readers get the same text from
+          the contact list below; this is the pointer path only. */}
+      {contactHover && showContacts && (
+        <div
+          role="tooltip"
+          className="absolute z-30 pointer-events-none max-w-[240px] rounded-lg border border-white/[0.14] bg-[#050510]/95 px-2.5 py-1.5 text-[11px] leading-snug text-slate-100 shadow-lg backdrop-blur-sm"
+          style={{ left: Math.max(4, contactHover.x + 12), top: Math.max(4, contactHover.y - 8) }}
+        >
+          <div className="font-hud font-semibold text-cyan-200">{contactLabel(contactHover.contact)}</div>
+          <div className="text-slate-400">{contactDetail(contactHover.contact, Date.now(), contactsAsOfMs)}</div>
+        </div>
+      )}
+      {showContacts && contacts.length > 0 && (
+        <ul className="sr-only" aria-label="Ship contacts near your holdings (other corporations, anonymised unless you hold a fleet reveal)">
+          {contacts.slice(0, 40).map(c => <li key={c.id}>{contactLabel(c)}</li>)}
+          {contacts.length > 40 && <li>and {contacts.length - 40} more contacts</li>}
+        </ul>
       )}
 
       <p id="solar-map-3d-hint" className="sr-only">
