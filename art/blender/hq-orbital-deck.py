@@ -97,6 +97,15 @@ LIMB_DIP = math.acos(R_EARTH / (R_EARTH + ALT))           # 20.2 deg below the l
 LIMB_Y = 0.33                                             # frame height fraction of the limb straight ahead
 CAM_PITCH = -(LIMB_DIP + math.atan((0.5 - LIMB_Y) * 2 * math.tan(HALF_VFOV)))
 CAP_DEG = 26.0                                            # spherical caps cover this much around the nadir
+# Where the station is and which way it is looking, in real Earth coordinates. The window sees the
+# ground 4 deg to 20 deg AHEAD of the nadir (the nadir itself is below the sill), so the track is
+# chosen for what lies in that band, not for what is underneath: up the Nile from Aswan, across the
+# delta and the Sinai, over the eastern Mediterranean, with Anatolia and the Black Sea on the limb.
+# Coast, desert, sea and — at night — the Nile ribbon, Cairo, the Levantine coast and Istanbul, which
+# is the most legible city-light geography on the planet. Without this rotation the cap's axis lands
+# on the texture's north pole and the whole Earth renders as featureless ice.
+NADIR_LATLON = (24.0, 32.9)         # Aswan, the upper Nile
+FORWARD_LATLON = (41.0, 29.0)       # the ground track ahead: the Bosphorus
 NEAR_MAX_KM = 0.06
 MID_MAX_KM = 5.0
 DEPTH_WHITE_M = 3_000_000.0
@@ -106,12 +115,17 @@ TEX_DIR = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__
 
 VARIANT_ORDER = ['dayside', 'terminator', 'nightside', 'sunrise']
 # sun direction = unit vector from the scene toward the sun in camera-world axes
-# (x right, y forward, z local up); exposure (AgX); station flood factor; bloom; aurora boost
+# (x right, y forward, z local up); exposure (AgX); station flood factor; bloom; aurora boost.
+# The surface normal at central angle a ahead of the nadir is (0, sin a, cos a), and the window sees
+# a = 4 deg (sill) to 20.2 deg (limb) — so a sun with a small +z and a negative y puts the day/night
+# line INSIDE the frame, which is the whole point of the `terminator` variant. A sun on the local
+# horizon (z ~ 0) does the opposite: every normal in frame sits at the same grazing angle and the
+# plate reads as one flat brown disc.
 VARIANTS = {
-    'dayside':    dict(sun=(-0.45, -0.35, 0.82), exposure=-0.6, lights=0.0,  bloom=0.5, streak=0.0, look='None',        earthshine=0.0),
-    'terminator': dict(sun=(0.94, 0.30, -0.06),  exposure=0.5, lights=0.5,  bloom=0.6, streak=0.0, look='None',        earthshine=0.0),
-    'nightside':  dict(sun=(0.10, 0.35, -0.93),  exposure=1.2,  lights=1.0,  bloom=0.8, streak=0.0, look='AgX - Punchy', earthshine=0.12),
-    'sunrise':    dict(sun=(0.23, 0.915, -0.335), exposure=0.1, lights=0.8,  bloom=1.6, streak=1.0, look='None',        earthshine=0.05),
+    'dayside':    dict(sun=(-0.45, -0.35, 0.82), exposure=-1.7, lights=0.0,  bloom=0.5, streak=0.0, look='None',        earthshine=0.0),
+    'terminator': dict(sun=(0.30, -0.55, 0.16),  exposure=-0.45, lights=0.6,  bloom=0.6, streak=0.0, look='None',        earthshine=0.02),
+    'nightside':  dict(sun=(0.10, 0.35, -0.93),  exposure=0.55, lights=1.0,  bloom=0.8, streak=0.0, look='AgX - Punchy', earthshine=0.03),
+    'sunrise':    dict(sun=(0.23, 0.915, -0.335), exposure=-1.1, lights=0.8,  bloom=0.9, streak=0.55, look='None',       earthshine=0.03),
 }
 
 random.seed(20260914)
@@ -305,11 +319,39 @@ def _image(nt, name):
     return tex
 
 
-def _equirect_uv(nt):
-    """Longitude/latitude UV from the object-space position of a sphere centred on its origin."""
+def _latlon_vec(latlon):
+    lat = math.radians(latlon[0]); lon = math.radians(latlon[1])
+    return Vector((math.cos(lat) * math.cos(lon), math.cos(lat) * math.sin(lon), math.sin(lat)))
+
+
+def _ground_rotation(nadir, forward):
+    """Euler (XYZ) that maps the cap's local frame onto real Earth coordinates: local +Z onto the
+    nadir point, local +Y onto the ground track toward `forward`. Everything geographic in the plate
+    (which continents, which coastline, which cities light up) follows from these two points."""
+    z = _latlon_vec(nadir).normalized()
+    f = _latlon_vec(forward)
+    y = (f - z * f.dot(z)).normalized()
+    x = y.cross(z)
+    return Matrix(((x.x, y.x, z.x), (x.y, y.y, z.y), (x.z, y.z, z.z))).to_euler('XYZ')
+
+
+def _equirect_uv(nt, ground=None):
+    """Longitude/latitude UV from the object-space position of a sphere centred on its origin.
+
+    `ground` is the Euler from `_ground_rotation`: without it the cap's axis lands on the texture's
+    north pole and the whole plate renders as featureless ice (that was round 1's white Earth).
+    Blender's Mapping node applies its rotation as an XYZ Euler, which is the same convention
+    `Matrix.to_euler('XYZ')` produces, so the matrix round-trips exactly.
+    """
     tc = nt.nodes.new('ShaderNodeTexCoord')
     nrm = nt.nodes.new('ShaderNodeVectorMath'); nrm.operation = 'NORMALIZE'; nt.links.new(tc.outputs['Object'], nrm.inputs[0])
-    sep = nt.nodes.new('ShaderNodeSeparateXYZ'); nt.links.new(nrm.outputs[0], sep.inputs[0])
+    src = nrm.outputs[0]
+    if ground is not None:
+        mp = nt.nodes.new('ShaderNodeMapping'); mp.vector_type = 'POINT'
+        mp.inputs['Rotation'].default_value = tuple(ground)
+        nt.links.new(src, mp.inputs['Vector'])
+        src = mp.outputs['Vector']
+    sep = nt.nodes.new('ShaderNodeSeparateXYZ'); nt.links.new(src, sep.inputs[0])
     lon = _math(nt, 'ARCTAN2', sep.outputs['Y'], sep.outputs['X'])
     u = _math(nt, 'ADD', _math(nt, 'DIVIDE', lon, 2 * math.pi), 0.5)
     lat = _math(nt, 'ARCSINE', sep.outputs['Z'])
@@ -373,13 +415,16 @@ def earth_material(sun):
     m.use_nodes = True
     nt = m.node_tree
     bsdf = nt.nodes['Principled BSDF']
-    uv, tc = _equirect_uv(nt)
+    uv, tc = _equirect_uv(nt, _ground_rotation(NADIR_LATLON, FORWARD_LATLON))
     day = _image(nt, 'earth_day.webp'); nt.links.new(uv, day.inputs['Vector'])
     night = _image(nt, 'earth_night.webp'); nt.links.new(uv, night.inputs['Vector'])
     # terrain grain: the 2048 px map is 20 km per texel, so break it with two noise scales (~4 km and ~1 km)
     grain_a = _noise(nt, tc.outputs['Object'], 0.25, 5.0, 0.55)
     grain_b = _noise(nt, tc.outputs['Object'], 1.1, 3.0, 0.5)
-    g = _maprange(nt, _math(nt, 'ADD', _math(nt, 'MULTIPLY', grain_a.outputs['Fac'], 0.6), _math(nt, 'MULTIPLY', grain_b.outputs['Fac'], 0.4)), 0.3, 0.7, 0.82, 1.14)
+    grain_c = _noise(nt, tc.outputs['Object'], 4.0, 2.0, 0.5)
+    gsum = _math(nt, 'ADD', _math(nt, 'ADD', _math(nt, 'MULTIPLY', grain_a.outputs['Fac'], 0.5), _math(nt, 'MULTIPLY', grain_b.outputs['Fac'], 0.32)),
+                 _math(nt, 'MULTIPLY', grain_c.outputs['Fac'], 0.18))
+    g = _maprange(nt, gsum, 0.28, 0.72, 0.68, 1.34)
     gm = nt.nodes.new('ShaderNodeMix'); gm.data_type = 'RGBA'; gm.blend_type = 'MULTIPLY'; gm.inputs['Factor'].default_value = 1.0
     nt.links.new(day.outputs['Color'], gm.inputs[6])
     gcol = nt.nodes.new('ShaderNodeCombineColor'); nt.links.new(g, gcol.inputs[0]); nt.links.new(g, gcol.inputs[1]); nt.links.new(g, gcol.inputs[2])
@@ -390,7 +435,11 @@ def earth_material(sun):
     sea = _maprange(nt, _math(nt, 'SUBTRACT', sepc.outputs[2], rg), 0.02, 0.10, 0.0, 1.0)
     colmix = nt.nodes.new('ShaderNodeMix'); colmix.data_type = 'RGBA'
     nt.links.new(sea, colmix.inputs['Factor']); nt.links.new(gm.outputs[2], colmix.inputs[6]); nt.links.new(day.outputs['Color'], colmix.inputs[7])
-    nt.links.new(colmix.outputs[2], bsdf.inputs['Base Color'])
+    sat = nt.nodes.new('ShaderNodeHueSaturation')
+    sat.inputs['Saturation'].default_value = 1.55
+    sat.inputs['Value'].default_value = 1.0
+    nt.links.new(colmix.outputs[2], sat.inputs['Color'])
+    nt.links.new(sat.outputs['Color'], bsdf.inputs['Base Color'])
     rough = _maprange(nt, sea, 0.0, 1.0, 0.85, 0.22)
     nt.links.new(rough, bsdf.inputs['Roughness'])
     if 'Specular IOR Level' in bsdf.inputs:
@@ -404,7 +453,7 @@ def earth_material(sun):
     night_gate = _maprange(nt, nd, -0.22, 0.02, 1.0, 0.0)
     pts = _noise(nt, tc.outputs['Object'], 3.0, 2.0, 0.6)
     pt = _maprange(nt, pts.outputs['Fac'], 0.35, 0.7, 0.35, 1.4)
-    strength = _math(nt, 'MULTIPLY', _math(nt, 'MULTIPLY', night_gate, pt), 4.0)
+    strength = _math(nt, 'MULTIPLY', _math(nt, 'MULTIPLY', night_gate, pt), 7.0)
     nsub = nt.nodes.new('ShaderNodeVectorMath'); nsub.operation = 'SUBTRACT'; nsub.inputs[1].default_value = (0.10, 0.10, 0.10)
     nt.links.new(night.outputs['Color'], nsub.inputs[0])
     nmax = nt.nodes.new('ShaderNodeVectorMath'); nmax.operation = 'MAXIMUM'; nmax.inputs[1].default_value = (0.0, 0.0, 0.0)
@@ -425,12 +474,26 @@ def cloud_material():
     for n in list(nt.nodes):
         nt.nodes.remove(n)
     out = nt.nodes.new('ShaderNodeOutputMaterial')
-    uv, tc = _equirect_uv(nt)
+    uv, tc = _equirect_uv(nt, _ground_rotation(NADIR_LATLON, FORWARD_LATLON))
     cl = _image(nt, 'earth_clouds.webp'); nt.links.new(uv, cl.inputs['Vector'])
     lum = nt.nodes.new('ShaderNodeRGBToBW'); nt.links.new(cl.outputs['Color'], lum.inputs[0])
     detail = _noise(nt, tc.outputs['Object'], 0.35, 6.0, 0.6)
     d = _maprange(nt, detail.outputs['Fac'], 0.3, 0.7, 0.55, 1.35)
-    cov = _maprange(nt, _math(nt, 'MULTIPLY', lum.outputs[0], d), 0.24, 0.9, 0.0, 1.0)
+    from_map = _maprange(nt, _math(nt, 'MULTIPLY', lum.outputs[0], d), 0.045, 0.26, 0.0, 1.0)
+    # The map is one fixed snapshot at 20 km per texel, and the ground track runs over the Sahara,
+    # where that snapshot is nearly cloudless — a bare, soft desert is the one thing that reads as a
+    # render rather than a place. So a procedural weather field is laid over it (object space is
+    # kilometres: 0.004 = 250 km systems, 0.03 = 33 km cells, 0.13 = 8 km puffs) and the two are
+    # combined with MAXIMUM, which keeps the real systems and fills the empty quarters.
+    sys_n = _noise(nt, tc.outputs['Object'], 0.004, 3.0, 0.55)
+    cell = _noise(nt, tc.outputs['Object'], 0.03, 5.0, 0.6)
+    puff = _noise(nt, tc.outputs['Object'], 0.13, 4.0, 0.55)
+    mixn = _math(nt, 'ADD', _math(nt, 'ADD', _math(nt, 'MULTIPLY', sys_n.outputs['Fac'], 0.52),
+                                  _math(nt, 'MULTIPLY', cell.outputs['Fac'], 0.32)),
+                 _math(nt, 'MULTIPLY', puff.outputs['Fac'], 0.16))
+    band = _maprange(nt, sys_n.outputs['Fac'], 0.46, 0.60, 0.0, 1.0)          # only inside weather systems
+    proc = _math(nt, 'MULTIPLY', _maprange(nt, mixn, 0.520, 0.610, 0.0, 1.0), band)
+    cov = _math(nt, 'MAXIMUM', from_map, proc)
     bsdf = nt.nodes.new('ShaderNodeBsdfPrincipled')
     bsdf.inputs['Base Color'].default_value = (0.96, 0.96, 0.97, 1)
     bsdf.inputs['Roughness'].default_value = 1.0
@@ -467,7 +530,7 @@ def atmosphere_material(name, sun, strength, blend_power, night_floor, inner=Fal
     vd = nt.nodes.new('ShaderNodeVectorMath'); vd.operation = 'DOT_PRODUCT'
     nt.links.new(geo2.outputs['Incoming'], vd.inputs[0]); vd.inputs[1].default_value = tuple(-Vector(sun).normalized())
     fwd = _math(nt, 'POWER', _maprange(nt, vd.outputs['Value'], 0.0, 1.0, 0.0, 1.0), 6.0)
-    daylight = _math(nt, 'MULTIPLY', daylight, _math(nt, 'ADD', 1.0, _math(nt, 'MULTIPLY', fwd, 5.0)))
+    daylight = _math(nt, 'MULTIPLY', daylight, _math(nt, 'ADD', 1.0, _math(nt, 'MULTIPLY', fwd, 1.8)))
     col = nt.nodes.new('ShaderNodeMix'); col.data_type = 'RGBA'
     col.inputs[6].default_value = (0.30, 0.55, 1.0, 1); col.inputs[7].default_value = (1.0, 0.42, 0.16, 1)
     nt.links.new(_math(nt, 'MULTIPLY', grazing, 0.15 if inner else 0.85), col.inputs['Factor'])
@@ -577,11 +640,15 @@ def build_camera():
 
 
 def build_far(sun):
+    # The two atmosphere shells are the whole reason this plate can look like a render instead of a
+    # photograph: at low `blend_power` a Fresnel shell over a 26 deg cap goes grazing long before the
+    # limb, so it lays a flat pink veil over two thirds of the Earth and every continent, cloud and
+    # terminator underneath disappears. Keep the power high (thin arc) and the strength low.
     c = coll('FAR')
     spherical_cap('earth', R_EARTH, CAP_DEG, earth_material(sun), c)
     spherical_cap('clouds', R_EARTH + 9.0, CAP_DEG, cloud_material(), c, rings=300, segs=1536)
-    camera_only(spherical_cap('atmo_inner', R_EARTH + 38.0, CAP_DEG, atmosphere_material('atmo_inner', sun, 0.30, 2.0, 0.0, inner=True), c, rings=200, segs=1024))
-    camera_only(spherical_cap('atmo_limb', R_EARTH + 95.0, CAP_DEG, atmosphere_material('atmo_limb', sun, 5.0, 3.0, 0.05), c, rings=520, segs=2048))
+    camera_only(spherical_cap('atmo_inner', R_EARTH + 38.0, CAP_DEG, atmosphere_material('atmo_inner', sun, 0.012, 2.6, 0.0, inner=True), c, rings=200, segs=1024))
+    camera_only(spherical_cap('atmo_limb', R_EARTH + 95.0, CAP_DEG, atmosphere_material('atmo_limb', sun, 1.5, 7.0, 0.03), c, rings=520, segs=2048))
     # the Moon: 0.52 deg across, upper-left of centre, above the limb; lit by the same sun so its phase is right
     md = cam_pt(0.40, 0.12, 1.0).normalized()
     dist = 40000.0
@@ -614,7 +681,7 @@ def build_lights(sun, V):
 def freighter(name, collection, loc, rot, scale=1.0, engine=0.0, running=1.0):
     """A 34 m freighter: pressurised module, tank cluster, radiators, engine cluster; nose along +Y (local)."""
     c = collection
-    hull = mat('hull_white', (0.78, 0.79, 0.80), rough=0.45, metal=0.1)
+    hull = mat('hull_white', (0.56, 0.57, 0.585), rough=0.42, metal=0.12)
     dark = mat('hull_dark', (0.12, 0.13, 0.15), rough=0.5, metal=0.3)
     gold = mat('hull_foil', (0.85, 0.62, 0.22), rough=0.35, metal=0.8)
     rad = mat('radiator', (0.92, 0.92, 0.9), rough=0.7)
@@ -657,7 +724,7 @@ def freighter(name, collection, loc, rot, scale=1.0, engine=0.0, running=1.0):
 
 def build_mid():
     c = coll('MID')
-    steel = mat('arm_steel', (0.72, 0.73, 0.75), rough=0.4, metal=0.6)
+    steel = mat('arm_steel', (0.58, 0.59, 0.62), rough=0.38, metal=0.65)
     dark = mat('hull_dark', (0.12, 0.13, 0.15), rough=0.5, metal=0.3)
     amber = mat('arm_amber', (0.9, 0.55, 0.1), rough=0.5)
     # the docking arm: three jointed segments from the lower-left toward the ship, in the lower-right
@@ -739,10 +806,16 @@ def build_near():
     cyl('wing_mast', tuple(mp), 0.3 * U, 10 * U, truss_m, c, seg=10, rot=rot_between((0, 0, 1), wp - mp))
     box('wing_box', tuple(mp), (2.2 * U, 2.2 * U, 1.8 * U), foil, c, rot=(0.2, 0.3, 0.4))
     # radiator: white panel standing along the right edge, seen nearly edge-on
-    rad = mat('radiator_near', (0.9, 0.9, 0.88), rough=0.7)
+    rad = mat('radiator_near', (0.74, 0.75, 0.74), rough=0.62)
     rp = cam_pt(1.01, 0.52, 18 * U)
-    r = box('radiator', (0, 0, 0), (0.08 * U, 4 * U, 10 * U), rad, c)
-    r.matrix_world = Matrix.Translation(rp) @ Matrix.Rotation(math.radians(-8), 4, 'Z') @ Matrix.Rotation(math.radians(5), 4, 'Y')
+    spine_rot = Matrix.Rotation(math.radians(-8), 4, 'Z') @ Matrix.Rotation(math.radians(5), 4, 'Y')
+    # seven separate panels with gaps, not one slab, so the right edge reads as hardware
+    for k in range(7):
+        z = (k - 3) * 1.42 * U
+        pan = box(f'radiator_p{k}', (0, 0, 0), (0.07 * U, 4 * U, 1.24 * U), rad, c)
+        pan.matrix_world = Matrix.Translation(rp) @ spine_rot @ Matrix.Translation((0, 0, z))
+        rib = box(f'radiator_rib{k}', (0, 0, 0), (0.10 * U, 0.16 * U, 1.24 * U), truss_m, c)
+        rib.matrix_world = Matrix.Translation(rp) @ spine_rot @ Matrix.Translation((0, -1.6 * U, z))
     sp = box('rad_spine', (0, 0, 0), (0.4 * U, 0.4 * U, 10.4 * U), truss_m, c)
     sp.matrix_world = Matrix.Translation(rp + Vector((-0.3 * U, 0, 0))) @ Matrix.Rotation(math.radians(5), 4, 'Y')
     # an antenna with a small dish just outside the glass, lower left

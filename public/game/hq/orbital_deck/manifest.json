@@ -1,0 +1,679 @@
+{
+  "stage": "orbital_deck",
+  "title": "Orbital Command Deck",
+  "version": 1,
+  "generatedAt": "2026-09-13T18:01:32.309Z",
+  "source": "art/blender/hq-orbital-deck.py",
+  "aspect": [
+    21,
+    9
+  ],
+  "native": {
+    "width": 2560,
+    "height": 1097
+  },
+  "widths": [
+    2560,
+    1280,
+    640
+  ],
+  "files": "game/hq/orbital_deck/{variant}-{layer}-{width}.webp",
+  "defaultVariant": "sunrise",
+  "variantOrder": [
+    "dayside",
+    "terminator",
+    "nightside",
+    "sunrise"
+  ],
+  "composition": {
+    "horizonY": 0.33,
+    "limbAhead": [
+      0.5,
+      0.33
+    ],
+    "limbLeft": [
+      -0.004,
+      0.479
+    ],
+    "limbRight": [
+      1.004,
+      0.479
+    ],
+    "dockedShip": [
+      0.7,
+      0.6
+    ],
+    "moon": [
+      0.4,
+      0.12
+    ],
+    "orbitalPeriodMin": 92.7,
+    "consoleClearBottom": 0.12,
+    "overscan": 0.03,
+    "clockOffsetHours": 0,
+    "camera": {
+      "altitudeKm": 420,
+      "pitchDeg": -26.49,
+      "lensMm": 24,
+      "limbDipDeg": 20.26
+    },
+    "variantOrder": [
+      "dayside",
+      "terminator",
+      "nightside",
+      "sunrise"
+    ],
+    "defaultVariant": "sunrise",
+    "note": "Layers share one camera; scale each by (1 + overscan) so parallax never reveals an edge. Consoles dock in the bottom 12%. Coordinates are normalized [x, y] from the top-left."
+  },
+  "depthThresholds": {
+    "nearMaxM": 60,
+    "midMaxM": 5000
+  },
+  "layers": [
+    {
+      "name": "far",
+      "order": 0,
+      "parallax": 0.05,
+      "alpha": false,
+      "note": "space, stars, Earth (day/night maps, clouds, Fresnel atmosphere), sun disc + glare, the Moon (opaque backplate)"
+    },
+    {
+      "name": "mid",
+      "order": 1,
+      "parallax": 0.45,
+      "alpha": true,
+      "note": "docking arm, the docked freighter, a tender, distant satellites"
+    },
+    {
+      "name": "near",
+      "order": 5,
+      "parallax": 1,
+      "alpha": true,
+      "note": "window frame with cyan/amber/purple console strips, station truss, solar wing, radiator, antenna"
+    }
+  ],
+  "variants": {
+    "dayside": {
+      "sunDirection": [
+        -0.45,
+        -0.35,
+        0.82
+      ],
+      "exposure": -1.7,
+      "lights": 0,
+      "look": "None",
+      "bloom": 0.5,
+      "streak": 0,
+      "horizonRow": 362,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "dayside-far-640.webp",
+              "bytes": 21612,
+              "height": 274
+            },
+            "1280": {
+              "file": "dayside-far-1280.webp",
+              "bytes": 63622,
+              "height": 549
+            },
+            "2560": {
+              "file": "dayside-far-2560.webp",
+              "bytes": 177264,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "dayside-mid-640.webp",
+              "bytes": 8588,
+              "height": 274
+            },
+            "1280": {
+              "file": "dayside-mid-1280.webp",
+              "bytes": 15706,
+              "height": 549
+            },
+            "2560": {
+              "file": "dayside-mid-2560.webp",
+              "bytes": 29980,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "dayside-near-640.webp",
+              "bytes": 23506,
+              "height": 274
+            },
+            "1280": {
+              "file": "dayside-near-1280.webp",
+              "bytes": 52618,
+              "height": 549
+            },
+            "2560": {
+              "file": "dayside-near-2560.webp",
+              "bytes": 99954,
+              "height": 1097
+            }
+          }
+        }
+      }
+    },
+    "terminator": {
+      "sunDirection": [
+        0.3,
+        -0.55,
+        0.16
+      ],
+      "exposure": -0.45,
+      "lights": 0.6,
+      "look": "None",
+      "bloom": 0.6,
+      "streak": 0,
+      "horizonRow": 362,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "terminator-far-640.webp",
+              "bytes": 15668,
+              "height": 274
+            },
+            "1280": {
+              "file": "terminator-far-1280.webp",
+              "bytes": 53362,
+              "height": 549
+            },
+            "2560": {
+              "file": "terminator-far-2560.webp",
+              "bytes": 129656,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "terminator-mid-640.webp",
+              "bytes": 9610,
+              "height": 274
+            },
+            "1280": {
+              "file": "terminator-mid-1280.webp",
+              "bytes": 18824,
+              "height": 549
+            },
+            "2560": {
+              "file": "terminator-mid-2560.webp",
+              "bytes": 36098,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "terminator-near-640.webp",
+              "bytes": 27228,
+              "height": 274
+            },
+            "1280": {
+              "file": "terminator-near-1280.webp",
+              "bytes": 60324,
+              "height": 549
+            },
+            "2560": {
+              "file": "terminator-near-2560.webp",
+              "bytes": 115912,
+              "height": 1097
+            }
+          }
+        }
+      }
+    },
+    "nightside": {
+      "sunDirection": [
+        0.1,
+        0.35,
+        -0.93
+      ],
+      "exposure": 0.55,
+      "lights": 1,
+      "look": "AgX - Punchy",
+      "bloom": 0.8,
+      "streak": 0,
+      "horizonRow": 362,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "nightside-far-640.webp",
+              "bytes": 6340,
+              "height": 274
+            },
+            "1280": {
+              "file": "nightside-far-1280.webp",
+              "bytes": 20156,
+              "height": 549
+            },
+            "2560": {
+              "file": "nightside-far-2560.webp",
+              "bytes": 50534,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "nightside-mid-640.webp",
+              "bytes": 8524,
+              "height": 274
+            },
+            "1280": {
+              "file": "nightside-mid-1280.webp",
+              "bytes": 17356,
+              "height": 549
+            },
+            "2560": {
+              "file": "nightside-mid-2560.webp",
+              "bytes": 35474,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "nightside-near-640.webp",
+              "bytes": 23814,
+              "height": 274
+            },
+            "1280": {
+              "file": "nightside-near-1280.webp",
+              "bytes": 52856,
+              "height": 549
+            },
+            "2560": {
+              "file": "nightside-near-2560.webp",
+              "bytes": 102470,
+              "height": 1097
+            }
+          }
+        }
+      }
+    },
+    "sunrise": {
+      "sunDirection": [
+        0.23,
+        0.915,
+        -0.335
+      ],
+      "exposure": -1.1,
+      "lights": 0.8,
+      "look": "None",
+      "bloom": 0.9,
+      "streak": 0.55,
+      "horizonRow": 362,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "sunrise-far-640.webp",
+              "bytes": 6922,
+              "height": 274
+            },
+            "1280": {
+              "file": "sunrise-far-1280.webp",
+              "bytes": 18428,
+              "height": 549
+            },
+            "2560": {
+              "file": "sunrise-far-2560.webp",
+              "bytes": 49816,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "sunrise-mid-640.webp",
+              "bytes": 7946,
+              "height": 274
+            },
+            "1280": {
+              "file": "sunrise-mid-1280.webp",
+              "bytes": 14980,
+              "height": 549
+            },
+            "2560": {
+              "file": "sunrise-mid-2560.webp",
+              "bytes": 31832,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "sunrise-near-640.webp",
+              "bytes": 23140,
+              "height": 274
+            },
+            "1280": {
+              "file": "sunrise-near-1280.webp",
+              "bytes": 50250,
+              "height": 549
+            },
+            "2560": {
+              "file": "sunrise-near-2560.webp",
+              "bytes": 99976,
+              "height": 1097
+            }
+          }
+        }
+      }
+    }
+  },
+  "actors": {
+    "shipDeparting": {
+      "blend": "normal",
+      "order": 3,
+      "trigger": "launch",
+      "below": "near",
+      "idle": false,
+      "perVariant": true,
+      "anchor": {
+        "x": 0.471875,
+        "y": 0.105742935278031,
+        "w": 0.08515625,
+        "h": 0.1640838650865998
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "A freighter climbing away on a departure arc with its engines lit, lit per variant. Translate it up and right along the arc while it plays; it is not drawn at rest.",
+      "widths": [
+        2560,
+        1280,
+        640
+      ],
+      "files": {
+        "dayside": {
+          "640": {
+            "file": "dayside-shipDeparting-640.webp",
+            "bytes": 1010,
+            "width": 55,
+            "height": 45
+          },
+          "1280": {
+            "file": "dayside-shipDeparting-1280.webp",
+            "bytes": 1828,
+            "width": 109,
+            "height": 90
+          },
+          "2560": {
+            "file": "dayside-shipDeparting-2560.webp",
+            "bytes": 2644,
+            "width": 218,
+            "height": 180
+          }
+        },
+        "terminator": {
+          "640": {
+            "file": "terminator-shipDeparting-640.webp",
+            "bytes": 1044,
+            "width": 55,
+            "height": 45
+          },
+          "1280": {
+            "file": "terminator-shipDeparting-1280.webp",
+            "bytes": 2004,
+            "width": 109,
+            "height": 90
+          },
+          "2560": {
+            "file": "terminator-shipDeparting-2560.webp",
+            "bytes": 2818,
+            "width": 218,
+            "height": 180
+          }
+        },
+        "nightside": {
+          "640": {
+            "file": "nightside-shipDeparting-640.webp",
+            "bytes": 1072,
+            "width": 55,
+            "height": 45
+          },
+          "1280": {
+            "file": "nightside-shipDeparting-1280.webp",
+            "bytes": 1926,
+            "width": 109,
+            "height": 90
+          },
+          "2560": {
+            "file": "nightside-shipDeparting-2560.webp",
+            "bytes": 2980,
+            "width": 218,
+            "height": 180
+          }
+        },
+        "sunrise": {
+          "640": {
+            "file": "sunrise-shipDeparting-640.webp",
+            "bytes": 1020,
+            "width": 55,
+            "height": 45
+          },
+          "1280": {
+            "file": "sunrise-shipDeparting-1280.webp",
+            "bytes": 1812,
+            "width": 109,
+            "height": 90
+          },
+          "2560": {
+            "file": "sunrise-shipDeparting-2560.webp",
+            "bytes": 2718,
+            "width": 218,
+            "height": 180
+          }
+        }
+      },
+      "quality": 86
+    },
+    "debrisWarning": {
+      "blend": "normal",
+      "order": 4,
+      "trigger": "weather",
+      "below": "near",
+      "idle": false,
+      "perVariant": false,
+      "anchor": {
+        "x": 0.521875,
+        "y": 0,
+        "w": 0.395703125,
+        "h": 0.3618960802187785
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "A debris streak crossing the upper right (alpha). Show it for a second or two during a hazard event, sliding along its own long axis.",
+      "widths": [
+        2560,
+        1280,
+        640
+      ],
+      "files": {
+        "640": {
+          "file": "actor-debrisWarning-640.webp",
+          "bytes": 5334,
+          "width": 253,
+          "height": 99
+        },
+        "1280": {
+          "file": "actor-debrisWarning-1280.webp",
+          "bytes": 14772,
+          "width": 507,
+          "height": 199
+        },
+        "2560": {
+          "file": "actor-debrisWarning-2560.webp",
+          "bytes": 48930,
+          "width": 1013,
+          "height": 397
+        }
+      },
+      "quality": 84
+    },
+    "aurora": {
+      "blend": "screen",
+      "order": 1,
+      "trigger": "weather",
+      "below": "mid",
+      "idle": false,
+      "perVariant": false,
+      "anchor": {
+        "x": 0,
+        "y": 0.02917046490428441,
+        "w": 1,
+        "h": 0.5259799453053783
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "Aurora curtains standing on the limb (screen blend). Fade in during a solar storm; drift it slowly sideways. Strongest on nightside/terminator; on dayside keep opacity under 0.4.",
+      "widths": [
+        1280,
+        640
+      ],
+      "files": {
+        "640": {
+          "file": "actor-aurora-640.webp",
+          "bytes": 21354,
+          "width": 640,
+          "height": 144
+        },
+        "1280": {
+          "file": "actor-aurora-1280.webp",
+          "bytes": 63892,
+          "width": 1280,
+          "height": 289
+        }
+      },
+      "quality": 82
+    },
+    "satGlint": {
+      "blend": "screen",
+      "order": 1,
+      "trigger": "build_complete",
+      "below": "mid",
+      "idle": true,
+      "perVariant": false,
+      "anchor": {
+        "x": 0.0484375,
+        "y": 0,
+        "w": 0.5625,
+        "h": 0.1422060164083865
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "Five satellites catching the sun along the limb (screen blend). Drawn at rest; twinkle by pulsing opacity 0.3-1.0 on a slow cycle, flare when a build completes.",
+      "widths": [
+        1280,
+        640
+      ],
+      "files": {
+        "640": {
+          "file": "actor-satGlint-640.webp",
+          "bytes": 1500,
+          "width": 360,
+          "height": 39
+        },
+        "1280": {
+          "file": "actor-satGlint-1280.webp",
+          "bytes": 3942,
+          "width": 720,
+          "height": 78
+        }
+      },
+      "quality": 84
+    }
+  },
+  "depth": {
+    "file": "depth-1280.webp",
+    "bytes": 8566,
+    "width": 1280,
+    "height": 549,
+    "metersAtWhite": 3000000,
+    "encoding": "linear: metres = value / 255 * metersAtWhite; 0 = sky"
+  },
+  "bytes": {
+    "byVariant": {
+      "dayside": 492850,
+      "terminator": 466682,
+      "nightside": 317524,
+      "sunrise": 303290
+    },
+    "actors": 182600,
+    "depth": 8566,
+    "total": 1771512
+  },
+  "render": {
+    "engine": "CYCLES",
+    "samples": 160,
+    "timings": {
+      "dayside": {
+        "far": 6.3,
+        "mid": 0.9,
+        "near": 1.6,
+        "depart": 0.6,
+        "post": 8,
+        "total": 24.5
+      },
+      "terminator": {
+        "far": 5.8,
+        "mid": 0.9,
+        "near": 1.7,
+        "depart": 0.6,
+        "post": 7.9,
+        "total": 22.2
+      },
+      "nightside": {
+        "far": 5.5,
+        "mid": 0.9,
+        "near": 1.7,
+        "depart": 0.7,
+        "post": 8.3,
+        "total": 22.7
+      },
+      "sunrise": {
+        "far": 5.3,
+        "mid": 0.9,
+        "near": 1.7,
+        "depart": 0.6,
+        "post": 8.5,
+        "total": 22.6
+      },
+      "actors": {
+        "debrisWarning": 0.6,
+        "aurora": 0.6,
+        "satGlint": 0.4,
+        "total": 6.7
+      }
+    }
+  }
+}

@@ -1,0 +1,543 @@
+{
+  "stage": "lunar_hq",
+  "title": "Lunar Gateway HQ",
+  "version": 1,
+  "generatedAt": "2026-09-13T18:03:19.207Z",
+  "source": "art/blender/hq-lunar.py",
+  "aspect": [
+    21,
+    9
+  ],
+  "native": {
+    "width": 2560,
+    "height": 1097
+  },
+  "widths": [
+    2560,
+    1280,
+    640
+  ],
+  "files": "game/hq/lunar_hq/{variant}-{layer}-{width}.webp",
+  "defaultVariant": "polar_day",
+  "variantOrder": [
+    "polar_day",
+    "earthrise",
+    "night"
+  ],
+  "composition": {
+    "horizonY": 0.33,
+    "rimTopY": 0.19,
+    "pad1": [
+      0.794,
+      0.414
+    ],
+    "pad2": [
+      0.111,
+      0.384
+    ],
+    "habitat": [
+      0.097,
+      0.457
+    ],
+    "rig": [
+      1.538,
+      0.338
+    ],
+    "earth": {
+      "polar_day": [
+        0.763,
+        0.121
+      ],
+      "earthrise": [
+        0.256,
+        0.206
+      ],
+      "night": [
+        0.763,
+        0.121
+      ]
+    },
+    "gateway": [
+      0.091,
+      -0.807
+    ],
+    "consoleClearBottom": 0.12,
+    "overscan": 0.03,
+    "clockOffsetHours": 0,
+    "camera": {
+      "heightM": 17,
+      "pitchDeg": -4.3,
+      "lensMm": 35,
+      "craterRadiusM": 9000,
+      "earthDiamDeg": 2.4
+    },
+    "variantOrder": [
+      "polar_day",
+      "earthrise",
+      "night"
+    ],
+    "defaultVariant": "polar_day",
+    "note": "Layers share one camera; scale each by (1 + overscan) so parallax never reveals an edge. Consoles dock in the bottom 12%. Coordinates are normalized [x, y] from the top-left."
+  },
+  "depthThresholds": {
+    "nearMaxM": 60,
+    "midMaxM": 2500
+  },
+  "layers": [
+    {
+      "name": "far",
+      "order": 0,
+      "parallax": 0.1,
+      "alpha": false,
+      "note": "black sky, stars, Earth over the rim, the Gateway, the crater rim and highlands (opaque backplate)"
+    },
+    {
+      "name": "mid",
+      "order": 1,
+      "parallax": 0.45,
+      "alpha": true,
+      "note": "crater floor with craters, boulders and tracks; the base: two pads, habitats, drill rig, solar tower, rover, containers"
+    },
+    {
+      "name": "near",
+      "order": 5,
+      "parallax": 1,
+      "alpha": true,
+      "note": "window mullions, header, sill with cyan/amber/purple strips, the shielding berm under the glass"
+    }
+  ],
+  "variants": {
+    "polar_day": {
+      "sunElevationDeg": 7.6,
+      "sunRotationDeg": 300,
+      "earthElevationDeg": 5,
+      "earthAzimuthDeg": 15,
+      "exposure": 0.9,
+      "lights": 0.55,
+      "look": "None",
+      "horizonRow": 460,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "polar_day-far-640.webp",
+              "bytes": 3624,
+              "height": 274
+            },
+            "1280": {
+              "file": "polar_day-far-1280.webp",
+              "bytes": 10726,
+              "height": 549
+            },
+            "2560": {
+              "file": "polar_day-far-2560.webp",
+              "bytes": 24882,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "polar_day-mid-640.webp",
+              "bytes": 18596,
+              "height": 274
+            },
+            "1280": {
+              "file": "polar_day-mid-1280.webp",
+              "bytes": 67122,
+              "height": 549
+            },
+            "2560": {
+              "file": "polar_day-mid-2560.webp",
+              "bytes": 218438,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "polar_day-near-640.webp",
+              "bytes": 6722,
+              "height": 274
+            },
+            "1280": {
+              "file": "polar_day-near-1280.webp",
+              "bytes": 15070,
+              "height": 549
+            },
+            "2560": {
+              "file": "polar_day-near-2560.webp",
+              "bytes": 37112,
+              "height": 1097
+            }
+          }
+        }
+      }
+    },
+    "earthrise": {
+      "sunElevationDeg": 3.2,
+      "sunRotationDeg": 236,
+      "earthElevationDeg": 3,
+      "earthAzimuthDeg": -14,
+      "exposure": 1.15,
+      "lights": 0.6,
+      "look": "None",
+      "horizonRow": 460,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "earthrise-far-640.webp",
+              "bytes": 4428,
+              "height": 274
+            },
+            "1280": {
+              "file": "earthrise-far-1280.webp",
+              "bytes": 13694,
+              "height": 549
+            },
+            "2560": {
+              "file": "earthrise-far-2560.webp",
+              "bytes": 31988,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "earthrise-mid-640.webp",
+              "bytes": 21590,
+              "height": 274
+            },
+            "1280": {
+              "file": "earthrise-mid-1280.webp",
+              "bytes": 76822,
+              "height": 549
+            },
+            "2560": {
+              "file": "earthrise-mid-2560.webp",
+              "bytes": 246736,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "earthrise-near-640.webp",
+              "bytes": 7654,
+              "height": 274
+            },
+            "1280": {
+              "file": "earthrise-near-1280.webp",
+              "bytes": 16948,
+              "height": 549
+            },
+            "2560": {
+              "file": "earthrise-near-2560.webp",
+              "bytes": 42466,
+              "height": 1097
+            }
+          }
+        }
+      }
+    },
+    "night": {
+      "sunElevationDeg": -8,
+      "sunRotationDeg": 194,
+      "earthElevationDeg": 5,
+      "earthAzimuthDeg": 15,
+      "exposure": 1.5,
+      "lights": 1.4,
+      "look": "AgX - Punchy",
+      "horizonRow": 460,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "night-far-640.webp",
+              "bytes": 2428,
+              "height": 274
+            },
+            "1280": {
+              "file": "night-far-1280.webp",
+              "bytes": 8446,
+              "height": 549
+            },
+            "2560": {
+              "file": "night-far-2560.webp",
+              "bytes": 19686,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "night-mid-640.webp",
+              "bytes": 8968,
+              "height": 274
+            },
+            "1280": {
+              "file": "night-mid-1280.webp",
+              "bytes": 30970,
+              "height": 549
+            },
+            "2560": {
+              "file": "night-mid-2560.webp",
+              "bytes": 107236,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "night-near-640.webp",
+              "bytes": 7462,
+              "height": 274
+            },
+            "1280": {
+              "file": "night-near-1280.webp",
+              "bytes": 16166,
+              "height": 549
+            },
+            "2560": {
+              "file": "night-near-2560.webp",
+              "bytes": 42474,
+              "height": 1097
+            }
+          }
+        }
+      }
+    }
+  },
+  "actors": {
+    "haulerLanding": {
+      "blend": "normal",
+      "order": 3,
+      "trigger": "launch",
+      "below": "near",
+      "idle": false,
+      "perVariant": true,
+      "anchor": {
+        "x": 0.7625,
+        "y": 0.007292616226071103,
+        "w": 0.06875,
+        "h": 0.22698268003646307
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "A cargo hauler 60 m over pad 1 with its engines lit, lit per variant. Translate it down onto the pad (anchor bottom = pad centre) while it plays; pair with dustStorm on touchdown.",
+      "widths": [
+        2560,
+        1280,
+        640
+      ],
+      "files": {
+        "polar_day": {
+          "640": {
+            "file": "polar_day-haulerLanding-640.webp",
+            "bytes": 1110,
+            "width": 44,
+            "height": 62
+          },
+          "1280": {
+            "file": "polar_day-haulerLanding-1280.webp",
+            "bytes": 2070,
+            "width": 88,
+            "height": 125
+          },
+          "2560": {
+            "file": "polar_day-haulerLanding-2560.webp",
+            "bytes": 3326,
+            "width": 176,
+            "height": 249
+          }
+        },
+        "earthrise": {
+          "640": {
+            "file": "earthrise-haulerLanding-640.webp",
+            "bytes": 1172,
+            "width": 44,
+            "height": 62
+          },
+          "1280": {
+            "file": "earthrise-haulerLanding-1280.webp",
+            "bytes": 2084,
+            "width": 88,
+            "height": 125
+          },
+          "2560": {
+            "file": "earthrise-haulerLanding-2560.webp",
+            "bytes": 3418,
+            "width": 176,
+            "height": 249
+          }
+        },
+        "night": {
+          "640": {
+            "file": "night-haulerLanding-640.webp",
+            "bytes": 1006,
+            "width": 44,
+            "height": 62
+          },
+          "1280": {
+            "file": "night-haulerLanding-1280.webp",
+            "bytes": 1912,
+            "width": 88,
+            "height": 125
+          },
+          "2560": {
+            "file": "night-haulerLanding-2560.webp",
+            "bytes": 3204,
+            "width": 176,
+            "height": 249
+          }
+        }
+      },
+      "quality": 86
+    },
+    "rigLights": {
+      "blend": "screen",
+      "order": 2,
+      "trigger": "build_complete",
+      "below": "near",
+      "idle": false,
+      "perVariant": false,
+      "anchor": {
+        "x": 0,
+        "y": 0.2479489516864175,
+        "w": 0.931640625,
+        "h": 0.3436645396536007
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "The base's work lights only: pad rings, mast floods, rig lamp, airlock, rover (screen blend). Blend in with the variant's lights value; flash on a build completing.",
+      "widths": [
+        2560,
+        1280,
+        640
+      ],
+      "files": {
+        "640": {
+          "file": "actor-rigLights-640.webp",
+          "bytes": 8532,
+          "width": 596,
+          "height": 94
+        },
+        "1280": {
+          "file": "actor-rigLights-1280.webp",
+          "bytes": 21244,
+          "width": 1193,
+          "height": 189
+        },
+        "2560": {
+          "file": "actor-rigLights-2560.webp",
+          "bytes": 51656,
+          "width": 2385,
+          "height": 377
+        }
+      },
+      "quality": 74
+    },
+    "dustStorm": {
+      "blend": "normal",
+      "order": 4,
+      "trigger": "weather",
+      "below": "near",
+      "idle": false,
+      "perVariant": false,
+      "anchor": {
+        "x": 0.440625,
+        "y": 0.19690063810391978,
+        "w": 0.559375,
+        "h": 0.2689152233363719
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "Regolith spray over pad 1 (grey veil + radial sheets). Fade in during a hazard/landing, drift outward, fade out; there is no air, so it settles fast.",
+      "widths": [
+        1280,
+        640
+      ],
+      "files": {
+        "640": {
+          "file": "actor-dustStorm-640.webp",
+          "bytes": 8618,
+          "width": 358,
+          "height": 74
+        },
+        "1280": {
+          "file": "actor-dustStorm-1280.webp",
+          "bytes": 25296,
+          "width": 716,
+          "height": 148
+        }
+      },
+      "quality": 76
+    }
+  },
+  "depth": {
+    "file": "depth-1280.webp",
+    "bytes": 3358,
+    "width": 1280,
+    "height": 549,
+    "metersAtWhite": 40000,
+    "encoding": "linear: metres = value / 255 * metersAtWhite; 0 = sky"
+  },
+  "bytes": {
+    "byVariant": {
+      "polar_day": 402292,
+      "earthrise": 462326,
+      "night": 243836
+    },
+    "actors": 134648,
+    "depth": 3358,
+    "total": 1246460
+  },
+  "render": {
+    "engine": "CYCLES",
+    "samples": 160,
+    "timings": {
+      "polar_day": {
+        "far": 1.6,
+        "mid": 2.8,
+        "near": 1.4,
+        "hauler": 0.7,
+        "post": 9.6,
+        "total": 17.2
+      },
+      "earthrise": {
+        "far": 1.3,
+        "mid": 2.4,
+        "near": 1.3,
+        "hauler": 0.7,
+        "post": 9,
+        "total": 15.7
+      },
+      "night": {
+        "far": 1.4,
+        "mid": 2.3,
+        "near": 1.2,
+        "hauler": 0.7,
+        "post": 9.3,
+        "total": 16
+      },
+      "actors": {
+        "rigLights": 2.3,
+        "dustStorm": 0.7,
+        "total": 5.3
+      }
+    }
+  }
+}

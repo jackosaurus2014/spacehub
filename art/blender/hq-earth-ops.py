@@ -17,19 +17,24 @@ Options (after the `--`):
                                                  it cannot light the scene from the Nishita sun disc)
     --save-blend PATH                           optionally save the built scene (no packed textures)
     --no-post                                   skip the numpy post-process (debug)
+    --post-only                                 skip any render whose raw PNG already exists (re-run the post-process)
 
 Outputs per variant (PNG, native 2560x1097 unless --scale):
     <variant>-far.png       RGB   sky (graded), sea, dunes, distant industry, hazed by depth (opaque)
     <variant>-mid.png       RGBA  scrub field, roads, fence, hangar, pad complex WITHOUT the vehicle
     <variant>-near.png      RGBA  window mullions / header / sill (alpha)
     <variant>-vehicle.png   RGBA  crop: the launch vehicle alone (actor; drawn above mid, lifts on launch)
-    <variant>-beauty.png    RGB   far + mid + vehicle + near stacked (the static plate)
+    <variant>-vehicleShadow.png RGBA crop: the vehicle's shadow slice (actor; fades at liftoff), one shared anchor
+    <variant>-beauty.png    RGB   far + mid + shadow + vehicle + near stacked (the static plate)
 Shared (rendered once with --actors):
     depth.png               16-bit grey, metres / 8000 (0 = sky); the Z pass of the whole scene
+    veg-atlas.png           2048x512 RGBA, the four vegetation card tiles (cached; delete to re-render)
     actor-plume.png         RGBA crop, ignition flash + trench steam, pad-anchored (drawn below vehicle)
-    actor-padlights.png     RGBA crop, pad/tower/hangar work lights only (screen blend)
+    actor-padlights.png     RGBA crop, pad/tower/crawlerway work lights only (screen blend), right of x = 0.30
+    actor-hangarLights.png  RGBA crop, hangar/office/yard lights only (screen blend), left of x = 0.30
     actor-weather.png       RGBA full frame, rain streaks + grey veil
-    render-meta.json        anchors, thresholds, timings; consumed by encode-hq-earth.ts
+    overcast-far.png        RGB   far plate under a stratus deck (the weather actor's far-plate swap)
+    render-meta.json        anchors, thresholds, timings, layer + actor definitions; consumed by encode-hq-stage.ts
 
 Design rules (docs/COMMAND_CENTER_DESIGN_2026-09-13.md, CLAUDE.md "GUI and Command Center"):
     21:9, horizon in the upper third, pad centre-right, bottom 12% free of important detail,
@@ -55,7 +60,7 @@ def parse_args():
     argv = sys.argv
     args = argv[argv.index('--') + 1:] if '--' in argv else []
     opts = {'variant': 'day', 'actors': False, 'out': None, 'samples': 128, 'scale': 1.0,
-            'engine': 'CYCLES', 'save_blend': None, 'post': True}
+            'engine': 'CYCLES', 'save_blend': None, 'post': True, 'post_only': False}
     i = 0
     while i < len(args):
         a = args[i]
@@ -75,6 +80,8 @@ def parse_args():
             opts['save_blend'] = args[i + 1]; i += 2
         elif a == '--no-post':
             opts['post'] = False; i += 1
+        elif a == '--post-only':
+            opts['post_only'] = True; i += 1
         else:
             raise SystemExit(f'unknown arg {a}')
     if not opts['out']:
@@ -427,6 +434,74 @@ def plant_material(name, c_lo, c_hi):
     return m
 
 
+def _seam(nt, coord_out, pitch, width=0.06):
+    """1 near a seam line every `pitch` metres along one axis, else 0."""
+    div = nt.nodes.new('ShaderNodeMath'); div.operation = 'DIVIDE'; div.inputs[1].default_value = pitch
+    nt.links.new(coord_out, div.inputs[0])
+    fr = nt.nodes.new('ShaderNodeMath'); fr.operation = 'FRACT'; nt.links.new(div.outputs[0], fr.inputs[0])
+    sub = nt.nodes.new('ShaderNodeMath'); sub.operation = 'SUBTRACT'; sub.inputs[1].default_value = 0.5; nt.links.new(fr.outputs[0], sub.inputs[0])
+    ab = nt.nodes.new('ShaderNodeMath'); ab.operation = 'ABSOLUTE'; nt.links.new(sub.outputs[0], ab.inputs[0])
+    mr = nt.nodes.new('ShaderNodeMapRange'); mr.inputs['From Min'].default_value = 0.5 - width / pitch; mr.inputs['From Max'].default_value = 0.5
+    mr.inputs['To Min'].default_value = 0.0; mr.inputs['To Max'].default_value = 1.0; mr.clamp = True
+    nt.links.new(ab.outputs[0], mr.inputs['Value'])
+    return mr
+
+
+def panel_material(name, color, panel=(6.0, 3.0), rib=0.6):
+    """Industrial cladding: panel seams every panel[0] m horizontally (x and y walls) and panel[1] m
+    vertically, darker in the seam with a bump; fine vertical ribs every `rib` m; wear noise."""
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    bsdf = nt.nodes['Principled BSDF']
+    bsdf.inputs['Roughness'].default_value = 0.55
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    sep = nt.nodes.new('ShaderNodeSeparateXYZ'); nt.links.new(tc.outputs['Object'], sep.inputs[0])
+    sx = _seam(nt, sep.outputs['X'], panel[0]); sy = _seam(nt, sep.outputs['Y'], panel[0]); sz = _seam(nt, sep.outputs['Z'], panel[1])
+    mx = nt.nodes.new('ShaderNodeMath'); mx.operation = 'MAXIMUM'; nt.links.new(sx.outputs[0], mx.inputs[0]); nt.links.new(sy.outputs[0], mx.inputs[1])
+    mz = nt.nodes.new('ShaderNodeMath'); mz.operation = 'MAXIMUM'; nt.links.new(mx.outputs[0], mz.inputs[0]); nt.links.new(sz.outputs[0], mz.inputs[1])
+    # ribs: sin along x and along y (each wall picks up the one that varies across it)
+    def rib_wave(src):
+        d = nt.nodes.new('ShaderNodeMath'); d.operation = 'MULTIPLY'; d.inputs[1].default_value = 2 * math.pi / rib; nt.links.new(src, d.inputs[0])
+        s = nt.nodes.new('ShaderNodeMath'); s.operation = 'SINE'; nt.links.new(d.outputs[0], s.inputs[0])
+        return s
+    rx = rib_wave(sep.outputs['X']); ry = rib_wave(sep.outputs['Y'])
+    radd = nt.nodes.new('ShaderNodeMath'); radd.operation = 'ADD'; nt.links.new(rx.outputs[0], radd.inputs[0]); nt.links.new(ry.outputs[0], radd.inputs[1])
+    rscale = nt.nodes.new('ShaderNodeMath'); rscale.operation = 'MULTIPLY'; rscale.inputs[1].default_value = 0.08; nt.links.new(radd.outputs[0], rscale.inputs[0])
+    seam_neg = nt.nodes.new('ShaderNodeMath'); seam_neg.operation = 'MULTIPLY'; seam_neg.inputs[1].default_value = -0.6; nt.links.new(mz.outputs[0], seam_neg.inputs[0])
+    hgt = nt.nodes.new('ShaderNodeMath'); hgt.operation = 'ADD'; nt.links.new(rscale.outputs[0], hgt.inputs[0]); nt.links.new(seam_neg.outputs[0], hgt.inputs[1])
+    bump = nt.nodes.new('ShaderNodeBump'); bump.inputs['Strength'].default_value = 0.5; bump.inputs['Distance'].default_value = 0.04
+    nt.links.new(hgt.outputs[0], bump.inputs['Height'])
+    nt.links.new(bump.outputs['Normal'], bsdf.inputs['Normal'])
+    wear = _noise(nt, tc.outputs['Object'], 0.12, 5.0, 0.55)
+    base = _ramp(nt, wear.outputs['Fac'], [(0.3, tuple(x * 0.86 for x in color)), (0.7, color)])
+    dark = nt.nodes.new('ShaderNodeMix'); dark.data_type = 'RGBA'
+    dark.inputs[7].default_value = (color[0] * 0.45, color[1] * 0.45, color[2] * 0.45, 1)
+    nt.links.new(mz.outputs[0], dark.inputs['Factor']); nt.links.new(base.outputs['Color'], dark.inputs[6])
+    nt.links.new(dark.outputs[2], bsdf.inputs['Base Color'])
+    return m
+
+
+def slat_material(name, color, pitch=0.45):
+    """Roll-up door: horizontal slats every `pitch` m (bump + a shade line)."""
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    bsdf = nt.nodes['Principled BSDF']
+    bsdf.inputs['Roughness'].default_value = 0.45
+    bsdf.inputs['Metallic'].default_value = 0.35
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    sep = nt.nodes.new('ShaderNodeSeparateXYZ'); nt.links.new(tc.outputs['Object'], sep.inputs[0])
+    sz = _seam(nt, sep.outputs['Z'], pitch, width=0.05)
+    bump = nt.nodes.new('ShaderNodeBump'); bump.inputs['Strength'].default_value = 0.7; bump.inputs['Distance'].default_value = 0.03; bump.invert = True
+    nt.links.new(sz.outputs[0], bump.inputs['Height']); nt.links.new(bump.outputs['Normal'], bsdf.inputs['Normal'])
+    dark = nt.nodes.new('ShaderNodeMix'); dark.data_type = 'RGBA'
+    dark.inputs[6].default_value = (*color, 1); dark.inputs[7].default_value = (color[0] * 0.5, color[1] * 0.5, color[2] * 0.5, 1)
+    nt.links.new(sz.outputs[0], dark.inputs['Factor'])
+    nt.links.new(dark.outputs[2], bsdf.inputs['Base Color'])
+    return m
+
+
 def world_setup(sun_elev, sun_rot, aerosol, stars, cirrus, sun_disc=True):
     w = bpy.data.worlds.new('World')
     bpy.context.scene.world = w
@@ -490,6 +565,32 @@ def world_setup(sun_elev, sun_rot, aerosol, stars, cirrus, sun_disc=True):
     nt.links.new(c3.outputs[0], cirrus_bg.inputs['Strength'])
     nt.links.new(add.outputs[0], add2.inputs[0]); nt.links.new(cirrus_bg.outputs[0], add2.inputs[1])
     nt.links.new(add2.outputs[0], out.inputs['Surface'])
+    return w
+
+
+def world_overcast():
+    """A solid stratus deck: grey gradient (brighter overhead, dim and warm-grey at the horizon) with a
+    soft cloud-base noise; no sun disc, so the scene is lit flat and shadowless."""
+    w = bpy.data.worlds.new('WorldOvercast')
+    bpy.context.scene.world = w
+    w.use_nodes = True
+    nt = w.node_tree
+    for n in list(nt.nodes):
+        nt.nodes.remove(n)
+    out = nt.nodes.new('ShaderNodeOutputWorld')
+    bg = nt.nodes.new('ShaderNodeBackground')
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    sep = nt.nodes.new('ShaderNodeSeparateXYZ'); nt.links.new(tc.outputs['Generated'], sep.inputs[0])
+    grad = _ramp(nt, sep.outputs['Z'], [(-0.02, (0.30, 0.30, 0.31)), (0.05, (0.42, 0.43, 0.45)), (0.30, (0.62, 0.64, 0.68)), (1.0, (0.85, 0.87, 0.90))])
+    mp = nt.nodes.new('ShaderNodeMapping'); mp.inputs['Scale'].default_value = (1.0, 1.0, 4.0)
+    nt.links.new(tc.outputs['Generated'], mp.inputs['Vector'])
+    cn = _noise(nt, mp.outputs['Vector'], 3.0, 6.0, 0.6)
+    cl = _ramp(nt, cn.outputs['Fac'], [(0.35, (0.82, 0.82, 0.82)), (0.65, (1.08, 1.08, 1.08))])
+    mul = nt.nodes.new('ShaderNodeMix'); mul.data_type = 'RGBA'; mul.blend_type = 'MULTIPLY'; mul.inputs['Factor'].default_value = 1.0
+    nt.links.new(grad.outputs['Color'], mul.inputs[6]); nt.links.new(cl.outputs['Color'], mul.inputs[7])
+    nt.links.new(mul.outputs[2], bg.inputs['Color'])
+    bg.inputs['Strength'].default_value = 28.0
+    nt.links.new(bg.outputs[0], out.inputs['Surface'])
     return w
 
 
@@ -619,60 +720,216 @@ def build_far():
     return c
 
 
-def clump_palmetto(material, collection):
-    """Saw palmetto: 7 fan-shaped fronds on short stalks, radiating from a low crown."""
+# --------------------------------------------------------------------------------------
+# Vegetation atlas (round 3): four alpha tiles rendered once from detailed blade geometry,
+# then instanced as crossed cards. Tiles are albedo + coverage (emission-only render, Standard
+# view transform), so the cards are lit by the scene like everything else.
+# --------------------------------------------------------------------------------------
+
+ATLAS_TILES = ['palmetto', 'sawgrass', 'drygrass', 'scrub']
+ATLAS_TILE_PX = 512
+ATLAS_TILE_M = 2.6                         # a tile covers 2.6 m x 2.6 m (base at z = 0)
+ATLAS_COLORS = {                           # (dark, light) albedo per tile
+    'palmetto': ((0.13, 0.24, 0.09), (0.40, 0.48, 0.20)),
+    'sawgrass': ((0.20, 0.30, 0.10), (0.52, 0.54, 0.24)),
+    'drygrass': ((0.42, 0.34, 0.16), (0.72, 0.62, 0.36)),
+    'scrub':    ((0.10, 0.16, 0.07), (0.30, 0.32, 0.15)),
+}
+
+
+def _blade(bm, base, dirv, length, width, segs=6, droop=0.6, taper=0.92):
+    """A bending blade: quad strip along a polyline that sags under `droop` (m/m of length)."""
+    p = Vector(base)
+    d = Vector(dirv).normalized()
+    side = Vector((-d.y, d.x, 0.0))
+    if side.length < 1e-4:
+        side = Vector((1, 0, 0))
+    side.normalize()
+    L, R = [], []
+    for i in range(segs + 1):
+        t = i / segs
+        w = width * (1.0 - taper * t)
+        L.append(bm.verts.new(p - side * w)); R.append(bm.verts.new(p + side * w))
+        step = length / segs
+        d = (d + Vector((0, 0, -droop * step))).normalized()
+        p = p + d * step
+    for i in range(segs):
+        bm.faces.new((L[i], R[i], R[i + 1], L[i + 1]))
+
+
+def atlas_geometry(kind, material, collection):
     bm = bmesh.new()
-    for k in range(11):
-        az = k * 2 * math.pi / 11 + random.uniform(-0.2, 0.2)
-        tilt = math.radians(random.uniform(38, 74))
-        r = random.uniform(0.6, 0.95)
-        base = Vector((0.12 * math.cos(az), 0.12 * math.sin(az), 0.25))
-        d = Vector((math.cos(az) * math.cos(tilt), math.sin(az) * math.cos(tilt), math.sin(tilt)))
-        side = Vector((-math.sin(az), math.cos(az), 0))
-        up = d.cross(side)
-        centre = bm.verts.new(base)
-        pts = []
-        for j in range(7):
-            a = math.radians(-55 + j * 110 / 6)
-            p = base + d * (r * math.cos(a)) + side * (r * math.sin(a)) + up * (0.02 * math.sin(3 * a))
-            pts.append(bm.verts.new(p))
-        for j in range(6):
-            bm.faces.new((centre, pts[j], pts[j + 1]))
-    return _finish('clump_palmetto', bm, material, collection, (0, -600, -50))
+    if kind == 'palmetto':
+        for k in range(10):
+            az = k * 2 * math.pi / 10 + random.uniform(-0.25, 0.25)
+            tilt = math.radians(random.uniform(30, 70))
+            stalk_d = Vector((math.cos(az) * math.cos(tilt), math.sin(az) * math.cos(tilt), math.sin(tilt)))
+            base = Vector((0.06 * math.cos(az), 0.06 * math.sin(az), 0.02))
+            stalk_len = random.uniform(0.35, 0.6)
+            _blade(bm, base, stalk_d, stalk_len, 0.014, segs=3, droop=0.15, taper=0.3)
+            fan_base = base + stalk_d * stalk_len
+            side = Vector((-math.sin(az), math.cos(az), 0))
+            up = stalk_d.cross(side).normalized()
+            r = random.uniform(0.55, 0.85)
+            n_leaf = 19
+            for j in range(n_leaf):
+                a = math.radians(-78 + j * 156 / (n_leaf - 1)) + random.uniform(-0.03, 0.03)
+                ld = stalk_d * math.cos(a) + side * math.sin(a) + up * random.uniform(-0.06, 0.06)
+                _blade(bm, fan_base, ld, r * random.uniform(0.8, 1.0), 0.028, segs=4, droop=0.35 + 0.5 * abs(math.sin(a)), taper=0.85)
+    elif kind in ('sawgrass', 'drygrass'):
+        n, h_lo, h_hi, droop, lean = (95, 0.9, 1.7, 0.75, (4, 30)) if kind == 'sawgrass' else (75, 0.5, 1.1, 1.3, (10, 45))
+        for k in range(n):
+            az = random.uniform(0, 2 * math.pi)
+            tilt = math.radians(random.uniform(*lean))
+            rr = 0.14 * random.random() ** 0.5
+            base = Vector((rr * math.cos(az), rr * math.sin(az), 0.0))
+            d = Vector((math.cos(az) * math.sin(tilt), math.sin(az) * math.sin(tilt), math.cos(tilt)))
+            _blade(bm, base, d, random.uniform(h_lo, h_hi), random.uniform(0.012, 0.022), segs=7, droop=droop * random.uniform(0.6, 1.4))
+    else:  # scrub: woody twigs + small leaves in a flattened dome
+        for k in range(16):
+            az = random.uniform(0, 2 * math.pi)
+            tilt = math.radians(random.uniform(20, 65))
+            d = Vector((math.cos(az) * math.cos(tilt), math.sin(az) * math.cos(tilt), math.sin(tilt)))
+            _blade(bm, (0, 0, 0.0), d, random.uniform(0.55, 0.95), 0.012, segs=4, droop=-0.15, taper=0.5)
+        for k in range(340):
+            u = random.random(); v = random.random(); w = random.random()
+            x = (u * 2 - 1) * 0.95; y = (v * 2 - 1) * 0.6; z = 0.12 + w * 0.85
+            if (x / 0.95) ** 2 + (y / 0.6) ** 2 + ((z - 0.45) / 0.5) ** 2 > 1.0:
+                continue
+            s = random.uniform(0.035, 0.07)
+            ax = random.uniform(0, math.pi); ay = random.uniform(-0.6, 0.6)
+            e1 = Vector((math.cos(ax), math.sin(ax), 0)) * s
+            e2 = Vector((-math.sin(ax) * math.cos(ay), math.cos(ax) * math.cos(ay), math.sin(ay))) * s * 1.6
+            c = Vector((x, y, z))
+            bm.faces.new((bm.verts.new(c - e2), bm.verts.new(c + e1), bm.verts.new(c + e2), bm.verts.new(c - e1)))
+    return _finish(f'atlas_{kind}', bm, material, collection, (0, 0, 0))
 
 
-def clump_grass(material, collection, blades=26, h_lo=0.8, h_hi=1.4, lean=(8, 35)):
-    """Saw-grass / cordgrass tuft: thin tapered blades leaning outward."""
+def atlas_material(kind):
+    """Emission-only albedo: noise-driven ramp between the tile's two greens, darker toward the base."""
+    lo, hi = ATLAS_COLORS[kind]
+    m = bpy.data.materials.new(f'atlas_{kind}')
+    m.use_nodes = True
+    nt = m.node_tree
+    for n in list(nt.nodes):
+        nt.nodes.remove(n)
+    out = nt.nodes.new('ShaderNodeOutputMaterial')
+    em = nt.nodes.new('ShaderNodeEmission'); em.inputs['Strength'].default_value = 1.0
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    nz = _noise(nt, tc.outputs['Object'], 4.0, 3.0, 0.5)
+    ramp = _ramp(nt, nz.outputs['Fac'], [(0.3, lo), (0.7, hi)])
+    sep = nt.nodes.new('ShaderNodeSeparateXYZ'); nt.links.new(tc.outputs['Object'], sep.inputs[0])
+    ao = nt.nodes.new('ShaderNodeMapRange'); ao.inputs['From Min'].default_value = 0.0; ao.inputs['From Max'].default_value = 0.9
+    ao.inputs['To Min'].default_value = 0.62; ao.inputs['To Max'].default_value = 1.0; ao.clamp = True
+    nt.links.new(sep.outputs['Z'], ao.inputs['Value'])
+    mul = nt.nodes.new('ShaderNodeMix'); mul.data_type = 'RGBA'; mul.blend_type = 'MULTIPLY'; mul.inputs['Factor'].default_value = 1.0
+    nt.links.new(ramp.outputs['Color'], mul.inputs[6])
+    nt.links.new(ao.outputs[0], mul.inputs[7])
+    nt.links.new(mul.outputs[2], em.inputs['Color'])
+    nt.links.new(em.outputs[0], out.inputs['Surface'])
+    return m
+
+
+def render_veg_atlas(out_dir, opts):
+    """Render the four tiles orthographically (transparent film, Standard transform, black world)
+    and assemble <out>/veg-atlas.png (2048 x 512 RGBA, edge-dilated). Cached between runs."""
+    import numpy as np
+    path = os.path.join(out_dir, 'veg-atlas.png')
+    if os.path.exists(path):
+        return path
+    sc = bpy.context.scene
+    saved = (sc.camera, sc.render.resolution_x, sc.render.resolution_y, sc.render.film_transparent, sc.view_settings.view_transform,
+             sc.view_settings.look, sc.view_settings.exposure, sc.cycles.samples, sc.world)
+    cam = bpy.data.cameras.new('AtlasCam'); cam.type = 'ORTHO'; cam.ortho_scale = ATLAS_TILE_M
+    cam.clip_start = 0.01; cam.clip_end = 50
+    cob = bpy.data.objects.new('AtlasCam', cam); cob.location = (0, -8, ATLAS_TILE_M / 2); cob.rotation_euler = (math.radians(90), 0, 0)
+    c = coll('ATLAS'); c.objects.link(cob)
+    sc.camera = cob
+    sc.render.resolution_x = sc.render.resolution_y = ATLAS_TILE_PX
+    sc.render.film_transparent = True
+    sc.view_settings.view_transform = 'Standard'; sc.view_settings.look = 'None'; sc.view_settings.exposure = 0.0
+    sc.cycles.samples = 64
+    world_flat((0, 0, 0), 0.0)
+    for n in list(COLLS):
+        COLLS[n].hide_render = n != 'ATLAS'
+    atlas = np.zeros((ATLAS_TILE_PX, ATLAS_TILE_PX * len(ATLAS_TILES), 4), dtype=np.float32)
+    t0 = time.time()
+    for i, kind in enumerate(ATLAS_TILES):
+        ob = atlas_geometry(kind, atlas_material(kind), c)
+        tile_path = os.path.join(out_dir, f'atlas-{kind}.png')
+        sc.render.filepath = tile_path
+        bpy.ops.render.render(write_still=True)
+        bpy.data.objects.remove(ob, do_unlink=True)
+        tile = dilate_edges(np_load(tile_path, 4), iterations=10)
+        atlas[:, i * ATLAS_TILE_PX:(i + 1) * ATLAS_TILE_PX] = tile
+    write_png(path, atlas)
+    print(f'  vegetation atlas rendered in {time.time() - t0:.1f}s -> {path}')
+    drop_coll('ATLAS')
+    bpy.data.cameras.remove(cam)
+    (sc.camera, sc.render.resolution_x, sc.render.resolution_y, sc.render.film_transparent, sc.view_settings.view_transform,
+     sc.view_settings.look, sc.view_settings.exposure, sc.cycles.samples, sc.world) = saved
+    return path
+
+
+def card_material(atlas_path):
+    """Atlas albedo x per-instance tint; coverage drives a transparent mix; a little translucency
+    so low sun glows through the fronds."""
+    m = bpy.data.materials.new('veg_cards')
+    m.use_nodes = True
+    nt = m.node_tree
+    for n in list(nt.nodes):
+        nt.nodes.remove(n)
+    out = nt.nodes.new('ShaderNodeOutputMaterial')
+    img = bpy.data.images.load(atlas_path, check_existing=True)
+    img.alpha_mode = 'STRAIGHT'
+    tex = nt.nodes.new('ShaderNodeTexImage'); tex.image = img; tex.interpolation = 'Cubic'; tex.extension = 'CLIP'
+    uv = nt.nodes.new('ShaderNodeUVMap')
+    nt.links.new(uv.outputs['UV'], tex.inputs['Vector'])
+    oi = nt.nodes.new('ShaderNodeObjectInfo')
+    tint = _ramp(nt, oi.outputs['Random'], [(0.0, (0.78, 0.82, 0.70)), (0.5, (1.0, 1.0, 1.0)), (1.0, (1.12, 1.06, 0.92))])
+    mul = nt.nodes.new('ShaderNodeMix'); mul.data_type = 'RGBA'; mul.blend_type = 'MULTIPLY'; mul.inputs['Factor'].default_value = 1.0
+    nt.links.new(tex.outputs['Color'], mul.inputs[6]); nt.links.new(tint.outputs['Color'], mul.inputs[7])
+    bsdf = nt.nodes.new('ShaderNodeBsdfPrincipled')
+    bsdf.inputs['Roughness'].default_value = 0.85
+    if 'Specular IOR Level' in bsdf.inputs:
+        bsdf.inputs['Specular IOR Level'].default_value = 0.25
+    nt.links.new(mul.outputs[2], bsdf.inputs['Base Color'])
+    trans = nt.nodes.new('ShaderNodeBsdfTranslucent')
+    nt.links.new(mul.outputs[2], trans.inputs['Color'])
+    mix_t = nt.nodes.new('ShaderNodeMixShader'); mix_t.inputs['Fac'].default_value = 0.5
+    nt.links.new(bsdf.outputs[0], mix_t.inputs[1]); nt.links.new(trans.outputs[0], mix_t.inputs[2])
+    tr = nt.nodes.new('ShaderNodeBsdfTransparent')
+    mix_a = nt.nodes.new('ShaderNodeMixShader')
+    nt.links.new(tex.outputs['Alpha'], mix_a.inputs['Fac'])
+    nt.links.new(tr.outputs[0], mix_a.inputs[1]); nt.links.new(mix_t.outputs[0], mix_a.inputs[2])
+    nt.links.new(mix_a.outputs[0], out.inputs['Surface'])
+    for attr, val in (('surface_render_method', 'DITHERED'), ('blend_method', 'HASHED'), ('shadow_method', 'HASHED')):
+        try:
+            setattr(m, attr, val)
+        except Exception:
+            pass
+    m.use_backface_culling = False
+    return m
+
+
+def card_mesh(kind, material, collection):
+    """Two crossed quads, ATLAS_TILE_M square, base on the ground, UVs on the tile's atlas column."""
+    i = ATLAS_TILES.index(kind)
+    n = len(ATLAS_TILES)
+    u0, u1 = i / n, (i + 1) / n
     bm = bmesh.new()
-    for k in range(blades):
-        az = random.uniform(0, 2 * math.pi)
-        tilt = math.radians(random.uniform(*lean))
-        h = random.uniform(h_lo, h_hi)
-        w = random.uniform(0.03, 0.06)
-        base = Vector((0.08 * math.cos(az) * random.random(), 0.08 * math.sin(az) * random.random(), 0))
-        d = Vector((math.cos(az) * math.sin(tilt), math.sin(az) * math.sin(tilt), math.cos(tilt)))
-        side = Vector((-math.sin(az), math.cos(az), 0)) * w
-        tip = base + d * h + Vector((0, 0, -0.15 * h * tilt))
-        a = bm.verts.new(base - side); b = bm.verts.new(base + side)
-        m = bm.verts.new(base + d * h * 0.55 + side * 0.9); n = bm.verts.new(base + d * h * 0.55 - side * 0.9)
-        t = bm.verts.new(tip)
-        bm.faces.new((a, b, m, n)); bm.faces.new((n, m, t))
-    return _finish('clump_grass', bm, material, collection, (0, -600, -50))
+    uv = bm.loops.layers.uv.new('UVMap')
+    h = ATLAS_TILE_M / 2
+    for ang in (0.0, math.pi / 2):
+        cs, sn = math.cos(ang), math.sin(ang)
+        vs = [bm.verts.new((x * cs, x * sn, z)) for x, z in ((-h, -0.04), (h, -0.04), (h, 2 * h - 0.04), (-h, 2 * h - 0.04))]
+        f = bm.faces.new(vs)
+        for loop, (u, v) in zip(f.loops, ((u0, 0), (u1, 0), (u1, 1), (u0, 1))):
+            loop[uv].uv = (u, v)
+    return _finish(f'card_{kind}', bm, material, collection, (0, -600, -50))
 
 
-def clump_scrub(material, collection):
-    """Low woody scrub: noise-displaced flattened sphere."""
-    from mathutils import noise as mnoise
-    bm = bmesh.new()
-    bmesh.ops.create_uvsphere(bm, u_segments=14, v_segments=9, radius=0.8)
-    for v in bm.verts:
-        p = v.co
-        n = mnoise.noise(p * 2.6) * 0.3 + mnoise.noise(p * 5.5 + Vector((7, 3, 1))) * 0.14
-        v.co = Vector((p.x * (1 + n), p.y * (1 + n), max(-0.1, p.z * 0.6 * (1 + n * 0.5))))
-    return _finish('clump_scrub', bm, material, collection, (0, -600, -50), smooth=True)
-
-
-def build_mid():
+def build_mid(atlas_path):
     c = coll('MID')
     ground = ground_material()
     polygon('near_land', LAND_MID, 0.0, ground, c)
@@ -788,19 +1045,30 @@ def build_mid():
             n_post += 1
 
     # ---- horizontal integration hangar (long axis along x, door facing the pad) + offices + parking + vehicles
-    hangar_wall = mat('hangar_wall', (0.68, 0.69, 0.70), rough=0.55)
-    hangar_roof = mat('hangar_roof', (0.42, 0.44, 0.47), rough=0.6)
+    hangar_wall = panel_material('hangar_wall', (0.68, 0.69, 0.70), panel=(6.0, 3.0), rib=0.6)
+    hangar_roof = panel_material('hangar_roof', (0.42, 0.44, 0.47), panel=(6.0, 6.0), rib=0.9)
     hangar_door = mat('hangar_door', (0.22, 0.28, 0.36), rough=0.5, emit=(1.0, 0.72, 0.42), emit_strength=0.0)
     hx, hy = HANGAR.x, HANGAR.y
     box('hangar', (hx, hy, 9), (84, 42, 18), hangar_wall, c)
     box('hangar_roof', (hx, hy, 18.4), (86, 44, 0.9), hangar_roof, c)
     box('hangar_ridge', (hx, hy, 19.6), (86, 10, 1.6), hangar_roof, c)
     box('hangar_door', (hx + 42.3, hy, 7.5), (0.5, 30, 15), hangar_door, c)
-    box('hangar_stripe', (hx, hy, 14.5), (84.3, 42.3, 0.9), mat('hangar_stripe', (0.10, 0.45, 0.60), rough=0.5), c)
+    # a logo-free band: deep blue with a thin white pinstripe above it, all the way round
+    box('hangar_band', (hx, hy, 14.4), (84.3, 42.3, 1.6), mat('hangar_band', (0.06, 0.16, 0.34), rough=0.5), c)
+    box('hangar_pinstripe', (hx, hy, 15.45), (84.3, 42.3, 0.18), mat('hangar_pin', (0.9, 0.9, 0.88), rough=0.5), c)
     box('hangar_window_strip', (hx, hy, 10.5), (84.3, 42.3, 0.5), mat('hangar_glass', (0.2, 0.3, 0.35), emit=(0.55, 0.85, 1.0), emit_strength=0.0), c)
     # an open bay on the camera-facing wall: dark recess with a warm-lit interior (the night glow)
     box('hangar_bay_recess', (hx + 26, hy - 21.3, 5.0), (14, 1.0, 10), mat('bay_dark', (0.03, 0.03, 0.03), rough=0.9), c)
     box('hangar_bay_glow', (hx + 26, hy - 20.7, 4.6), (12.5, 0.2, 8.6), mat('bay_glow', (0.5, 0.4, 0.3), emit=(1.0, 0.72, 0.42), emit_strength=0.0), c)
+    # a closed roll-up door on the near face, left of the bay: slatted, in a steel frame, with a
+    # personnel door and a bollard pair in front
+    box('rollup_frame', (hx - 12, hy - 21.15, 6.2), (20.0, 0.5, 12.4), mat('door_frame', (0.16, 0.17, 0.19), rough=0.6, metal=0.3), c)
+    box('rollup_door', (hx - 12, hy - 21.4, 5.9), (18.4, 0.3, 11.8), slat_material('rollup_slats', (0.36, 0.42, 0.50), pitch=0.45), c)
+    box('rollup_stripe', (hx - 12, hy - 21.62, 2.2), (18.4, 0.05, 0.6), mat('door_stripe', (0.9, 0.7, 0.1), rough=0.6), c)
+    box('personnel_door', (hx - 26, hy - 21.35, 1.2), (1.1, 0.2, 2.3), mat('pers_door', (0.16, 0.18, 0.22), rough=0.5), c)
+    for i, bx in enumerate((-22.5, -1.5)):
+        cyl(f'bollard_{i}', (hx + bx, hy - 24.5, 0.55), 0.18, 1.1, mat('bollard', (0.85, 0.65, 0.1), rough=0.5), c, seg=8)
+    box('door_apron', (hx - 12, hy - 30, 0.035), (24, 18, 0.03), conc, c)
     box('office', (hx - 10, hy - 36, 4.5), (28, 22, 9), mat('office_wall', (0.60, 0.62, 0.64), rough=0.6), c)
     box('office_glass', (hx - 10, hy - 47.2, 5.5), (26, 0.3, 2.2), mat('office_glass', (0.15, 0.2, 0.25), emit=(0.7, 0.9, 1.0), emit_strength=0.0), c)
     box('parking', (hx + 30, hy - 45, 0.03), (56, 36, 0.04), asphalt, c)
@@ -833,16 +1101,15 @@ def build_mid():
         L = math.hypot(x1 - x0, y1 - y0); a = math.atan2(y1 - y0, x1 - x0)
         box(f'beach_{int(y0)}', ((x0 + x1) / 2 - 8 * math.sin(a), (y0 + y1) / 2 + 8 * math.cos(a), -0.02), (L + 10, 18, 0.02), beach, c, rot=(0, 0, a))
 
-    # ---- vegetation: four clump variants scattered by a weighted density field
-    palm_m = plant_material('palmetto', (0.15, 0.26, 0.09), (0.32, 0.38, 0.16))
-    grass_m = plant_material('sawgrass', (0.22, 0.30, 0.11), (0.44, 0.44, 0.19))
-    dry_m = plant_material('drygrass', (0.42, 0.36, 0.18), (0.62, 0.52, 0.28))
-    scrub_m = plant_material('scrub', (0.10, 0.15, 0.06), (0.24, 0.24, 0.12))
+    # ---- vegetation: alpha-atlas cards (round 3) scattered by a weighted density field.
+    # They live in their own collection so the depth passes see the ground under them.
+    cv = coll('VEG')
+    cards_m = card_material(atlas_path)
     variants = [
-        (clump_palmetto(palm_m, c), 0.48, (1.1, 2.4)),
-        (clump_grass(grass_m, c, blades=34), 0.32, (0.9, 1.6)),
-        (clump_scrub(scrub_m, c), 0.04, (0.6, 1.1)),
-        (clump_grass(dry_m, c, blades=24, h_lo=0.5, h_hi=0.9, lean=(15, 45)), 0.16, (0.9, 1.5)),
+        (card_mesh('palmetto', cards_m, cv), 0.48, (1.1, 2.0)),
+        (card_mesh('sawgrass', cards_m, cv), 0.30, (0.85, 1.5)),
+        (card_mesh('scrub', cards_m, cv), 0.06, (1.0, 1.6)),
+        (card_mesh('drygrass', cards_m, cv), 0.16, (0.8, 1.3)),
     ]
     from mathutils import noise as mnoise
     hx0, hy0 = HANGAR.x, HANGAR.y
@@ -858,21 +1125,23 @@ def build_mid():
         return False
 
     def density(x, y):
-        d = 0.55 + 0.9 * mnoise.noise(Vector((x * 0.008, y * 0.008, 0.3)))     # patchy scrub
-        d = max(0.08, d)
+        d = 0.5 + 1.4 * mnoise.noise(Vector((x * 0.008, y * 0.008, 0.3)))     # patchy scrub: thickets and open sand
+        d = max(0.06, d)
         road_d = min(dist_to_segment(x, y, a, b) - w * 0.6 for (a, b, w) in ROADS)
         if 0.0 < road_d < 10.0:
             d *= 2.6                                                          # thick along the road edges
         if x > coast_x(y) - 55:
             d *= 0.15                                                         # sparse on the dunes / beach
+        if y < 260:
+            d *= 1.6                                                          # the foreground has to read as a field, not dots
         return d
 
     n_inst = 0
     tries = 0
-    target = 3400
-    while n_inst < target and tries < 120000:
+    target = 9000
+    while n_inst < target and tries < 260000:
         tries += 1
-        y = 45 + (MID_MAX_M - 45) * (random.random() ** 1.7)
+        y = 40 + (MID_MAX_M - 40) * (random.random() ** 1.6)
         half_w = y * math.tan(HALF_FOV) * 1.15 + 20
         x = random.uniform(-half_w, half_w)
         if blocked(x, y):
@@ -885,12 +1154,14 @@ def build_mid():
             acc += wgt
             if r <= acc:
                 break
-        if y > 900 and src.name == 'clump_grass' and random.random() < 0.6:
-            src, s_lo, s_hi = variants[0][0], 1.0, 2.0                        # far away only the bigger clumps read
+        if y > 900 and src.name != 'card_palmetto' and random.random() < 0.6:
+            src, s_lo, s_hi = variants[0][0], 0.9, 1.5                        # far away only the bigger clumps read
         s = random.uniform(s_lo, s_hi)
-        instance(f'veg_{n_inst}', src, (x, y, 0.0), (s, s * random.uniform(0.8, 1.2), s * random.uniform(0.85, 1.15)), random.uniform(0, 6.28), c)
+        # one card of the pair faces the camera within +/-35 deg so the fan shape reads at 2560
+        rot = math.atan2(-x, -y) + math.pi / 2 + random.uniform(-0.6, 0.6)
+        instance(f'veg_{n_inst}', src, (x, y, 0.0), (s * random.uniform(0.85, 1.2), s * random.uniform(0.85, 1.2), s * random.uniform(0.9, 1.1)), rot, cv)
         n_inst += 1
-    print(f'  scattered {n_inst} clumps in {tries} tries')
+    print(f'  scattered {n_inst} cards in {tries} tries')
 
     pine_trunk = mat('pine_trunk', (0.22, 0.16, 0.11), rough=0.9)
     pine_crown = plant_material('pine_crown', (0.07, 0.13, 0.06), (0.14, 0.20, 0.09))
@@ -1197,8 +1468,13 @@ def set_visible(names):
         c.hide_viewport = n not in names
 
 
+POST_ONLY = False
+
 def render_to(path, transparent, samples=None):
     sc = bpy.context.scene
+    if POST_ONLY and os.path.exists(path):
+        print(f'  (post-only) kept {os.path.basename(path)}')
+        return 0.0
     sc.render.film_transparent = transparent
     old = sc.cycles.samples
     if samples is not None:
@@ -1412,6 +1688,8 @@ def anchor_dict(bb, W, H):
 
 def main():
     opts = parse_args()
+    global POST_ONLY
+    POST_ONLY = opts['post_only']
     out = opts['out']
     os.makedirs(out, exist_ok=True)
     variants = VARIANT_ORDER if opts['variant'] == 'all' else [opts['variant']]
@@ -1436,15 +1714,24 @@ def main():
     clear_scene()
     sc = bpy.context.scene
     build_camera()
+    configure_render(opts)
+    atlas_path = render_veg_atlas(out, opts)
     build_far()
-    build_mid()
+    build_mid(atlas_path)
     build_vehicle()
     build_near()
-    configure_render(opts)
     W, H = sc.render.resolution_x, sc.render.resolution_y
+    # stage-level fields consumed by encode-hq-stage.ts (the manifest contract)
+    meta.update({'stage': 'earth', 'title': 'Earth Operations Center', 'source': 'art/blender/hq-earth-ops.py',
+                 'defaultVariant': 'sunrise', 'clockOffsetHours': 0,
+                 'layers': [
+                     {'name': 'far', 'order': 0, 'parallax': 0.12, 'alpha': False, 'note': 'sky (graded), sea, dunes, distant pad/cranes (opaque backplate)'},
+                     {'name': 'mid', 'order': 1, 'parallax': 0.42, 'alpha': True, 'note': 'scrub cards, roads, fence, hangar, pad complex without the vehicle'},
+                     {'name': 'near', 'order': 5, 'parallax': 1.0, 'alpha': True, 'note': 'window mullions, header, sill with cyan/amber strips'},
+                 ]})
     vbb = vehicle_anchor(sc)
     meta['actors']['vehicle'] = {'blend': 'normal', 'perVariant': True, 'idle': True, 'anchor': anchor_dict(vbb, W, H),
-                                 'below': 'near', 'above': 'plume', 'trigger': 'launch',
+                                 'below': 'near', 'above': 'plume', 'trigger': 'launch', 'order': 3, 'quality': 88,
                                  'note': 'Always drawn at its anchor (the vehicle on the pad). On launch translate it upward; plume stays pad-anchored.'}
     # projected geometry for the report / component
     from bpy_extras.object_utils import world_to_camera_view
@@ -1463,6 +1750,7 @@ def main():
             d = np_load(depth_paths['all'], 3)
             write_png(os.path.join(out, 'depth.png'), np.clip(d[..., :1] / DEPTH_WHITE_M, 0, 1), bitdepth=16)
 
+    shadow_frames = {}
     for v in variants:
         V = VARIANTS[v]
         t0 = time.time()
@@ -1489,8 +1777,15 @@ def main():
         timings['sky'] = render_to(os.path.join(out, f'{v}-sky.png'), False, samples=max(16, opts['samples'] // 4))
         set_visible(('FAR',) + lights_vis + moon_vis)
         timings['far'] = render_to(os.path.join(out, f'{v}-far-raw.png'), True)
-        set_visible(('MID',) + lights_vis + moon_vis)
+        set_visible(('MID', 'VEG') + lights_vis + moon_vis)
         timings['mid'] = render_to(os.path.join(out, f'{v}-mid-raw.png'), True)
+        # the same mid with the vehicle as a shadow-only caster: the difference is the vehicleShadow actor
+        for ob in COLLS['VEHICLE'].objects:
+            ob.visible_camera = False
+        set_visible(('MID', 'VEG', 'VEHICLE') + lights_vis + moon_vis)
+        timings['shadow'] = render_to(os.path.join(out, f'{v}-midshadow-raw.png'), True)
+        for ob in COLLS['VEHICLE'].objects:
+            ob.visible_camera = True
         set_visible(('VEHICLE',) + lights_vis + moon_vis)
         timings['vehicle'] = render_to(os.path.join(out, f'{v}-vehicle-raw.png'), True)
         set_visible(('NEAR',) + moon_vis)
@@ -1516,11 +1811,25 @@ def main():
             veh_h[..., :3] = lin_to_srgb(srgb_to_lin(veh[..., :3]) * (1 - fv) + hz * fv)
             veh_h = dilate_edges(veh_h)
             near = dilate_edges(np_load(os.path.join(out, f'{v}-near-raw.png'), 4))
+            # vehicle shadow slice: per-pixel darkening ratio of mid-with-shadow over mid, expressed as an
+            # alpha + colour that reproduces it exactly under a normal (sRGB) composite: bg*r = bg*(1-a) + c*a
+            mid_sh = apply_haze(np_load(os.path.join(out, f'{v}-midshadow-raw.png'), 4), dmid, haze_rgb, V['haze_d'], V['haze_k'])
+            lit = np.clip(mid[..., :3], 1e-3, None)
+            ratio = np.clip(mid_sh[..., :3] / lit, 0.0, 1.0)
+            ratio = np.where((mid[..., 3:4] > 0.5) & (mid_sh[..., 3:4] > 0.5), ratio, 1.0)
+            a_sh = np.clip(1.0 - ratio.min(axis=2), 0.0, 1.0)
+            a_sh = np.where(a_sh > 0.03, a_sh, 0.0)
+            shadow = np.zeros_like(mid)
+            with np.errstate(divide='ignore', invalid='ignore'):
+                col = np.where(a_sh[..., None] > 0, mid[..., :3] * (ratio - 1.0 + a_sh[..., None]) / np.maximum(a_sh[..., None], 1e-4), 0.0)
+            shadow[..., :3] = np.clip(col, 0, 1)
+            shadow[..., 3] = a_sh
+            shadow_frames[v] = shadow
             write_png(os.path.join(out, f'{v}-far.png'), far_final[..., :3])
             write_png(os.path.join(out, f'{v}-mid.png'), mid)
             write_png(os.path.join(out, f'{v}-near.png'), near)
             write_png(os.path.join(out, f'{v}-vehicle.png'), veh_h[vbb[1]:vbb[3], vbb[0]:vbb[2]])
-            beauty = alpha_over(alpha_over(alpha_over(far_final, mid), veh_h), near)
+            beauty = alpha_over(alpha_over(alpha_over(alpha_over(far_final, mid), shadow), veh_h), near)
             write_png(os.path.join(out, f'{v}-beauty.png'), beauty[..., :3])
             timings['post'] = time.time() - tp
             meta['variants'][v] = {'sunElevationDeg': V['sun_elev'], 'sunRotationDeg': V['sun_rot'], 'exposure': V['exposure'],
@@ -1529,6 +1838,32 @@ def main():
         timings['total'] = time.time() - t0
         meta['timings'][v] = {k: round(x, 1) for k, x in timings.items()}
         print(f'=== {v} done in {timings["total"]:.0f}s')
+        json.dump(meta, open(meta_path, 'w'), indent=2)
+
+    if opts['post'] and shadow_frames:
+        # one anchor shared by every variant: the union of the shadow footprints rendered this run
+        # (render --variant all so the sunrise shadow, the longest, is inside the crop)
+        prev = meta['actors'].get('vehicleShadow', {}).get('anchor')
+        x0, y0, x1, y1 = W, H, 0, 0
+        for arr in shadow_frames.values():
+            if float(arr[..., 3].max()) <= 0.03:
+                continue                                   # no shadow in this variant (night)
+            _, bb = crop_to_alpha(arr, margin=16, thresh=0.03)
+            x0, y0, x1, y1 = min(x0, bb[0]), min(y0, bb[1]), max(x1, bb[2]), max(y1, bb[3])
+        if x1 <= x0 or y1 <= y0:
+            x0, y0, x1, y1 = 0, 0, W, H
+        if prev and len(shadow_frames) < len(VARIANT_ORDER):
+            x0, y0 = min(x0, int(prev['x'] * W)), min(y0, int(prev['y'] * H))
+            x1, y1 = max(x1, int((prev['x'] + prev['w']) * W)), max(y1, int((prev['y'] + prev['h']) * H))
+        x0 -= x0 % 4; y0 -= y0 % 4
+        bb = (max(0, x0), max(0, y0), min(W, x1), min(H, y1))
+        for v, arr in shadow_frames.items():
+            write_png(os.path.join(out, f'{v}-vehicleShadow.png'), dilate_edges(arr[bb[1]:bb[3], bb[0]:bb[2]], iterations=6))
+        meta['actors']['vehicleShadow'] = {
+            'blend': 'normal', 'perVariant': True, 'idle': True, 'anchor': anchor_dict(bb, W, H), 'below': 'plume', 'above': 'mid',
+            'trigger': 'launch', 'order': 1, 'quality': 80, 'maxWidth': 1280,
+            'note': 'The vehicle\'s shadow on the pad and field, lit per variant, as a normal-blend slice (alpha = darkening). '
+                    'Drawn at rest with the vehicle; fade its opacity to 0 as the vehicle lifts. Not baked into mid.'}
         json.dump(meta, open(meta_path, 'w'), indent=2)
 
     if opts['actors']:
@@ -1540,7 +1875,7 @@ def main():
         world_flat((0, 0, 0), 0.0)
         sc.view_settings.look = 'None'
         sc.view_settings.exposure = VARIANTS['night']['exposure']
-        set_visible(('FAR', 'MID', 'VEHICLE', 'LIGHTS'))
+        set_visible(('FAR', 'MID', 'VEG', 'VEHICLE', 'LIGHTS'))
         tl = render_to(os.path.join(out, 'actor-padlights-raw.png'), True)
         drop_coll('LIGHTS')
         build_plume()
@@ -1561,21 +1896,46 @@ def main():
         sc.view_settings.exposure = 0.0
         set_visible(('WEATHER',))
         tw = render_to(os.path.join(out, 'actor-weather-raw.png'), True, samples=32)
+        # overcast far plate for the weather actor: a flat grey cloud deck, no sun disc, heavy haze
+        drop_coll('WEATHER')
+        world_overcast()
+        sc.view_settings.exposure = VARIANTS['day']['exposure'] + 1.2
+        sc.view_settings.look = 'None'
+        set_visible(())
+        tov = render_to(os.path.join(out, 'overcast-sky.png'), False, samples=max(16, opts['samples'] // 4))
+        set_visible(('FAR',))
+        tov += render_to(os.path.join(out, 'overcast-far-raw.png'), True)
         if opts['post']:
             pl = np_load(os.path.join(out, 'actor-plume-raw.png'), 4)
             pl, bb = crop_to_alpha(dilate_edges(pl), margin=16, thresh=0.01)
             write_png(os.path.join(out, 'actor-plume.png'), pl)
-            meta['actors']['plume'] = {'blend': 'normal', 'anchor': anchor_dict(bb, W, H), 'below': 'vehicle', 'trigger': 'launch'}
+            meta['actors']['plume'] = {'blend': 'normal', 'anchor': anchor_dict(bb, W, H), 'below': 'vehicle', 'trigger': 'launch', 'order': 2, 'quality': 88,
+                                       'note': 'ignition flash + trench steam rolling out both sides of the pad; pad-anchored, drawn below the vehicle'}
             pd = np_load(os.path.join(out, 'actor-padlights-raw.png'), 4)
             lum = pd[..., :3].max(axis=2)
             pd[..., 3] = np.clip((lum - 0.06) * 3.0, 0, 1) * (pd[..., 3] > 0.5)
-            pd, bb = crop_to_alpha(dilate_edges(pd, iterations=6), margin=16, thresh=0.12)
-            write_png(os.path.join(out, 'actor-padlights.png'), pd)
-            meta['actors']['padlights'] = {'blend': 'screen', 'anchor': anchor_dict(bb, W, H), 'below': 'near', 'trigger': 'build_complete'}
+            pd = dilate_edges(pd, iterations=6)
+            # split at the first mullion (x = 0.30): hangar lights left, pad lights right
+            split = int(0.30 * W)
+            left = pd.copy(); left[:, split:, 3] = 0.0
+            right = pd.copy(); right[:, :split, 3] = 0.0
+            for name, arr, note in (('hangarLights', left, 'the hangar bay, sodium yard lights and office glass only (screen blend)'),
+                                    ('padlights', right, 'the pad, tower and crawlerway work lights only (screen blend)')):
+                crop, bb = crop_to_alpha(arr, margin=16, thresh=0.12)
+                write_png(os.path.join(out, f'actor-{name}.png'), crop)
+                meta['actors'][name] = {'blend': 'screen', 'anchor': anchor_dict(bb, W, H), 'below': 'near', 'trigger': 'build_complete',
+                                        'order': 2, 'quality': 74, 'note': note}
             wt = np_load(os.path.join(out, 'actor-weather-raw.png'), 4)
             write_png(os.path.join(out, 'actor-weather.png'), dilate_edges(wt, iterations=4))
-            meta['actors']['weather'] = {'blend': 'normal', 'anchor': {'x': 0.0, 'y': 0.0, 'w': 1.0, 'h': 1.0}, 'below': 'near', 'trigger': 'weather'}
-        meta['timings']['actors'] = {'padlights': round(tl, 1), 'plume': round(tpl, 1), 'weather': round(tw, 1), 'total': round(time.time() - t0, 1)}
+            osky = np_load(os.path.join(out, 'overcast-sky.png'), 4)
+            ohaze = sample_haze_color(osky, H)
+            ofar = apply_haze(np_load(os.path.join(out, 'overcast-far-raw.png'), 4), np_load(depth_paths['far'], 3), ohaze, 2600.0, 0.96)
+            write_png(os.path.join(out, 'overcast-far.png'), alpha_over(osky, ofar)[..., :3])
+            meta['actors']['weather'] = {'blend': 'normal', 'anchor': {'x': 0.0, 'y': 0.0, 'w': 1.0, 'h': 1.0}, 'below': 'near', 'trigger': 'weather',
+                                         'order': 4, 'quality': 72, 'maxWidth': 1280,
+                                         'farPlate': {'png': 'overcast-far.png', 'alpha': False, 'quality': 86,
+                                                      'note': 'an overcast far plate (grey cloud deck, no sun, heavy haze); cross-fade the far layer to it while the weather actor is on, then back'}}
+        meta['timings']['actors'] = {'padlights': round(tl, 1), 'plume': round(tpl, 1), 'weather': round(tw, 1), 'overcast': round(tov, 1), 'total': round(time.time() - t0, 1)}
         json.dump(meta, open(meta_path, 'w'), indent=2)
 
     if opts['save_blend']:

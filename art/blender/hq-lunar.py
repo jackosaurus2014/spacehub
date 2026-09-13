@@ -89,8 +89,12 @@ def parse_args():
 # --------------------------------------------------------------------------------------
 
 RES_W, RES_H = 2560, 1097
-CAM_POS = Vector((0.0, 0.0, 4.0))
-CAM_PITCH_DEG = -2.0
+# Eye height matters more than it looks: the floor undulates by +-4.5 m, so a 4 m camera sits about
+# 1.6 m over the local ground and the bottom half of the window is a close-up of dirt five metres
+# away. 17 m (an ops module on the second level of the base) pushes that same band out to 50-300 m,
+# which is where the boulders, ruts, pads and rigs actually live.
+CAM_POS = Vector((0.0, 0.0, 17.0))
+CAM_PITCH_DEG = -4.3                        # puts the crater floor's horizon at y = 0.33 (upper third)
 CAM_LENS_MM = 35.0
 HALF_FOV = math.atan(18.0 / CAM_LENS_MM)
 HALF_VFOV = math.atan(18.0 * RES_H / RES_W / CAM_LENS_MM)
@@ -99,8 +103,11 @@ MID_MAX_M = 2500.0
 DEPTH_WHITE_M = 40000.0
 CRATER_C = Vector((0.0, 7000.0))            # the crater the base sits in
 CRATER_R = 9000.0
-EARTH_DIST = 40000.0
+# Earth sits further out than the terrain mesh reaches (42 km) so a crater rim can never intersect
+# it; the sphere's radius is derived from the distance, so the angular size is unchanged.
+EARTH_DIST = 150000.0
 EARTH_DIAM_DEG = 2.4                        # 1.9 deg in truth; cheated up so it reads at 1280
+EARTH_EMIT = 1.7                            # Earth's day side is emissive (see earth_material)
 PAD1 = Vector((130.0, 430.0))
 PAD2 = Vector((-280.0, 700.0))
 HAB = Vector((-110.0, 265.0))
@@ -112,9 +119,12 @@ VARIANT_ORDER = ['polar_day', 'earthrise', 'night']
 # sun elevation / rotation (0 = +Y ahead, 90 = +X right), Earth elevation / azimuth (deg), exposure,
 # base-light factor, earthlight fill, stars, bloom
 VARIANTS = {
-    'polar_day': dict(sun_elev=1.6, sun_rot=300.0, earth_elev=9.0, earth_az=14.0, exposure=-0.4, lights=0.3, earthlight=0.0, stars=0.6, bloom=0.5, look='None'),
-    'earthrise': dict(sun_elev=0.9, sun_rot=236.0, earth_elev=5.4, earth_az=34.0, exposure=-0.2, lights=0.6, earthlight=0.0, stars=0.8, bloom=0.7, look='None'),
-    'night':     dict(sun_elev=-8.0, sun_rot=194.0, earth_elev=9.0, earth_az=14.0, exposure=1.6, lights=1.4, earthlight=0.09, stars=1.0, bloom=0.9, look='AgX - Punchy'),
+    # The real south pole sits under a 1-2 deg sun and renders as a black plate with two lit rim
+    # peaks: true, unreadable, and no fun to command from. The sun is lifted to 7-8 deg — still
+    # grazing, still throwing shadows the length of the crater floor, but the regolith reads.
+    'polar_day': dict(sun_elev=7.6, sun_rot=300.0, earth_elev=5.0, earth_az=15.0, exposure=0.9, lights=0.55, earthlight=0.0, stars=0.6, bloom=0.5, look='None'),
+    'earthrise': dict(sun_elev=3.2, sun_rot=236.0, earth_elev=3.0, earth_az=-14.0, exposure=1.15, lights=0.6, earthlight=0.02, stars=0.8, bloom=0.7, look='None'),
+    'night':     dict(sun_elev=-8.0, sun_rot=194.0, earth_elev=5.0, earth_az=15.0, exposure=1.5, lights=1.4, earthlight=0.50, stars=1.0, bloom=0.9, look='AgX - Punchy'),
 }
 
 random.seed(20260915)
@@ -390,15 +400,34 @@ def earth_material(sun):
     cov = _maprange(nt, lum.outputs[0], 0.25, 0.9, 0.0, 0.95)
     mixc = nt.nodes.new('ShaderNodeMix'); mixc.data_type = 'RGBA'
     nt.links.new(cov, mixc.inputs['Factor']); nt.links.new(day.outputs['Color'], mixc.inputs[6]); mixc.inputs[7].default_value = (0.95, 0.95, 0.96, 1)
-    nt.links.new(mixc.outputs[2], bsdf.inputs['Base Color'])
+    # Earth is lit by emission, not by the scene's sun lamp. At lunar night there IS no sun lamp (the
+    # sun is below the horizon and the regolith must stay black), and a diffuse Earth then renders as
+    # a dark hole in the sky — which is exactly backwards, because lunar night is full Earth.
+    bsdf.inputs['Base Color'].default_value = (0, 0, 0, 1)
     nd = _sun_dot(nt, sun)
+    daylit = _maprange(nt, nd, -0.06, 0.28, 0.0, 1.0)
+    dayem = nt.nodes.new('ShaderNodeMix'); dayem.data_type = 'RGBA'; dayem.blend_type = 'MULTIPLY'; dayem.inputs['Factor'].default_value = 1.0
+    nt.links.new(mixc.outputs[2], dayem.inputs[6])
+    dgrey = nt.nodes.new('ShaderNodeCombineColor')
+    dscaled = _math(nt, 'MULTIPLY', daylit, EARTH_EMIT)
+    nt.links.new(dscaled, dgrey.inputs[0]); nt.links.new(dscaled, dgrey.inputs[1]); nt.links.new(dscaled, dgrey.inputs[2])
+    nt.links.new(dgrey.outputs[0], dayem.inputs[7])
     gate = _maprange(nt, nd, -0.2, 0.02, 1.0, 0.0)
     nsub = nt.nodes.new('ShaderNodeVectorMath'); nsub.operation = 'SUBTRACT'; nsub.inputs[1].default_value = (0.10, 0.10, 0.10)
     nt.links.new(night.outputs['Color'], nsub.inputs[0])
     nmax = nt.nodes.new('ShaderNodeVectorMath'); nmax.operation = 'MAXIMUM'; nmax.inputs[1].default_value = (0, 0, 0)
     nt.links.new(nsub.outputs[0], nmax.inputs[0])
-    nt.links.new(nmax.outputs[0], bsdf.inputs['Emission Color'])
-    nt.links.new(_math(nt, 'MULTIPLY', gate, 3.0), bsdf.inputs['Emission Strength'])
+    nscale = nt.nodes.new('ShaderNodeVectorMath'); nscale.operation = 'SCALE'; nscale.inputs['Scale'].default_value = 2.2
+    nt.links.new(nmax.outputs[0], nscale.inputs[0])
+    ngate = nt.nodes.new('ShaderNodeMix'); ngate.data_type = 'RGBA'; ngate.blend_type = 'MULTIPLY'; ngate.inputs['Factor'].default_value = 1.0
+    nt.links.new(nscale.outputs[0], ngate.inputs[6])
+    ggrey = nt.nodes.new('ShaderNodeCombineColor')
+    nt.links.new(gate, ggrey.inputs[0]); nt.links.new(gate, ggrey.inputs[1]); nt.links.new(gate, ggrey.inputs[2])
+    nt.links.new(ggrey.outputs[0], ngate.inputs[7])
+    tot = nt.nodes.new('ShaderNodeMix'); tot.data_type = 'RGBA'; tot.blend_type = 'ADD'; tot.inputs['Factor'].default_value = 1.0
+    nt.links.new(dayem.outputs[2], tot.inputs[6]); nt.links.new(ngate.outputs[2], tot.inputs[7])
+    nt.links.new(tot.outputs[2], bsdf.inputs['Emission Color'])
+    bsdf.inputs['Emission Strength'].default_value = 1.0
     return m
 
 
@@ -515,7 +544,10 @@ NEAR_CRATERS = []
 def near_height(xs, ys):
     """The crater floor within 1.5 km: gentle undulation, a scatter of small craters, fine roughness."""
     import numpy as np
-    z = 1.8 * (fbm(xs, ys, 0.0025, 4, seed=3) - 0.5) * 2 + 0.5 * (fbm(xs, ys, 0.03, 3, seed=4) - 0.5) + 0.12 * (fbm(xs, ys, 0.4, 2, seed=5) - 0.5)
+    # Amplitudes matter more here than anywhere else in the scene: the sun is 7 deg up, so every
+    # metre of relief throws about eight metres of shadow. A flat floor under a grazing sun reads as
+    # grey paper.
+    z = 4.5 * (fbm(xs, ys, 0.0025, 4, seed=3) - 0.5) * 2 + 1.7 * (fbm(xs, ys, 0.018, 4, seed=4) - 0.5) + 0.45 * (fbm(xs, ys, 0.12, 3, seed=12) - 0.5) + 0.12 * (fbm(xs, ys, 0.4, 2, seed=5) - 0.5)
     z += crater_field(xs, ys, NEAR_CRATERS)
     return z.astype(np.float32)
 
@@ -571,8 +603,9 @@ def build_far(V):
     e = sphere('earth', tuple(CAM_POS + ed * EARTH_DIST), er, earth_material(sun), c, seg=128)
     e.rotation_euler = (math.radians(66), 0, math.radians(35))
     camera_only(sphere('earth_atmo', tuple(CAM_POS + ed * EARTH_DIST), er * 1.035, atmosphere_material(sun), c, seg=96))
-    # the Gateway: a bright point overhead-left with a hint of its arrays
-    gd = sky_dir(24.0, -22.0)
+    # the Gateway: a bright point high in the left pane with a hint of its arrays. The window only
+    # reaches 8 deg above the horizon, so 'overhead' has to mean 'the top of the glass'.
+    gd = sky_dir(6.2, -19.0)
     gm = mat('gateway_glow', (1, 1, 1), emit=(1.0, 0.95, 0.85), emit_strength=600.0)
     gp = CAM_POS + gd * 12000.0
     camera_only(sphere('gateway', tuple(gp), 4.0, gm, c, seg=10))
@@ -585,21 +618,28 @@ def build_mid():
     global NEAR_CRATERS
     c = coll('MID')
     NEAR_CRATERS = []
-    for k in range(70):
-        r = random.uniform(3.0, 45.0) if random.random() < 0.85 else random.uniform(45.0, 110.0)
+    for k in range(150):
+        r = random.uniform(2.5, 45.0) if random.random() < 0.85 else random.uniform(45.0, 130.0)
         x = random.uniform(-900, 900); y = random.uniform(30, 1450)
         if (Vector((x, y)) - PAD1).length < 70 + r or (Vector((x, y)) - PAD2).length < 70 + r or (Vector((x, y)) - HAB).length < 60 + r or (Vector((x, y)) - RIG).length < 50 + r:
             continue
-        NEAR_CRATERS.append((x, y, r, 0.16 * r))
+        NEAR_CRATERS.append((x, y, r, 0.21 * r))
     xs, ys = np.meshgrid(np.linspace(-900, 900, 901, dtype=np.float32), np.linspace(-20, 1450, 736, dtype=np.float32))
     grid_mesh('near_terrain', xs, ys, near_height(xs, ys), regolith_material('regolith'), c)
     rock = mat('rock', (0.11, 0.105, 0.10), rough=0.95)
     from mathutils import noise as mnoise
-    for k in range(260):
-        x = random.uniform(-700, 700); y = 25 + 1300 * random.random() ** 1.5
+    # 320 boulders: the first 70 are deliberately close (15-260 m) and large, because those are the
+    # only ones big enough in frame to read as silhouettes and drag a shadow across the floor. The
+    # rest thin out to the horizon.
+    for k in range(320):
+        if k < 70:
+            x = random.uniform(-520, 520); y = 15 + 245 * random.random() ** 1.2
+            s = random.uniform(1.6, 4.2) if random.random() < 0.75 else random.uniform(4.2, 8.5)
+        else:
+            x = random.uniform(-700, 700); y = 25 + 1300 * random.random() ** 1.5
+            s = random.uniform(0.4, 2.2) if random.random() < 0.9 else random.uniform(2.2, 6.0)
         if (Vector((x, y)) - PAD1).length < 40 or (Vector((x, y)) - PAD2).length < 40 or (Vector((x, y)) - HAB).length < 45:
             continue
-        s = random.uniform(0.4, 2.2) if random.random() < 0.9 else random.uniform(2.2, 6.0)
         bm = bmesh.new()
         bmesh.ops.create_icosphere(bm, subdivisions=2, radius=1.0)
         for v in bm.verts:
@@ -1177,7 +1217,7 @@ def main():
         'blend': 'normal', 'perVariant': True, 'idle': False, 'anchor': anchor_dict(hbb, W, H), 'below': 'near', 'trigger': 'launch',
         'order': 3, 'quality': 86,
         'note': 'A cargo hauler 60 m over pad 1 with its engines lit, lit per variant. Translate it down onto the pad (anchor bottom = pad centre) while it plays; pair with dustStorm on touchdown.'}
-    meta['composition'] = {'horizonY': 0.42, 'rimTopY': 0.25, 'pad1': proj(sc, (PAD1.x, PAD1.y, ground_z(PAD1.x, PAD1.y) + 1)),
+    meta['composition'] = {'horizonY': 0.33, 'rimTopY': 0.19, 'pad1': proj(sc, (PAD1.x, PAD1.y, ground_z(PAD1.x, PAD1.y) + 1)),
                            'pad2': proj(sc, (PAD2.x, PAD2.y, ground_z(PAD2.x, PAD2.y) + 1)), 'habitat': proj(sc, (HAB.x, HAB.y, ground_z(HAB.x, HAB.y) + 3)),
                            'rig': proj(sc, (RIG.x, RIG.y, ground_z(RIG.x, RIG.y) + 14)), 'earth': {v: proj(sc, CAM_POS + sky_dir(V['earth_elev'], V['earth_az']) * EARTH_DIST) for v, V in VARIANTS.items()},
                            'gateway': proj(sc, CAM_POS + sky_dir(24.0, -22.0) * 12000.0)}

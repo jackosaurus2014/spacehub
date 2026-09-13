@@ -2,7 +2,7 @@
   "stage": "earth",
   "title": "Earth Operations Center",
   "version": 1,
-  "generatedAt": "2026-09-13T05:11:52.274Z",
+  "generatedAt": "2026-09-13T17:32:34.262Z",
   "source": "art/blender/hq-earth-ops.py",
   "aspect": [
     21,
@@ -18,6 +18,13 @@
     640
   ],
   "files": "game/hq/earth/{variant}-{layer}-{width}.webp",
+  "defaultVariant": "sunrise",
+  "variantOrder": [
+    "day",
+    "sunrise",
+    "dusk",
+    "night"
+  ],
   "composition": {
     "horizonY": 0.33,
     "padDeck": [
@@ -38,6 +45,7 @@
     ],
     "consoleClearBottom": 0.12,
     "overscan": 0.03,
+    "clockOffsetHours": 0,
     "camera": {
       "heightM": 16,
       "pitchDeg": -4.2,
@@ -71,7 +79,7 @@
       "order": 1,
       "parallax": 0.42,
       "alpha": true,
-      "note": "scrub field, roads, fence, hangar, pad complex without the vehicle"
+      "note": "scrub cards, roads, fence, hangar, pad complex without the vehicle"
     },
     {
       "name": "near",
@@ -101,17 +109,17 @@
           "files": {
             "640": {
               "file": "day-far-640.webp",
-              "bytes": 4060,
+              "bytes": 3966,
               "height": 274
             },
             "1280": {
               "file": "day-far-1280.webp",
-              "bytes": 11222,
+              "bytes": 11264,
               "height": 549
             },
             "2560": {
               "file": "day-far-2560.webp",
-              "bytes": 33924,
+              "bytes": 34178,
               "height": 1097
             }
           }
@@ -121,17 +129,17 @@
           "files": {
             "640": {
               "file": "day-mid-640.webp",
-              "bytes": 40656,
+              "bytes": 31226,
               "height": 274
             },
             "1280": {
               "file": "day-mid-1280.webp",
-              "bytes": 102856,
+              "bytes": 85114,
               "height": 549
             },
             "2560": {
               "file": "day-mid-2560.webp",
-              "bytes": 237582,
+              "bytes": 207692,
               "height": 1097
             }
           }
@@ -141,17 +149,17 @@
           "files": {
             "640": {
               "file": "day-near-640.webp",
-              "bytes": 7078,
+              "bytes": 7056,
               "height": 274
             },
             "1280": {
               "file": "day-near-1280.webp",
-              "bytes": 15554,
+              "bytes": 15574,
               "height": 549
             },
             "2560": {
               "file": "day-near-2560.webp",
-              "bytes": 39668,
+              "bytes": 40468,
               "height": 1097
             }
           }
@@ -177,17 +185,17 @@
           "files": {
             "640": {
               "file": "sunrise-far-640.webp",
-              "bytes": 4392,
+              "bytes": 4484,
               "height": 274
             },
             "1280": {
               "file": "sunrise-far-1280.webp",
-              "bytes": 11974,
+              "bytes": 12276,
               "height": 549
             },
             "2560": {
               "file": "sunrise-far-2560.webp",
-              "bytes": 36578,
+              "bytes": 36606,
               "height": 1097
             }
           }
@@ -197,17 +205,17 @@
           "files": {
             "640": {
               "file": "sunrise-mid-640.webp",
-              "bytes": 36964,
+              "bytes": 28472,
               "height": 274
             },
             "1280": {
               "file": "sunrise-mid-1280.webp",
-              "bytes": 94612,
+              "bytes": 73310,
               "height": 549
             },
             "2560": {
               "file": "sunrise-mid-2560.webp",
-              "bytes": 223140,
+              "bytes": 172378,
               "height": 1097
             }
           }
@@ -217,17 +225,17 @@
           "files": {
             "640": {
               "file": "sunrise-near-640.webp",
-              "bytes": 8136,
+              "bytes": 8132,
               "height": 274
             },
             "1280": {
               "file": "sunrise-near-1280.webp",
-              "bytes": 17806,
+              "bytes": 17808,
               "height": 549
             },
             "2560": {
               "file": "sunrise-near-2560.webp",
-              "bytes": 44586,
+              "bytes": 44418,
               "height": 1097
             }
           }
@@ -253,17 +261,17 @@
           "files": {
             "640": {
               "file": "dusk-far-640.webp",
-              "bytes": 4410,
+              "bytes": 4534,
               "height": 274
             },
             "1280": {
               "file": "dusk-far-1280.webp",
-              "bytes": 11884,
+              "bytes": 12002,
               "height": 549
             },
             "2560": {
               "file": "dusk-far-2560.webp",
-              "bytes": 33480,
+              "bytes": 34306,
               "height": 1097
             }
           }
@@ -273,17 +281,17 @@
           "files": {
             "640": {
               "file": "dusk-mid-640.webp",
-              "bytes": 38724,
+              "bytes": 23452,
               "height": 274
             },
             "1280": {
               "file": "dusk-mid-1280.webp",
-              "bytes": 96708,
+              "bytes": 55292,
               "height": 549
             },
             "2560": {
               "file": "dusk-mid-2560.webp",
-              "bytes": 227216,
+              "bytes": 122728,
               "height": 1097
             }
           }
@@ -293,17 +301,17 @@
           "files": {
             "640": {
               "file": "dusk-near-640.webp",
-              "bytes": 5006,
+              "bytes": 4998,
               "height": 274
             },
             "1280": {
               "file": "dusk-near-1280.webp",
-              "bytes": 11650,
+              "bytes": 11642,
               "height": 549
             },
             "2560": {
               "file": "dusk-near-2560.webp",
-              "bytes": 30788,
+              "bytes": 30986,
               "height": 1097
             }
           }
@@ -329,17 +337,17 @@
           "files": {
             "640": {
               "file": "night-far-640.webp",
-              "bytes": 5176,
+              "bytes": 5192,
               "height": 274
             },
             "1280": {
               "file": "night-far-1280.webp",
-              "bytes": 15700,
+              "bytes": 15530,
               "height": 549
             },
             "2560": {
               "file": "night-far-2560.webp",
-              "bytes": 39054,
+              "bytes": 39096,
               "height": 1097
             }
           }
@@ -349,17 +357,17 @@
           "files": {
             "640": {
               "file": "night-mid-640.webp",
-              "bytes": 36102,
+              "bytes": 28390,
               "height": 274
             },
             "1280": {
               "file": "night-mid-1280.webp",
-              "bytes": 85834,
+              "bytes": 72926,
               "height": 549
             },
             "2560": {
               "file": "night-mid-2560.webp",
-              "bytes": 188410,
+              "bytes": 169118,
               "height": 1097
             }
           }
@@ -369,17 +377,17 @@
           "files": {
             "640": {
               "file": "night-near-640.webp",
-              "bytes": 4744,
+              "bytes": 4792,
               "height": 274
             },
             "1280": {
               "file": "night-near-1280.webp",
-              "bytes": 12296,
+              "bytes": 12214,
               "height": 549
             },
             "2560": {
               "file": "night-near-2560.webp",
-              "bytes": 32776,
+              "bytes": 32806,
               "height": 1097
             }
           }
@@ -391,17 +399,18 @@
     "vehicle": {
       "blend": "normal",
       "order": 3,
-      "perVariant": true,
-      "idle": true,
       "trigger": "launch",
       "below": "near",
       "above": "plume",
+      "idle": true,
+      "perVariant": true,
       "anchor": {
         "x": 0.546875,
         "y": 0.06563354603463993,
         "w": 0.041015625,
         "h": 0.3281677301731996
       },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
       "note": "Always drawn at its anchor (the vehicle on the pad). On launch translate it upward; plume stays pad-anchored.",
       "widths": [
         2560,
@@ -412,19 +421,19 @@
         "day": {
           "640": {
             "file": "day-vehicle-640.webp",
-            "bytes": 1438,
+            "bytes": 1420,
             "width": 26,
             "height": 89
           },
           "1280": {
             "file": "day-vehicle-1280.webp",
-            "bytes": 2892,
+            "bytes": 2886,
             "width": 53,
             "height": 182
           },
           "2560": {
             "file": "day-vehicle-2560.webp",
-            "bytes": 5042,
+            "bytes": 5034,
             "width": 105,
             "height": 360
           }
@@ -432,19 +441,19 @@
         "sunrise": {
           "640": {
             "file": "sunrise-vehicle-640.webp",
-            "bytes": 1414,
+            "bytes": 1420,
             "width": 26,
             "height": 89
           },
           "1280": {
             "file": "sunrise-vehicle-1280.webp",
-            "bytes": 2898,
+            "bytes": 2918,
             "width": 53,
             "height": 182
           },
           "2560": {
             "file": "sunrise-vehicle-2560.webp",
-            "bytes": 5220,
+            "bytes": 5202,
             "width": 105,
             "height": 360
           }
@@ -452,19 +461,19 @@
         "dusk": {
           "640": {
             "file": "dusk-vehicle-640.webp",
-            "bytes": 1600,
+            "bytes": 1610,
             "width": 26,
             "height": 89
           },
           "1280": {
             "file": "dusk-vehicle-1280.webp",
-            "bytes": 2944,
+            "bytes": 2896,
             "width": 53,
             "height": 182
           },
           "2560": {
             "file": "dusk-vehicle-2560.webp",
-            "bytes": 5584,
+            "bytes": 5638,
             "width": 105,
             "height": 360
           }
@@ -472,19 +481,19 @@
         "night": {
           "640": {
             "file": "night-vehicle-640.webp",
-            "bytes": 1620,
+            "bytes": 1626,
             "width": 26,
             "height": 89
           },
           "1280": {
             "file": "night-vehicle-1280.webp",
-            "bytes": 3074,
+            "bytes": 3084,
             "width": 53,
             "height": 182
           },
           "2560": {
             "file": "night-vehicle-2560.webp",
-            "bytes": 5834,
+            "bytes": 5808,
             "width": 105,
             "height": 360
           }
@@ -492,18 +501,101 @@
       },
       "quality": 88
     },
+    "vehicleShadow": {
+      "blend": "normal",
+      "order": 1,
+      "trigger": "launch",
+      "below": "plume",
+      "above": "mid",
+      "idle": true,
+      "perVariant": true,
+      "anchor": {
+        "x": 0,
+        "y": 0.007292616226071103,
+        "w": 1,
+        "h": 0.9927073837739289
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "The vehicle's shadow on the pad and field, lit per variant, as a normal-blend slice (alpha = darkening). Drawn at rest with the vehicle; fade its opacity to 0 as the vehicle lifts. Not baked into mid.",
+      "widths": [
+        1280,
+        640
+      ],
+      "files": {
+        "day": {
+          "640": {
+            "file": "day-vehicleShadow-640.webp",
+            "bytes": 2956,
+            "width": 640,
+            "height": 272
+          },
+          "1280": {
+            "file": "day-vehicleShadow-1280.webp",
+            "bytes": 8038,
+            "width": 1280,
+            "height": 545
+          }
+        },
+        "sunrise": {
+          "640": {
+            "file": "sunrise-vehicleShadow-640.webp",
+            "bytes": 2378,
+            "width": 640,
+            "height": 272
+          },
+          "1280": {
+            "file": "sunrise-vehicleShadow-1280.webp",
+            "bytes": 6884,
+            "width": 1280,
+            "height": 545
+          }
+        },
+        "dusk": {
+          "640": {
+            "file": "dusk-vehicleShadow-640.webp",
+            "bytes": 11808,
+            "width": 640,
+            "height": 272
+          },
+          "1280": {
+            "file": "dusk-vehicleShadow-1280.webp",
+            "bytes": 27634,
+            "width": 1280,
+            "height": 545
+          }
+        },
+        "night": {
+          "640": {
+            "file": "night-vehicleShadow-640.webp",
+            "bytes": 66878,
+            "width": 640,
+            "height": 272
+          },
+          "1280": {
+            "file": "night-vehicleShadow-1280.webp",
+            "bytes": 249002,
+            "width": 1280,
+            "height": 545
+          }
+        }
+      },
+      "quality": 80
+    },
     "plume": {
       "blend": "normal",
       "order": 2,
       "trigger": "launch",
       "below": "vehicle",
+      "idle": false,
+      "perVariant": false,
       "anchor": {
         "x": 0.2125,
-        "y": 0.105742935278031,
+        "y": 0.10209662716499544,
         "w": 0.65625,
-        "h": 0.3518687329079307
+        "h": 0.35551504102096626
       },
       "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "ignition flash + trench steam rolling out both sides of the pad; pad-anchored, drawn below the vehicle",
       "widths": [
         2560,
         1280,
@@ -512,37 +604,82 @@
       "files": {
         "640": {
           "file": "actor-plume-640.webp",
-          "bytes": 10106,
+          "bytes": 10058,
           "width": 420,
-          "height": 97
+          "height": 98
         },
         "1280": {
           "file": "actor-plume-1280.webp",
-          "bytes": 26688,
+          "bytes": 26578,
           "width": 840,
-          "height": 193
+          "height": 195
         },
         "2560": {
           "file": "actor-plume-2560.webp",
-          "bytes": 81514,
+          "bytes": 80588,
           "width": 1680,
-          "height": 386
+          "height": 390
         }
       },
       "quality": 88
+    },
+    "hangarLights": {
+      "blend": "screen",
+      "order": 2,
+      "trigger": "build_complete",
+      "below": "near",
+      "idle": false,
+      "perVariant": false,
+      "anchor": {
+        "x": 0,
+        "y": 0.2187784867821331,
+        "w": 0.30625,
+        "h": 0.3646308113035551
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "the hangar bay, sodium yard lights and office glass only (screen blend)",
+      "widths": [
+        2560,
+        1280,
+        640
+      ],
+      "files": {
+        "640": {
+          "file": "actor-hangarLights-640.webp",
+          "bytes": 7018,
+          "width": 196,
+          "height": 100
+        },
+        "1280": {
+          "file": "actor-hangarLights-1280.webp",
+          "bytes": 18858,
+          "width": 392,
+          "height": 200
+        },
+        "2560": {
+          "file": "actor-hangarLights-2560.webp",
+          "bytes": 39830,
+          "width": 784,
+          "height": 400
+        }
+      },
+      "quality": 74
     },
     "padlights": {
       "blend": "screen",
       "order": 2,
       "trigger": "build_complete",
       "below": "near",
+      "idle": false,
+      "perVariant": false,
       "anchor": {
-        "x": 0,
+        "x": 0.29375,
         "y": 0,
-        "w": 0.946875,
-        "h": 0.8313582497721057
+        "w": 0.652734375,
+        "h": 0.6025524156791249
       },
       "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "the pad, tower and crawlerway work lights only (screen blend)",
       "widths": [
         2560,
         1280,
@@ -551,30 +688,32 @@
       "files": {
         "640": {
           "file": "actor-padlights-640.webp",
-          "bytes": 34704,
-          "width": 606,
-          "height": 228
+          "bytes": 20086,
+          "width": 418,
+          "height": 165
         },
         "1280": {
           "file": "actor-padlights-1280.webp",
-          "bytes": 95246,
-          "width": 1212,
-          "height": 456
+          "bytes": 53792,
+          "width": 836,
+          "height": 331
         },
         "2560": {
           "file": "actor-padlights-2560.webp",
-          "bytes": 194470,
-          "width": 2424,
-          "height": 912
+          "bytes": 117146,
+          "width": 1671,
+          "height": 661
         }
       },
-      "quality": 86
+      "quality": 74
     },
     "weather": {
       "blend": "normal",
       "order": 4,
       "trigger": "weather",
       "below": "near",
+      "idle": false,
+      "perVariant": false,
       "anchor": {
         "x": 0,
         "y": 0,
@@ -589,23 +728,45 @@
       "files": {
         "640": {
           "file": "actor-weather-640.webp",
-          "bytes": 28782,
+          "bytes": 28796,
           "width": 640,
           "height": 274
         },
         "1280": {
           "file": "actor-weather-1280.webp",
-          "bytes": 71276,
+          "bytes": 71282,
           "width": 1280,
           "height": 549
         }
       },
-      "quality": 72
+      "quality": 72,
+      "farPlate": {
+        "layer": "far",
+        "note": "an overcast far plate (grey cloud deck, no sun, heavy haze); cross-fade the far layer to it while the weather actor is on, then back",
+        "quality": 86,
+        "files": {
+          "640": {
+            "file": "weather-far-640.webp",
+            "bytes": 2870,
+            "height": 274
+          },
+          "1280": {
+            "file": "weather-far-1280.webp",
+            "bytes": 7612,
+            "height": 549
+          },
+          "2560": {
+            "file": "weather-far-2560.webp",
+            "bytes": 21410,
+            "height": 1097
+          }
+        }
+      }
     }
   },
   "depth": {
     "file": "depth-1280.webp",
-    "bytes": 5422,
+    "bytes": 5340,
     "width": 1280,
     "height": 549,
     "metersAtWhite": 8000,
@@ -613,60 +774,65 @@
   },
   "bytes": {
     "byVariant": {
-      "day": 492600,
-      "sunrise": 478188,
-      "dusk": 459866,
-      "night": 420092
+      "day": 436538,
+      "sunrise": 397884,
+      "dusk": 299940,
+      "night": 380064
     },
-    "actors": 582346,
-    "depth": 5422,
-    "total": 2438514
+    "actors": 921044,
+    "depth": 5340,
+    "total": 2440810
   },
   "render": {
     "engine": "CYCLES",
     "samples": 160,
     "timings": {
       "day": {
-        "sky": 0.7,
-        "far": 1.3,
-        "mid": 2.4,
-        "vehicle": 0.5,
-        "near": 1,
-        "post": 9.3,
-        "total": 15.3
-      },
-      "sunrise": {
-        "sky": 0.7,
-        "far": 1.9,
-        "mid": 3.2,
-        "vehicle": 0.6,
-        "near": 0.9,
-        "post": 9.2,
-        "total": 16.5
-      },
-      "dusk": {
-        "sky": 0.9,
-        "far": 1.9,
-        "mid": 3.2,
-        "vehicle": 0.6,
-        "near": 1,
-        "post": 9,
-        "total": 16.6
-      },
-      "night": {
         "sky": 0.8,
         "far": 1.4,
-        "mid": 2.3,
+        "mid": 8.7,
+        "shadow": 9.5,
+        "vehicle": 0.8,
+        "near": 1.5,
+        "post": 11.7,
+        "total": 34.4
+      },
+      "sunrise": {
+        "sky": 0.8,
+        "far": 3.1,
+        "mid": 13.6,
+        "shadow": 13.6,
+        "vehicle": 0.6,
+        "near": 0.9,
+        "post": 9.6,
+        "total": 42.2
+      },
+      "dusk": {
+        "sky": 0.8,
+        "far": 1.8,
+        "mid": 11.2,
+        "shadow": 11.3,
         "vehicle": 0.6,
         "near": 1,
-        "post": 8.9,
-        "total": 15
+        "post": 9.9,
+        "total": 36.8
+      },
+      "night": {
+        "sky": 0.6,
+        "far": 1.4,
+        "mid": 6.8,
+        "shadow": 7,
+        "vehicle": 0.7,
+        "near": 1,
+        "post": 10.5,
+        "total": 28.1
       },
       "actors": {
-        "padlights": 2.7,
-        "plume": 38.3,
-        "weather": 0.8,
-        "total": 46.2
+        "padlights": 8.2,
+        "plume": 33.5,
+        "weather": 0.7,
+        "overcast": 1.9,
+        "total": 49.7
       }
     }
   }
