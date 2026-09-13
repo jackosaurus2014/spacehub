@@ -83,9 +83,16 @@ import {
   glintAngle,
   bodyName,
   SLOT_PIP_STYLE,
+  countContactsByBody,
+  contactCountText,
   type LocalSceneModel,
   type LocalShell,
 } from '@/lib/game/map-flight';
+// Graphics Phase 2 (item 4): the region tint the 2D stage washes with —
+// the SAME table the 3D skybox / particles read (map-regions.ts), keyed by
+// the local body or the selected location. 2D parity for region identity.
+import { MAP_REGION_SKY, regionForBody, regionForLocation } from '@/lib/game/map-regions';
+import { ORBITAL_BODY_MAP } from '@/lib/game/orbital-elements';
 
 /** Quadratic-bezier point at parameter u — shared by the ship-transit
  *  polyline and its engine-trail sample points (Wave V7). */
@@ -567,6 +574,14 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localBody, state, contacts, world]);
   useEffect(() => { if (localBody && !localModel) setLocalBody(null); }, [localBody, localModel]);
+  // Phase 2 (item 4): region wash — inside a local view the body's region,
+  // otherwise the selected location's (the inner system by default).
+  const regionTint = useMemo(() => {
+    const region = localBody ? regionForBody(localBody) : selectedLoc ? regionForLocation(selectedLoc) : 'inner_system';
+    return MAP_REGION_SKY[region].tint;
+  }, [localBody, selectedLoc]);
+  // Addendum (c): contacts per body for the Location List + the local chip.
+  const contactCounts = useMemo(() => countContactsByBody(contacts), [contacts]);
 
   // Selection lock-on (item 4): the reticle converges on to the body when a
   // new selection is acquired. Timestamped in a ref so the draw loop can ease
@@ -599,6 +614,19 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       ctx.drawImage(nebula, 0, 0, w, h);
       ctx.restore();
     }
+    // Region wash (Phase 2 item 4, 2D parity): two radial tints from the
+    // shared region table — top-left `a`, bottom-right `b`.
+    const washR = Math.max(w, h) * 0.85;
+    const washA = ctx.createRadialGradient(w * 0.2, h * 0.15, 0, w * 0.2, h * 0.15, washR);
+    washA.addColorStop(0, regionTint.a);
+    washA.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = washA;
+    ctx.fillRect(0, 0, w, h);
+    const washB = ctx.createRadialGradient(w * 0.85, h * 0.9, 0, w * 0.85, h * 0.9, washR);
+    washB.addColorStop(0, regionTint.b);
+    washB.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = washB;
+    ctx.fillRect(0, 0, w, h);
 
     // ─── Stars (twinkling, 3-layer parallax) ─────────────────────
     // Farthest layer (0) barely shifts with pan; closest (2) tracks full offset.
@@ -1331,7 +1359,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     }
 
     animRef.current = requestAnimationFrame(draw);
-  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, showContacts, contacts, contactsAsOfMs, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc, modeVisuals, zoomTier, alwaysLabels, slotRings, laneVolumes, localModel, localZoom, spriteUrlFor]);
+  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, showContacts, contacts, contactsAsOfMs, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc, modeVisuals, zoomTier, alwaysLabels, slotRings, laneVolumes, localModel, localZoom, spriteUrlFor, regionTint]);
 
   // Canvas sizing — re-scale on container resize
   useEffect(() => {
@@ -1784,6 +1812,12 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                         {standing === 'stakeholder' && <span aria-hidden="true" className="text-cyan-300 shrink-0">◆</span>}
                         {hasWarning && <GameIcon name="warning" size={12} className="text-amber-300 shrink-0" />}
                         {modeVis?.glyph && <span aria-hidden="true" className="text-slate-300 shrink-0">{modeVis.glyph}</span>}
+                        {/* Addendum (c): contacts in this body's local scene (the body row carries it). */}
+                        {showContacts && localBodyId && loc.id === ORBITAL_BODY_MAP.get(localBodyId)?.locationId && (contactCounts[localBodyId]?.total ?? 0) > 0 && (
+                          <span aria-hidden="true" className="ml-auto shrink-0 inline-flex items-center gap-0.5 text-[10px] text-slate-400">
+                            <GameIcon name="target" size={10} />{contactCounts[localBodyId].total}
+                          </span>
+                        )}
                       </span>
                       <span className="sr-only">
                         {unlocked ? ', unlocked' : ', locked'}{isSelected ? ', currently selected' : ''}
@@ -1791,6 +1825,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                         {hasWarning ? ', severe hazard forecast next month' : ''}
                         {modeVis ? `, ${modeVis.srText}` : ''}
                         {slotRings[loc.id] ? `. ${slotRings[loc.id].srText}` : ''}
+                        {showContacts && localBodyId && loc.id === ORBITAL_BODY_MAP.get(localBodyId)?.locationId && contactCounts[localBodyId] ? `. ${contactCountText(contactCounts[localBodyId])}` : ''}
                         {localBodyId && localBody === localBodyId ? `. ${localModel?.srText ?? ''}` : ''}
                         . Press C for the command menu.
                       </span>
@@ -1936,7 +1971,10 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         {(shipsInTransit.length > 0 || (showContacts && contacts.length > 0)) && (
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none flex gap-1.5">
             {shipsInTransit.length > 0 && <DataChip icon="ship-transport" tone="good">{shipsInTransit.length} in transit</DataChip>}
-            {showContacts && contacts.length > 0 && (
+            {showContacts && localBody && (contactCounts[localBody]?.total ?? 0) > 0 && (
+              <DataChip icon="target">{contactCountText(contactCounts[localBody])}</DataChip>
+            )}
+            {showContacts && !localBody && contacts.length > 0 && (
               <DataChip icon="target">{contacts.length} contact{contacts.length === 1 ? '' : 's'}</DataChip>
             )}
           </div>

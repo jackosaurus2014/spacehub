@@ -26,7 +26,7 @@
 import { useRef, useState, useEffect, useMemo, useContext, useCallback, createContext, forwardRef, Suspense } from 'react';
 import * as THREE from 'three';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
-import { Billboard, Text } from '@react-three/drei';
+import { Billboard, Text, shaderMaterial } from '@react-three/drei';
 import { configureTextBuilder } from 'troika-three-text';
 
 // troika generates glyph SDFs in a web worker built from a blob URL; the
@@ -46,6 +46,19 @@ import {
 } from '@/lib/game/map-zoom';
 import type { ModeVisual } from '@/lib/game/map-modes';
 import { getAtmosphere } from '@/lib/game/map-bodies';
+import { ORBITAL_BODY_MAP } from '@/lib/game/orbital-elements';
+// Item 3 — the procedural planet shader (GLSL + the three-free helpers).
+import {
+  PLANET_VERTEX,
+  PLANET_FRAGMENT,
+  PLANET_RING_NORMAL,
+  PLANET_RING_TILT,
+  syncPlanetMaps,
+  bodyShaderFlags,
+  bodySunIrradiance,
+  cloudShiftFor,
+  type PlanetMapUniformsLike,
+} from '@/lib/game/map-shading';
 import { MAP_GLYPHS } from '@/lib/game/map-glyphs';
 import type { ScenePositions } from '@/lib/game/orbital-elements';
 import {
@@ -93,6 +106,9 @@ export function useSafeTexture(url?: string): THREE.Texture | null {
         if (disposed) { t.dispose(); return; }
         t.colorSpace = THREE.SRGBColorSpace;
         t.anisotropy = 4;
+        // The planet shader's band flow shifts u past the seam.
+        t.wrapS = THREE.RepeatWrapping;
+        t.needsUpdate = true;
         loadedTex = t;
         setTex(t);
       },
@@ -611,9 +627,66 @@ export function useGatedRaycast(proto: RaycastFn): RaycastFn {
 export const MESH_RAYCAST: RaycastFn = THREE.Mesh.prototype.raycast as RaycastFn;
 export const INSTANCED_RAYCAST: RaycastFn = THREE.InstancedMesh.prototype.raycast as RaycastFn;
 
-// ── Saturn ring with radial UV remap (the alpha texture is a radial strip) ──
+// ── Planet shader material (graphics review item 3) ─────────────────────────
+// One drei shaderMaterial, four variants by define (lib/game/map-shading.ts):
+// the surface, the cloud sphere, the atmosphere halo (replacing the two
+// flat BackSide shells) and Saturn's ring. Every texture reaches a variant
+// through syncPlanetMaps + useMapRefresh, so a program compiled before its
+// map streamed in is rebuilt when the map lands — the same contract the
+// standard materials had.
 
-export function PlanetRing({ texUrl, innerScale, outerScale, bodyR }: { texUrl: string; innerScale: number; outerScale: number; bodyR: number }) {
+const PlanetMaterialImpl = shaderMaterial(
+  {
+    dayMap: null,
+    cloudsMap: null,
+    ringMap: null,
+    hasMap: 0,
+    hasClouds: 0,
+    hasLights: 0,
+    baseColor: new THREE.Color('#ffffff'),
+    tint: new THREE.Color('#ffffff'),
+    atmoColor: new THREE.Color('#000000'),
+    atmoStrength: 0,
+    sunI: 1,
+    bodyR: 1,
+    ocean: 0,
+    gasBands: 0,
+    time: 0,
+    cloudShift: 0,
+    ringN: new THREE.Vector3(PLANET_RING_NORMAL[0], PLANET_RING_NORMAL[1], PLANET_RING_NORMAL[2]),
+    ringInner: 0,
+    ringOuter: 0,
+    ringOpacity: 0.9,
+    lightsColor: new THREE.Color('#fde68a'),
+    lightsStrength: 1.1,
+  },
+  PLANET_VERTEX,
+  PLANET_FRAGMENT,
+);
+
+type PlanetVariant = 'PLANET' | 'CLOUDS' | 'HALO' | 'RING';
+
+const LOCKED_TINT = '#8a8f98';
+const LOCKED_BASE = '#334155';
+const RING_FALLBACK = '#eab308';
+
+function usePlanetMaterial(variant: PlanetVariant): THREE.ShaderMaterial {
+  const mat = useMemo(() => {
+    const m = new PlanetMaterialImpl() as THREE.ShaderMaterial;
+    m.defines = { [variant]: '' };
+    if (variant !== 'PLANET') { m.transparent = true; m.depthWrite = false; }
+    if (variant === 'HALO') { m.side = THREE.BackSide; m.blending = THREE.AdditiveBlending; }
+    if (variant === 'RING') m.side = THREE.DoubleSide;
+    return m;
+  }, [variant]);
+  useEffect(() => () => mat.dispose(), [mat]);
+  return mat;
+}
+
+// ── Saturn ring with radial UV remap (the alpha texture is a radial strip) ──
+// RING variant: the planet's shadow falls across the far side of the ring.
+
+export function PlanetRing({ texUrl, innerScale, outerScale, bodyR, sunI = 1, unlocked = true }: { texUrl: string; innerScale: number; outerScale: number; bodyR: number; sunI?: number; unlocked?: boolean }) {
   const tex = useSafeTexture(texUrl);
   const geo = useMemo(() => {
     const inner = bodyR * innerScale;
@@ -630,19 +703,22 @@ export function PlanetRing({ texUrl, innerScale, outerScale, bodyR }: { texUrl: 
     return g;
   }, [bodyR, innerScale, outerScale]);
   useEffect(() => () => geo.dispose(), [geo]);
-  const matRef = useRef<THREE.MeshBasicMaterial>(null);
+  const mat = usePlanetMaterial('RING');
+  const matRef = useRef<THREE.Material | null>(null);
+  matRef.current = mat;
   useMapRefresh(matRef, tex);
+  useEffect(() => {
+    const u = mat.uniforms;
+    u.ringMap.value = tex;
+    u.ringOpacity.value = tex ? 0.9 : 0.35;
+    (u.tint.value as THREE.Color).set(tex ? (unlocked ? '#ffffff' : '#cbd5e1') : RING_FALLBACK);
+    u.bodyR.value = bodyR;
+    u.sunI.value = sunI;
+    mat.needsUpdate = true;
+  }, [mat, tex, unlocked, bodyR, sunI]);
   return (
-    <mesh geometry={geo} rotation-x={-Math.PI / 2 + 0.18} renderOrder={2}>
-      <meshBasicMaterial
-        ref={matRef}
-        map={tex ?? undefined}
-        color={tex ? '#ffffff' : '#eab308'}
-        transparent
-        opacity={tex ? 0.9 : 0.35}
-        side={THREE.DoubleSide}
-        depthWrite={false}
-      />
+    <mesh geometry={geo} rotation-x={-Math.PI / 2 + PLANET_RING_TILT} renderOrder={2}>
+      <primitive object={mat} attach="material" />
     </mesh>
   );
 }
@@ -678,17 +754,23 @@ export function OrbitPath({ radius, inclinationDeg = 0, highlighted = false, bas
   return <primitive object={line} />;
 }
 
-// ── Body sphere — the textured, lit, atmosphere-shelled planet/moon ─────────
+// ── Body sphere — the shader-lit planet/moon with clouds, halo and ring ────
 // Shared by the system BodyMesh and the local scene so Earth is the same
-// Earth in both. Rotation is decorative (off under reduced motion).
+// Earth in both. Rotation and band flow are decorative (frozen under
+// reduced motion). The 2D canvas keeps its sprite + limb-darkening disc: the
+// terminator, rim, specular, cloud and ring shadows are decorative-only
+// lighting (no game fact is conveyed by them; the atmosphere itself is
+// text in the Location List via ATMOSPHERES.label).
 
 export interface BodySphereProps {
   r: number;
   texture?: string;
   cloudsTexture?: string;
-  nightTexture?: string;
   color: string;
   locationId?: string;
+  /** Orbital body id — drives the shader flags (ocean, bands, night
+   *  lights) and the irradiance at its orbit. */
+  bodyId?: string;
   unlocked: boolean;
   reduced: boolean;
   ring?: { texture: string; innerScale: number; outerScale: number };
@@ -698,59 +780,91 @@ export interface BodySphereProps {
   onPointerOut?: (e: ThreeEvent<PointerEvent>) => void;
 }
 
-export function BodySphere({ r, texture, cloudsTexture, nightTexture, color, locationId, unlocked, reduced, ring, onClick, onPointerOver, onPointerOut }: BodySphereProps) {
+export function BodySphere({ r, texture, cloudsTexture, color, locationId, bodyId, unlocked, reduced, ring, onClick, onPointerOver, onPointerOut }: BodySphereProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
   const tex = useSafeTexture(texture);
   const clouds = useSafeTexture(cloudsTexture);
-  const night = useSafeTexture(nightTexture);
   const seg = r > 0.8 ? 48 : 28;
   const raycast = useGatedRaycast(MESH_RAYCAST);
-  const surfaceMat = useRef<THREE.MeshStandardMaterial>(null);
-  useMapRefresh(surfaceMat, tex, night);
-  useFrame((_, delta) => {
-    if (reduced) return;
-    if (meshRef.current) meshRef.current.rotation.y += delta * 0.06;
-    if (cloudsRef.current) cloudsRef.current.rotation.y += delta * 0.085;
-  });
-  // Atmospheric shell, data-driven from ATMOSPHERES (map-bodies.ts). The
-  // BackSide sphere reads as a rim glow against the lit limb; the
-  // terminator itself is real (a single point light at the Sun).
   const atmo = getAtmosphere(locationId);
+  const flags = bodyShaderFlags(bodyId ? ORBITAL_BODY_MAP.get(bodyId) : undefined);
+  const sunI = bodySunIrradiance(bodyId);
+
+  const surface = usePlanetMaterial('PLANET');
+  const cloudMat = usePlanetMaterial('CLOUDS');
+  const haloMat = usePlanetMaterial('HALO');
+  const surfaceRef = useRef<THREE.Material | null>(null);
+  surfaceRef.current = surface;
+  const cloudRef = useRef<THREE.Material | null>(null);
+  cloudRef.current = cloudMat;
+  // Late maps → recompile (the Sun / Venus regression contract).
+  useMapRefresh(surfaceRef, tex, clouds);
+  useMapRefresh(cloudRef, clouds);
+
+  // Per-body constants.
+  const atmoColor = atmo?.color ?? '#000000';
+  const atmoStrength = atmo?.opacity ?? 0;
+  const ringInner = ring?.innerScale ?? 0;
+  const ringOuter = ring?.outerScale ?? 0;
+  useEffect(() => {
+    const u = surface.uniforms;
+    (u.baseColor.value as THREE.Color).set(unlocked ? color : LOCKED_BASE);
+    (u.tint.value as THREE.Color).set(unlocked ? '#ffffff' : LOCKED_TINT);
+    (u.atmoColor.value as THREE.Color).set(atmoColor);
+    u.atmoStrength.value = atmoStrength;
+    u.sunI.value = sunI;
+    u.bodyR.value = r;
+    u.ocean.value = flags.ocean ? 1 : 0;
+    u.gasBands.value = flags.gasBands ? 1 : 0;
+    u.ringInner.value = ringInner;
+    u.ringOuter.value = ringOuter;
+    cloudMat.uniforms.sunI.value = sunI;
+    (haloMat.uniforms.atmoColor.value as THREE.Color).set(atmoColor);
+    haloMat.uniforms.atmoStrength.value = atmoStrength;
+  }, [surface, cloudMat, haloMat, unlocked, color, atmoColor, atmoStrength, sunI, r, flags.ocean, flags.gasBands, ringInner, ringOuter]);
+
+  // Late textures into the sampler uniforms (+ recompile when a slot binds).
+  useEffect(() => {
+    if (syncPlanetMaps(surface.uniforms as unknown as PlanetMapUniformsLike, { day: tex, clouds }, flags)) surface.needsUpdate = true;
+    if (syncPlanetMaps(cloudMat.uniforms as unknown as PlanetMapUniformsLike, { clouds }, flags)) cloudMat.needsUpdate = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surface, cloudMat, tex, clouds, flags.lightsInAlpha]);
+
+  const timeRef = useRef(0);
+  useFrame((_, delta) => {
+    if (!reduced) {
+      timeRef.current += Math.min(delta, 0.1);
+      if (meshRef.current) meshRef.current.rotation.y += delta * 0.06;
+      if (cloudsRef.current) cloudsRef.current.rotation.y += delta * 0.085;
+    }
+    const u = surface.uniforms;
+    u.time.value = timeRef.current;
+    u.cloudShift.value = cloudShiftFor(meshRef.current?.rotation.y ?? 0, cloudsRef.current?.rotation.y ?? 0);
+  });
+
   return (
     <group>
       <mesh ref={meshRef} onClick={onClick} onPointerOver={onPointerOver} onPointerOut={onPointerOut} raycast={raycast}>
         <sphereGeometry args={[r, seg, seg]} />
-        <meshStandardMaterial
-          ref={surfaceMat}
-          map={tex ?? undefined}
-          color={tex ? (unlocked ? '#ffffff' : '#8a8f98') : (unlocked ? color : '#334155')}
-          roughness={0.92}
-          metalness={0.04}
-          emissiveMap={night ?? undefined}
-          emissive={night ? '#aab4ff' : '#000000'}
-          emissiveIntensity={night ? 0.85 : 0}
-        />
+        <primitive object={surface} attach="material" />
       </mesh>
-      {clouds && (
-        <mesh ref={cloudsRef}>
+      {cloudsTexture && (
+        <mesh ref={cloudsRef} renderOrder={1}>
           <sphereGeometry args={[r * 1.03, seg, seg]} />
-          <meshStandardMaterial map={clouds} transparent opacity={0.5} depthWrite={false} />
+          <primitive object={cloudMat} attach="material" />
         </mesh>
       )}
+      {/* Atmosphere halo, data-driven from ATMOSPHERES (map-bodies.ts): a
+          single BackSide shell whose glow is limb-bright and day-weighted
+          (the HALO variant), instead of two flat constant-alpha shells. */}
       {atmo && (
-        <>
-          <mesh>
-            <sphereGeometry args={[r * atmo.shellScale, 24, 24]} />
-            <meshBasicMaterial color={atmo.color} transparent opacity={atmo.opacity * 0.62} side={THREE.BackSide} depthWrite={false} />
-          </mesh>
-          <mesh>
-            <sphereGeometry args={[r * (atmo.shellScale + 0.05), 20, 20]} />
-            <meshBasicMaterial color={atmo.color} transparent opacity={atmo.opacity * 0.26} side={THREE.BackSide} depthWrite={false} />
-          </mesh>
-        </>
+        <mesh renderOrder={2}>
+          <sphereGeometry args={[r * atmo.shellScale, 32, 32]} />
+          <primitive object={haloMat} attach="material" />
+        </mesh>
       )}
-      {ring && <PlanetRing texUrl={ring.texture} innerScale={ring.innerScale} outerScale={ring.outerScale} bodyR={r} />}
+      {ring && <PlanetRing texUrl={ring.texture} innerScale={ring.innerScale} outerScale={ring.outerScale} bodyR={r} sunI={sunI} unlocked={unlocked} />}
     </group>
   );
 }

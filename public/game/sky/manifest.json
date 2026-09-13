@@ -1,0 +1,47 @@
+{
+  "width": 2048,
+  "height": 1024,
+  "maxKb": 180,
+  "files": [
+    {
+      "id": "inner_system",
+      "bytes": 30270,
+      "q": 84
+    },
+    {
+      "id": "earth_environs",
+      "bytes": 22902,
+      "q": 84
+    },
+    {
+      "id": "asteroid_belt",
+      "bytes": 41352,
+      "q": 84
+    },
+    {
+      "id": "jovian",
+      "bytes": 40430,
+      "q": 84
+    },
+    {
+      "id": "saturnian",
+      "bytes": 45788,
+      "q": 84
+    },
+    {
+      "id": "outer_system",
+      "bytes": 25194,
+      "q": 84
+    },
+    {
+      "id": "heliopause",
+      "bytes": 16226,
+      "q": 84
+    },
+    {
+      "id": "interstellar",
+      "bytes": 31370,
+      "q": 84
+    }
+  ]
+}

@@ -741,3 +741,47 @@ export const SLOT_PIP_STYLE: Record<SlotRingSegmentKind, { color: string; alpha:
   others: { color: '#f59e0b', alpha: 0.5, hollow: false },
   free: { color: '#94a3b8', alpha: 0.45, hollow: true },
 };
+
+// ─── Contacts per body (graphics Phase 2, addendum (c)) ─────────────────────
+// The Location List row for a body shows how many traffic contacts are in
+// its local scene right now — holding at one of its locations, or in
+// transit to / from one — so the intel that the 3D local scene shows as
+// hulls and tags is also a number a screen reader gets. Pure; both
+// renderers' lists call it.
+
+export interface BodyContactCount {
+  holding: number;
+  arriving: number;
+  departing: number;
+  /** Distinct contacts touching the body (a lane inside one body counts once). */
+  total: number;
+  /** Contacts carrying an identity block (fleet reveal held). */
+  revealed: number;
+}
+
+export function countContactsByBody(contacts: readonly TrafficContact[]): Record<string, BodyContactCount> {
+  const out: Record<string, BodyContactCount> = {};
+  const get = (bodyId: string) => (out[bodyId] ||= { holding: 0, arriving: 0, departing: 0, total: 0, revealed: 0 });
+  for (const c of contacts) {
+    if (c.status === 'holding') {
+      const b = localBodyForLocation(c.locationId);
+      if (!b) continue;
+      const row = get(b);
+      row.holding++; row.total++;
+      if (c.intel) row.revealed++;
+      continue;
+    }
+    const to = localBodyForLocation(c.laneB);
+    const from = localBodyForLocation(c.laneA);
+    if (to) { const row = get(to); row.arriving++; row.total++; if (c.intel) row.revealed++; }
+    if (from && from !== to) { const row = get(from); row.departing++; row.total++; if (c.intel) row.revealed++; }
+  }
+  return out;
+}
+
+/** "3 contacts here · 1 revealed" — the local-scene chip / row text. */
+export function contactCountText(n: BodyContactCount | undefined): string {
+  if (!n || n.total === 0) return '';
+  const base = `${n.total} contact${n.total === 1 ? '' : 's'} here`;
+  return n.revealed > 0 ? `${base} · ${n.revealed} revealed` : base;
+}

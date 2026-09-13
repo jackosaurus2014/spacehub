@@ -40,7 +40,8 @@ export interface OrbitalBody {
   color: string;
   /** Extra transparent cloud layer texture (Earth). */
   cloudsTexture?: string;
-  /** Emissive night-lights texture (Earth). */
+  /** Emissive night-lights texture. Earth no longer uses one — its lights
+   *  ride in `texture`'s alpha (map-shading.ts bodyShaderFlags). */
   nightTexture?: string;
   /** Ring system (Saturn). Scales are multiples of the body's visual radius. */
   ring?: { texture: string; innerScale: number; outerScale: number };
@@ -111,7 +112,9 @@ export const ORBITAL_BODIES: OrbitalBody[] = [
   { id: 'venus', name: 'Venus', aAU: 0.723, periodDays: 224.7, inclinationDeg: 3.4, radiusKm: 6052, texture: '/textures/venus.webp', color: '#fde047', locationId: 'venus_orbit', phaseDeg: 85 },
   {
     id: 'earth', name: 'Earth', aAU: 1.0, periodDays: 365.25, inclinationDeg: 0, radiusKm: 6371,
-    texture: '/textures/earth_day.webp', cloudsTexture: '/textures/earth_clouds.webp', nightTexture: '/textures/earth_night.webp',
+    // Day albedo with the night lights packed in the ALPHA channel (item 3:
+    // the planet shader reads day+lights in one fetch, clouds in the other).
+    texture: '/textures/earth_day_lights.webp', cloudsTexture: '/textures/earth_clouds.webp',
     color: '#38bdf8', locationId: 'earth_surface', phaseDeg: 205,
   },
   { id: 'moon', name: 'Moon', parent: 'earth', orbitScale: 2.6, periodDays: 27.32, radiusKm: 1737, texture: '/textures/moon.webp', color: '#cbd5e1', locationId: 'lunar_surface', phaseDeg: 40 },

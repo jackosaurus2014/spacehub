@@ -28,6 +28,13 @@
 // Labels are the shared SDF labels (item 6) with a declutter registry of
 // their own; the tier is pinned to 'detail' (a local scene IS the detail
 // view). A selected moon's orbit path brightens.
+//
+// Graphics Phase 2, addendum (c) — intel polish: contacts get the system
+// view's exact anonymised / revealed / NPC treatment (one batching path,
+// map-hulls.ts) PLUS a persistent ETA tag for the revealed corporations
+// and the soonest arrivals (ship-traffic.ts pickTaggedContacts, capped so
+// a busy port does not become a wall of text), and the shell counts feed
+// the "n contacts here" chip + Location List count in SolarMap3D.
 
 import { useRef, useMemo, useCallback, useLayoutEffect, useEffect, useState } from 'react';
 import * as THREE from 'three';
@@ -37,7 +44,7 @@ import { ORBITAL_BODY_MAP } from '@/lib/game/orbital-elements';
 import type { MapZoomTier } from '@/lib/game/map-zoom';
 import type { ModeVisual } from '@/lib/game/map-modes';
 import { SLOT_SEGMENT_STYLE } from '@/lib/game/map-bodies';
-import { placeContacts, contactLabel, contactDetail, corpRingColor, FACTION_CONTACT_TINT, ANON_CONTACT_COLOR, type TrafficContact, type ContactAnchor } from '@/lib/game/ship-traffic';
+import { placeContacts, contactLabel, contactDetail, contactTagText, pickTaggedContacts, corpRingColor, FACTION_CONTACT_TINT, ANON_CONTACT_COLOR, type TrafficContact, type ContactAnchor } from '@/lib/game/ship-traffic';
 import { batchHullInstances, contactRenderKind, HULL_SCALE, HULL_MODEL_IDS, type HullInstanceInput, type HullModelId } from '@/lib/game/map-hulls';
 import { MAP_LABEL_COLORS, MAP_TAG_PX } from '@/lib/game/map-labels';
 import { HullInstances, MarkerMesh, SlabMesh, RingMesh, FacilityMesh, instanceCapacity, paintInstances } from './hulls';
@@ -264,7 +271,7 @@ function MoonNode({ moon, bodyR, reduced, timeRef, selectedLocationId, onPick, o
   }, [moon.locationId]);
   return (
     <group ref={groupRef}>
-      <BodySphere r={moon.r} texture={moon.texture} color={moon.color} locationId={moon.locationId} unlocked={moon.unlocked} reduced={reduced} onClick={handleClick} onPointerOver={setCursor(true)} onPointerOut={setCursor(false)} />
+      <BodySphere r={moon.r} texture={moon.texture} color={moon.color} locationId={moon.locationId} bodyId={moon.id} unlocked={moon.unlocked} reduced={reduced} onClick={handleClick} onPointerOver={setCursor(true)} onPointerOut={setCursor(false)} />
       {moon.locationId && <BodyLabel name={moon.name} unlocked={moon.unlocked} badges={NO_BADGES} tierRef={DETAIL_TIER} locationId={moon.locationId} yOffset={-(moon.r + 0.3)} priority={2} />}
       {moon.shells.map(s => (
         <ShellRing key={s.id} shell={s} unitR={moon.r} selected={!!s.locationId && selectedLocationId === s.locationId} reduced={reduced} timeRef={timeRef} onPick={onPick} onHover={onHover} />
@@ -300,6 +307,31 @@ function ShipTag({ ship, builtAtMs, posMap }: { ship: LocalShip; builtAtMs: numb
   return <HudTag ref={rootRef} text={text} px={MAP_TAG_PX} color={ship.status === 'holding' ? MAP_LABEL_COLORS.tagHolding : MAP_LABEL_COLORS.tag} resolve={resolve} />;
 }
 
+/** Addendum (c): a persistent tag on a contact — revealed corporation +
+ *  hull, or the honest anonymised class — with the live ETA (1 Hz). */
+function ContactTag({ contact, asOfMs, posMap }: { contact: TrafficContact; asOfMs: number; posMap: Map<string, THREE.Vector3> }) {
+  const rootRef = useRef<THREE.Group>(null);
+  const placedRef = useRef(false);
+  const [text, setText] = useState(() => contactTagText(contact, Date.now(), asOfMs));
+  useEffect(() => {
+    const compute = () => setText(contactTagText(contact, Date.now(), asOfMs));
+    compute();
+    const iv = setInterval(compute, 1000);
+    return () => clearInterval(iv);
+  }, [contact, asOfMs]);
+  useFrame(() => {
+    const p = posMap.get(contact.id);
+    const g = rootRef.current;
+    placedRef.current = !!p;
+    if (p && g) g.position.set(p.x, p.y + 0.14, p.z);
+  });
+  const resolve = useCallback(() => placedRef.current && text !== '', [text]);
+  // Revealed contacts read in the tag colour; anonymised and NPC backdrop
+  // in the muted tone (identity not held is itself the information).
+  const color = contact.intel ? MAP_LABEL_COLORS.tag : MAP_LABEL_COLORS.locked;
+  return <HudTag ref={rootRef} id={`contact:${contact.id}`} priority={0} text={text} px={MAP_TAG_PX} color={color} resolve={resolve} />;
+}
+
 interface LocalShipItem extends HullInstanceInput { ship: LocalShip }
 
 function LocalShips({ model, posRef, timeRef, reduced, asOfMs, showShips, showContacts, onHover }: {
@@ -320,6 +352,8 @@ function LocalShips({ model, posRef, timeRef, reduced, asOfMs, showShips, showCo
     return out;
   }, [model.ships, showShips, showContacts]);
   const batches = useMemo(() => batchHullInstances(items), [items]);
+  // Addendum (c): which contacts carry a persistent ETA tag.
+  const tagged = useMemo(() => (showContacts ? pickTaggedContacts(items.filter(it => it.kind !== 'own').map(it => it.ship.contact)) : []), [items, showContacts]);
   const caps = useMemo(() => ({
     hulls: Object.fromEntries(HULL_MODEL_IDS.map(m => [m, instanceCapacity(batches.hulls[m].length)])) as Record<HullModelId, number>,
     anonymous: instanceCapacity(batches.anonymous.length),
@@ -464,6 +498,7 @@ function LocalShips({ model, posRef, timeRef, reduced, asOfMs, showShips, showCo
         <RingMesh key={`rings-${caps.rings}`} capacity={caps.rings} radius={s * 0.9} register={register.rings} />
       )}
       {showShips && model.ships.filter(sh => sh.own && sh.contact.status === 'transit').map(sh => <ShipTag key={sh.id} ship={sh} builtAtMs={model.builtAtMs} posMap={posMap} />)}
+      {tagged.map(c => <ContactTag key={c.id} contact={c} asOfMs={asOfMs} posMap={posMap} />)}
     </group>
   );
 }
@@ -525,9 +560,9 @@ export default function SolarMapLocal({ model, posRef, timeRef, reduced, selecte
             r={model.bodyR}
             texture={model.texture}
             cloudsTexture={def?.cloudsTexture}
-            nightTexture={def?.nightTexture}
             color={model.color}
             locationId={model.locationId}
+            bodyId={model.bodyId}
             unlocked={model.unlocked}
             reduced={reduced}
             ring={def?.ring}

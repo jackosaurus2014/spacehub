@@ -48,7 +48,7 @@ import { getActiveScienceMissions, SCIENCE_PROGRAM_MAP } from '@/lib/game/scienc
 import { playSound } from '@/lib/game/sound-engine';
 import { useWorldState } from '@/hooks/useWorldState';
 import { onMapPing, getPingVisual, PING_COLOR, type MapPingEvent } from '@/lib/game/map-ping';
-import { EFFECT_ASSETS, SKYBOX_ASSETS } from '@/lib/game/assets';
+import { EFFECT_ASSETS } from '@/lib/game/assets';
 import { computeModeVisuals, type MapMode, type ModeVisual } from '@/lib/game/map-modes';
 import { ORBITAL_BODY_MAP } from '@/lib/game/orbital-elements';
 // Wave A2 (map as command theater) — zoom tiers, body presentation data and
@@ -113,6 +113,10 @@ import {
   type PositionsRef,
 } from './map3d/shared';
 import SolarMapLocal, { type LocalHover } from './map3d/SolarMapLocal';
+// Graphics Phase 2 (item 4): region skybox crossfade + particle field, and
+// the pure region derivation both renderers share.
+import { RegionTracker, RegionSky, RegionParticles } from './map3d/region';
+import { MAP_REGION_SKY, type MapRegionId } from '@/lib/game/map-regions';
 import {
   flyDurationMs,
   flyProgress,
@@ -124,6 +128,8 @@ import {
   buildLocalSceneModel,
   bodyName,
   rootBodyId,
+  countContactsByBody,
+  contactCountText,
   type CameraPose,
   type LocalSceneModel,
 } from '@/lib/game/map-flight';
@@ -312,31 +318,9 @@ const MAP_FX_KEY = 'tycoon-map-fx'; // '1' | '0' — user quality toggle
 
 const SolarMapBloom = lazy(() => import('./SolarMapBloom'));
 
-// ── Wave V4: nebula skybox (V6 asset, previously unused) ────────────────────
-// Equirect background at deliberately low intensity — the NASA body textures
-// stay the visual focus (spec's brightness bound). Loads non-suspending; the
-// existing CSS gradient remains the fallback until (or if never) loaded.
-
-function NebulaSkybox() {
-  const scene = useThree(s => s.scene);
-  const tex = useSafeTexture(SKYBOX_ASSETS.nebulaEquirect);
-  useEffect(() => {
-    if (!tex) return;
-    tex.mapping = THREE.EquirectangularReflectionMapping;
-    const prevBg = scene.background;
-    const prevIntensity = scene.backgroundIntensity;
-    scene.background = tex;
-    // 0.18 → 0.14 with the item-8 tone pass (ACES + exposure 1.1 would
-    // otherwise lift the nebula into the mid-tones; the review asked for
-    // deeper blacks, not a brighter backdrop).
-    scene.backgroundIntensity = 0.14;
-    return () => {
-      scene.background = prevBg;
-      scene.backgroundIntensity = prevIntensity;
-    };
-  }, [tex, scene]);
-  return null;
-}
+// ── Skybox ──────────────────────────────────────────────────────────────────
+// Phase 2 (item 4): the single nebula equirect became eight per-region
+// backdrops crossfaded by map3d/region.tsx (RegionSky); see map-regions.ts.
 
 // ── Framing rig (item 9) ─────────────────────────────────────────────────────
 
@@ -392,7 +376,7 @@ function IntroDolly({ controlsRef, posRef, onDone }: { controlsRef: ControlsRef;
 /** Dev-only measurement hook for the graphics probes: Earth's on-screen
  *  radius, camera distances and the zoom tier. Stripped from production
  *  builds by the NODE_ENV guard. */
-function MapProbe({ posRef, localRef, flightRef }: { posRef: PositionsRef; localRef: React.MutableRefObject<string | null>; flightRef: FlightRef }) {
+function MapProbe({ posRef, localRef, flightRef, regionRef }: { posRef: PositionsRef; localRef: React.MutableRefObject<string | null>; flightRef: FlightRef; regionRef: React.MutableRefObject<MapRegionId> }) {
   const camera = useThree(s => s.camera);
   const size = useThree(s => s.size);
   const scene = useThree(s => s.scene);
@@ -434,10 +418,14 @@ function MapProbe({ posRef, localRef, flightRef }: { posRef: PositionsRef; local
           return { pending, total };
         })(),
         renderer: { toneMapping: gl.toneMapping, exposure: gl.toneMappingExposure },
+        // Phase 2: the region the sky is showing and the per-frame draw calls.
+        region: regionRef.current,
+        drawCalls: gl.info.render.calls,
+        triangles: gl.info.render.triangles,
       };
     };
     return () => { delete w.__solarMapProbe; };
-  }, [camera, size, scene, gl, posRef, localRef, flightRef]);
+  }, [camera, size, scene, gl, posRef, localRef, flightRef, regionRef]);
   return null;
 }
 
@@ -562,9 +550,9 @@ function BodyMesh({ def, posRef, reduced, unlocked, badges, standing, mode, tier
         r={r}
         texture={def.texture}
         cloudsTexture={def.cloudsTexture}
-        nightTexture={def.nightTexture}
         color={def.color}
         locationId={def.locationId}
+        bodyId={def.id}
         unlocked={unlocked}
         reduced={reduced}
         ring={def.ring}
@@ -1565,6 +1553,13 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   const systemGateRef = useRef(true);
   systemGateRef.current = localBody === null;
   const [localHover, setLocalHover] = useState<LocalHover | null>(null);
+  // Phase 2 (item 4): the region the camera is in — a ref for the frame
+  // loop (sky + particles), React state only on change (chip + sr text).
+  // The home frame is the Earth cluster, so the sky opens on Earth environs.
+  const regionRef = useRef<MapRegionId>('earth_environs');
+  const [region, setRegion] = useState<MapRegionId>('earth_environs');
+  // Addendum (c): contacts per body for the Location List + local chip.
+  const contactCounts = useMemo(() => countContactsByBody(contacts), [contacts]);
   const onLocalBodyChangeRef = useRef(onLocalBodyChange);
   onLocalBodyChangeRef.current = onLocalBodyChange;
   const handleLocalChange = useCallback((id: string | null) => {
@@ -2076,13 +2071,18 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         }}
       >
         <ambientLight intensity={0.16} />
-        <NebulaSkybox />
+        {/* Phase 2 (item 4): per-region skybox crossfade + particle field.
+            Particles are decorative motion — not mounted under reduced
+            motion. Both are children of this one Canvas. */}
+        <RegionTracker controlsRef={controlsRef} posRef={posRef} localRef={localRef} regionRef={regionRef} onChange={setRegion} />
+        <RegionSky regionRef={regionRef} reduced={reduced} />
+        {!reduced && <RegionParticles regionRef={regionRef} posRef={posRef} controlsRef={controlsRef} localRef={localRef} />}
         {/* Item 8: more and larger stars (4,200 → 7,000, factor 5 → 6.5);
             still monochrome and still static under reduced motion. */}
         <Stars radius={420} depth={90} count={7000} factor={6.5} saturation={0} fade speed={reduced ? 0 : 0.5} />
         <SceneClock posRef={posRef} timeRef={timeRef} reduced={reduced} />
         <ZoomTierTracker tierRef={tierRef} onChange={handleTierChange} />
-        <MapProbe posRef={posRef} localRef={localRef} flightRef={flightRef} />
+        <MapProbe posRef={posRef} localRef={localRef} flightRef={flightRef} regionRef={regionRef} />
         <Sun reduced={reduced} />
         {/* Flight mode (part a): the rig that flies the camera and the
             tracker that swaps scenes when the camera crosses a local sphere.
@@ -2352,6 +2352,12 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
                           {standing === 'stakeholder' && <GameIcon name="diamond" size={12} className="text-cyan-300 shrink-0" />}
                           {hasWarning && <GameIcon name="warning" size={12} className="text-amber-300 shrink-0" />}
                           {modeVis?.glyph && <span aria-hidden="true" className="text-slate-300 shrink-0">{modeVis.glyph}</span>}
+                          {/* Addendum (c): contacts in this body's local scene (the body row carries it). */}
+                          {showContacts && localBodyId && loc.id === ORBITAL_BODY_MAP.get(localBodyId)?.locationId && (contactCounts[localBodyId]?.total ?? 0) > 0 && (
+                            <span aria-hidden="true" className="ml-auto shrink-0 inline-flex items-center gap-0.5 text-[10px] text-slate-400">
+                              <GameIcon name="target" size={10} />{contactCounts[localBodyId].total}
+                            </span>
+                          )}
                         </span>
                         <span className="sr-only">
                           {unlocked ? ', unlocked' : ', locked'}{isSelected ? ', currently selected' : ''}
@@ -2359,6 +2365,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
                           {hasWarning ? ', severe hazard forecast next month' : ''}
                           {modeVis ? `, ${modeVis.srText}` : ''}
                           {slotRingByLoc[loc.id] ? `. ${slotRingByLoc[loc.id].srText}` : ''}
+                          {showContacts && localBodyId && loc.id === ORBITAL_BODY_MAP.get(localBodyId)?.locationId && contactCounts[localBodyId] ? `. ${contactCountText(contactCounts[localBodyId])}` : ''}
                           {localBodyId && localBody === localBodyId ? `. ${localModel?.srText ?? ''}` : ''}
                           . Press C for the command menu.
                         </span>
@@ -2395,14 +2402,20 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         )}
       </div>
 
-      {(shipsInTransit > 0 || (showContacts && contacts.length > 0)) && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none flex gap-1.5">
-          {shipsInTransit > 0 && <DataChip icon="ship-transport" tone="good">{shipsInTransit} in transit</DataChip>}
-          {showContacts && contacts.length > 0 && (
-            <DataChip icon="target">{contacts.length} contact{contacts.length === 1 ? '' : 's'}</DataChip>
-          )}
-        </div>
-      )}
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none flex gap-1.5">
+        {/* Phase 2 (item 4): the region is always text, never sky-only. */}
+        <DataChip icon="map"><span role="status" aria-live="polite">{MAP_REGION_SKY[region].label}</span></DataChip>
+        {shipsInTransit > 0 && <DataChip icon="ship-transport" tone="good">{shipsInTransit} in transit</DataChip>}
+        {/* Addendum (c): inside a local scene the chip counts the contacts
+            HERE (holding, arriving, departing); the system view keeps the
+            feed total. */}
+        {showContacts && localBody && (contactCounts[localBody]?.total ?? 0) > 0 && (
+          <DataChip icon="target">{contactCountText(contactCounts[localBody])}</DataChip>
+        )}
+        {showContacts && !localBody && contacts.length > 0 && (
+          <DataChip icon="target">{contacts.length} contact{contacts.length === 1 ? '' : 's'}</DataChip>
+        )}
+      </div>
 
       {/* Flight mode (part a): local-scene hover tag — a slot pip's owner, a
           shell's occupancy, a ship's ETA. Pointer path only; the Location
@@ -2453,7 +2466,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         Use the Location List overlay (bottom-left) to browse and select every location by keyboard and press
         C on a row for its command menu, or switch to the 2D map with the 2D/3D toggle.
         Number keys jump straight to a body: 1 to 9 and 0 select the ten bodies of the active bank, and the backquote key pages between banks. The Jump legend at the bottom of the map names every binding and is clickable. 
-        Current zoom tier: {MAP_ZOOM_TIER_LABEL[zoomTier]}.
+        Current zoom tier: {MAP_ZOOM_TIER_LABEL[zoomTier]}. Current region: {MAP_REGION_SKY[region].label}.
       </p>
     </div>
   );
