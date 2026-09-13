@@ -27,6 +27,14 @@ import { useRef, useState, useEffect, useMemo, useContext, useCallback, createCo
 import * as THREE from 'three';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import { Billboard, Text } from '@react-three/drei';
+import { configureTextBuilder } from 'troika-three-text';
+
+// troika generates glyph SDFs in a web worker built from a blob URL; the
+// production CSP (script-src without blob:) rejects the worker's
+// importScripts and it then falls back to the main thread after logging a
+// page error on every load (seen on prod 2026-09-13). Generate on the main
+// thread from the start: a few hundred glyphs is cheap, and there is no error.
+if (typeof window !== 'undefined') configureTextBuilder({ useWorker: false });
 import {
   zoomTierFromCameraDistance,
   isMajorLocation,
