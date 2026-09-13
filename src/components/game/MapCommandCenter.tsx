@@ -16,15 +16,23 @@ import type { ExpeditionPlanRequest } from '@/lib/game/expeditions';
 import SolarSystemCanvas from './SolarSystemCanvas';
 import GalacticMapView from './GalacticMapView';
 
+/** Shown while the 3D chunk downloads AND (2026-09-12) while the renderer
+ *  choice is still unresolved on first paint — previously the 2D canvas
+ *  mounted for that tick and was torn down again when the 3D renderer won,
+ *  so every mount of the map allocated two full-size canvases. */
+function MapInitializing() {
+  return (
+    <div className="w-full h-full flex items-center justify-center bg-[#020208]">
+      <span className="text-cyan-300/70 text-xs font-hud animate-pulse">Initializing orbital view…</span>
+    </div>
+  );
+}
+
 // WebGL renderer (4X wave W7) — loaded on demand so three.js lands in an
 // async chunk that mobile / reduced-motion / no-WebGL users never download.
 const SolarMap3D = dynamic(() => import('./SolarMap3D'), {
   ssr: false,
-  loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-[#020208]">
-      <span className="text-cyan-300/70 text-xs font-hud animate-pulse">Initializing orbital view…</span>
-    </div>
-  ),
+  loading: () => <MapInitializing />,
 });
 import OrderQueueHUD, { type OrderQueueTarget } from './OrderQueueHUD';
 import MapContextPanel, { type MapSelection, type MapContextView } from './MapContextPanel';
@@ -43,6 +51,7 @@ import { SLOT_SEGMENT_STYLE } from '@/lib/game/map-bodies';
 import GlobalActivityFeed from './GlobalActivityFeed';
 import SpatialStrategyPanel from './SpatialStrategyPanel';
 import { playSound } from '@/lib/game/sound-engine';
+import { toast } from '@/lib/toast';
 import { THREE_D_ENABLED } from '@/lib/three-runtime';
 import { updateMusicMood } from '@/lib/game/music-engine';
 import { isFoldedFeatureUnlocked } from '@/lib/game/corporation-tiers';
@@ -76,20 +85,32 @@ const MAP_RENDERER_KEY = 'tycoon-map-renderer'; // '3d' | '2d'
  *  information layering. '1' = every label/badge at every zoom. */
 const MAP_LABELS_KEY = 'tycoon-map-labels-always';
 
+// Probed ONCE per page and the probe context released immediately. Before
+// 2026-09-12 this ran on mount and on every window `resize` event, creating a
+// WebGL2 context each time and never losing it; Chrome caps a page at 16 live
+// contexts and evicts the oldest, so a resize burst (or, below the stage
+// breakpoint, a few hub switches) could evict the real map context. Measured
+// on production: 30 resize events → 30 new contexts.
+let webgl2Probe: boolean | null = null;
 function detectWebGL2(): boolean {
+  if (webgl2Probe !== null) return webgl2Probe;
+  let gl: WebGL2RenderingContext | null = null;
   try {
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl2');
-    return !!gl;
+    gl = document.createElement('canvas').getContext('webgl2');
   } catch {
-    return false;
+    gl = null;
   }
+  webgl2Probe = !!gl;
+  try { gl?.getExtension('WEBGL_lose_context')?.loseContext(); } catch { /* best effort */ }
+  return webgl2Probe;
 }
 
 /** Environment capability — NOT user preference. Re-evaluated on resize and
- *  reduced-motion changes so the map degrades live, never breaks. */
-function use3DCapable(): boolean {
-  const [capable, setCapable] = useState(false);
+ *  reduced-motion changes so the map degrades live, never breaks. `null`
+ *  until the first evaluation (SSR / first paint): the shell shows a
+ *  placeholder rather than mounting a renderer it may immediately replace. */
+function use3DCapable(): boolean | null {
+  const [capable, setCapable] = useState<boolean | null>(null);
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
     const evaluate = () => {
@@ -232,7 +253,9 @@ export default function MapCommandCenter({
   }, [layer, state]);
 
   // 3D/2D renderer selection: environment capability × persisted preference.
-  // Starts false (2D) so SSR/first paint never assumes WebGL, then upgrades.
+  // Capability is null until evaluated (SSR/first paint never assumes WebGL);
+  // the placeholder renders until then, so no renderer is mounted and torn
+  // down again on the same mount.
   const capable3D = use3DCapable();
   const [prefer3D, setPrefer3D] = useState(true);
   useEffect(() => {
@@ -240,7 +263,7 @@ export default function MapCommandCenter({
       setPrefer3D(localStorage.getItem(MAP_RENDERER_KEY) !== '2d');
     } catch { /* storage unavailable → default 3D on capable hardware */ }
   }, []);
-  const use3D = THREE_D_ENABLED && capable3D && prefer3D;
+  const use3D = THREE_D_ENABLED && capable3D === true && prefer3D;
   const toggleRenderer = useCallback(() => {
     playSound('click');
     setPrefer3D(prev => {
@@ -248,6 +271,20 @@ export default function MapCommandCenter({
       try { localStorage.setItem(MAP_RENDERER_KEY, next ? '3d' : '2d'); } catch { /* ignore */ }
       return next;
     });
+  }, []);
+  // 2026-09-12 (browser-crash investigation): a lost WebGL context while the
+  // map is mounted means the GPU side is in trouble (driver reset, GPU
+  // process crash, context eviction). Persist the 2D choice so the NEXT
+  // session starts safe too, swap renderers now, and say so in text — the
+  // 3D button stays available for the player to try again deliberately.
+  const handleContextLost = useCallback(() => {
+    try { localStorage.setItem(MAP_RENDERER_KEY, '2d'); } catch { /* ignore */ }
+    setPrefer3D(false);
+    toast.warning(
+      'The 3D map lost its graphics context, so the 2D map has taken over. The 3D button on the map bar switches back.',
+      'Map switched to 2D',
+      8000,
+    );
   }, []);
   // Audit Wave F §B5: Spatial Strategy (lane traffic, orbital-slot occupancy,
   // chokepoints) folded into the map as a HUD overlay — it's geography, so it
@@ -520,7 +557,9 @@ export default function MapCommandCenter({
       style={{ height: mapHeight ? `${mapHeight}px` : '70vh' }}
     >
       {layer === 'solar' ? (
-        use3D ? (
+        capable3D === null ? (
+          <MapInitializing />
+        ) : use3D ? (
           <SolarMap3D
             state={state}
             selectedLocationId={selection?.kind === 'location' ? selection.id : null}
@@ -530,6 +569,7 @@ export default function MapCommandCenter({
             alwaysLabels={labelsAlways}
             onZoomTierChange={setZoomTier}
             laneVolumes={showVolume ? laneVolumes?.map : null}
+            onContextLost={handleContextLost}
           />
         ) : (
           <SolarSystemCanvas
@@ -583,7 +623,7 @@ export default function MapCommandCenter({
         >
           ✴ Galactic
         </button>
-        {THREE_D_ENABLED && capable3D && layer === 'solar' && (
+        {THREE_D_ENABLED && capable3D === true && layer === 'solar' && (
           <button
             type="button"
             onClick={toggleRenderer}

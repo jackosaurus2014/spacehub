@@ -27,7 +27,7 @@
 //
 // Performance: single instanced mesh for the belt, sprite labels (no DOM, no
 // font network fetch), frameloop paused when the tab/page is hidden, DPR
-// capped at 2. Text labels are canvas sprites with sizeAttenuation:false so
+// capped at 1.5. Text labels are canvas sprites with sizeAttenuation:false so
 // they stay readable at Pluto range without DOM overlays.
 
 import { useRef, useState, useEffect, useMemo, useCallback, useLayoutEffect, lazy, Suspense } from 'react';
@@ -110,6 +110,12 @@ interface SolarMap3DProps {
    *  listed in text by the MapCommandCenter legend (parity with the 2D
    *  canvas's inline labels). */
   laneVolumes?: Record<string, { v: number; n: number }> | null;
+  /** 2026-09-12 (browser-crash investigation): the WebGL context was lost
+   *  while the map was mounted — driver reset, GPU-process crash, or
+   *  Chrome evicting the oldest of too many contexts. The shell persists the
+   *  2D preference and swaps renderers. NOT fired for the loss React Three
+   *  Fiber itself forces on unmount (the listener is removed first). */
+  onContextLost?: () => void;
 }
 
 // Wave V4 feature flag — flip false if the bloom pass ever busts the perf
@@ -1444,7 +1450,7 @@ function SelectionMarker({ posRef, selectedLocationId, reduced }: { posRef: Posi
 
 // ── Main component ───────────────────────────────────────────────────────────
 
-export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard', alwaysLabels = false, onZoomTierChange, laneVolumes }: SolarMap3DProps) {
+export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard', alwaysLabels = false, onZoomTierChange, laneVolumes, onContextLost }: SolarMap3DProps) {
   const [selectedLoc, setSelectedLoc] = useState<string | null>(null);
   const [showLanes, setShowLanes] = useState(true);
   const [showShips, setShowShips] = useState(true);
@@ -1485,14 +1491,40 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   }, []);
   const running = active && pageVisible;
 
+  // Context-loss watch (2026-09-12). The renderer's canvas is only known once
+  // R3F has created it (onCreated), so the listener is attached by an effect
+  // keyed on that element — and removed on unmount BEFORE R3F's own deferred
+  // forceContextLoss (500 ms after unmount), so a routine unmount is never
+  // mistaken for a crash. StrictMode's mount/unmount/mount is handled the
+  // same way (the effect re-attaches).
+  const [glCanvas, setGlCanvas] = useState<HTMLCanvasElement | null>(null);
+  const onContextLostRef = useRef(onContextLost);
+  onContextLostRef.current = onContextLost;
+  useEffect(() => {
+    if (!glCanvas) return;
+    let fired = false;
+    const onLost = () => {
+      if (fired) return;
+      fired = true;
+      onContextLostRef.current?.();
+    };
+    glCanvas.addEventListener('webglcontextlost', onLost);
+    return () => glCanvas.removeEventListener('webglcontextlost', onLost);
+  }, [glCanvas]);
+
   // Wave V4 — bloom gating (spec: ON only when use3D && dpr>1 && !reduced,
   // user quality toggle in the renderer button group, lazy chunk). dprHigh
   // starts false so SSR/first paint never fetches the chunk speculatively.
+  // 2026-09-12: the pass is OPT-IN (default off). `dpr > 1` is true on every
+  // scaled Windows display (125% = 1.25), so "on when dpr > 1" made the
+  // HalfFloat composer targets the default for essentially all Windows
+  // laptops — the population reporting whole-browser exits. The FX button
+  // still enables it; the choice persists.
   const [dprHigh, setDprHigh] = useState(false);
   useEffect(() => { setDprHigh(window.devicePixelRatio > 1); }, []);
-  const [fxPref, setFxPref] = useState(true);
+  const [fxPref, setFxPref] = useState(false);
   useEffect(() => {
-    try { setFxPref(localStorage.getItem(MAP_FX_KEY) !== '0'); } catch { /* default on */ }
+    try { setFxPref(localStorage.getItem(MAP_FX_KEY) === '1'); } catch { /* default off */ }
   }, []);
   const toggleFx = useCallback(() => {
     playSound('click');
@@ -1722,13 +1754,18 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         aria-label="3D solar system map showing your unlocked locations, buildings, NPC presence, and ships in transit. Bodies orbit the Sun with realistic relative periods."
         aria-describedby="solar-map-3d-hint"
       >
+      {/* 2026-09-12 (browser-crash investigation): dpr capped at 1.5 (was 2 —
+          the MSAA default framebuffer scales with dpr²) and powerPreference
+          'default' (was 'high-performance', which forces a discrete-GPU
+          device switch on every context creation on hybrid Windows
+          laptops). */}
       <Canvas
         camera={{ position: [0, 30, 44], fov: 50, near: 0.1, far: 1200 }}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         frameloop={running ? 'always' : 'never'}
-        gl={{ antialias: true, powerPreference: 'high-performance' }}
+        gl={{ antialias: true, powerPreference: 'default' }}
         style={{ background: 'linear-gradient(180deg, #030310 0%, #05051a 100%)' }}
-        onCreated={({ camera }) => { cameraRef.current = camera; }}
+        onCreated={({ camera, gl }) => { cameraRef.current = camera; setGlCanvas(gl.domElement); }}
         onPointerMissed={e => {
           // Ignore "clicks" that were actually orbit drags.
           const down = pointerDownRef.current;

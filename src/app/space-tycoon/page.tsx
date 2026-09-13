@@ -221,7 +221,7 @@ import type { OrderQueueTarget } from '@/lib/game/order-queue';
 // (≥1280px) the map stays mounted behind every non-map tab, which renders
 // as an overlay over the frozen/dimmed map. Pure layout decisions live in
 // map-stage.ts so the open/close state machine is unit-testable.
-import { computeStageLayout, overlayDismissTab, STAGE_MEDIA_QUERY } from '@/lib/game/map-stage';
+import { computeStageLayout, overlayDismissTab, STAGE_MEDIA_QUERY, STAGE_HIDDEN_MEDIA_QUERY } from '@/lib/game/map-stage';
 import ContractsHubPanel from '@/components/game/ContractsHubPanel';
 import StandingsHubPanel from '@/components/game/StandingsHubPanel';
 import MarketHubPanel from '@/components/game/MarketHubPanel';
@@ -964,7 +964,18 @@ export default function SpaceTycoonPage() {
     mq.addEventListener('change', apply);
     return () => mq.removeEventListener('change', apply);
   }, []);
-  const stageLayout = computeStageLayout(tab, desktopStage);
+  // 2026-09-12 (browser-crash investigation): ≥768px but below the stage
+  // breakpoint keeps the map mounted-but-hidden so a hub switch never
+  // creates a new WebGL context — see map-stage.ts.
+  const [wideViewport, setWideViewport] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(STAGE_HIDDEN_MEDIA_QUERY);
+    const apply = () => setWideViewport(mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
+  const stageLayout = computeStageLayout(tab, desktopStage, wideViewport);
   // Escape closes the panel overlay and returns to the map (keyboard path;
   // pointer path is the dimmed-margin backdrop button in the JSX below).
   useEffect(() => {
@@ -2721,11 +2732,13 @@ export default function SpaceTycoonPage() {
           (Wave 9). Wave V4 (map-as-stage): on desktop ≥1280px the map STAYS
           MOUNTED behind every other tab (WebGL context preserved, renderers
           frozen via `covered`), dimmed by the overlay backdrop below; the
-          map subtree goes inert so focus stays in the panel. On phones the
-          map unmounts exactly as before. */}
+          map subtree goes inert so focus stays in the panel. Between 768px
+          and the stage breakpoint the map stays mounted but display:none
+          (context kept alive, nothing drawn — R3F skips a 0×0 container).
+          On phones the map unmounts exactly as before. */}
       {stageLayout.mapMounted && (
         <div
-          className="flex-1 min-h-0 flex flex-col"
+          className={stageLayout.mapHidden ? 'hidden' : 'flex-1 min-h-0 flex flex-col'}
           aria-hidden={stageLayout.mapCovered || undefined}
           {...(stageLayout.mapCovered ? ({ inert: '' } as unknown as HTMLAttributes<HTMLDivElement>) : {})}
         >
