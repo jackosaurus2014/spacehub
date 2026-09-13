@@ -40,6 +40,7 @@ import {
   pinchCamera,
   hitRadius,
   pickNearest,
+  MIN_HIT_RADIUS_PX,
   type MapCamera,
   type PinchState,
   type HitCandidate,
@@ -63,6 +64,23 @@ import {
 } from '@/lib/game/ship-traffic';
 import { getArtVariant } from '@/lib/game/assets';
 import { MAP_GLYPHS } from '@/lib/game/map-glyphs';
+// Flight mode part (a) — the 2D orbit diagram: the same LocalSceneModel the
+// 3D local scene draws (body, rings, pips, glints, ships), laid out by
+// layoutLocalDiagram(). Enter/exit rules match the 3D map (a selection
+// enters; System chip / Escape / zooming out leaves); flight degrades to a
+// cut, which is also the reduced-motion answer.
+import {
+  buildLocalSceneModel,
+  localBodyForLocation,
+  layoutLocalDiagram,
+  localAnchorsAt,
+  localMoonOffset,
+  glintAngle,
+  bodyName,
+  SLOT_PIP_STYLE,
+  type LocalSceneModel,
+  type LocalShell,
+} from '@/lib/game/map-flight';
 
 /** Quadratic-bezier point at parameter u — shared by the ship-transit
  *  polyline and its engine-trail sample points (Wave V7). */
@@ -161,7 +179,19 @@ interface SolarSystemCanvasProps {
    *  layer is off or the feed is unavailable. */
   contacts?: TrafficContact[];
   contactsAsOfMs?: number;
+  /** Flight mode (part a): shell requests — enter a body's local diagram,
+   *  return to the system, or re-frame the selection (same contract as the
+   *  3D renderer; here every transition is a cut). */
+  cameraRequest?: { kind: 'local' | 'system' | 'frame'; bodyId?: string | null; token: number } | null;
+  onLocalBodyChange?: (bodyId: string | null) => void;
 }
+
+/** Local-diagram zoom bounds. Zooming out past the floor leaves the local
+ *  view — the 2D answer to "back out past the local sphere". */
+const LOCAL_ZOOM_MIN = 0.7;
+const LOCAL_ZOOM_MAX = 2.6;
+
+interface LocalHit { id: string; x: number; y: number; r: number; kind: 'body' | 'moon' | 'ring' }
 
 // Visual layout: positions per location (this flat projection's own geometry).
 // y values intentionally spread to give the belt + moons some visual depth.
@@ -293,7 +323,7 @@ function useImageCache(urls: string[]): { cache: Map<string, HTMLImageElement>; 
 
 const NO_CONTACTS: TrafficContact[] = [];
 
-export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true, alwaysLabels = false, onZoomTierChange, laneVolumes, layers, onToggleLayer, contacts = NO_CONTACTS, contactsAsOfMs = 0 }: SolarSystemCanvasProps) {
+export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true, alwaysLabels = false, onZoomTierChange, laneVolumes, layers, onToggleLayer, contacts = NO_CONTACTS, contactsAsOfMs = 0, cameraRequest, onLocalBodyChange }: SolarSystemCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -357,6 +387,32 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   const contactPxRef = useRef<{ x: number; y: number; contact: TrafficContact }[]>([]);
   const [contactTag, setContactTag] = useState<{ contact: TrafficContact; x: number; y: number } | null>(null);
   useEffect(() => { if (!showContacts || contacts.length === 0) setContactTag(null); }, [showContacts, contacts.length]);
+
+  // ── Flight mode (part a): the local orbit diagram ─────────────────────────
+  const [localBody, setLocalBody] = useState<string | null>(null);
+  const [localZoom, setLocalZoom] = useState(1);
+  const localZoomRef = useRef(1);
+  const localHitsRef = useRef<LocalHit[]>([]);
+  const localShipPxRef = useRef<{ x: number; y: number; title: string; detail: string }[]>([]);
+  const [localTag, setLocalTag] = useState<{ title: string; detail: string; x: number; y: number } | null>(null);
+  const onLocalBodyChangeRef = useRef(onLocalBodyChange);
+  onLocalBodyChangeRef.current = onLocalBodyChange;
+  useEffect(() => { onLocalBodyChangeRef.current?.(localBody); }, [localBody]);
+  const setLocalZoomBoth = useCallback((z: number) => {
+    const c = Math.max(LOCAL_ZOOM_MIN, Math.min(LOCAL_ZOOM_MAX, z));
+    localZoomRef.current = c;
+    setLocalZoom(c);
+  }, []);
+  const enterLocal = useCallback((bodyId: string) => {
+    playSound('click');
+    setLocalTag(null);
+    setLocalZoomBoth(1);
+    setLocalBody(bodyId);
+  }, [setLocalZoomBoth]);
+  const exitLocal = useCallback(() => {
+    setLocalTag(null);
+    setLocalBody(null);
+  }, []);
 
   // World presence (audit Change #3 / D1) — other corporations' colony
   // claims per location, shared/cached across every consumer of the hook.
@@ -493,6 +549,20 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     return out;
   }, [state]);
 
+  // The local scene model, cached per body and rebuilt on data change.
+  const localCacheRef = useRef<Map<string, LocalSceneModel>>(new Map());
+  useEffect(() => { localCacheRef.current.clear(); }, [state, contacts, world]);
+  const localModel = useMemo(() => {
+    if (!localBody) return null;
+    const cached = localCacheRef.current.get(localBody);
+    if (cached) return cached;
+    const built = buildLocalSceneModel(state, localBody, { contacts, nowMs: Date.now(), worldNames: world?.world.colonies ?? null });
+    if (built) localCacheRef.current.set(localBody, built);
+    return built;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localBody, state, contacts, world]);
+  useEffect(() => { if (localBody && !localModel) setLocalBody(null); }, [localBody, localModel]);
+
   // Selection lock-on (item 4): the reticle converges on to the body when a
   // new selection is acquired. Timestamped in a ref so the draw loop can ease
   // it without re-rendering.
@@ -542,6 +612,28 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       ctx.beginPath();
       ctx.arc(wx, wy, s.size, 0, Math.PI * 2);
       ctx.fill();
+    }
+
+    // Flight mode (part a): inside a local view the diagram replaces the
+    // system entirely (the same swap the 3D map makes at the local sphere).
+    if (localModel) {
+      drawLocalDiagram(ctx, w, h, localModel, {
+        zoom: localZoom,
+        tSec,
+        reducedMotion,
+        selectedLoc,
+        showShips,
+        showContacts,
+        contactsAsOfMs,
+        sprites: imgs.cache,
+        spriteUrlFor,
+        lockElapsedMs: timestampMs - selectionAtRef.current,
+        hits: localHitsRef.current,
+        shipPx: localShipPxRef.current,
+      });
+      contactPxRef.current = [];
+      animRef.current = requestAnimationFrame(draw);
+      return;
     }
 
     // Zoom pass: BOTH axes scale with zoom. The original transform scaled x
@@ -1228,7 +1320,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     }
 
     animRef.current = requestAnimationFrame(draw);
-  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, showContacts, contacts, contactsAsOfMs, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc, modeVisuals, zoomTier, alwaysLabels, slotRings, laneVolumes]);
+  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, showContacts, contacts, contactsAsOfMs, worldLayerActive, world, layoutOf, imgs.cache, imgs.loaded, standingByLoc, modeVisuals, zoomTier, alwaysLabels, slotRings, laneVolumes, localModel, localZoom, spriteUrlFor]);
 
   // Canvas sizing — re-scale on container resize
   useEffect(() => {
@@ -1277,6 +1369,15 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
    *  maths the draw loop and hit-test use: lx = layout.x * w * zoom + offset.x
    *  (and ly likewise), solved for the offset that puts lx,ly at the centre. */
   const centreOn = useCallback((locId: string) => {
+    // Flight mode (part a): a location that belongs to a body (Earth, LEO →
+    // Earth, the Moon …) opens that body's local diagram — the 2D "fly-to",
+    // degraded to a cut. Region pips (belt, relay) pan the system as before.
+    const bodyId = localBodyForLocation(locId);
+    if (bodyId) {
+      if (bodyId !== localBody) enterLocal(bodyId);
+      return;
+    }
+    if (localBody) exitLocal();
     const canvas = canvasRef.current;
     const layout = LOCATION_LAYOUT[locId];
     if (!canvas || !layout) return;
@@ -1288,8 +1389,21 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       x: rect.width / 2 - layout.x * rect.width * z,
       y: rect.height / 2 - layout.y * rect.height * z,
     });
-  }, [applyCamera]);
+  }, [applyCamera, localBody, enterLocal, exitLocal]);
   focusExternalRef.current = centreOn;
+
+  // Shell requests (System / Local chips, Escape, L, G).
+  const lastCameraTokenRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!cameraRequest || cameraRequest.token === lastCameraTokenRef.current) return;
+    lastCameraTokenRef.current = cameraRequest.token;
+    if (cameraRequest.kind === 'local' && cameraRequest.bodyId) enterLocal(cameraRequest.bodyId);
+    else if (cameraRequest.kind === 'system') exitLocal();
+    else if (cameraRequest.kind === 'frame') {
+      if (localBody) setLocalZoomBoth(1);
+      else if (selectedLoc) centreOn(selectedLoc);
+    }
+  }, [cameraRequest, enterLocal, exitLocal, localBody, selectedLoc, centreOn, setLocalZoomBoth]);
 
   /**
    * @param anchor  Screen point to hang the radial command menu on.
@@ -1344,6 +1458,35 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     const w = rect.width;
     const h = rect.height;
 
+    // Flight mode (part a): inside the local diagram, hit the body, a moon
+    // or a shell ring (radial menu for the slot ring); then a ship's tag.
+    if (localModel) {
+      let best: LocalHit | null = null;
+      let bestD = Infinity;
+      for (const hit of localHitsRef.current) {
+        const d = Math.hypot(hit.x - mx, hit.y - my);
+        const inside = hit.kind === 'ring' ? Math.abs(d - hit.r) <= 10 : d <= Math.max(hit.r, MIN_HIT_RADIUS_PX);
+        const score = hit.kind === 'ring' ? Math.abs(d - hit.r) : d;
+        if (inside && score < bestD) { bestD = score; best = hit; }
+      }
+      if (best) {
+        setLocalTag(null);
+        selectLocation(best.id, embedded ? { x: mx, y: my } : undefined);
+        return;
+      }
+      let nearest: { x: number; y: number; title: string; detail: string } | null = null;
+      let nearestD = 16 * 16;
+      for (const sp of localShipPxRef.current) {
+        const d = (sp.x - mx) * (sp.x - mx) + (sp.y - my) * (sp.y - my);
+        if (d < nearestD) { nearestD = d; nearest = sp; }
+      }
+      if (nearest) { setLocalTag({ title: nearest.title, detail: nearest.detail, x: nearest.x, y: nearest.y }); return; }
+      setLocalTag(null);
+      setSelectedLoc(null);
+      onSelectLocation?.(null);
+      return;
+    }
+
     const candidates: HitCandidate[] = [];
     for (const loc of LOCATIONS) {
       const layout = LOCATION_LAYOUT[loc.id];
@@ -1360,7 +1503,9 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       // The radial menu only exists in the map-command shell; the legacy
       // stacked layout keeps its original click-to-toggle behavior.
       setContactTag(null);
-      selectLocation(hit, embedded ? { x: mx, y: my } : undefined);
+      // A tap on a body enters its local diagram (parity with the 3D
+      // renderer, where a click flies into the local scene).
+      selectLocation(hit, embedded ? { x: mx, y: my } : undefined, { focus: true });
       return;
     }
     // Ship traffic: a tap on a contact opens its tag (bodies win ties above).
@@ -1377,7 +1522,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     setContactTag(null);
     setSelectedLoc(null);
     onSelectLocation?.(null);
-  }, [zoom, offset, onSelectLocation, selectLocation, embedded]);
+  }, [zoom, offset, onSelectLocation, selectLocation, embedded, localModel]);
 
   // ── Pan / pinch via pointer events (mouse + touch unified) ────────────────
   /** Canvas-relative point from client coords (camera offsets are canvas-space). */
@@ -1429,17 +1574,28 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     if (pinchRef.current && pointersRef.current.size >= 2) {
       const next = pinchSample();
       if (next) {
+        if (localBody) {
+          // Local diagram: pinch scales the diagram; pinching out past the
+          // floor returns to the system (the 2D "back out past the sphere").
+          const ratio = next.dist / Math.max(1, pinchRef.current.dist);
+          const z = localZoomRef.current * ratio;
+          if (z < LOCAL_ZOOM_MIN * 0.92) exitLocal(); else setLocalZoomBoth(z);
+          pinchRef.current = next;
+          return;
+        }
         // One gesture handles both: zoom by the distance ratio, pan by the
         // midpoint drift (map-camera.pinchCamera keeps the pinched world
         // point under the fingers).
         applyCamera(pinchCamera(camRef.current, pinchRef.current, next));
         pinchRef.current = next;
       }
+    } else if (dragRef.current && localBody) {
+      // No pan inside the diagram (it is always centred).
     } else if (dragRef.current) {
       const d = dragRef.current;
       applyCamera({ zoom: camRef.current.zoom, x: d.camX + (e.clientX - d.startX), y: d.camY + (e.clientY - d.startY) });
     }
-  }, [applyCamera, pinchSample]);
+  }, [applyCamera, pinchSample, localBody, exitLocal, setLocalZoomBoth]);
 
   const handlePointerEnd = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     pointersRef.current.delete(e.pointerId);
@@ -1464,12 +1620,25 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     if (!canvas) return;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
+      if (localBodyRef.current) {
+        // Local diagram: wheel scales it; scrolling out past the floor
+        // returns to the system.
+        const factor = Math.exp(-e.deltaY * (e.ctrlKey ? 0.0045 : 0.0016));
+        const z = localZoomRef.current * factor;
+        if (z < LOCAL_ZOOM_MIN * 0.92) exitLocalRef.current(); else setLocalZoomBoth(z);
+        return;
+      }
       const rect = canvas.getBoundingClientRect();
       applyCamera(wheelZoom(camRef.current, e.deltaY, { x: e.clientX - rect.left, y: e.clientY - rect.top }, e.ctrlKey));
     };
     canvas.addEventListener('wheel', onWheel, { passive: false });
     return () => canvas.removeEventListener('wheel', onWheel);
-  }, [applyCamera]);
+  }, [applyCamera, setLocalZoomBoth]);
+  // Refs so the native wheel listener (attached once) sees live values.
+  const localBodyRef = useRef<string | null>(null);
+  localBodyRef.current = localBody;
+  const exitLocalRef = useRef(exitLocal);
+  exitLocalRef.current = exitLocal;
 
   // Keyboard zoom/pan — CLAUDE.md keyboard-only invariant. `+` / `=` / `-` /
   // `R` work map-wide with the same input-field guards the shell's M/C
@@ -1488,6 +1657,17 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       const cam = camRef.current;
       const rect = canvas.getBoundingClientRect();
       const centre = { x: rect.width / 2, y: rect.height / 2 };
+      if (localBodyRef.current) {
+        // Local diagram: + / − scale it (− past the floor leaves), R/Home
+        // re-frames it at 1×. Arrow panning does not apply (always centred).
+        if (e.key === '+' || e.key === '=') { e.preventDefault(); setLocalZoomBoth(localZoomRef.current * BUTTON_ZOOM_FACTOR); }
+        else if (e.key === '-' || e.key === '_') {
+          e.preventDefault();
+          const z = localZoomRef.current / BUTTON_ZOOM_FACTOR;
+          if (z < LOCAL_ZOOM_MIN * 0.92) exitLocalRef.current(); else setLocalZoomBoth(z);
+        } else if (e.key === 'r' || e.key === 'R' || e.key === 'Home') { e.preventDefault(); setLocalZoomBoth(1); }
+        return;
+      }
       if (e.key === '+' || e.key === '=') {
         e.preventDefault();
         applyCamera(zoomAboutPoint(cam, cam.zoom * BUTTON_ZOOM_FACTOR, centre));
@@ -1514,7 +1694,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [active, applyCamera]);
+  }, [active, applyCamera, setLocalZoomBoth]);
 
   // Selected location details
   const selectedLocData = selectedLoc ? LOCATIONS.find(l => l.id === selectedLoc) : null;
@@ -1559,9 +1739,10 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                   const standing = standingByLoc[loc.id];
                   const hasWarning = warningLocs.has(loc.id);
                   const modeVis = modeVisuals[loc.id];
+                  const localBodyId = localBodyForLocation(loc.id);
                   return (
+                    <div key={loc.id} className="flex items-stretch gap-1 min-w-0">
                     <button
-                      key={loc.id}
                       type="button"
                       onClick={() => selectLocation(loc.id, undefined, { toggle: false, focus: true })}
                       // Wave A2 — keyboard/right-click route into the radial
@@ -1577,7 +1758,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                       }}
                       aria-pressed={isSelected}
                       aria-keyshortcuts="C"
-                      className={`min-h-[44px] px-2 py-1.5 rounded-lg text-[11px] text-left border transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+                      className={`flex-1 min-w-0 min-h-[44px] px-2 py-1.5 rounded-lg text-[11px] text-left border transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
                         isSelected
                           ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-200'
                           : unlocked
@@ -1599,9 +1780,27 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                         {hasWarning ? ', severe hazard forecast next month' : ''}
                         {modeVis ? `, ${modeVis.srText}` : ''}
                         {slotRings[loc.id] ? `. ${slotRings[loc.id].srText}` : ''}
+                        {localBodyId && localBody === localBodyId ? `. ${localModel?.srText ?? ''}` : ''}
                         . Press C for the command menu.
                       </span>
                     </button>
+                    {/* Flight mode (part a): keyboard / screen-reader path
+                        into and out of a body's local diagram. */}
+                    {localBodyId && (
+                      <button
+                        type="button"
+                        onClick={() => { if (localBody === localBodyId) { playSound('click'); exitLocal(); } else enterLocal(localBodyId); }}
+                        aria-pressed={localBody === localBodyId}
+                        aria-label={`${localBody === localBodyId ? 'Leave' : 'Enter'} the local view of ${bodyName(localBodyId)}`}
+                        title={localBody === localBodyId ? 'Back to the system view' : `Local view: ${bodyName(localBodyId)} with its moons, orbital shells, slots, your satellites and ships`}
+                        className={`min-h-[44px] w-8 shrink-0 flex items-center justify-center rounded-lg text-[12px] font-semibold border transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+                          localBody === localBodyId ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-200' : 'bg-white/[0.02] border-white/[0.08] text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        <span aria-hidden="true">{localBody === localBodyId ? '◉' : '○'}</span>
+                      </button>
+                    )}
+                    </div>
                   );
                 })}
               </div>
@@ -1643,9 +1842,9 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         <div className="hud-frame flex flex-col gap-1 p-1 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm absolute top-[5.5rem] md:top-2 right-2 z-20">
           <span className="hud-corner-bl" aria-hidden="true" />
           <span className="hud-corner-br" aria-hidden="true" />
-          <button onClick={() => { const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom * BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in" aria-keyshortcuts="+">+</button>
-          <button onClick={() => { const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom / BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out" aria-keyshortcuts="-">−</button>
-          <button onClick={() => applyCamera(DEFAULT_MAP_CAMERA)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="R Home">⟲</button>
+          <button onClick={() => { if (localBody) { setLocalZoomBoth(localZoomRef.current * BUTTON_ZOOM_FACTOR); return; } const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom * BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in" aria-keyshortcuts="+">+</button>
+          <button onClick={() => { if (localBody) { const z = localZoomRef.current / BUTTON_ZOOM_FACTOR; if (z < LOCAL_ZOOM_MIN * 0.92) exitLocal(); else setLocalZoomBoth(z); return; } const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom / BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out" aria-keyshortcuts="-">−</button>
+          <button onClick={() => { if (localBody) { setLocalZoomBoth(1); return; } applyCamera(DEFAULT_MAP_CAMERA); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="R Home">⟲</button>
         </div>
 
         {/* Layer toggles — moved to bottom-right in map-command mode so the
@@ -1729,6 +1928,20 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
             <div className="text-slate-400">{contactDetail(contactTag.contact, Date.now(), contactsAsOfMs)}</div>
           </div>
         )}
+        {/* Flight mode (part a): a tapped ship in the local diagram. */}
+        {localTag && localBody && (
+          <div
+            role="tooltip"
+            className="absolute z-30 pointer-events-none max-w-[240px] rounded-lg border border-white/[0.14] bg-[#050510]/95 px-2.5 py-1.5 text-[11px] leading-snug text-slate-100 shadow-lg backdrop-blur-sm"
+            style={{ left: Math.max(4, localTag.x + 10), top: Math.max(4, localTag.y - 6) }}
+          >
+            <div className="font-hud font-semibold text-cyan-200">{localTag.title}</div>
+            <div className="text-slate-400">{localTag.detail}</div>
+          </div>
+        )}
+        {localModel && (
+          <p className="sr-only" role="status" aria-live="polite">{localModel.srText} Zoom out, press Escape, or use the System chip to return to the system.</p>
+        )}
         {showContacts && contacts.length > 0 && (
           <ul className="sr-only" aria-label="Ship contacts near your holdings (other corporations, anonymised unless you hold a fleet reveal)">
             {contacts.slice(0, 40).map(c => <li key={c.id}>{contactLabel(c)}</li>)}
@@ -1738,6 +1951,8 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
         <p id="solar-system-canvas-hint" className="sr-only">
           Click a location to open its radial command menu — build, dispatch, demand, standing orders and full detail, at the body.
+          Selecting a body opens its local view: the body with its moons, orbital shells, slots, your satellites and the ships coming and going;
+          zoom out, press Escape, or use the System chip to return, and each Location List row has a Local button that does the same.
           Drag or use one finger to pan; scroll, pinch with two fingers, or press plus and minus to zoom (R or Home resets the view) —
           zooming in spreads the close-packed Earth-orbit locations apart so each is easy to pick.
           Zoom controls how much per-location detail is drawn; the Location List always shows everything,
@@ -1922,6 +2137,270 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
       <p id="solar-system-canvas-hint" className="text-slate-600 text-[10px] text-center">Click a location to see details. Drag (or one finger) to pan; scroll, pinch, or press + / − to zoom, 0 to reset. Toggle lanes and ships with the top-left buttons. Focus the map for arrow-key panning, or use the Location List below to browse and select every location by keyboard.</p>
     </div>
   );
+}
+
+// ─── Flight mode (part a): the local orbit diagram ───────────────────────────
+// Body + moons + shell rings + slot pips + glints + ships, from the SAME
+// LocalSceneModel the 3D local scene renders. Pure canvas drawing; the hit
+// list and the ship pixel list are written for the click handler.
+
+interface LocalDrawOpts {
+  zoom: number;
+  tSec: number;
+  reducedMotion: boolean;
+  selectedLoc: string | null;
+  showShips: boolean;
+  showContacts: boolean;
+  contactsAsOfMs: number;
+  sprites: Map<string, HTMLImageElement>;
+  spriteUrlFor: (base: string) => string;
+  lockElapsedMs: number;
+  hits: LocalHit[];
+  shipPx: { x: number; y: number; title: string; detail: string }[];
+}
+
+function drawBodyDisc(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, locationId: string | undefined, color: string, unlocked: boolean, sprite: HTMLImageElement | undefined) {
+  ctx.globalAlpha = unlocked ? 1 : 0.5;
+  if (sprite && sprite.complete && sprite.naturalWidth > 0) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.drawImage(sprite, x - r, y - r, r * 2, r * 2);
+    const darken = ctx.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.2, x, y, r);
+    darken.addColorStop(0, 'rgba(255,255,255,0.08)');
+    darken.addColorStop(0.55, 'rgba(0,0,0,0)');
+    darken.addColorStop(1, 'rgba(0,0,0,0.55)');
+    ctx.fillStyle = darken;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  } else {
+    const g = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, 0, x, y, r);
+    g.addColorStop(0, lightenColor(color, 30));
+    g.addColorStop(0.6, color);
+    g.addColorStop(1, darkenColor(color, 40));
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  const atmo = getAtmosphere(locationId);
+  if (atmo && unlocked) {
+    const rim = ctx.createRadialGradient(x, y, r * 0.94, x, y, r * (atmo.shellScale + 0.06));
+    rim.addColorStop(0, `${atmo.color}00`);
+    rim.addColorStop(0.55, hexToRgba(atmo.color, atmo.opacity));
+    rim.addColorStop(1, `${atmo.color}00`);
+    ctx.fillStyle = rim;
+    ctx.beginPath();
+    ctx.arc(x, y, r * (atmo.shellScale + 0.06), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.strokeStyle = unlocked ? `${color}a0` : '#334155';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.stroke();
+}
+
+function drawShellRing(ctx: CanvasRenderingContext2D, cx: number, cy: number, R: number, unitR: number, shell: LocalShell, selected: boolean, tSec: number, hits: LocalHit[], labelIndex = 0) {
+  // Ring (selected: bright + a soft halo ring).
+  ctx.save();
+  ctx.strokeStyle = shell.color;
+  ctx.globalAlpha = selected ? 0.95 : 0.45;
+  ctx.lineWidth = selected ? 2.2 : 1.1;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  ctx.stroke();
+  if (selected) {
+    ctx.globalAlpha = 0.18;
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.restore();
+  if (shell.locationId) hits.push({ id: shell.locationId, x: cx, y: cy, r: R, kind: 'ring' });
+  // Slot pips: yours filled bright, others filled dim, free hollow.
+  const pipR = Math.max(1.4, 0.03 * unitR);
+  for (const p of shell.pips) {
+    const a = -Math.PI / 2 + p.frac * Math.PI * 2;
+    const x = cx + Math.cos(a) * R;
+    const y = cy + Math.sin(a) * R;
+    const style = SLOT_PIP_STYLE[p.kind];
+    ctx.globalAlpha = style.alpha;
+    ctx.beginPath();
+    ctx.arc(x, y, p.kind === 'yours' ? pipR * 1.35 : pipR, 0, Math.PI * 2);
+    if (style.hollow) { ctx.strokeStyle = style.color; ctx.lineWidth = 1; ctx.stroke(); }
+    else { ctx.fillStyle = style.color; ctx.fill(); }
+  }
+  ctx.globalAlpha = 1;
+  // Glints: yours bright just outside the ring, others dim just inside,
+  // stations as small squares outside.
+  const glint = (n: number, radius: number, size: number, color: string, alpha: number, phase: number, square: boolean) => {
+    if (n <= 0) return;
+    ctx.fillStyle = color;
+    ctx.globalAlpha = alpha;
+    for (let i = 0; i < Math.min(n, 2000); i++) {
+      const a = glintAngle(i + phase, n, tSec);
+      const x = cx + Math.cos(a) * radius;
+      const y = cy + Math.sin(a) * radius;
+      if (square) ctx.fillRect(x - size, y - size * 0.6, size * 2, size * 1.2);
+      else { ctx.beginPath(); ctx.arc(x, y, size, 0, Math.PI * 2); ctx.fill(); }
+    }
+    ctx.globalAlpha = 1;
+  };
+  glint(shell.satellites, R + 4, Math.max(1.4, 0.022 * unitR), '#a5f3fc', 1, 0.25, false);
+  glint(shell.otherSatellites, R - 4, Math.max(1, 0.016 * unitR), '#a08a55', 0.55, 0.6, false);
+  glint(shell.stations, R + 7, Math.max(1.6, 0.03 * unitR), '#e2e8f0', 1, 0.5, true);
+  // Label at the top of the ring: name + slot badge (text, never colour alone).
+  ctx.save();
+  ctx.font = `600 ${Math.max(9, 0.2 * unitR)}px Inter, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(0,0,0,0.85)';
+  ctx.shadowBlur = 3;
+  ctx.fillStyle = selected ? '#e0f2fe' : 'rgba(203,213,225,0.9)';
+  // Alternate the anchor angle per shell (top, lower-left, lower-right, …)
+  // so three concentric rings never stack their labels.
+  const la = -Math.PI / 2 + labelIndex * (Math.PI * 2 / 3);
+  const lx = cx + Math.cos(la) * (R + 6);
+  const ly = cy + Math.sin(la) * (R + 6) + (Math.sin(la) > 0.3 ? 10 : Math.sin(la) < -0.3 ? -2 : 4);
+  ctx.textAlign = Math.cos(la) > 0.3 ? 'left' : Math.cos(la) < -0.3 ? 'right' : 'center';
+  ctx.fillText(shell.slots ? `${shell.label} · ${shell.slots.badge}` : shell.label, lx, ly);
+  ctx.restore();
+}
+
+function drawLocalDiagram(ctx: CanvasRenderingContext2D, w: number, h: number, model: LocalSceneModel, o: LocalDrawOpts) {
+  const base = layoutLocalDiagram(model, w, h);
+  const R = base.R * o.zoom;
+  const { cx, cy } = base;
+  const t = o.reducedMotion ? 0 : o.tSec;
+  o.hits.length = 0;
+  o.shipPx.length = 0;
+
+  // Local-sphere backdrop: a faint disc so the diagram reads as "inside".
+  const halo = ctx.createRadialGradient(cx, cy, R * 0.8, cx, cy, R * (model.extentScale + 0.9));
+  halo.addColorStop(0, 'rgba(34,211,238,0.06)');
+  halo.addColorStop(1, 'rgba(34,211,238,0)');
+  ctx.fillStyle = halo;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * (model.extentScale + 0.9), 0, Math.PI * 2);
+  ctx.fill();
+
+  // Shells (inner → outer), then moons and their shells.
+  model.shells.forEach((shell, i) => {
+    drawShellRing(ctx, cx, cy, shell.scale * R, R, shell, !!shell.locationId && o.selectedLoc === shell.locationId, t, o.hits, i);
+  });
+  // Ships — placed by the shared placeContacts() against the local anchor
+  // tables (xz → canvas xy), exits toward the external location's layout
+  // position.
+  const exitDirs: Record<string, [number, number]> = {};
+  const home = LOCATION_POSITION[model.locationId];
+  for (const id of model.externalIds) {
+    const p = LOCATION_POSITION[id];
+    if (!p || !home) continue;
+    const dx = p.x - home.x, dy = p.y - home.y;
+    const len = Math.hypot(dx, dy) || 1;
+    exitDirs[id] = [dx / len, dy / len];
+  }
+  const local = localAnchorsAt(model, t, R, exitDirs);
+  const toXY = (table: Record<string, ContactAnchor>): Record<string, ContactAnchor> => {
+    const out: Record<string, ContactAnchor> = {};
+    for (const [id, a] of Object.entries(table)) out[id] = { pos: [cx + a.pos[0], cy + a.pos[2], 0], r: a.r };
+    return out;
+  };
+  const laneXY = toXY(local.lane);
+  const holdXY = toXY(local.hold);
+  const now = Date.now();
+  for (const ship of model.ships) {
+    if (ship.own && !o.showShips) continue;
+    if (!ship.own && !o.showContacts) continue;
+    const transit = ship.contact.status === 'transit';
+    const placed = placeContacts([ship.contact], transit ? laneXY : holdXY, now, transit
+      ? { asOfMs: ship.own ? model.builtAtMs : o.contactsAsOfMs, plane: 'xy', bendCap: 0.6 * R }
+      : { plane: 'xy', orbitGap: 0, staticOrbit: o.reducedMotion, orbitRadPerSec: 0.18 });
+    const p = placed[0];
+    if (!p) continue;
+    const x = p.pos[0], y = p.pos[1];
+    const arrival = typeof ship.etaMs === 'number' ? model.builtAtMs + ship.etaMs : null;
+    const eta = arrival ? `ETA ${formatCountdown(Math.max(0, (arrival - now) / 1000))}` : '';
+    if (ship.own) {
+      const heading = p.heading ? Math.atan2(p.heading[1], p.heading[0]) : t * 0.18;
+      drawShipMarker(ctx, x, y, heading, ship.color, Math.max(2.6, 0.06 * R));
+      if (transit) {
+        ctx.save();
+        ctx.font = `600 ${Math.max(9, 0.17 * R)}px Inter, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0,0,0,0.85)';
+        ctx.shadowBlur = 3;
+        ctx.fillStyle = 'rgba(103,232,249,0.95)';
+        ctx.fillText(`${ship.name} · ${eta}`, x, y - Math.max(10, 0.22 * R));
+        ctx.restore();
+      }
+      o.shipPx.push({ x, y, title: ship.name, detail: `${ship.status}${eta ? ` · ${eta}` : ''}` });
+    } else {
+      ctx.fillStyle = ship.contact.npc && ship.contact.factionHint ? FACTION_CONTACT_TINT[ship.contact.factionHint] : (ship.contact.intel ? '#cbd5e1' : ANON_CONTACT_COLOR);
+      ctx.globalAlpha = 0.6;
+      ctx.beginPath();
+      ctx.arc(x, y, Math.max(1.6, 0.04 * R), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      o.shipPx.push({ x, y, title: contactLabel(ship.contact), detail: contactDetail(ship.contact, now, o.contactsAsOfMs) });
+    }
+  }
+
+  // Moons (with their own shells, e.g. lunar orbit around the Moon).
+  for (const moon of model.moons) {
+    const off = localMoonOffset(moon, t);
+    const mx = cx + off[0] * R;
+    const my = cy + off[2] * R;
+    const mr = Math.max(3, (moon.r / model.bodyR) * R);
+    // faint orbit path
+    ctx.strokeStyle = 'rgba(148,163,184,0.16)';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.arc(cx, cy, moon.orbitScale * R, 0, Math.PI * 2);
+    ctx.stroke();
+    moon.shells.forEach((shell, i) => {
+      drawShellRing(ctx, mx, my, shell.scale * mr, mr, shell, !!shell.locationId && o.selectedLoc === shell.locationId, t, o.hits, i + 2);
+    });
+    const spriteUrl = moon.locationId ? LOCATION_SPRITE[moon.locationId] : undefined;
+    drawBodyDisc(ctx, mx, my, mr, moon.locationId, moon.color, moon.unlocked, spriteUrl ? o.sprites.get(o.spriteUrlFor(spriteUrl)) : undefined);
+    if (moon.locationId) o.hits.push({ id: moon.locationId, x: mx, y: my, r: mr + 4, kind: 'moon' });
+    ctx.fillStyle = moon.unlocked ? '#e2e8f0' : '#64748b';
+    ctx.font = `${Math.max(9, 0.2 * R)}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(moon.name, mx, my + mr + Math.max(10, 0.26 * R));
+  }
+
+  // The body itself, on top.
+  const spriteUrl = LOCATION_SPRITE[model.locationId];
+  drawBodyDisc(ctx, cx, cy, R, model.locationId, model.color, model.unlocked, spriteUrl ? o.sprites.get(o.spriteUrlFor(spriteUrl)) : undefined);
+  o.hits.push({ id: model.locationId, x: cx, y: cy, r: R + 4, kind: 'body' });
+  ctx.fillStyle = model.unlocked ? '#e2e8f0' : '#64748b';
+  ctx.font = `600 ${Math.max(11, 0.26 * R)}px Inter, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText(model.name, cx, cy + R + Math.max(12, 0.3 * R));
+
+  // Selection reticle for the body / a moon (rings brighten themselves).
+  const sel = o.selectedLoc;
+  const target = sel ? o.hits.find(hh => hh.id === sel && hh.kind !== 'ring') : null;
+  if (target) {
+    const lock = reticleLockState(o.lockElapsedMs, o.reducedMotion);
+    const ringR = (target.r + 6) * lock.radiusScale;
+    ctx.save();
+    ctx.globalAlpha = lock.opacity;
+    ctx.strokeStyle = '#22d3ee';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([7, 5]);
+    ctx.lineDashOffset = o.reducedMotion ? 0 : -o.tSec * 14;
+    ctx.beginPath();
+    ctx.arc(target.x, target.y, ringR, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
 }
 
 // ─── Drawing helpers ──────────────────────────────────────────────────────────

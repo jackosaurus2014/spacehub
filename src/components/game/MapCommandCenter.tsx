@@ -80,6 +80,42 @@ import { useWorldState } from '@/hooks/useWorldState';
 // contacts, polled here once for whichever solar renderer is mounted.
 import { useShipTraffic } from '@/hooks/useShipTraffic';
 import { BRIDGE_LAYOUT_EVENT } from '@/lib/game/bridge-mode';
+// Flight mode part (a): breadcrumb state, the once-per-browser hint and the
+// body a selection resolves to (LEO → Earth) — shared with both renderers.
+import { buildBreadcrumb, localBodyForLocation, bodyName, LOCAL_HINT_KEY, LOCAL_HINT_TEXT } from '@/lib/game/map-flight';
+
+/** "System › Earth › Local" — the map bar's flight-mode breadcrumb. Each chip
+ *  is a real button (click-back); the current one carries aria-current. */
+function Breadcrumb({ localBody, selectedBody, onSystem, onBody, onLocal, compact = false }: {
+  localBody: string | null; selectedBody: string | null;
+  onSystem: () => void; onBody: (bodyId: string) => void; onLocal: (bodyId: string) => void; compact?: boolean;
+}) {
+  const chips = buildBreadcrumb(localBody, selectedBody);
+  return (
+    <nav aria-label="Map view" className="flex items-center overflow-hidden">
+      {chips.map((chip, i) => {
+        const act = chip.kind === 'system' ? onSystem : chip.kind === 'local' ? () => chip.bodyId && onLocal(chip.bodyId) : () => chip.bodyId && onBody(chip.bodyId);
+        return (
+          <span key={`${chip.kind}-${chip.bodyId ?? ''}`} className="flex items-center">
+            {i > 0 && <span aria-hidden="true" className="text-slate-600 text-[10px]">›</span>}
+            <button
+              type="button"
+              onClick={() => { if (!chip.actionable) return; playSound('click'); act(); }}
+              aria-current={chip.current ? 'location' : undefined}
+              disabled={!chip.actionable}
+              title={chip.kind === 'system' ? 'Back to the system view' : chip.kind === 'local' ? (chip.current ? 'You are in the local view' : `Enter the local view of ${chip.label === 'Local' ? bodyName(chip.bodyId) : chip.label}`) : `Fly to ${chip.label}`}
+              className={`${compact ? 'min-h-[36px] px-1.5' : 'min-h-[44px] px-2'} text-[10px] font-semibold whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:cursor-default ${
+                chip.current ? 'text-cyan-200' : chip.actionable ? 'text-slate-400 hover:text-white' : 'text-slate-500'
+              }`}
+            >
+              {chip.label}
+            </button>
+          </span>
+        );
+      })}
+    </nav>
+  );
+}
 
 type Layer = 'solar' | 'galactic';
 
@@ -294,6 +330,37 @@ export default function MapCommandCenter({
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [covered]);
+
+  // ── Flight mode (part a) ─────────────────────────────────────────────────
+  // The renderer owns the camera and reports which body's local scene it is
+  // in; the shell draws the breadcrumb, sends camera requests (System chip,
+  // Local chip, Escape, L, G) and shows the once-per-browser hint.
+  const [localBody, setLocalBody] = useState<string | null>(null);
+  const [cameraRequest, setCameraRequest] = useState<{ kind: 'local' | 'system' | 'frame'; bodyId?: string | null; token: number } | null>(null);
+  const requestCamera = useCallback((kind: 'local' | 'system' | 'frame', bodyId?: string | null) => {
+    setCameraRequest({ kind, bodyId, token: Date.now() + Math.random() });
+  }, []);
+  const [localHint, setLocalHint] = useState(false);
+  const handleLocalBodyChange = useCallback((id: string | null) => {
+    setLocalBody(id);
+    if (!id) { setLocalHint(false); return; }
+    try {
+      if (localStorage.getItem(LOCAL_HINT_KEY) === '1') return;
+      localStorage.setItem(LOCAL_HINT_KEY, '1');
+    } catch { /* no storage → show once per page */ }
+    setLocalHint(true);
+  }, []);
+  useEffect(() => {
+    if (!localHint) return;
+    const t = setTimeout(() => setLocalHint(false), 9000);
+    return () => clearTimeout(t);
+  }, [localHint]);
+  useEffect(() => { if (layer !== 'solar') setLocalBody(null); }, [layer]);
+  const selectedBody = selection?.kind === 'location' ? localBodyForLocation(selection.id) : null;
+  const [localNotice, setLocalNotice] = useState('');
+  useEffect(() => {
+    setLocalNotice(localBody ? `${bodyName(localBody)} local view.` : 'System view.');
+  }, [localBody]);
 
   // W12: the galactic layer steers the adaptive score toward the colder
   // interstellar palette (hint is only honored while the map tab is active —
@@ -594,6 +661,48 @@ export default function MapCommandCenter({
     return () => window.removeEventListener('keydown', onKey);
   }, [covered, layer, radial, selection]);
 
+  // Flight mode keys: Escape leaves a local scene (when no menu / panel is
+  // open to take the key first), L toggles the local view of the selected
+  // body, G frames the selection. Never inside inputs or modals.
+  useEffect(() => {
+    if (covered || layer !== 'solar') return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+      if (document.querySelector('[aria-modal="true"]')) return;
+      if (e.key === 'Escape') {
+        // Layered dismissal: the arc and popovers own their own Escape; an
+        // open context panel closes first; then Escape leaves the local
+        // scene. preventDefault keeps the page's lower-priority handlers
+        // (overlay dismiss, bridge exit) from firing on the same press.
+        if (radial || showActivity || showSpatial || jumpOpen) return;
+        if (detail) {
+          e.preventDefault();
+          playSound('click');
+          setDetail(null);
+          return;
+        }
+        if (!localBody) return;
+        e.preventDefault();
+        playSound('click');
+        requestCamera('system');
+      } else if (e.key === 'l' || e.key === 'L') {
+        e.preventDefault();
+        playSound('click');
+        if (localBody) requestCamera('system');
+        else if (selectedBody) requestCamera('local', selectedBody);
+      } else if (e.key === 'g' || e.key === 'G') {
+        if (!selection && !localBody) return;
+        e.preventDefault();
+        playSound('click');
+        requestCamera('frame');
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [covered, layer, radial, detail, showActivity, showSpatial, jumpOpen, localBody, selectedBody, selection, requestCamera]);
+
   // Wave V3: consume an external focus request (Outliner deep-link) — the
   // EXACT same selection logic OrderQueueHUD's own chips use, just fed by a
   // prop instead of a click. Guarded by `token` so it fires once per request
@@ -629,6 +738,8 @@ export default function MapCommandCenter({
             onToggleLayer={toggleLayer}
             contacts={traffic.contacts}
             contactsAsOfMs={traffic.asOfMs}
+            cameraRequest={cameraRequest}
+            onLocalBodyChange={handleLocalBodyChange}
           />
         ) : (
           <SolarSystemCanvas
@@ -646,6 +757,8 @@ export default function MapCommandCenter({
             onToggleLayer={toggleLayer}
             contacts={traffic.contacts}
             contactsAsOfMs={traffic.asOfMs}
+            cameraRequest={cameraRequest}
+            onLocalBodyChange={handleLocalBodyChange}
           />
         )
       ) : (
@@ -702,6 +815,11 @@ export default function MapCommandCenter({
             <StripButton icon="megastructures" label="Spatial strategy overlay" pressed={showSpatial} expanded={showSpatial} controls="map-spatial-strategy-popover" onClick={() => { playSound('click'); setShowSpatial(v => !v); }} />
           )}
         </div>
+        {layer === 'solar' && (
+          <div className="pointer-events-auto hud-frame rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm px-1 max-w-full">
+            <Breadcrumb compact localBody={localBody} selectedBody={selectedBody} onSystem={() => requestCamera('system')} onBody={id => requestCamera('local', id)} onLocal={id => requestCamera('local', id)} />
+          </div>
+        )}
         {layer === 'solar' && (
           <p className="pointer-events-auto hud-frame rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm px-2.5 py-1 text-[10px] text-slate-300 max-w-full text-center" role="status" aria-live="polite">
             <span className="text-cyan-300 font-semibold">{MAP_MODE_MAP.get(mapMode)?.label}</span> lens · Zoom: <span className="text-cyan-300 font-semibold">{MAP_ZOOM_TIER_LABEL[zoomTier]}</span>
@@ -838,6 +956,10 @@ export default function MapCommandCenter({
               zoom so information is never zoom-only for keyboard/screen-
               reader users. */}
           <div className="hud-frame flex items-center gap-1 rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm overflow-hidden">
+            {/* Flight mode (part a) — "System › Earth › Local" with click-back. */}
+            <div className="px-1 border-r border-white/[0.08]">
+              <Breadcrumb localBody={localBody} selectedBody={selectedBody} onSystem={() => requestCamera('system')} onBody={id => requestCamera('local', id)} onLocal={id => requestCamera('local', id)} />
+            </div>
             <span className="px-2 text-[10px] text-slate-400 whitespace-nowrap" role="status" aria-live="polite">
               Zoom: <span className="text-cyan-300 font-semibold">{MAP_ZOOM_TIER_LABEL[zoomTier]}</span>
             </span>
@@ -939,6 +1061,22 @@ export default function MapCommandCenter({
           </div>
         </div>
       )}
+
+      {/* Flight mode (part a): one-line hint on the first local-scene entry,
+          once per browser (LOCAL_HINT_KEY). HoloTip panel styling; dismisses
+          itself, on Escape, or on click. */}
+      {localHint && layer === 'solar' && (
+        <div
+          className="holotip-panel absolute top-[7.5rem] md:top-[8.5rem] left-1/2 -translate-x-1/2 z-30 max-w-[min(92vw,420px)] rounded-xl border border-cyan-400/30 bg-[#050510]/95 px-3 py-2 text-[11px] text-slate-200 shadow-lg backdrop-blur-md flex items-center gap-2"
+          role="status"
+          data-local-hint
+        >
+          <GameIcon name="map" size={13} className="text-cyan-300 shrink-0" />
+          <span><span className="text-cyan-200 font-semibold">{bodyName(localBody)} local view.</span> {LOCAL_HINT_TEXT}</span>
+          <button type="button" onClick={() => setLocalHint(false)} aria-label="Dismiss hint" className="ml-1 w-8 h-8 shrink-0 flex items-center justify-center rounded-lg text-slate-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400">✕</button>
+        </div>
+      )}
+      <p className="sr-only" role="status" aria-live="polite">{layer === 'solar' ? localNotice : ''}</p>
 
       {/* Jump hotkey legend (2026-09-04) — the visible half of the number-key
           bindings. Collapsed to a chip by default so it never eats map; the
