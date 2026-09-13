@@ -59,7 +59,9 @@ async function acceptCookies(page) {
 /** Registers a disposable QA account through the public API. Email domain marks it as QA (src/lib/qa-accounts.ts). */
 async function registerQaAccount(prefix) {
   const email = `${prefix}-${Date.now()}@spacenexus.internal`;
-  const password = 'Qa-' + Math.random().toString(36).slice(2, 10) + '-Probe!' + Date.now().toString(36).slice(-4);
+  // Every class the password policy requires, guaranteed: base36 randomness
+  // alone can come out digitless, which failed a nightly run on 2026-09-13.
+  const password = 'Qa7-' + Math.random().toString(36).slice(2, 10) + '-Probe!' + String(Date.now()).slice(-4);
   const r = await fetch(`${SITE}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Origin: SITE },
