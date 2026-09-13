@@ -176,6 +176,37 @@ export async function resolveFreshnessAlert(jobName: string): Promise<void> {
 }
 
 /**
+ * Resolve every unresolved alert whose jobName starts with `prefix`.
+ * The content-accuracy sentinel names its alert after the failing check ids
+ * ("content-accuracy: a, b"), so a later passing run could never resolve it
+ * by exact name — two such alerts sat open from 2026-09-11 until this was
+ * added on 2026-09-13. Returns how many were resolved.
+ */
+export async function resolveFreshnessAlertsByPrefix(prefix: string): Promise<number> {
+  try {
+    const alerts = await readPersistedAlerts();
+    let resolved = 0;
+    for (const alert of alerts) {
+      if (!alert.resolved && alert.jobName.startsWith(prefix)) {
+        alert.resolved = true;
+        resolved++;
+      }
+    }
+    if (resolved > 0) {
+      await writePersistedAlerts(alerts);
+      logger.info('Cron freshness alerts resolved by prefix', { prefix, resolved });
+    }
+    return resolved;
+  } catch (error) {
+    logger.error('Failed to resolve freshness alerts by prefix', {
+      prefix,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
+/**
  * Get all persisted freshness alerts. Safe for monitoring endpoints.
  */
 export async function getFreshnessAlerts(): Promise<CronFreshnessAlert[]> {

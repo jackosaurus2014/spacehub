@@ -14,8 +14,10 @@ jest.mock('@/lib/logger', () => ({
 }));
 
 const mockSendFreshnessAlert = jest.fn().mockResolvedValue(undefined);
+const mockResolveByPrefix = jest.fn(async (..._args: unknown[]) => 0);
 jest.mock('@/lib/freshness-alerts', () => ({
   sendFreshnessAlert: (...args: unknown[]) => mockSendFreshnessAlert(...args),
+  resolveFreshnessAlertsByPrefix: (...args: unknown[]) => mockResolveByPrefix(...args),
 }));
 
 jest.mock('@/lib/db', () => ({
@@ -476,6 +478,12 @@ describe('runContentAccuracySentinel', () => {
     const result = await runContentAccuracySentinel(checks);
     expect(result.failedCount).toBe(0);
     expect(mockSendFreshnessAlert).not.toHaveBeenCalled();
+  });
+
+  it('closes the previous composite content-accuracy alert on every run (2026-09-13)', async () => {
+    mockResolveByPrefix.mockClear();
+    await runContentAccuracySentinel();
+    expect(mockResolveByPrefix).toHaveBeenCalledWith('content-accuracy:');
   });
 
   it('does not throw if sendFreshnessAlert itself rejects', async () => {

@@ -14,7 +14,7 @@
 
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { sendFreshnessAlert } from '@/lib/freshness-alerts';
+import { sendFreshnessAlert, resolveFreshnessAlertsByPrefix } from '@/lib/freshness-alerts';
 import { STARTUP_HUB_ASOF } from '@/lib/startup-hub-data';
 import { REPORT_CARDS_QUARTER_ASSESSED } from '@/lib/report-cards-data';
 import { getArtemisNewsArticles } from '@/lib/artemis-news';
@@ -823,6 +823,11 @@ export async function runContentAccuracySentinel(
       logger.warn(`Content accuracy check FAILED: ${result.id}`, { detail: result.detail });
     }
   }
+
+  // Each run reflects the CURRENT state: close the previous composite alert
+  // (its name lists the check ids that failed last time) before raising a
+  // fresh one, so a passing run leaves nothing open in the admin view.
+  await resolveFreshnessAlertsByPrefix('content-accuracy:');
 
   if (failed.length > 0) {
     try {
