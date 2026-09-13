@@ -91,6 +91,13 @@ const CRON_JOBS: CronJobDef[] = [
   // NewsletterSubscriber rows with dailyBrief=true. Idempotent per UTC day
   // (DailyBriefSend ledger), so a stale-catch-up rerun never double-sends.
   { schedule: '4 7 * * *',     path: '/api/cron/daily-brief',               label: 'daily-brief',                maxStaleMinutes: 1560 },
+  // SpaceNexus AM (2026-09-12, competitor review Tier 1 #3): the weekday
+  // morning brief — five Sonnet-drafted stories, next launch, one number —
+  // to NewsletterSubscriber.morningBrief opt-ins. 12:00 UTC = 08:00 ET.
+  // Idempotent per UTC date (MorningBrief ledger); quality gates withhold
+  // and alert instead of sending. maxStaleMinutes spans Fri 12:00 → Mon
+  // 12:00 (4320) plus a 3h grace so the watchdog stays quiet on weekends.
+  { schedule: '0 12 * * 1-5',  path: '/api/cron/morning-brief',             label: 'morning-brief',              maxStaleMinutes: 4500 },
   { schedule: '15 7 * * *',    path: '/api/cron/job-alerts',                label: 'job-alerts',                 maxStaleMinutes: 1560 },
   { schedule: '45 7 * * *',    path: '/api/cron/hiring-snapshot',           label: 'hiring-snapshot',            maxStaleMinutes: 1560 },
   { schedule: '0 13 * * 3',    path: '/api/cron/whos-hiring-post',          label: 'whos-hiring-post',           maxStaleMinutes: 11520 },

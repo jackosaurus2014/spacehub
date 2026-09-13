@@ -56,6 +56,20 @@ export async function GET(request: Request) {
       );
     }
 
+    // scope=am: SpaceNexus AM only (the AM footer also links the dedicated
+    // /api/newsletter/morning-brief toggle; both land here for symmetry).
+    if (scope === 'am') {
+      if (subscriber.morningBrief) {
+        await prisma.newsletterSubscriber.update({
+          where: { id: subscriber.id },
+          data: { morningBrief: false },
+        });
+      }
+      return NextResponse.redirect(
+        `${process.env.NEXT_PUBLIC_APP_URL}/?newsletter=am_disabled`
+      );
+    }
+
     if (scope === 'monthly') {
       if (subscriber.monthlyReports) {
         await prisma.newsletterSubscriber.update({
@@ -86,6 +100,7 @@ export async function GET(request: Request) {
         dailyBrief: false,
         marketsDaily: false,
         monthlyReports: false,
+        morningBrief: false,
       },
     });
 
@@ -156,6 +171,7 @@ export async function POST(request: Request) {
         dailyBrief: false,
         marketsDaily: false,
         monthlyReports: false,
+        morningBrief: false,
       },
     });
 

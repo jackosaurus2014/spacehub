@@ -112,6 +112,9 @@ export const newsletterSubscribeSchema = z.object({
   // Same rule as dailyBrief: separate flags, only ever SET by the caller.
   marketsDaily: z.boolean().optional(),
   monthlyReports: z.boolean().optional(),
+  // Opt-in to SpaceNexus AM, the weekday 08:00 ET morning brief (2026-09-12).
+  // The main signup form ticks it by default; still only ever SET by the caller.
+  morningBrief: z.boolean().optional(),
   // Honeypot: real users never fill this hidden field.
   website: z.string().max(0, 'Invalid submission').optional(),
 });

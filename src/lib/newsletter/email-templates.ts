@@ -314,6 +314,30 @@ ${overflow ? 'More qualifying actions this period - ' : ''}View all regulatory a
   return { html, plain };
 }
 
+// SpaceNexus AM promo (2026-09-12): the M/Th digest carries a short block
+// with the one-click enable link. The token placeholder is filled per
+// recipient by personalizeEmail(), the same way the unsubscribe link is.
+const MORNING_BRIEF_ENABLE_URL = `${APP_URL}/api/newsletter/morning-brief?token={{UNSUBSCRIBE_TOKEN}}&action=enable`;
+
+function buildMorningBriefPromo(): string {
+  return `
+    <tr>
+      <td style="padding: 20px 30px; background-color: ${styles.bgCard};">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: 1px solid ${styles.borderColor}; border-radius: 8px;">
+          <tr>
+            <td style="padding: 16px 18px;">
+              <p style="margin: 0 0 6px 0; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: ${styles.accentNebulaLight}; font-weight: 600;">SpaceNexus AM</p>
+              <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: ${styles.textLight};">
+                Want this every weekday morning? SpaceNexus AM is a five-story brief with the next launch and one number, in your inbox at 8am ET.
+              </p>
+              <a href="${MORNING_BRIEF_ENABLE_URL}" style="font-size: 14px; font-weight: 600; color: ${styles.textWhite}; text-decoration: underline;">Turn on SpaceNexus AM with one click</a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>`;
+}
+
 export function renderDigestEmail(
   date: Date,
   featureArticles: FeatureArticle[],
@@ -446,6 +470,7 @@ ${article.content}
     ${featureArticles.length > 0 ? featureArticlesHtml.split('</tr>')[0] + '</tr>' : ''}
     ${newsHtml}
     ${featureArticles.length > 1 ? featureArticlesHtml.split('</tr>').slice(1).join('</tr>') : ''}
+    ${buildMorningBriefPromo()}
     <tr>
       <td style="padding: 30px; background-color: ${styles.bgCard}; text-align: center;">
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
@@ -469,6 +494,9 @@ Delivered Mondays & Thursdays
 ${chartSection.plain}${watchSection.plain}
 ${featureArticlesPlain}
 ${newsPlain}
+
+--- SPACENEXUS AM ---
+Want this every weekday morning? SpaceNexus AM is a five-story brief with the next launch and one number, 8am ET. Turn it on with one click: ${MORNING_BRIEF_ENABLE_URL}
 
 ---
 Visit SpaceNexus: ${APP_URL}

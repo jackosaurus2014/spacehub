@@ -20,6 +20,10 @@ export default function NewsletterSignup({
 }: NewsletterSignupProps) {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  // SpaceNexus AM (2026-09-12): the weekday morning brief is a separate,
+  // labelled opt-in — ticked by default for NEW signups, never applied to
+  // existing subscribers (they consented to M/Th only).
+  const [morningBrief, setMorningBrief] = useState(true);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [canResend, setCanResend] = useState(false);
@@ -58,10 +62,23 @@ export default function NewsletterSignup({
         case 'monthly_unsubscribed':
           setMessage('You\'ve been removed from the monthly reports. Your other subscriptions are unchanged.');
           break;
+        case 'am_enabled':
+          setStatus('success');
+          setMessage('SpaceNexus AM is on. Expect it weekday mornings at 8am ET.');
+          break;
+        case 'am_disabled':
+          setMessage('SpaceNexus AM is off. Your other subscriptions are unchanged.');
+          break;
         case 'error':
           setStatus('error');
           const reason = searchParams.get('reason');
-          setMessage(reason === 'invalid_token' ? 'Invalid or expired link.' : 'Something went wrong. Please try again.');
+          setMessage(
+            reason === 'invalid_token'
+              ? 'Invalid or expired link.'
+              : reason === 'not_subscribed'
+                ? 'That address is not an active subscriber. Subscribe below to get SpaceNexus AM.'
+                : 'Something went wrong. Please try again.'
+          );
           break;
       }
     }
@@ -83,6 +100,7 @@ export default function NewsletterSignup({
           email,
           name: name || undefined,
           source,
+          morningBrief,
         }),
       });
 
@@ -141,6 +159,15 @@ export default function NewsletterSignup({
           >
             {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
           </button>
+          <label className="flex items-start gap-2 text-[11px] text-slate-400 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={morningBrief}
+              onChange={(e) => setMorningBrief(e.target.checked)}
+              className="mt-0.5 rounded border-white/[0.2] bg-white/[0.06] text-cyan-500 focus:ring-cyan-500/40"
+            />
+            <span>Also send SpaceNexus AM, the weekday morning brief</span>
+          </label>
         </form>
         {message && (
           <p
@@ -243,6 +270,15 @@ export default function NewsletterSignup({
                 'Subscribe to Newsletter'
               )}
             </button>
+            <label className="flex items-center justify-center gap-2 mt-4 text-sm text-slate-300 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={morningBrief}
+                onChange={(e) => setMorningBrief(e.target.checked)}
+                className="rounded border-white/[0.2] bg-white/[0.06] text-cyan-500 focus:ring-cyan-500/40"
+              />
+              <span>Also send SpaceNexus AM, the weekday morning brief</span>
+            </label>
             {status === 'error' && (
               <p className="mt-4 text-red-500 text-sm">{message}</p>
             )}

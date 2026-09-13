@@ -498,6 +498,8 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Newsletter
     { url: `${BASE_URL}/newsletter`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    // SpaceNexus AM archive index (2026-09-12); the per-issue pages are in segment 3.
+    { url: `${BASE_URL}/brief/am`, changeFrequency: 'daily' as const, priority: 0.7 },
 
     // Daily Digest
 
@@ -706,5 +708,19 @@ async function getContentRoutes(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  return [...blogRoutes, ...launchRoutes, ...galleryRoutes, ...insightRoutes, ...explainerRoutes, ...radarActionRoutes, ...podcastRoutes];
+  // SpaceNexus AM issues (2026-09-12): the last 30 sent weekday briefs.
+  let morningBriefRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const { listArchiveDates } = await import('@/lib/morning-brief/archive');
+    morningBriefRoutes = (await listArchiveDates(30)).map((r) => ({
+      url: `${BASE_URL}/brief/am/${r.date}`,
+      lastModified: r.updatedAt,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    }));
+  } catch (error) {
+    logger.error('Sitemap segment 3: Failed to fetch morning brief routes', { error: error instanceof Error ? error.message : String(error) });
+  }
+
+  return [...blogRoutes, ...launchRoutes, ...galleryRoutes, ...insightRoutes, ...explainerRoutes, ...radarActionRoutes, ...podcastRoutes, ...morningBriefRoutes];
 }

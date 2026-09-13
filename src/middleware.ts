@@ -529,6 +529,12 @@ export const SLUG_EXISTENCE_CHECKS: Array<{
     existsApiPath: (id) => `/api/gallery/${encodeURIComponent(id)}/exists`,
   },
   {
+    // SpaceNexus AM archive (2026-09-12): one page per sent MorningBrief date.
+    // /brief/am itself (the index) has no trailing segment and is untouched.
+    match: /^\/brief\/am\/([^/]+)\/?$/,
+    existsApiPath: (date) => `/api/brief/am/${encodeURIComponent(date)}/exists`,
+  },
+  {
     // Episode slugs are unique only per show, so the probe carries both segments.
     match: /^\/podcasts\/([^/]+\/[^/]+)\/?$/,
     existsApiPath: (pair) => `/api/podcasts/${pair.split('/').map(encodeURIComponent).join('/')}/exists`,

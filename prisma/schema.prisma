@@ -1946,6 +1946,11 @@ model NewsletterSubscriber {
   // and the monthly Hiring Index + Launch Slip reports. Ledger: EmailProgramSend.
   marketsDaily      Boolean   @default(false)
   monthlyReports    Boolean   @default(false)
+  // SpaceNexus AM (2026-09-12): the weekday 12:00 UTC AI-drafted morning
+  // brief. Existing subscribers stay OFF (they consented to M/Th); the signup
+  // form's checkbox (checked by default) sets it, and a one-click token link
+  // (/api/newsletter/morning-brief) flips it either way. Ledger: MorningBrief.
+  morningBrief      Boolean   @default(false)
   userId            String?   @unique
   user              User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt         DateTime  @default(now())
@@ -1967,6 +1972,31 @@ model DailyBriefSend {
   skipped     Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+/// SpaceNexus AM — one row per weekday issue (2026-09-12). `date` (YYYY-MM-DD
+/// UTC) is the idempotency key: the 12:00 UTC cron claims the day by creating
+/// the row in status 'sending' before any email goes out, so a rerun can never
+/// double-send. Failed quality gates are recorded as status 'failed' with the
+/// reasons in errorLog (nothing sent); 'skipped' marks weekends/holidays. The
+/// issue JSON + rendered HTML back the public archive at /brief/am/[date].
+model MorningBrief {
+  id           String   @id @default(cuid())
+  date         String   @unique
+  status       String   @default("sending") // sending | sent | failed | skipped
+  subject      String?
+  preheader    String?
+  issue        String?  @db.Text // JSON: MorningBriefIssue
+  htmlContent  String?  @db.Text
+  plainContent String?  @db.Text
+  sentCount    Int      @default(0)
+  failedCount  Int      @default(0)
+  errorLog     String?  @db.Text
+  aiModel      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status, date])
 }
 
 /// One row per (program, period) — the claim-before-send ledger shared by the

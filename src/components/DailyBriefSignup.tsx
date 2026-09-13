@@ -22,6 +22,9 @@ export default function DailyBriefSignup({
   // explicit choice, sent through the same subscribe API as dailyBrief.
   const [marketsDaily, setMarketsDaily] = useState(false);
   const [monthlyReports, setMonthlyReports] = useState(false);
+  // SpaceNexus AM (2026-09-12): the Sonnet-drafted weekday morning brief at
+  // 8am ET. Ticked by default like the main signup form.
+  const [morningBrief, setMorningBrief] = useState(true);
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
@@ -39,7 +42,7 @@ export default function DailyBriefSignup({
       const res = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source, dailyBrief, marketsDaily, monthlyReports, website: honeypot }),
+        body: JSON.stringify({ email, source, dailyBrief, marketsDaily, monthlyReports, morningBrief, website: honeypot }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
@@ -98,6 +101,15 @@ export default function DailyBriefSignup({
         </button>
       </div>
       <label className="flex items-center gap-2 mt-3 text-xs text-slate-300 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={morningBrief}
+          onChange={(e) => setMorningBrief(e.target.checked)}
+          className="rounded border-white/[0.2] bg-white/[0.06] text-cyan-500 focus:ring-cyan-500/40"
+        />
+        Also send SpaceNexus AM, the weekday morning brief (8am ET) — five stories, the next launch, one number
+      </label>
+      <label className="flex items-center gap-2 mt-2 text-xs text-slate-300 cursor-pointer">
         <input
           type="checkbox"
           checked={dailyBrief}
