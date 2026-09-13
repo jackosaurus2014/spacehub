@@ -611,15 +611,37 @@ export const MONEY_CLAMP_ALERT_THRESHOLD = 10_000_000;
  * visible money and needs a look, and usually a ledger restore
  * (scripts/tycoon-ledger-credit.ts).
  */
+export const MONEY_CLAMP_ACK_KEY = 'system:money-clamp-ack';
+
+/**
+ * Rejections at or before this instant have been dealt with (money restored,
+ * cause fixed) and must not keep paging. Set it with
+ * `scripts/tycoon-clamp-ack.ts` when an incident is closed.
+ */
+async function readMoneyClampAck(): Promise<Date | null> {
+  try {
+    const row = await prisma.dynamicContent.findUnique({ where: { contentKey: MONEY_CLAMP_ACK_KEY } });
+    if (!row) return null;
+    const parsed = JSON.parse(row.data) as { acknowledgedThrough?: string };
+    const t = parsed?.acknowledgedThrough ? Date.parse(parsed.acknowledgedThrough) : NaN;
+    return Number.isFinite(t) ? new Date(t) : null;
+  } catch {
+    return null;
+  }
+}
+
 async function checkMoneyClampQuiet(): Promise<AccuracyCheckOutcome> {
-  const since = new Date(Date.now() - 24 * 3600_000);
+  const ack = await readMoneyClampAck();
+  const window = new Date(Date.now() - 24 * 3600_000);
+  const since = ack && ack > window ? ack : window;
   const rows = await prisma.marketAuditLog.findMany({
     where: { eventType: 'client_money_implausible_rejected', createdAt: { gte: since } },
     orderBy: { createdAt: 'desc' },
     take: 500,
     select: { profileId: true, details: true, createdAt: true },
   });
-  if (rows.length === 0) return { ok: true, detail: 'No income was rejected in the last 24h' };
+  const scope = ack && ack > window ? `since the acknowledgement at ${ack.toISOString()}` : 'in the last 24h';
+  if (rows.length === 0) return { ok: true, detail: `No income was rejected ${scope}` };
 
   const byProfile = new Map<string, number>();
   for (const r of rows) {
@@ -629,7 +651,7 @@ async function checkMoneyClampQuiet(): Promise<AccuracyCheckOutcome> {
     if (!Number.isFinite(excess) || excess <= 0) continue;
     byProfile.set(r.profileId, (byProfile.get(r.profileId) || 0) + excess);
   }
-  if (byProfile.size === 0) return { ok: true, detail: `${rows.length} audit row(s), none with a rejected amount` };
+  if (byProfile.size === 0) return { ok: true, detail: `${rows.length} audit row(s) ${scope}, none with a rejected amount` };
 
   // QA probe corporations clamp all the time and are not players.
   const real = await prisma.gameProfile.findMany({
@@ -647,7 +669,7 @@ async function checkMoneyClampQuiet(): Promise<AccuracyCheckOutcome> {
   const list = offenders.slice(0, 5).map((o) => `${o.company} (${o.id}) $${(o.total / 1e6).toFixed(1)}M`).join('; ');
   return {
     ok: false,
-    detail: `Sync ceiling rejected income for ${offenders.length} player(s) in 24h: ${list}. Diagnose with scripts/tycoon-money-diag.ts and restore with scripts/tycoon-ledger-credit.ts.`,
+    detail: `Sync ceiling rejected income for ${offenders.length} player(s) ${scope}: ${list}. Diagnose with scripts/tycoon-money-diag.ts and restore with scripts/tycoon-ledger-credit.ts.`,
   };
 }
 
