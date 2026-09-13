@@ -9,6 +9,30 @@
 
 import type { GameState, BuildingInstance, ServiceInstance } from './types';
 import { STARTING_YEAR } from './constants';
+import { BUILDING_MAP } from './buildings';
+
+// ─── Balance Pass 10 (2026-09-12) — starter pad fuel ────────────────────────
+// The Small Launch Pad consumes rocket fuel every game-month
+// (buildings.ts consumesPerMonth). A fresh Cape Heritage corporation started
+// with NONE, so its only launch pad sat at "Short" in the Sourcing console
+// from minute one. Archetypes that start with a consuming building now start
+// with STARTER_SUPPLY_MONTHS of every input it burns, and the building
+// itself starts on the 'market' supply policy so it keeps buying afterwards.
+// buildFirstSyncKit (sync-validation.ts) derives the server kit from these
+// same definitions — the kit-parity test pins the two together.
+
+/** Months of every consumed input a starting building comes stocked with. */
+export const STARTER_SUPPLY_MONTHS = 6;
+
+/** STARTER_SUPPLY_MONTHS × consumesPerMonth for one building definition. */
+export function starterSupplyFor(definitionId: string): Record<string, number> {
+  const def = BUILDING_MAP.get(definitionId);
+  const out: Record<string, number> = {};
+  for (const [res, perMonth] of Object.entries(def?.consumesPerMonth || {})) {
+    if (perMonth > 0) out[res] = (out[res] || 0) + perMonth * STARTER_SUPPLY_MONTHS;
+  }
+  return out;
+}
 
 export type StartingArchetype = 'cape_heritage' | 'meridian_signals' | 'tracking_consortium';
 
@@ -24,6 +48,9 @@ export interface ArchetypeDefinition {
   startingBuildings: Array<{
     definitionId: string;
     locationId: string;
+    /** Pass 10: starting sourcing policy — 'market' for buildings that
+     *  consume inputs (a standing market order), absent = engine default. */
+    supplyPolicy?: 'local' | 'market';
   }>;
   startingServices: Array<{
     definitionId: string;
@@ -50,9 +77,10 @@ export const ARCHETYPES: ArchetypeDefinition[] = [
     narrative:
       'Your family has been putting mass into orbit for three generations. A small launch pad is already operational next to a ground tracking station — a complete launch-and-tracking operation from day one. Cash reserves are thin because the hardware exists, but two revenue streams are already running.',
     startingMoney: 75_000_000,
-    startingResources: { iron: 30, aluminum: 20 },
+    // Pass 10: + six months of the pad's rocket fuel (60 units), see above.
+    startingResources: { iron: 30, aluminum: 20, ...starterSupplyFor('launch_pad_small') },
     startingBuildings: [
-      { definitionId: 'launch_pad_small', locationId: 'earth_surface' },
+      { definitionId: 'launch_pad_small', locationId: 'earth_surface', supplyPolicy: 'market' },
       { definitionId: 'ground_station',   locationId: 'earth_surface' },
     ],
     startingServices: [
@@ -137,6 +165,7 @@ export function applyArchetype(state: GameState, archetypeId: StartingArchetype)
     isComplete: true,
     startedAtMs: now - 1000,
     realDurationSeconds: 1,
+    ...(b.supplyPolicy ? { supplyPolicy: b.supplyPolicy } : {}),
   }));
 
   const activeServices: ServiceInstance[] = def.startingServices.map(svc => ({

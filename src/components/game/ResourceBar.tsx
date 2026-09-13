@@ -7,7 +7,7 @@ import { formatMoney, formatGameDate } from '@/lib/game/formulas';
 import { BUILDING_MAP } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { getWorkforceBonuses } from '@/lib/game/workforce';
-// Wave E5 (docs/ECONOMY_PVP_2026-08.md §2.6/§E5): the burn-rate estimate
+// Wave E5 (docs/ECONOMY_PVP_2026-08.md Â§2.6/Â§E5): the burn-rate estimate
 // should reflect the same wage-index-adjusted payroll the engine charges.
 import { getMonthlyPayrollForState } from '@/lib/game/labor-market';
 import { getResearchBonuses } from '@/lib/game/research-tree';
@@ -25,7 +25,8 @@ import { getTierDef, getTierBonuses } from '@/lib/game/corporation-tiers';
 import { getServiceDemandMultiplier } from '@/lib/game/service-pricing';
 import { gameDateToMonthIndex } from '@/lib/game/demand-pools';
 import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
-// Wave A1 (docs/VISUAL_AAA_2026-08.md §A1.3) — Stellaris-style stock + flow.
+import { getFrontierRevenueMultiplier } from '@/lib/game/frontier'; // Pass 10
+// Wave A1 (docs/VISUAL_AAA_2026-08.md Â§A1.3) â Stellaris-style stock + flow.
 // Every figure below comes from the engine's own code paths; see
 // resource-flow.ts's header for the drift rule and the omissions list.
 import { computeResourceFlows, formatFlow, flowDirection, type ResourceFlow } from '@/lib/game/resource-flow';
@@ -36,7 +37,7 @@ import { Figure, FlowValue } from './chrome';
 
 interface ResourceBarProps {
   state: GameState;
-  /** Wave V8 — current density mode, lifted to the page shell so it can also
+  /** Wave V8 â current density mode, lifted to the page shell so it can also
    *  drive the `data-density` attribute on the game root. Optional so
    *  existing tests/usages that don't care about density still compile;
    *  defaults to comfortable. */
@@ -53,7 +54,7 @@ interface ResourceBarProps {
  *  of it (the brief: "extend the treatment consistently, don't duplicate").
  *  `AnimatedMoney` below is now just this with `formatMoney` bound.
  *
- *  `minDelta` is the jump below which we snap instead of animating — a
+ *  `minDelta` is the jump below which we snap instead of animating â a
  *  rounding tick shouldn't spend a frame budget. Money uses 100 (dollars);
  *  resource stocks use a much smaller unit-scale threshold. */
 function AnimatedValue({
@@ -100,7 +101,7 @@ function AnimatedMoney({ value, className }: { value: number; className?: string
   return <AnimatedValue value={value} format={(n) => formatMoney(Math.round(n))} className={className} />;
 }
 
-/** Compact unit count for a resource stockpile: 12 345 → "12.3k". */
+/** Compact unit count for a resource stockpile: 12 345 â "12.3k". */
 function formatUnits(n: number): string {
   const v = Math.round(n);
   const abs = Math.abs(v);
@@ -110,7 +111,7 @@ function formatUnits(n: number): string {
   return `${v}`;
 }
 
-/** 30-point sparkline of recent money readings. Renders at ~64×18 so it fits
+/** 30-point sparkline of recent money readings. Renders at ~64Ã18 so it fits
  *  snugly to the right of the cash figure without crowding on mobile. */
 function MoneySparkline({ history, positive }: { history: number[]; positive: boolean }) {
   if (history.length < 2) return null;
@@ -137,7 +138,7 @@ function MoneySparkline({ history, positive }: { history: number[]; positive: bo
 const SPARKLINE_MAX_POINTS = 30;
 
 /** How many resource cells the strip renders. The strip scrolls, so this is
- *  a DOM budget rather than a hard limit on what the player can reach — and
+ *  a DOM budget rather than a hard limit on what the player can reach â and
  *  `computeResourceFlows` sorts by depletion urgency, so the ones that need
  *  a decision are always the ones in front. */
 const FLOW_STRIP_MAX = 12;
@@ -145,12 +146,12 @@ const FLOW_STRIP_MAX = 12;
 /**
  * One resource cell: icon, stock, and net flow per game month.
  *
- * The Stellaris pattern — stock AND flow together, with a hover/focus
+ * The Stellaris pattern â stock AND flow together, with a hover/focus
  * breakdown itemizing the contributions. Accessibility:
  *  - the icon carries the resource NAME as visually-hidden text, so the cell
  *    is never icon-only for a screen-reader user;
- *  - direction is carried by an arrow glyph, an explicit +/− sign, and a
- *    hidden word (see <FlowValue>) — never by colour alone;
+ *  - direction is carried by an arrow glyph, an explicit +/â sign, and a
+ *    hidden word (see <FlowValue>) â never by colour alone;
  *  - HoloTip makes the whole cell a focusable, Enter/Space-activatable
  *    trigger with `aria-describedby`, so the breakdown is keyboard-reachable.
  */
@@ -197,7 +198,7 @@ function ResourceFlowCell({ flow, omitted }: { flow: ResourceFlow; omitted: read
           })),
           { label: 'Net', value: `${formatFlow(flow.net)} /mo` },
         ],
-        source: 'Live from the simulation — same code paths the monthly tick charges.',
+        source: 'Live from the simulation â same code paths the monthly tick charges.',
       }}
     >
       <span
@@ -220,7 +221,7 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
   const [ambient, setAmbient] = useState(false);
   const [music, setMusic] = useState(false);
   const [musicVol, setMusicVol] = useState(0.45);
-  // Wave V7 — haptics toggle. Only rendered when the device actually exposes
+  // Wave V7 â haptics toggle. Only rendered when the device actually exposes
   // navigator.vibrate (desktop mice never do) so the control isn't clutter
   // on hardware it can't affect.
   const [hapticsSupported, setHapticsSupported] = useState(false);
@@ -234,25 +235,28 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
     setHapticsSupported(typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function');
     setHaptics(isHapticsEnabled());
     // W12: if the player had music on last session, resume it on their first
-    // gesture (autoplay-policy safe — the gesture unlocks the AudioContext).
+    // gesture (autoplay-policy safe â the gesture unlocks the AudioContext).
     initMusicAutoResume(() => setMusic(true));
   }, []);
 
-  // ─── P&L computation — must match game engine exactly ────────────────────
+  // âââ P&L computation â must match game engine exactly ââââââââââââââââââââ
   const corpTier = state.corporationTier || 1;
   const tierDef = getTierDef(corpTier);
   const tierBonuses = getTierBonuses(corpTier);
 
   // Wave A1: this block used to run on EVERY render (it was bare statements in
   // the component body). Now that the bar also derives per-resource flows, it
-  // is memoized on `state` — the only input it reads.
-  const { revenue, costs, net } = useMemo(() => {
+  // is memoized on `state` â the only input it reads.
+  const { revenue, costs, net, frontierMult } = useMemo(() => {
     const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
     const wfBonuses = getWorkforceBonuses(workforce);
     const resBonuses = getResearchBonuses(state.completedResearch, state.repeatableResearchLevels, state.corporationTier || 1); // Row 8: tier-scaled caps
     const legacyBonuses = getLegacyBonuses(state.legacy || DEFAULT_LEGACY);
     const tb = getTierBonuses(state.corporationTier || 1);
     const multipliers = getActiveMultipliers(state);
+    // Pass 10: Frontier service-revenue doubling (2.0 active â 1.0 over the
+    // graduation glide) â the same term game-engine.ts Â§1 applies.
+    const frontierMult = getFrontierRevenueMultiplier(state);
 
     let rev = 0, cost = 0;
     for (const svc of state.activeServices) {
@@ -262,7 +266,7 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
       const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0) * getMarkRevenueMultiplier(linkedBld); // D4
       const supplyMult = getServiceDemandMultiplier(state, svc.definitionId, svc.locationId, gameDateToMonthIndex(state.gameDate));
       rev += def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost
-        * (1 + wfBonuses.serviceRevenue) * (1 + resBonuses.serviceRevenueBonus) * legacyBonuses.revenueMultiplier * (1 + tb.revenueBonus) * supplyMult;
+        * (1 + wfBonuses.serviceRevenue) * (1 + resBonuses.serviceRevenueBonus) * legacyBonuses.revenueMultiplier * (1 + tb.revenueBonus) * supplyMult * frontierMult;
       cost += def.operatingCostPerMonth * multipliers.costMultiplier * legacyBonuses.costMultiplier * (1 - tb.maintenanceReduction);
     }
     for (const bld of state.buildings) {
@@ -278,16 +282,16 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
       const shipDef = SHIP_MAP.get(ship.definitionId);
       if (shipDef?.maintenancePerMonth) cost += shipDef.maintenancePerMonth;
     }
-    return { revenue: rev, costs: cost, net: Math.round(rev - cost) };
+    return { revenue: rev, costs: cost, net: Math.round(rev - cost), frontierMult };
   }, [state]);
 
-  // ─── Wave A1: per-resource stock + monthly flow ──────────────────────────
+  // âââ Wave A1: per-resource stock + monthly flow ââââââââââââââââââââââââââ
   // One pass over services/buildings/ships plus the engine's own consumption
   // and storage lenses. Memoized on `state` for the same reason as the P&L.
   const flowReport = useMemo(() => computeResourceFlows(state), [state]);
   const strip = flowReport.flows.slice(0, FLOW_STRIP_MAX);
 
-  // ─── Client-side money history (sparkline) + delta-flash driver ──────────
+  // âââ Client-side money history (sparkline) + delta-flash driver ââââââââââ
   const historyRef = useRef<number[]>([]);
   const [history, setHistory] = useState<number[]>([]);
   const prevMoneyRef = useRef<number>(state.money);
@@ -302,7 +306,7 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
       const next = [...historyRef.current, state.money].slice(-SPARKLINE_MAX_POINTS);
       historyRef.current = next;
       setHistory(next);
-      // Only flash on meaningful deltas — small rounding ticks shouldn't strobe.
+      // Only flash on meaningful deltas â small rounding ticks shouldn't strobe.
       const delta = state.money - prev;
       if (Math.abs(delta) >= 100_000) {
         setFlashDir(delta > 0 ? 'up' : 'down');
@@ -342,9 +346,9 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
     setHaptics(next);
     if (next) vibrate(10); // confirm the toggle itself with a tap, once enabled
   };
-  // Wave V8 — density mode toggle. Persists via density.ts, then notifies
+  // Wave V8 â density mode toggle. Persists via density.ts, then notifies
   // the page shell (onDensityChange) so it can re-set the `data-density`
-  // attribute on the game root — GameStyles.tsx's CSS custom properties do
+  // attribute on the game root â GameStyles.tsx's CSS custom properties do
   // the rest, no per-panel re-render required.
   const handleToggleDensity = () => {
     const next = toggleGameDensity();
@@ -352,12 +356,12 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
   };
 
   return (
-    // Wave A2.1 (docs/VISUAL_AAA_2026-08.md §A2.1) — `bezel-plate-top` makes
+    // Wave A2.1 (docs/VISUAL_AAA_2026-08.md Â§A2.1) â `bezel-plate-top` makes
     // this the top plate of the docked command bezel rather than a web
     // header: a brushed console face with a lit top lip and a hard shadow
     // onto the selector channel below. It re-points the A1 --mat-* tokens
     // instead of setting box-shadow, so the .hud-frame housing survives.
-    // No padding or height changed — the bar is exactly as tall as before.
+    // No padding or height changed â the bar is exactly as tall as before.
     <div className="hud-frame bezel-plate-top relative bg-black/90 border-b border-cyan-500/10 px-3 sm:px-4 py-2 z-20">
       {/* Bottom corner brackets (top brackets are painted by ::before/::after) */}
       <span className="hud-corner-bl" aria-hidden="true" />
@@ -395,11 +399,12 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
               rows: [
                 { label: 'Revenue', value: `+${formatMoney(Math.round(revenue))}/mo` },
                 { label: 'Costs', value: `-${formatMoney(Math.round(costs))}/mo` },
+                ...(frontierMult > 1 ? [{ label: 'Frontier revenue boost', value: `Ã${frontierMult.toFixed(2)} (already in Revenue)` }] : []),
               ],
-              source: 'ResourceBar.tsx — recomputed live from services, buildings, workforce, ships',
+              source: 'ResourceBar.tsx â recomputed live from services, buildings, workforce, ships',
             }}
           >
-            {/* Wave A1: same FlowValue composition as every resource cell —
+            {/* Wave A1: same FlowValue composition as every resource cell â
                 arrow glyph + explicit sign + hidden direction word, so the
                 headline rate reads identically to the ones below it. */}
             <div
@@ -410,7 +415,7 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
               }`}
             >
               <FlowValue
-                text={`${net >= 0 ? '+' : '−'}${formatMoney(Math.abs(net))}`}
+                text={`${net >= 0 ? '+' : 'â'}${formatMoney(Math.abs(net))}`}
                 direction={net > 0 ? 'up' : net < 0 ? 'down' : 'flat'}
                 unit="/mo"
                 srDirection={net >= 0 ? 'net profit per month' : 'net loss per month'}
@@ -418,6 +423,32 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
               />
             </div>
           </HoloTip>
+
+          {/* Pass 10: Frontier revenue boost chip â visible whenever the
+              multiplier is above 1.0 (active Frontier, or still gliding). */}
+          {frontierMult > 1 && (
+            <HoloTip
+              as="div"
+              underline={false}
+              content={{
+                title: 'Protected Frontier revenue boost',
+                icon: 'money',
+                iconGlow: 'cyan',
+                body: <>Service revenue is doubled while your Protected Frontier is active, then glides back to ×1.0 over the 14 days after graduation — never a cliff. It is already included in the net-income figure. Contracts get their own ×1.25 Frontier boost.</>,
+                rows: [
+                  { label: 'Current multiplier', value: `×${frontierMult.toFixed(2)}` },
+                ],
+                source: 'frontier.ts — getFrontierRevenueMultiplier (mirrored on the server sync ceiling)',
+              }}
+            >
+              <span
+                className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-[10px] sm:text-xs font-mono text-cyan-300"
+                aria-label={`Frontier revenue boost, times ${frontierMult.toFixed(2)}`}
+              >
+                Frontier ×{frontierMult.toFixed(frontierMult >= 2 ? 1 : 2)}
+              </span>
+            </HoloTip>
+          )}
 
           {/* Corporation Tier Badge */}
           <HoloTip
@@ -461,7 +492,7 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
               className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-[10px] text-amber-300 hover:bg-amber-500/20 tracking-wide"
               title="This save lives only in this browser. Sign in to keep it on your account and continue on any device."
             >
-              Not saved to an account · Sign in
+              Not saved to an account Â· Sign in
             </Link>
           )}
         </div>
@@ -519,7 +550,7 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
               <GameIcon name={haptics ? 'haptics' : 'haptics-off'} size={14} />
             </button>
           )}
-          {/* Wave V8 — density toggle. Hidden under 640px: compact mode is
+          {/* Wave V8 â density toggle. Hidden under 640px: compact mode is
               forced back to comfortable on phones (44px touch-target floor
               takes priority over information density there), so the control
               itself is hidden rather than offering a choice that silently
@@ -538,7 +569,7 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
         </div>
       </div>
 
-      {/* ─── Wave A1: resource stock + flow strip ──────────────────────────
+      {/* âââ Wave A1: resource stock + flow strip ââââââââââââââââââââââââââ
           Stellaris's defining top-bar feature. Horizontally scrollable, so it
           holds at 375px without clipping or wrapping the bar above it; each
           cell is its own focus stop with a HoloTip breakdown. Hidden entirely

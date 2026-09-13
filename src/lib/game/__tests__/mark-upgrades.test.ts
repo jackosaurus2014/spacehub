@@ -66,12 +66,12 @@ const svcOf = (defId: string, locationId: string, instanceId: string) => {
 };
 
 describe('D4 — Mark table', () => {
-  it('cost is 1.5x / 2.5x baseCost: a $1.2B building refits for $1.8B then $3B; ground_station $45M / $75M', () => {
+  it('cost is 1.5x / 2.5x baseCost: a $1.2B building refits for $1.8B then $3B; ground_station $22.5M / $37.5M (Pass 10 halved base)', () => {
     const t3 = { baseCost: 1_200_000_000 };
     expect(getMarkUpgradeCost(t3, 2)).toBe(1_800_000_000);
     expect(getMarkUpgradeCost(t3, 3)).toBe(3_000_000_000);
-    expect(getMarkUpgradeCost(GS, 2)).toBe(45_000_000);
-    expect(getMarkUpgradeCost(GS, 3)).toBe(75_000_000);
+    expect(getMarkUpgradeCost(GS, 2)).toBe(22_500_000);
+    expect(getMarkUpgradeCost(GS, 3)).toBe(37_500_000);
     expect(getMarkUpgradeCost(GS, 1)).toBe(0);
     expect(getMarkUpgradeCost(GS, 4)).toBe(0);
     expect(MARK_COST_MULT).toEqual({ 1: 0, 2: 1.5, 3: 2.5 });

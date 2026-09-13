@@ -50,6 +50,7 @@ import { getResearchBonuses } from './research-tree';
 import { getWorkforceBonuses, getStaffingEfficiency, STAFFING_FLOOR } from './workforce';
 import { getMiningRevenueScale } from './mining-pricing';
 import { SUBSIDIARY_DEFS } from './subsidiaries';
+import { frontierRevenueMultiplierUpperBound } from './frontier';
 
 // ─── Tunables ────────────────────────────────────────────────────────────────
 
@@ -311,6 +312,12 @@ export interface ServerMonthlyGrossInputs {
   workforceData?: unknown;
   /** `GameProfile.totalEarned` — gates the megastructure/subsidiary allowances. */
   totalEarned?: number;
+  /** `GameProfile.createdAt` (ms). Pass 10: the Frontier service-revenue
+   *  doubling is bounded server-side from this timestamp alone
+   *  (frontier.ts frontierRevenueMultiplierUpperBound) — absent = 1.0. */
+  createdAtMs?: number;
+  /** Wall clock for the Frontier bound; defaults to Date.now(). */
+  nowMs?: number;
 }
 
 export interface ServerMonthlyGrossReport {
@@ -319,6 +326,8 @@ export interface ServerMonthlyGrossReport {
   services: number;
   megastructurePassive: number;
   subsidiaries: number;
+  /** Pass 10: the Frontier multiplier bound applied to `services`. */
+  frontierRevenueMult: number;
 }
 
 const stationBonusAt = (state: GameState, locationId: string): number => {
@@ -398,6 +407,11 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
     services += base * instMult * upgradeBoost * researchMult * workforceMult
       * (1 + stationBonusAt(state, svc.locationId)) * MAX_SERVICE_REVENUE_CLIENT_MULT;
   }
+  // Pass 10: Frontier service-revenue doubling, bounded from createdAt (see
+  // frontier.ts). Without this term every new corporation's doubled income
+  // would be rejected as implausible on sync.
+  const frontierRevenueMult = frontierRevenueMultiplierUpperBound(inputs.createdAtMs, inputs.nowMs ?? Date.now());
+  services *= frontierRevenueMult;
 
   // Megastructure passive income — client-only; allowed per definition once
   // the profile has EARNED its minMoney gate.
@@ -419,6 +433,7 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
   return {
     gross: Number.isFinite(gross) && gross > 0 ? Math.round(gross) : 0,
     services: Math.round(services), megastructurePassive: Math.round(megastructurePassive), subsidiaries: Math.round(subsidiaries),
+    frontierRevenueMult,
   };
 }
 

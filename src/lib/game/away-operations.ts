@@ -49,7 +49,7 @@ import { getWorkforceBonuses } from './workforce';
 import { getMonthlyPayrollForState } from './labor-market';
 import { getExtractionPressureMultiplier } from './extraction-pressure';
 import { priceLinkedMiningRevenue, blendMiningBaseRevenue, miningDutyCycleOpexMult } from './mining-pricing';
-import { isInFrontier, getGraduationGlideFraction, computeBookNetWorth } from './frontier';
+import { isInFrontier, getGraduationGlideFraction, computeBookNetWorth, getFrontierRevenueMultiplier } from './frontier';
 import { getResearchBonuses } from './research-tree';
 import { getStaffingEfficiency } from './workforce';
 import {
@@ -268,6 +268,8 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
     frontierSpotFloor: isInFrontier(working, now),
     graduationGlideFraction: getGraduationGlideFraction(working, now),
   };
+  // Pass 10 away-parity with game-engine.ts §1: Frontier revenue doubling.
+  const frontierRevenueMult = getFrontierRevenueMultiplier(working, now);
 
   let revenuePerTick = 0;
   let costsPerTick = 0;
@@ -326,6 +328,7 @@ export function calculateAwayOperations(state: GameState, now: number = Date.now
       * eraModifiers.revenueMultiplier
       * supplyMult
       * awayStaffingEfficiency   // Row 6 away-parity
+      * frontierRevenueMult      // Pass 10 away-parity
     );
     costsPerTick += Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * eraModifiers.costMultiplier * miningOpexMult);
   }

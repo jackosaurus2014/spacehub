@@ -277,13 +277,13 @@ describe('sync — shadow vs enforce', () => {
     // Two forged buildings, one registry row → book value of exactly one pad.
     setup(existingRow({ workforceData: { ...BOTH }, resources: {} }), [row('b1')]);
     const forged = await postSync({ money: 0, resources: {}, buildings: [gsBuilding('b1'), gsBuilding('b2'), gsBuilding('b3')] });
-    expect(forged.json.netWorth).toBe(Math.round(50_000_000 * 0.6));
+    expect(forged.json.netWorth).toBe(Math.round(25_000_000 * 0.6)); // Pass 10: launch_pad_small is $25M
 
     delete process.env.ASSET_LEDGER_MODE; // shadow keeps the pre-registry figure
     __resetRouteThrottle(); // C-2b sync cadence is in-memory
     setup(existingRow({ workforceData: { ...BOTH }, resources: {} }), [row('b1')]);
     const shadow = await postSync({ money: 0, resources: {}, buildings: [gsBuilding('b1'), gsBuilding('b2'), gsBuilding('b3')] });
-    expect(shadow.json.netWorth).toBe(Math.round(3 * 50_000_000 * 0.6));
+    expect(shadow.json.netWorth).toBe(Math.round(3 * 25_000_000 * 0.6)); // Pass 10: launch_pad_small is $25M
   });
 
   it('off: nothing is diffed, nothing is stashed, nothing is audited', async () => {

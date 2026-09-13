@@ -13,7 +13,7 @@ import { DEFAULT_DOCTRINE } from './corporate-doctrine';
 import { DEFAULT_CORPORATE_ERAS } from './corporate-eras';
 import { DEFAULT_CONSUMPTION_STATE, applyGrandfatherGrace } from './consumption';
 import { getGlobalGameDate } from './server-time';
-import { ONBOARDING_CHAIN_VERSION, ONBOARDING_DONE_STEP } from './onboarding';
+import { ONBOARDING_CHAIN_VERSION, ONBOARDING_DONE_STEP, migrateOnboardingStepV2ToV3 } from './onboarding';
 import { WORLD_EPOCH, ARCHIVED_SAVE_KEY } from './world-reset';
 
 /** Create a fresh new game state */
@@ -847,7 +847,13 @@ export function migrateLoadedState(state: GameState): GameState | null {
     // already done. onboardingChainVersion guards re-runs so a save
     // legitimately on NEW steps 6-8 is never bumped.
     if (state.onboardingChainVersion !== ONBOARDING_CHAIN_VERSION) {
-      if ((state.tutorialStep ?? 0) >= 6) state.tutorialStep = ONBOARDING_DONE_STEP;
+      if (state.onboardingChainVersion === 2) {
+        // Chain v3 (Balance Pass 10, 2026-09-12): first_contract moved from
+        // step 5 to step 2 — remap a v2 save's position onto the new order.
+        state.tutorialStep = migrateOnboardingStepV2ToV3(state.tutorialStep);
+      } else if ((state.tutorialStep ?? 0) >= 6) {
+        state.tutorialStep = ONBOARDING_DONE_STEP;
+      }
       state.onboardingChainVersion = ONBOARDING_CHAIN_VERSION;
     }
     if (state.hasTradedOnMarket === undefined) state.hasTradedOnMarket = false;

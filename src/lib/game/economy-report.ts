@@ -34,7 +34,7 @@ import { getMarkRevenueMultiplier, getMarkMaintenanceMultiplier } from './mark-u
 import { getEffectiveMaintenancePerMonth } from './flagship-economics'; // D5
 import { computeCommanderBonuses } from './commanders';
 import { serviceSaturationMultiplier, corporateOverheadMonthly, executiveCompensationMonthly } from './formulas';
-import { isInFrontier, FRONTIER_CONTRACT_PAYOUT_MULTIPLIER, computeBookNetWorth } from './frontier';
+import { isInFrontier, FRONTIER_CONTRACT_PAYOUT_MULTIPLIER, computeBookNetWorth, getFrontierRevenueMultiplier } from './frontier';
 import { getTotalSubsidiaryIncome } from './subsidiaries';
 import { getGovernorBenefits, getMultiZonePenalty } from './zone-influence';
 import { getMonthlyInsurancePremium } from './economic-sinks';
@@ -83,6 +83,10 @@ export interface RevenueMultiplierBreakdown {
   commander: number;
   /** multipliers.revenueMultiplier (random events) */
   event: number;
+  /** Pass 10: Frontier service-revenue doubling — 2.0 while the Protected
+   *  Frontier is active, gliding to 1.0 over the 14-day graduation glide,
+   *  exactly 1.0 for veterans (frontier.ts getFrontierRevenueMultiplier). */
+  frontier: number;
   /** Combined product of all the above */
   combined: number;
 }
@@ -231,12 +235,13 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     reputation:    repBonuses.revenueMultiplier,
     commander:     commanderBonuses.revenueMultiplier,
     event:         eventMultipliers.revenueMultiplier,
+    frontier:      getFrontierRevenueMultiplier(state, now),
     combined: 1,
   };
   revMult.combined =
     revMult.workforce * revMult.research * revMult.legacy * revMult.era *
     revMult.corporationTier * revMult.megastructure * revMult.reputation *
-    revMult.commander * revMult.event;
+    revMult.commander * revMult.event * revMult.frontier
 
   // ─── Revenue breakdown, one row per (serviceId, locationId) ────────────
   const bucketMap = new Map<string, ServiceRevenueLine & { instances: number[]; saturationSum: number }>();

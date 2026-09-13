@@ -3512,3 +3512,198 @@ percentage points at most, so the redistribution would survive either way.
 because labour supply (`base + 2 × crewQuarters` ≈ 5,456) dwarfs the new
 demand (≈123 heads). Row 6 fixed the demand side; `LABOR_SUPPLY_PER_QUARTERS`
 is now the dominant term and is the natural follow-up to D6.
+
+## Pass 10 — early-game pace (2026-09-12)
+
+### Founder rationale
+
+Measured live on 2026-09-12: a fresh Cape Heritage corporation starts with
+$75M and nets about **+$4.9M per game-month**. A game-month is six real
+hours (`server-time.ts` `REAL_SECONDS_PER_GAME_MONTH = 21_600`; income
+accrues every 2 s tick as 1/10,800 of the monthly figure), so a $100M
+tier-1 research was **five real days** of building income and the $150M
+GEO Telecom Satellite nearly **eight**. The first evening of play had no
+affordable decision in it. The founder's call, explicitly — the clock stays
+as it is; the money side moves:
+
+1. **Halve tier-1 research and tier-1 building costs.** Edited in the data
+   files (`research-tree.ts`, `buildings.ts`) — they are the source of truth
+   for the engine, the server starting kit (`buildFirstSyncKit`), the sims
+   and these docs. No hidden runtime multiplier. Durations untouched.
+2. **A ×2.0 service-revenue multiplier inside the Protected Frontier**,
+   decaying along the existing 14-day graduation glide (Pass 6) so there is
+   never a cliff: 2.0 while active → 1.0 at the end of the glide → exactly
+   1.0 for veterans.
+3. **The starter contract joins the guided flow** (first-hour chain step 2,
+   before the first build), and **the starter launch pad stops running
+   degraded** — it consumed 10 rocket fuel a month that a new corporation
+   did not have.
+
+The Frontier graduation rule is unchanged (`frontier.ts`: 30-day timer AND
+$100M book net worth, $500M hard cap, 7-day grace).
+
+### Constants
+
+| constant | value | where |
+| --- | --- | --- |
+| tier-1 research `baseCostMoney` | ½ of pre-Pass-10 (39 nodes, $3.87B → $1.935B in total; $15M–$150M each) | `src/lib/game/research-tree.ts` |
+| tier-1 building `baseCost` | ½ of pre-Pass-10 (11 buildings, table below) | `src/lib/game/buildings.ts` |
+| `FRONTIER_REVENUE_MULTIPLIER` | 2.0 | `src/lib/game/frontier.ts` |
+| `getFrontierRevenueMultiplier(state, now)` | 2.0 while `isInFrontier`; `1 + (2 − 1) × getGraduationGlideFraction` after graduation; 1.0 otherwise | `frontier.ts` |
+| `frontierRevenueMultiplierUpperBound(createdAtMs, now)` | server bound: 2.0 until `FRONTIER_LATEST_GRADUATION_MS` (30 d + 7 d grace) after profile creation, then the same glide to 1.0 at day 51 | `frontier.ts` → `resource-plausibility.ts` |
+| `STARTER_SUPPLY_MONTHS` | 6 (Cape Heritage starts with 60 rocket fuel; the pad starts on `supplyPolicy: 'market'`) | `src/lib/game/archetypes.ts`, mirrored in `sync-validation.ts buildFirstSyncKit` |
+| `ONBOARDING_CHAIN_VERSION` | 3 (`first_contract` is step 2; v2 saves remapped by `migrateOnboardingStepV2ToV3`) | `src/lib/game/onboarding.ts`, `save-load.ts` |
+
+| tier-1 building | before | after |
+| --- | --- | --- |
+| Small Launch Pad | $50M | $25M |
+| Ground Station | $30M | $15M |
+| Mission Control Center | $80M | $40M |
+| LEO Telecom Satellite | $15M | $7.5M |
+| LEO Sensor Satellite | $25M | $12.5M |
+| GEO Telecom Satellite | $150M | $75M |
+| Orbital Outpost | $500M | $250M |
+| Terrestrial Research Institute | $250M | $125M |
+| Orbital Solar Farm | $100M | $50M |
+| Basic Lunar Extractor | $250M | $125M |
+| Terrestrial Fabrication Works | $350M | $175M |
+
+**Where the multiplier is applied.** Client: `game-engine.ts` §1 (one
+`frontierRevenueMult` term in the service revenue product, next to
+`staffingEfficiency`), `away-operations.ts` (away-parity), `economy-report.ts`
+(`revenueMultipliers.frontier`, folded into `combined`), `ResourceBar.tsx`
+(the top-bar net-income figure; a "Frontier ×2.0" chip with a HoloTip sits
+next to it whenever the multiplier is above 1.0). Server:
+`computeServerMonthlyGrossDetailed` multiplies its `services` term by the
+createdAt bound and reports `frontierRevenueMult`; the sync route passes
+`GameProfile.createdAt`. The bound is ≥ the client's real multiplier at every
+instant (a voluntary early graduate is strictly lower) — the safe direction
+for a plausibility ceiling. Without the mirror every new player's doubled
+income would have been rejected as implausible on sync — the exact shape of
+the 2026-09-12 contract-credit bug (commit 510de2a6).
+`pass10-early-game.test.ts` proves server gross for a Frontier row = 2 × the
+veteran row and that a live-tick month of doubled income fits under it.
+
+### Early-game pace — engine probe (`scripts/sim-early-game.ts`)
+
+`computeEconomyReport` on a fresh archetype save, with and without the
+Frontier doubling. "Months to X" counts the gap between X and starting cash
+on base income alone (0 = affordable on day one).
+
+| archetype | cash | net/mo, no Frontier | net/mo, Frontier ×2.0 | months → $50M research | months → GEO sat + GEO unlock ($125M) |
+| --- | --- | --- | --- | --- | --- |
+| Cape Heritage | $75.0M | $4.7M | $13.2M | 0 (cash on hand) | 10.7 mo ≈ 2.7 d → **3.8 mo ≈ 0.9 d** |
+| Meridian Signals | $60.0M | $4.6M | $12.4M | 0 (cash on hand) | 14.1 mo ≈ 3.5 d → **5.3 mo ≈ 1.3 d** |
+| Tracking Consortium | $75.0M | $3.2M | $11.4M | 0 (cash on hand) | 15.5 mo ≈ 3.9 d → **4.4 mo ≈ 1.1 d** |
+
+Before Pass 10 (founder measurement, Cape Heritage +$4.9M/mo): a $100M
+tier-1 node ≈ 20 months ≈ 5 real days; the $150M GEO sat ≈ 31 months ≈ 7.7
+days. After: the same node is $50M and the same corporation banks $50M of
+fresh income in 3.8 months ≈ 0.9 days inside the Frontier (2.7 days after
+graduation); the GEO sat is $75M ≈ 5.7 months ≈ 1.4 days of Frontier income.
+Roughly a 5× faster first evening, and the effect fades with the glide.
+
+### 50-year playtest (`scripts/sim-50yr.ts`)
+
+Three runs: the Pass-9 baseline (before), the same runner after the cost
+change, and the new `--frontier` mode, which models the live on-ramp for
+every player (×2.0 service revenue for the first 120 game-months = 30 real
+days after joining, then the 56-month glide starting there — revenue 2.0 →
+1.0 and the pool glide, both the real engine curves). The default runner
+still does NOT model the Frontier (it never did; joiners glide from day 1),
+so "after (costs)" isolates lever 1 and "after (--frontier)" adds lever 2.
+
+Research schedule, tier 1: 39 techs, **$3.87B → $1.94B**, serial real-time
+7 h (unchanged). Tiers 2–5 unchanged.
+
+Year-50 end states (book NW / cash / net per month, trailing 12 months):
+
+| archetype | before (Pass 9) | after (costs) | after (costs + `--frontier`) |
+| --- | --- | --- | --- |
+| mono-expander | $236M / $92M / $1.9M · T3 | $135M / $54M / $0.2M · T3 | $116M / $35M / $2.8M · T3 |
+| integrator | $65.2B / $3.7B / $582M · T4 | $68.7B / $7.6B / $536M · T4 | $64.5B / $3.4B / $404M · T5 |
+| industrialist | $5.1B / $4.2B / $38.6M · T3 | $5.8B / $5.1B / $40.1M · T3 | $13.1B / $1.8B / $109M · T4 |
+| aggressor | $1.0B / $461M / $23.0M · T3 | $1.2B / $764M / $23.7M · T3 | $2.9B / $669M / $62.3M · T3 |
+| turtle | $977M / $527M / $31.6M · T3 | $1.35B / $1.0B / $28.6M · T3 | $11.8B / $11.4B / $24.5M · T4 |
+| hoarder | $8.1B / $3.9B / $23.3M · T3 | $9.1B / $5.0B / $21.1M · T3 | $13.0B / $2.1B / $27.9M · T3 |
+| joiner-y10 | $46.4B / $1.2B / $459M · T4 | $57.2B / $7.8B / $299M · T4 | $62.1B / $749M / $421M · T4 |
+| joiner-y30 | $5.3B / $905M / $139M · T3 | $15.3B / $2.9B / $216M · T4 | $47.9B / $2.4B / $284M · T4 |
+
+Wealth concentration (book NW, negatives clamped):
+
+| decade end | Gini before | Gini after (costs) | Gini after (`--frontier`) | top-1 share before → costs → frontier |
+| --- | --- | --- | --- | --- |
+| y10 | 0.615 | 0.663 | 0.732 | 64% → 75% → 85% |
+| y30 | 0.702 | 0.692 | 0.629 | 70% → 65% → 46% |
+| y50 | 0.664 | 0.634 | **0.496** | 49% → 43% → **30%** |
+
+Late-joiner viability (the relaunch question), joiner-y30:
+
+| age | before | after (costs) | after (`--frontier`) |
+| --- | --- | --- | --- |
+| +12 mo | $135M NW, $8.6M/mo, 4 bldgs | $162M, $20.5M/mo, 5 | $98M, $12.7M/mo, 4 |
+| +24 mo | $159M, $10.4M/mo, 4 | $468M, $69.6M/mo, 11 | $547M, $56.1M/mo, 11 |
+| +60 mo | $179M, $4.5M/mo, 4 | $2.5B, $94.7M/mo, 16 | $5.3B, $356M/mo, 20 |
+| +120 mo | $612M, $25.6M/mo, 10 | $6.1B, $149M/mo, 21 | $16.6B, $663M/mo, 28 |
+
+Reading: the cost halving alone un-stalls the joiner's research ladder (it
+was stuck at four buildings for five years); the Frontier doubling
+compounds it, and by year 50 the world is markedly flatter (Gini 0.50, top
+share 30%) because every archetype's first thirty days now pay for the
+tier-2 ladder. The one archetype that got poorer is the mono-expander
+(satellite-only, one pool) — cheaper satellites mean more of them spammed
+into the same floored LEO telecom pool, the dominance-audit cautionary case
+(sim-strategies (a) below) made slightly worse, not better. That is the
+Pass-1 saturation math working as intended and not a regression to fix.
+
+### `scripts/sim-strategies.ts` (24-month solo tables, month 23 row)
+
+| strategy | before: net/mo · cash · NW | after: net/mo · cash · NW |
+| --- | --- | --- |
+| (a) satellite spammer | −$27.1M · −$343M · −$154M (21 sats) | −$39.1M · −$626M · −$509M (26 sats) |
+| (b) datacenter spammer | −$4.9M · $41M · $941M | −$4.9M · $214M · $1.02B |
+| (c) diversified integrator | $27.5M · $518M · $1.77B | $35.5M · $766M · $1.96B |
+| (e) passive idler | $4.6M · $1.95B · $2.05B | $4.6M · $2.03B · $2.08B |
+
+### Mining gate (`scripts/sim-mining.ts`)
+
+The gate compares the best ship-mining gross÷capex against the best
+building benchmark, which is the Basic Lunar Extractor whose cost this pass
+halves ($250M → $125M): its gross÷capex goes 1.40% → 2.80%/month, so the
+ratio moves **1.29× → 0.65×** (limit ~1.5×, OK). Buildings got relatively
+better, not ships — no ship price change is needed and none was made. If a
+future pass wanted ships back near parity, the smallest lever is the
+Prospector Barge's $180M capex (a ~40% cut would restore ≈1.1×), but the
+gate as written is comfortably inside its limit.
+
+### Guards
+
+`src/lib/game/__tests__/pass10-early-game.test.ts` (18 tests): exact
+tier-1 cost tables and tooltip copy; multiplier active / gliding (2.0 → 1.5
+→ 1.25 → 1.0) / veteran / `none` / timed-out; live tick pays exactly 2× and
+`economy-report` carries the term; away-parity; the server bound is never
+below the client's real multiplier across a 60-day sweep for three
+graduation histories; server monthly gross for a Frontier row = 2 × the
+veteran row and a doubled live-tick month fits under it; client and server
+starter kits agree on resources and `supplyPolicy` for all three archetypes;
+the Sourcing console shows the starter pad as "On market", not "Short";
+the guide's step order and the v2→v3 step remap. Existing guards updated
+for the new stickers: `mark-upgrades.test.ts`, `sim-month-grid.test.ts`,
+`asset-reconcile.test.ts`, `onboarding.test.ts`.
+
+### Risks / watch
+
+- The sync money ceiling is 2× looser than before for a profile's first
+  ~51 days. It is still bounded by the row's own gross and the $500K/s
+  backstop, and the ceiling never fed exploits before; the audit log
+  (`client_money_implausible_rejected`) should go quieter for new players,
+  not louder.
+- Cheaper LEO telecom satellites make the sat-spam floor deeper (above).
+  Watch the LEO telecom pool multiplier in the first live week.
+- Meridian Signals' two starting satellites consume 0.05 satellite bus a
+  month each and still start with none (the founder's directive named the
+  launch pad); `starterSupplyFor('sat_telecom')` is one line away if the
+  Sourcing console's "Short" pip on those bothers new players.
+- Saves mid-chain on v2 step 5 (the old contract step) resume at
+  `first_trade` rather than re-walking the contract step — a one-time
+  cohort of a few players; documented in `onboarding.ts`.

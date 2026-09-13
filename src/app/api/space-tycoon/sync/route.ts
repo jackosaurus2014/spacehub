@@ -268,6 +268,8 @@ export async function POST(request: Request) {
       activeServicesData: unknown; completedResearchList: string[]; workforceData: unknown;
       serverResources: unknown;
       creditedContractIds?: unknown;
+      /** Pass 10: bounds the Frontier revenue doubling on the money ceiling. */
+      createdAt?: Date;
     } | null = null;
     let elapsedSinceLastSyncMs = 0;
     // Money desync fix: the contract credit computed for this sync (null
@@ -280,6 +282,7 @@ export async function POST(request: Request) {
         where: { userId: session.user.id },
         select: {
           id: true, money: true, netWorth: true, totalEarned: true, lastSyncAt: true,
+          createdAt: true,
           resources: true, buildingsData: true, shipsData: true,
           activeServicesData: true, completedResearchList: true, workforceData: true,
           serverResources: true,
@@ -313,7 +316,9 @@ export async function POST(request: Request) {
               prevActiveServices: existingProfile.activeServicesData,
               prevResearch: existingProfile.completedResearchList,
             }),
-            { workforceData: existingProfile.workforceData, totalEarned: existingProfile.totalEarned },
+            { workforceData: existingProfile.workforceData, totalEarned: existingProfile.totalEarned,
+              // Pass 10: the Frontier revenue doubling is bounded from createdAt.
+              createdAtMs: existingProfile.createdAt instanceof Date ? existingProfile.createdAt.getTime() : undefined },
           );
         } catch (grossError) {
           logger.error('Server monthly gross computation failed — zero headroom this sync', { error: String(grossError) });

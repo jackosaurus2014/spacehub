@@ -53,7 +53,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   },
   {
     title: 'The Road to the Moon',
-    description: 'Research "Reusable Boosters" ($200M) for the Medium Launch Pad, then bank toward Lunar Orbit ($1B) and Lunar Surface ($2B). The Basic Lunar Extractor ($250M, money-only, no research) is your bootstrap mine — it produces lunar water every game month before you own any metals.',
+    description: 'Research "Reusable Boosters" ($100M) for the Medium Launch Pad, then bank toward Lunar Orbit ($1B) and Lunar Surface ($2B). The Basic Lunar Extractor ($125M, money-only, no research) is your bootstrap mine — it produces lunar water every game month before you own any metals.',
     icon: 'map',
     action: 'Research Reusable Boosters → unlock Lunar Orbit → Lunar Surface',
     tab: 'research',

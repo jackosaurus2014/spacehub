@@ -228,6 +228,59 @@ export function applyGraduationGlide(mult: number, fraction: number): number {
 /** Contract payouts inside Frontier get a generosity boost. */
 export const FRONTIER_CONTRACT_PAYOUT_MULTIPLIER = 1.25;
 
+// ─── Balance Pass 10 (2026-09-12) — Frontier service-revenue multiplier ──────
+// docs/BALANCE.md "Pass 10 — early-game pace". Measured live: a fresh Cape
+// Heritage corporation ($75M) nets about +$4.9M per 6-hour game-month, so a
+// $100M tier-1 research was five real days of building income. The founder's
+// call: service revenue is DOUBLED while the Protected Frontier is active,
+// and the doubling DECAYS along the existing 14-day graduation glide
+// (getGraduationGlideFraction — 1.0 at graduation, linear to 0), so there is
+// never a cliff: 2.0 → 1.0 over the glide, then exactly 1.0 for veterans.
+//
+// Applied in ONE place per engine: game-engine.ts §1 (live tick),
+// away-operations.ts (catch-up), economy-report.ts + ResourceBar.tsx (P&L
+// surfaces), and mirrored on the server in resource-plausibility.ts
+// computeServerMonthlyGrossDetailed via frontierRevenueMultiplierUpperBound
+// — the sync money ceiling MUST see the same doubling or every new player's
+// income is rejected as implausible (the 2026-09-12 contract-credit bug).
+
+/** Service-revenue multiplier while the Protected Frontier is active. */
+export const FRONTIER_REVENUE_MULTIPLIER = 2.0;
+
+/** Pure: the multiplier for a given Frontier-active flag and glide fraction.
+ *  active → FRONTIER_REVENUE_MULTIPLIER; else 1 + (F − 1) × fraction. */
+export function frontierRevenueMultiplierFor(active: boolean, glideFraction: number): number {
+  if (active) return FRONTIER_REVENUE_MULTIPLIER;
+  const f = Math.max(0, Math.min(1, Number.isFinite(glideFraction) ? glideFraction : 0));
+  if (f <= 0) return 1;
+  return 1 + (FRONTIER_REVENUE_MULTIPLIER - 1) * f;
+}
+
+/** The live client read: 2.0 while isInFrontier, gliding to 1.0 over
+ *  GRADUATION_GLIDE_MS after graduation, 1.0 for veterans / 'none'. */
+export function getFrontierRevenueMultiplier(state: GameState, now: number = Date.now()): number {
+  return frontierRevenueMultiplierFor(isInFrontier(state, now), getGraduationGlideFraction(state, now));
+}
+
+/** Server-side UPPER BOUND on the multiplier, from what the sync route knows
+ *  for certain: the profile's createdAt. A corporation can be Frontier-active
+ *  until FRONTIER_DURATION_MS (+ the 7-day grace shouldAutoGraduate allows)
+ *  after creation, and the latest possible graduation starts the latest
+ *  possible glide — so the bound is 2.0 through that window and then decays
+ *  along the same glide curve. It is ≥ the client's real multiplier at every
+ *  instant (a voluntary early graduate is strictly lower), which is the safe
+ *  direction for a plausibility CEILING; it is never below it. */
+export const FRONTIER_LATEST_GRADUATION_MS = FRONTIER_DURATION_MS + 7 * 24 * 60 * 60 * 1000;
+
+export function frontierRevenueMultiplierUpperBound(createdAtMs: number | undefined | null, nowMs: number = Date.now()): number {
+  if (typeof createdAtMs !== 'number' || !Number.isFinite(createdAtMs)) return 1;
+  const elapsed = nowMs - createdAtMs;
+  if (elapsed < FRONTIER_LATEST_GRADUATION_MS) return FRONTIER_REVENUE_MULTIPLIER;
+  const sinceLatestGraduation = elapsed - FRONTIER_LATEST_GRADUATION_MS;
+  if (sinceLatestGraduation >= GRADUATION_GLIDE_MS) return 1;
+  return frontierRevenueMultiplierFor(false, 1 - sinceLatestGraduation / GRADUATION_GLIDE_MS);
+}
+
 /** NPC piracy / sabotage events are fully suppressed inside Frontier. */
 export function isHostileEventSuppressed(state: GameState, now: number = Date.now()): boolean {
   return isInFrontier(state, now);

@@ -52,7 +52,7 @@ import {
   executiveCompensationMonthly,
   scaledBuildingCost,
 } from '../src/lib/game/formulas';
-import { BOOK_VALUE_DEPRECIATION_FACTOR, applyGraduationGlide, GRADUATION_GLIDE_MS } from '../src/lib/game/frontier';
+import { BOOK_VALUE_DEPRECIATION_FACTOR, applyGraduationGlide, GRADUATION_GLIDE_MS, FRONTIER_DURATION_MS, FRONTIER_REVENUE_MULTIPLIER, frontierRevenueMultiplierFor } from '../src/lib/game/frontier';
 import {
   computePoolAggregates,
   getServiceCategory,
@@ -187,6 +187,15 @@ export interface SimPlayer {
    *  table byte-identical). GRADUATION_GLIDE_GAME_MONTHS converts the shipped
    *  real-time constant. */
   graduationGlide?: { startMonth: number; glideMonths: number };
+  /** Balance Pass 10 (2026-09-12): the Frontier service-revenue doubling
+   *  (frontier.ts FRONTIER_REVENUE_MULTIPLIER, applied in game-engine.ts §1
+   *  to EVERY service's revenue, mining included): ×2.0 while
+   *  `month < endMonth`, then decaying along this player's graduationGlide
+   *  (frontierRevenueMultiplierFor over glideFractionAtMonth — 2.0 → 1.0
+   *  over the glide, 1.0 for veterans). Runners modeling the live on-ramp
+   *  set endMonth = join month + FRONTIER_GAME_MONTHS and start the glide
+   *  there. Absent = not modeled (every legacy table byte-identical). */
+  frontierRevenue?: { endMonth: number };
   /** Balance Pass 8 override, SHIPPED by Pass 9: the graduation glide
    *  extended to the MINING SPOT FLOOR. While this player's
    *  graduationGlide is active, each mined resource's below-base spot is
@@ -216,6 +225,20 @@ export interface SimPlayer {
  *  runner passes as `graduationGlide.glideMonths` to model the real engine
  *  constant. */
 export const GRADUATION_GLIDE_GAME_MONTHS = GRADUATION_GLIDE_MS / GAME_MONTH_MS;
+
+/** The shipped FRONTIER_DURATION_MS (30 real days) in 6h game-months = 120. */
+export const FRONTIER_GAME_MONTHS = FRONTIER_DURATION_MS / GAME_MONTH_MS;
+
+/** Pass 10: this player's Frontier revenue multiplier this month — the
+ *  harness equivalent of frontier.ts getFrontierRevenueMultiplier. */
+export function frontierRevenueMultAtMonth(
+  p: Pick<SimPlayer, 'frontierRevenue' | 'graduationGlide'>,
+  month: number,
+): number {
+  if (!p.frontierRevenue) return 1;
+  if (month < p.frontierRevenue.endMonth) return FRONTIER_REVENUE_MULTIPLIER;
+  return frontierRevenueMultiplierFor(false, glideFractionAtMonth(p.graduationGlide, month));
+}
 
 /** Month-granular glide fraction — the harness equivalent of frontier.ts
  *  getGraduationGlideFraction (elapsed real time ⇒ elapsed game-months). */
@@ -449,7 +472,7 @@ export function newPlayer(
   name: string,
   money: number,
   plan: SimPlayer['plan'],
-  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan' | 'headcount' | 'trainingLevel' | 'revenueMult' | 'graduationGlide' | 'glideSpotFloor' | 'refitPlan'>> = {},
+  opts: Partial<Pick<SimPlayer, 'maxBuildsPerMonth' | 'buysInputs' | 'sellsLeftovers' | 'craftPlan' | 'headcount' | 'trainingLevel' | 'revenueMult' | 'graduationGlide' | 'glideSpotFloor' | 'refitPlan' | 'frontierRevenue'>> = {},
 ): SimPlayer {
   return {
     name, money, totalEarned: 0, totalSpent: 0,
@@ -462,6 +485,7 @@ export function newPlayer(
     trainingLevel: opts.trainingLevel,
     revenueMult: opts.revenueMult,
     graduationGlide: opts.graduationGlide,
+    frontierRevenue: opts.frontierRevenue,
     glideSpotFloor: opts.glideSpotFloor,
     refitPlan: opts.refitPlan,
     history: [],
@@ -761,6 +785,8 @@ export function stepMonth(world: SimWorld, month: number): void {
     // Balance Pass 6 (C1): this player's post-graduation glide strength this
     // month (0 = no glide / expired — the default for every legacy run).
     const glideFrac = glideFractionAtMonth(p.graduationGlide, month);
+    // Pass 10: Frontier revenue doubling (1.0 unless the runner opted in).
+    const frontierMult = frontierRevenueMultAtMonth(p, month);
     let revenue = 0, operating = 0, maintenance = 0;
     const effVals: number[] = [];
     // D4: per-building lines (opt-in) — mirrors build-preview.ts's
@@ -804,6 +830,7 @@ export function stepMonth(world: SimWorld, month: number): void {
         );
         const svcRevenue = sDef.revenuePerMonth
           * rMult
+          * frontierMult // Pass 10
           * serviceSaturationMultiplier(pos)
           * poolMult
           * powerRatio
@@ -889,7 +916,7 @@ export function stepMonth(world: SimWorld, month: number): void {
             }
             snapshotForPlayer = { ...snapshotForPlayer, prices: floored };
           }
-          const miningRevenue = priceLinkedMiningRevenue(svcId, unitsPerResource, snapshotForPlayer) * rMult * saturationMult;
+          const miningRevenue = priceLinkedMiningRevenue(svcId, unitsPerResource, snapshotForPlayer) * rMult * saturationMult * frontierMult /* Pass 10 */;
           revenue += miningRevenue;
           if (lines) lineOf(b.instanceId).revenue += miningRevenue;
         }

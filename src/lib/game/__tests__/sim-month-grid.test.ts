@@ -70,7 +70,7 @@ describe('sim-harness month grid', () => {
     let money = p.money;
     for (let m = 0; m < 12; m++) {
       const nwBefore = bookNetWorth(p);
-      expect(nwBefore).toBe(Math.round(money + (30_000_000 + 80_000_000) * 0.6));
+      expect(nwBefore).toBe(Math.round(money + (15_000_000 + 40_000_000) * 0.6)); // Pass 10: tier-1 costs halved
       const execComp = executiveCompensationMonthly(nwBefore);
       stepMonth(world, m);
       const row = p.history[m];
@@ -108,8 +108,8 @@ describe('sim-harness month grid', () => {
     const r1 = p.history[1];
     expect(r1.refits).toBe(1);
     expect(p.buildings[0].markLevel).toBe(2);
-    // Money: getMarkUpgradeCost = 1.5 × $30M plus the materials bill.
-    expect(r1.refitCapex).toBeGreaterThanOrEqual(45_000_000);
+    // Money: getMarkUpgradeCost = 1.5 × $15M (Pass 10) plus the materials bill.
+    expect(r1.refitCapex).toBeGreaterThanOrEqual(22_500_000);
     expect(r1.capex).toBe(r1.refitCapex);
     const gs0 = lines0[p.buildings[0].instanceId];
     const gs1 = r1.buildingLines![p.buildings[0].instanceId];
@@ -120,7 +120,7 @@ describe('sim-harness month grid', () => {
     expect(mc1.revenue).toBeCloseTo(mc0.revenue, 6);
     expect(mc1.maintenance).toBeCloseTo(mc0.maintenance, 6);
     // Book value carries the depreciated refit spend.
-    expect(bookNetWorth(p)).toBe(Math.round(p.money + (30_000_000 + 80_000_000) * 0.6 + Math.round(45_000_000 * 0.6)));
+    expect(bookNetWorth(p)).toBe(Math.round(p.money + (15_000_000 + 40_000_000) * 0.6 + Math.round(22_500_000 * 0.6))); // Pass 10 costs
   });
 });
 

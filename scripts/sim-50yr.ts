@@ -66,7 +66,7 @@
 import {
   newPlayer, newWorld, stepMonth, fm, mdTable, bookNetWorth, marginalCurve,
   extractionPressureReport, GAME_MONTH_MS, INPUT_BUY_MULT, LOCATION_POWER_PLAN,
-  GRADUATION_GLIDE_GAME_MONTHS,
+  GRADUATION_GLIDE_GAME_MONTHS, FRONTIER_GAME_MONTHS,
   type SimPlayer, type SimWorld, type RefitOrder,
 } from './sim-harness';
 import { RESEARCH, RESEARCH_MAP } from '../src/lib/game/research-tree';
@@ -125,6 +125,14 @@ const ARGV = new Set(process.argv.slice(2));
  *  gate tech is researched, Mark III) refit whenever the D4 preview payback
  *  is under REFIT_PAYBACK_MAX_MONTHS and the cash-reserve rule allows. */
 const REFIT_AWARE = ARGV.has('--refit');
+/** --frontier (Balance Pass 10, 2026-09-12): model the live on-ramp for
+ *  EVERY player — the Frontier service-revenue doubling (×2.0) for the
+ *  first FRONTIER_GAME_MONTHS (120) after joining, then the 14-day
+ *  (56-month) graduation glide starting there (revenue 2.0 → 1.0 AND the
+ *  pool glide, both the real engine curves). Founders get it too: the
+ *  live game shields a world-start corporation exactly like a joiner. Off
+ *  = the Pass-5..9 world (no shield modeled, joiners glide from day 1). */
+const FRONTIER_MODEL = ARGV.has('--frontier');
 const REFIT_PAYBACK_MAX_MONTHS = 60;
 
 // ─── Research model: real tree, serial slot, money-gated ────────────────────
@@ -730,9 +738,13 @@ function runScenario(months: number, joinerGlideMonths: number | null, refitAwar
       maxBuildsPerMonth: arch.maxBuilds,
       sellsLeftovers: arch.sellsLeftovers,
       craftPlan: arch.craftPlan,
-      graduationGlide: joinerGlideMonths !== null && arch.joinMonth > 0
-        ? { startMonth: arch.joinMonth, glideMonths: joinerGlideMonths }
-        : undefined,
+      graduationGlide: FRONTIER_MODEL
+        ? { startMonth: arch.joinMonth + FRONTIER_GAME_MONTHS, glideMonths: joinerGlideMonths ?? GRADUATION_GLIDE_GAME_MONTHS }
+        : joinerGlideMonths !== null && arch.joinMonth > 0
+          ? { startMonth: arch.joinMonth, glideMonths: joinerGlideMonths }
+          : undefined,
+      // Pass 10: Frontier revenue doubling for the first 120 game-months.
+      frontierRevenue: FRONTIER_MODEL ? { endMonth: arch.joinMonth + FRONTIER_GAME_MONTHS } : undefined,
       refitPlan: refitAware ? makeRefitPlan(() => rs, arch.maxBuilds) : undefined,
     });
     return {
@@ -986,7 +998,7 @@ const {
 // Report
 // ════════════════════════════════════════════════════════════════════════════
 
-console.log('# Balance Pass 5 — 50-year shared-world playtest (8 archetypes, all realism switches on)\n');
+console.log('# Balance Pass 5 — 50-year shared-world playtest (8 archetypes, all realism switches on)' + (FRONTIER_MODEL ? ' — Pass 10 --frontier: ×2.0 Frontier revenue for 120 months + glide, every player' : '') + '\n');
 console.log(`World: ${MONTHS} game-months (${MONTHS / 12} game-years = ${MONTHS / 4} real days), npcSaleCaps+contendedNpcCaps, laborMarket, dynamicSpot, constructionMaterials, contractOutlet cap ${CONTRACT_CAP_PER_DAY}/day. Founders start ${fm(FOUNDER_MONEY)}; late joiners ${fm(JOINER_MONEY)} at months ${JOIN_A} and ${JOIN_B}.${REFIT_AWARE ? ` REFIT-AWARE: Mark II/III taken when preview payback < ${REFIT_PAYBACK_MAX_MONTHS} mo.` : ''}\n`);
 
 // ─── 1. Research/tier schedule actually achieved ────────────────────────────

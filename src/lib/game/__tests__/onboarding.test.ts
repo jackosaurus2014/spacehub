@@ -22,6 +22,7 @@ import {
   skipOnboarding,
   completeOnboarding,
   restartOnboarding,
+  migrateOnboardingStepV2ToV3,
 } from '../onboarding';
 import { getNewGameState, loadGame, saveGame } from '../save-load';
 import { applyArchetype } from '../archetypes';
@@ -140,9 +141,19 @@ describe('advancement and rewards', () => {
   it('detection-backed steps refuse manual advance and grant their reward exactly at the boundary', () => {
     let state = advanceOnboarding(freshArchetypeState(), { manual: true }); // → step 2
     expect(state.tutorialStep).toBe(2);
+    // Pass 10: step 2 is the contract step (the early-game income engine).
+    expect(getCurrentOnboardingStep(state)?.id).toBe('first_contract');
 
     // Manual click on an undetected detection-backed step: refused.
     expect(advanceOnboarding(state, { manual: true })).toBe(state);
+
+    // Player accepts a contract → detection passes → advance, no grant (the
+    // contract itself is the reward).
+    const contractBefore = state.money;
+    state = advanceOnboarding({ ...state, activeContracts: ['c_first_launch'] }, { manual: false });
+    expect(state.tutorialStep).toBe(3);
+    expect(state.money).toBe(contractBefore);
+    expect(getCurrentOnboardingStep(state)?.id).toBe('first_build');
 
     // Player orders a building → detection passes → advance grants $8M once.
     state = {
@@ -154,16 +165,16 @@ describe('advancement and rewards', () => {
       }],
     };
     const before = state.money;
-    const rewardDef = ONBOARDING_STEP_MAP.get(2)!;
+    const rewardDef = ONBOARDING_STEP_MAP.get(3)!;
     const advanced = advanceOnboarding(state, { manual: false });
-    expect(advanced.tutorialStep).toBe(3);
+    expect(advanced.tutorialStep).toBe(4);
     expect(advanced.money).toBe(before + rewardDef.rewardMoney);
     expect(advanced.totalEarned).toBe(state.totalEarned + rewardDef.rewardMoney);
     expect(advanced.eventLog[0].title).toContain('Commissioning grant');
 
-    // Advancing again does NOT re-grant step 2's reward (chain moved on).
+    // Advancing again does NOT re-grant step 3's reward (chain moved on).
     const again = advanceOnboarding(advanced, { manual: false });
-    // step 3 detection (player building complete) not met → unchanged.
+    // step 4 detection (player building complete) not met → unchanged.
     expect(again).toBe(advanced);
   });
 
@@ -212,7 +223,9 @@ describe('newcomer HUD + early-onboarding gates', () => {
     expect(isNewcomerHud(skipOnboarding(state))).toBe(false);
     expect(isNewcomerHud(completeOnboarding(state))).toBe(false);
     expect(isNewcomerHud({ ...state, corporationTier: 2 })).toBe(false);
-    expect(isEarlyOnboarding({ ...state, tutorialStep: 4 })).toBe(false);
+    // Pass 10: the contract step at 2 pushed first_income to 4 — still "early".
+    expect(isEarlyOnboarding({ ...state, tutorialStep: 4 })).toBe(true);
+    expect(isEarlyOnboarding({ ...state, tutorialStep: 5 })).toBe(false);
   });
 });
 
@@ -233,8 +246,8 @@ describe('V41 save migration (old done-sentinel → chain-aware sentinel)', () =
     expect(isOnboardingComplete(loaded!)).toBe(true);
   });
 
-  it('a save already on chain v2 keeps its mid-chain position (never re-bumped)', () => {
-    const state = { ...freshArchetypeState(), tutorialStep: 6 }; // NEW step 6 (first_trade)
+  it('a save already on the current chain keeps its mid-chain position (never re-bumped)', () => {
+    const state = { ...freshArchetypeState(), tutorialStep: 6 }; // step 6 (first_trade)
     saveGame(state);
     const loaded = loadGame();
     expect(loaded).not.toBeNull();
@@ -257,5 +270,33 @@ describe('V41 save migration (old done-sentinel → chain-aware sentinel)', () =
     expect(fresh.tutorialStep).toBe(1);
     expect(fresh.onboardingChainVersion).toBe(ONBOARDING_CHAIN_VERSION);
     expect(fresh.hasTradedOnMarket).toBe(false);
+  });
+
+  // Balance Pass 10: chain v3 moved first_contract from step 5 to step 2.
+  it('a chain-v2 save is remapped onto the v3 order (objective preserved, contract step never re-walked)', () => {
+    expect(migrateOnboardingStepV2ToV3(1)).toBe(1);   // command_deck
+    expect(migrateOnboardingStepV2ToV3(2)).toBe(3);   // first_build
+    expect(migrateOnboardingStepV2ToV3(3)).toBe(4);   // first_income
+    expect(migrateOnboardingStepV2ToV3(4)).toBe(5);   // first_research
+    expect(migrateOnboardingStepV2ToV3(5)).toBe(6);   // was ON first_contract → first_trade (no reward re-walk)
+    expect(migrateOnboardingStepV2ToV3(6)).toBe(6);   // first_trade
+    expect(migrateOnboardingStepV2ToV3(7)).toBe(7);   // next_orbit
+    expect(migrateOnboardingStepV2ToV3(8)).toBe(8);   // road_to_luna
+    expect(migrateOnboardingStepV2ToV3(9)).toBe(ONBOARDING_DONE_STEP);
+    expect(migrateOnboardingStepV2ToV3(undefined)).toBe(ONBOARDING_DONE_STEP);
+    expect(migrateOnboardingStepV2ToV3(0)).toBe(0);
+
+    const state = freshArchetypeState();
+    const v2 = { ...state, tutorialStep: 4, onboardingChainVersion: 2 } as GameState; // v2 first_research
+    saveGame(v2);
+    const loaded = loadGame();
+    expect(loaded!.tutorialStep).toBe(5);
+    expect(getCurrentOnboardingStep(loaded!)?.id).toBe('first_research');
+    expect(loaded!.onboardingChainVersion).toBe(ONBOARDING_CHAIN_VERSION);
+
+    // A v2 save that was already done stays done.
+    const done = { ...state, tutorialStep: 9, onboardingChainVersion: 2 } as GameState;
+    saveGame(done);
+    expect(isOnboardingComplete(loadGame()!)).toBe(true);
   });
 });

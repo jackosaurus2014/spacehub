@@ -39,9 +39,9 @@ const faqs = [
         q: 'How do I start making money?',
         a: `You start with $100M. To generate ongoing revenue, you need to build infrastructure that enables **services**. The fastest path to revenue:
 
-1. **Build a Small Launch Pad** ($50M, 6 months) → auto-activates "Small Launch Services" earning **$5M/mo net profit**
-2. **Build a Ground Station** ($30M, 4 months) → auto-activates "Satellite Tracking Services" earning **$2.2M/mo net profit**
-3. **Build a Mission Control Center** ($80M, 8 months) → auto-activates "Mission Operations Contracts" earning **$4M/mo net profit**
+1. **Build a Small Launch Pad** ($25M, 6 months) → auto-activates "Small Launch Services" earning **$5M/mo net profit**
+2. **Build a Ground Station** ($15M, 4 months) → auto-activates "Satellite Tracking Services" earning **$2.2M/mo net profit**
+3. **Build a Mission Control Center** ($40M, 8 months) → auto-activates "Mission Operations Contracts" earning **$4M/mo net profit**
 
 Once construction finishes, services activate automatically and revenue starts flowing. You need to **unpause the game** (press 1x, 2x, 5x, or 10x) for time to pass and construction to complete.`,
       },
@@ -132,13 +132,13 @@ Research is organized into 9 branches with 5 tiers each, from present-day tech (
         q: 'What should I research first?',
         a: `Best early research paths:
 
-**For revenue:** High-Res Optical ($100M) → unlocks LEO Sensor Satellites for Earth observation income
-**For expansion:** Reusable Boosters ($200M) → unlocks Medium Launch Pad + lunar missions
-**For tech income:** Rad-Hardened Processors ($200M) → unlocks Orbital Data Centers ($15M/mo!)
-**For passive income:** Triple-Junction Solar Cells ($60M) → unlocks solar farms
-**For infrastructure:** Modular Spacecraft ($150M) → unlocks space stations + tourism
+**For revenue:** High-Res Optical ($50M) → unlocks LEO Sensor Satellites for Earth observation income
+**For expansion:** Reusable Boosters ($100M) → unlocks Medium Launch Pad + lunar missions
+**For tech income:** Rad-Hardened Processors ($100M) → unlocks Orbital Data Centers ($15M/mo!)
+**For passive income:** Triple-Junction Solar Cells ($30M) → unlocks solar farms
+**For infrastructure:** Modular Spacecraft ($75M) → unlocks space stations + tourism
 
-The cheapest and fastest research is Triple-Junction Solar Cells (6 months, $60M). The highest early ROI is Rad-Hardened Processors → build an Orbital Data Center.`,
+The cheapest and fastest research is Triple-Junction Solar Cells (6 months, $30M). The highest early ROI is Rad-Hardened Processors → build an Orbital Data Center.`,
       },
       {
         q: 'What do the research prerequisites mean?',

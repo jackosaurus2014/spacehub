@@ -81,6 +81,10 @@ export interface SyncBuilding {
   markUpgradeTarget?: number;
   markUpgradeStartedAtMs?: number;
   markUpgradeDurationSeconds?: number;
+  /** Pass 10: per-building sourcing policy (consumption.ts). Client-owned;
+   *  carried so a reload from the server row keeps the player's choice and
+   *  the starter kit can seed the launch pad on a standing market order. */
+  supplyPolicy?: 'local' | 'market';
 }
 
 export interface SyncShip {
@@ -247,6 +251,9 @@ function validateBuildings(raw: unknown): SyncBuilding[] {
     }
     if (typeof r.damagePct === 'number' && Number.isFinite(r.damagePct)) {
       item.damagePct = clampNum(r.damagePct, 0, 1, 0);
+    }
+    if (r.supplyPolicy === 'local' || r.supplyPolicy === 'market') {
+      item.supplyPolicy = r.supplyPolicy;
     }
     out.push(item);
   });
@@ -494,6 +501,8 @@ export function buildFirstSyncKit(archetypeRaw: unknown, nowMs: number = Date.no
     isComplete: true,
     upgradeLevel: 0,
     markLevel: MIN_MARK_LEVEL,
+    // Pass 10: the archetype's starting sourcing policy (starter pad → market).
+    ...(b.supplyPolicy ? { supplyPolicy: b.supplyPolicy } : {}),
   }));
   const activeServices: SyncService[] = def.startingServices.map(svc => ({
     definitionId: svc.definitionId,

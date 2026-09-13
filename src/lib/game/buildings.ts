@@ -1,6 +1,10 @@
 // ─── Space Tycoon: Building Definitions ─────────────────────────────────────
 // realBuildSeconds: Tier 1 ≈ 3-5 min (180-300s), Tier 2 ≈ 10-20 min, Tier 3 ≈ 30-45 min, Tier 4 ≈ 45-60 min
 // Duplicate builds at same location scale by 1.3x time (in addition to cost scaling)
+// Balance Pass 10 (2026-09-12, docs/BALANCE.md "Pass 10 — early-game pace"):
+// every tier-1 building's baseCost is HALF its pre-Pass-10 figure (edited in
+// place — these numbers are the source of truth for the engine, the server
+// starting kit, the sims and the docs; there is no hidden runtime multiplier).
 
 import type { BuildingCrew, BuildingDefinition, BuildingCategory, BuildingDerivedStats, BuildingSynergyRange, BuildingInstance } from './types';
 import { markSpendToDate } from './mark-upgrades';
@@ -15,8 +19,8 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── LAUNCH PADS ──────────────────────────────────────────────────────
   { id: 'launch_pad_small', crew: { engineers: 1, operators: 1 }, name: 'Small Launch Pad', category: 'launch_pad', tier: 1,
     description: 'Supports small and medium rockets up to 5 tons to LEO.',
-    tooltip: 'YOUR FIRST REVENUE GENERATOR. Build this immediately — it activates Small Launch Services earning $5M/mo revenue at $2M/mo operating cost = $3M/mo net profit. Combined with maintenance ($500K/mo), you net $2.5M/mo. At $50M build cost, it pays for itself in 20 months. No research needed. This is how you start making money.',
-    baseCost: 50_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 500_000,
+    tooltip: 'YOUR FIRST REVENUE GENERATOR. Build this immediately — it activates Small Launch Services earning $5M/mo revenue at $2M/mo operating cost = $3M/mo net profit. Combined with maintenance ($500K/mo), you net $2.5M/mo. At $25M build cost, it pays for itself in 10 months. No research needed. This is how you start making money.',
+    baseCost: 25_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 500_000,
     requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: ['svc_launch_small'],
     realBuildSeconds: 300,
     // Wave E3 (§2.2): propellant per launch operations. 10/mo ≈ $1.2M at base
@@ -46,15 +50,15 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── GROUND ───────────────────────────────────────────────────────────
   { id: 'ground_station', crew: { engineers: 1, operators: 1 }, name: 'Ground Station', category: 'ground_station', tier: 1,
     description: 'Antenna complex for satellite comms and tracking. Generates revenue from tracking services.',
-    tooltip: 'CHEAPEST BUILDING IN THE GAME ($30M, 3 min build). Activates Ground Tracking at $2M/mo revenue vs $600K cost = $1.4M/mo net. Low upfront cost and no research needed. Build this first — it starts generating income immediately while you research and save for bigger buildings. Also counts toward building-count contracts.',
-    baseCost: 30_000_000, buildTimeMonths: 4, maintenanceCostPerMonth: 300_000,
+    tooltip: 'CHEAPEST BUILDING IN THE GAME ($15M, 3 min build). Activates Ground Tracking at $2M/mo revenue vs $600K cost = $1.4M/mo net. Low upfront cost and no research needed. Build this first — it starts generating income immediately while you research and save for bigger buildings. Also counts toward building-count contracts.',
+    baseCost: 15_000_000, buildTimeMonths: 4, maintenanceCostPerMonth: 300_000,
     requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: ['svc_ground_tracking'],
     realBuildSeconds: 180,
     capabilities: { detectionBonus: 0.02, expeditionSupport: 0.02 } },
   { id: 'mission_control', crew: { engineers: 1, operators: 1 }, name: 'Mission Control Center', category: 'ground_station', tier: 1,
     description: 'Command center for space ops. Generates revenue from mission management contracts.',
     tooltip: 'DOUBLES YOUR GROUND REVENUE. Activates Mission Operations at $4M/mo revenue vs $1.5M cost = $2.5M/mo net. No research needed. Build right after Ground Station for a combined $3.9M/mo ground income. Also required for the Space Insurance service later (when you research SAR Imaging). Strong early-game foundation building.',
-    baseCost: 80_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 800_000,
+    baseCost: 40_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 800_000,
     requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: ['svc_mission_ops'],
     realBuildSeconds: 360,
     capabilities: { trainingSpeed: 0.10, awayAutomation: 0.03, detectionBonus: 0.02 } },
@@ -62,8 +66,8 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── SATELLITES (LEO) ─────────────────────────────────────────────────
   { id: 'sat_telecom', crew: { operators: 1 }, name: 'LEO Telecom Satellite', category: 'satellite', tier: 1,
     description: 'Low-latency broadband satellite for LEO constellation.',
-    tooltip: 'CHEAPEST SATELLITE ($15M). Activates LEO Broadband at $3.5M/mo revenue vs $1.2M cost = $2.3M/mo net. No research needed — just unlock LEO (free). Great ROI for the price. Build 3-5 to create a constellation and boost your satellite count for contracts. Each additional one has slightly higher cost (1.15x scaling) but same revenue. Foundation of your space economy.',
-    baseCost: 15_000_000, buildTimeMonths: 3, maintenanceCostPerMonth: 200_000,
+    tooltip: 'CHEAPEST SATELLITE ($7.5M). Activates LEO Broadband at $3.5M/mo revenue vs $1.2M cost = $2.3M/mo net. No research needed — just unlock LEO (free). Great ROI for the price. Build 3-5 to create a constellation and boost your satellite count for contracts. Each additional one has slightly higher cost (1.15x scaling) but same revenue. Foundation of your space economy.',
+    baseCost: 7_500_000, buildTimeMonths: 3, maintenanceCostPerMonth: 200_000,
     requiredResearch: [], requiredLocation: 'leo', enabledServices: ['svc_telecom_leo'],
     realBuildSeconds: 240,
     consumesPerMonth: { satellite_bus: 0.05 },
@@ -71,7 +75,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   { id: 'sat_sensor', crew: { operators: 1 }, name: 'LEO Sensor Satellite', category: 'satellite', tier: 1,
     description: 'Earth observation satellite with optical and infrared sensors.',
     tooltip: 'EARTH OBSERVATION REVENUE. Activates LEO Earth Observation at $3M/mo vs $800K cost = $2.2M/mo net. Requires "High Res Optical" research. Great margin (73% profit). Also needed as a prerequisite for the high-value Asteroid Survey service ($28M/mo) later. Deploy multiple for satellite contract milestones.',
-    baseCost: 25_000_000, buildTimeMonths: 4, maintenanceCostPerMonth: 250_000,
+    baseCost: 12_500_000, buildTimeMonths: 4, maintenanceCostPerMonth: 250_000,
     requiredResearch: ['high_res_optical'], requiredLocation: 'leo', enabledServices: ['svc_sensor_leo'],
     realBuildSeconds: 300,
     consumesPerMonth: { satellite_bus: 0.05 },
@@ -80,8 +84,8 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── SATELLITES (GEO) ─────────────────────────────────────────────────
   { id: 'sat_telecom_geo', crew: { operators: 1 }, name: 'GEO Telecom Satellite', category: 'satellite', tier: 1,
     description: 'High-throughput geostationary communications satellite.',
-    tooltip: 'PREMIUM TELECOM REVENUE. Activates GEO Communications at $8M/mo vs $2.5M cost = $5.5M/mo net. More than double the LEO telecom profit per satellite, but costs 10x more ($150M). Requires unlocking GEO orbit ($50M). Build once you have stable early income. The $5.5M/mo net makes this one of the best mid-early investments.',
-    baseCost: 150_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 800_000,
+    tooltip: 'PREMIUM TELECOM REVENUE. Activates GEO Communications at $8M/mo vs $2.5M cost = $5.5M/mo net. More than double the LEO telecom profit per satellite, but costs 10x more ($75M). Requires unlocking GEO orbit ($50M). Build once you have stable early income. The $5.5M/mo net makes this one of the best mid-early investments.',
+    baseCost: 75_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 800_000,
     requiredResearch: [], requiredLocation: 'geo', enabledServices: ['svc_telecom_geo'],
     realBuildSeconds: 420,
     consumesPerMonth: { satellite_bus: 0.1 },
@@ -98,8 +102,8 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── SPACE STATIONS ───────────────────────────────────────────────────
   { id: 'space_station_small', crew: { engineers: 1, operators: 1, scientists: 1 }, name: 'Orbital Outpost', category: 'space_station', tier: 1,
     description: 'Small modular space station in LEO. 4-person crew capacity.',
-    tooltip: 'YOUR FIRST SPACE STATION (+15% REVENUE BONUS). Activates LEO Space Tourism at $12M/mo vs $4M cost = $8M/mo net. Also boosts ALL service revenue in LEO by +15% (stacks with other stations). Requires "Modular Spacecraft" research and costs aluminum (50) + titanium (20). A slow-payback but strategic build — it unlocks tourism — a key revenue category — and counts toward station contracts. Essential mid-game milestone. (Check the live projection on the build card before committing $500M.)',
-    baseCost: 500_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 5_000_000,
+    tooltip: 'YOUR FIRST SPACE STATION (+15% REVENUE BONUS). Activates LEO Space Tourism at $12M/mo vs $4M cost = $8M/mo net. Also boosts ALL service revenue in LEO by +15% (stacks with other stations). Requires "Modular Spacecraft" research and costs aluminum (50) + titanium (20). A slow-payback but strategic build — it unlocks tourism — a key revenue category — and counts toward station contracts. Essential mid-game milestone. (Check the live projection on the build card before committing $250M.)',
+    baseCost: 250_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['modular_spacecraft'], requiredLocation: 'leo', enabledServices: ['svc_tourism_leo'],
     realBuildSeconds: 900, resourceCost: { aluminum: 50, titanium: 20 }, powerRequired: 5,
     // E3 (§2.2): life support ≈ 1 pack / 25 crew — authored statically from
@@ -150,7 +154,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   { id: 'research_institute_earth', crew: { engineers: 1, scientists: 1 }, name: 'Terrestrial Research Institute', category: 'datacenter', tier: 1,
     description: 'A ground-side R&D campus: cheap lab space, deep talent pool, no launch costs for your scientists.',
     tooltip: 'FIRST RESEARCH BOOST. +5% research speed, corporation-wide. No research required and no orbit to reach — but capped at ONE per corporation (Earth real estate and regulator patience are finite). The off-world labs stack on top of it.',
-    baseCost: 250_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 1_200_000,
+    baseCost: 125_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 1_200_000,
     requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: [],
     realBuildSeconds: 420, resourceCost: { iron: 30, aluminum: 15 }, powerRequired: 0,
     maxPerPlayer: 1,
@@ -189,8 +193,8 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── SOLAR FARMS ──────────────────────────────────────────────────────
   { id: 'solar_farm_orbital', crew: { engineers: 1, operators: 1 }, name: 'Orbital Solar Farm', category: 'solar_farm', tier: 1,
     description: 'Large solar array providing power to orbital facilities.',
-    tooltip: 'POWER INFRASTRUCTURE. Activates Orbital Power Sales at $3M/mo vs $800K cost = $2.2M/mo net. Low revenue but high margin (73%) and cheap to build ($100M). Requires "Triple Junction" research. Power generation supports your other orbital facilities and is a prerequisite for advanced energy research. Good filler building while saving for bigger investments.',
-    baseCost: 100_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 500_000,
+    tooltip: 'POWER INFRASTRUCTURE. Activates Orbital Power Sales at $3M/mo vs $800K cost = $2.2M/mo net. Low revenue but high margin (73%) and cheap to build ($50M). Requires "Triple Junction" research. Power generation supports your other orbital facilities and is a prerequisite for advanced energy research. Good filler building while saving for bigger investments.',
+    baseCost: 50_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 500_000,
     requiredResearch: ['triple_junction'], requiredLocation: 'leo', enabledServices: ['svc_power_orbital'],
     realBuildSeconds: 300, powerGenerated: 20 },
   { id: 'solar_farm_lunar', crew: { engineers: 1, operators: 1 }, name: 'Lunar Solar Farm', category: 'solar_farm', tier: 2,
@@ -203,8 +207,8 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── MINING ───────────────────────────────────────────────────────────
   { id: 'mining_lunar_basic', crew: { engineers: 1, miners: 2 }, name: 'Basic Lunar Extractor', category: 'mining_enterprise', tier: 1,
     description: 'Simple surface skimmer that scrapes loose regolith ice. Small output, but no advanced materials needed to build.',
-    tooltip: 'BOOTSTRAP MINING. Money-only build ($250M, no resource inputs) so you can start producing lunar water before having iron/aluminum. Output is 20 water + 0.5 helium-3 per game month — modest but enough to unlock follow-on construction and start earning Lunar Basic Water Sales revenue. Upgrade to the full Lunar Ice Mine when you have the metals to afford it.',
-    baseCost: 250_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 800_000,
+    tooltip: 'BOOTSTRAP MINING. Money-only build ($125M, no resource inputs) so you can start producing lunar water before having iron/aluminum. Output is 20 water + 0.5 helium-3 per game month — modest but enough to unlock follow-on construction and start earning Lunar Basic Water Sales revenue. Upgrade to the full Lunar Ice Mine when you have the metals to afford it.',
+    baseCost: 125_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 800_000,
     requiredResearch: [], requiredLocation: 'lunar_surface', enabledServices: ['svc_mining_lunar_basic'],
     realBuildSeconds: 420, powerRequired: 3 },
   { id: 'mining_lunar_ice', crew: { engineers: 1, miners: 2 }, name: 'Lunar Ice Mine', category: 'mining_enterprise', tier: 2,
@@ -250,7 +254,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   { id: 'fabrication_earth', crew: { engineers: 1, operators: 1 }, name: 'Terrestrial Fabrication Works', category: 'fabrication_facility', tier: 1,
     description: 'Ground-side factory: smelt, refine and assemble components from delivered ore before you have industry off-world.',
     tooltip: 'FIRST FACTORY. Runs Tier 1-2 recipes (ingots, alloys, fuel, beams, electronics, solar arrays, propulsion, life support). Products (T3+) need an off-world plant. Unlimited Earth power; inputs still have to be bought or hauled down.',
-    baseCost: 350_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 1_500_000,
+    baseCost: 175_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 1_500_000,
     requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: [],
     realBuildSeconds: 480, resourceCost: { iron: 40, aluminum: 20 }, powerRequired: 0,
     maxPerPlayer: 1 }, // Early-fab wave: one per corporation — Earth launch/environmental permits cap ground industry; scaling up means orbit.
@@ -329,7 +333,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── NUCLEAR POWER & ADVANCED ENERGY ──────────────────────────────
   { id: 'nuclear_reactor_leo', crew: { engineers: 1, operators: 1 }, name: 'Orbital Nuclear Reactor', category: 'solar_farm', tier: 2,
     description: 'Compact fission reactor providing reliable continuous power in LEO. Not dependent on solar exposure.',
-    tooltip: 'RELIABLE LEO POWER. Unlike solar farms, nuclear reactors provide constant power regardless of orbital position. At 30 MW output, this single reactor covers the power needs of a data center (10 MW), fabrication lab (8 MW), and station (5 MW) combined. Requires "Surface Fission Reactor" research. More expensive than solar ($500M vs $100M) but higher output and no solar dependency. Essential for heavy LEO infrastructure.',
+    tooltip: 'RELIABLE LEO POWER. Unlike solar farms, nuclear reactors provide constant power regardless of orbital position. At 30 MW output, this single reactor covers the power needs of a data center (10 MW), fabrication lab (8 MW), and station (5 MW) combined. Requires "Surface Fission Reactor" research. More expensive than solar ($500M vs $50M) but higher output and no solar dependency. Essential for heavy LEO infrastructure.',
     baseCost: 500_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 2_000_000,
     requiredResearch: ['fission_surface_power'], requiredLocation: 'leo', enabledServices: [],
     realBuildSeconds: 1200, resourceCost: { titanium: 30, rare_earth: 15 }, powerGenerated: 30 }, // 20 min

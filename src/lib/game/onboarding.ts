@@ -31,8 +31,9 @@ import { generateId } from './formulas';
 // ─── Chain version ──────────────────────────────────────────────────────────
 
 /** Stamped on GameState.onboardingChainVersion. Saves without this stamp get
- *  the V41 sentinel migration in save-load.ts exactly once. */
-export const ONBOARDING_CHAIN_VERSION = 2;
+ *  the V41 sentinel migration in save-load.ts exactly once; v2 saves get the
+ *  v2→v3 step remap (migrateOnboardingStepV2ToV3, Balance Pass 10). */
+export const ONBOARDING_CHAIN_VERSION = 3;
 
 // ─── Step definitions ───────────────────────────────────────────────────────
 
@@ -64,7 +65,7 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
     id: 'command_deck',
     title: 'Welcome to the Command Deck',
     what: 'Look over your Dashboard: cash on hand, net income per month, and your starting facilities.',
-    why: 'Your archetype already runs revenue services — you start as a working company, not an empty lot. Net income is the number that decides everything.',
+    why: 'Your archetype already runs revenue services — you start as a working company, not an empty lot. Net income is the number that decides everything, and while your Protected Frontier lasts, service revenue is doubled (the "Frontier ×2.0" chip in the top bar).',
     where: 'Dashboard tab (you are here). The top bar always shows cash and net income.',
     targetTab: 'dashboard',
     icon: '\u{1F6F0}️',
@@ -72,10 +73,26 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
     manualAdvance: true,
   },
   {
+    // Balance Pass 10 (2026-09-12): the contract step moved from position 5
+    // to position 2. Every archetype qualifies for its starter contract on
+    // day one, and a single tier-1 payout is worth ten-plus months of
+    // building income — it is the early-game income engine, so it is taught
+    // before the first build, not after the first research.
     step: 2,
+    id: 'first_contract',
+    title: 'Accept Your First Contract',
+    what: 'Open Contracts & Diplomacy and accept the tier-1 contract your archetype already qualifies for — the progress bars show you are at or near 100%.',
+    why: 'Contracts are the early-game income engine: each tier-1 contract pays $50M–$100M in one lump sum — ten to twenty months of building income — and inside the Protected Frontier payouts are boosted ×1.25. Payouts share one daily budget (4 completions per rolling 24h to start), so they supplement your services rather than replace them.',
+    where: 'Contracts & Diplomacy tab → Standard Contracts → Accept.',
+    targetTab: 'contracts',
+    icon: '\u{1F4DC}',
+    rewardMoney: 0,
+  },
+  {
+    step: 3,
     id: 'first_build',
     title: 'Break Ground on Your First Build',
-    what: 'Order a new facility of your own. The Ground Station ($30M, ~3 min) is the cheapest; LEO Telecom Satellites ($15M) have the best margin per dollar.',
+    what: 'Order a new facility of your own. The Ground Station ($15M, ~3 min) is the cheapest; LEO Telecom Satellites ($7.5M) have the best margin per dollar.',
     why: 'Every completed facility adds a monthly revenue service. You have 2 construction slots — keeping both busy is the core early loop.',
     where: 'Build tab → pick a building on Earth Surface or LEO → Build.',
     targetTab: 'build',
@@ -83,37 +100,26 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
     rewardMoney: 8_000_000,
   },
   {
-    step: 3,
+    step: 4,
     id: 'first_income',
     title: 'Bring the Revenue Online',
     what: 'Wait for your build to finish (watch the countdown) — its service activates automatically and starts paying monthly.',
-    why: 'Services are your income backbone. On Earth, power is free from the grid; off-world sites later need solar or reactors, and after your Protected Frontier ends, facilities also consume real monthly inputs (fuel, spares).',
+    why: 'Services are your income backbone. On Earth, power is free from the grid; off-world sites later need solar or reactors, and after your Protected Frontier ends, facilities also consume real monthly inputs (fuel, spares) — your starter pad already sits on a standing market order for its fuel.',
     where: 'Dashboard shows the countdown; the Services tab lists every income stream.',
     targetTab: 'services',
     icon: '\u{1F4B0}',
     rewardMoney: 0,
   },
   {
-    step: 4,
+    step: 5,
     id: 'first_research',
     title: 'Start Your First Research',
-    what: 'Start any research you can afford — the Suggested Research tiles at the top are picked for your current cash and progress.',
+    what: 'Start any research you can afford — the Suggested Research tiles at the top are picked for your current cash and progress. Tier-1 research runs $15M–$150M.',
     why: 'Research unlocks new buildings, locations, and permanent bonuses. Something should be researching at all times — idle research is lost compounding.',
     where: 'Research tab → Suggested Research → pick a READY tile.',
     targetTab: 'research',
     icon: '\u{1F52C}',
     rewardMoney: 6_000_000,
-  },
-  {
-    step: 5,
-    id: 'first_contract',
-    title: 'Accept a Contract',
-    what: 'Accept a contract whose requirements you are close to meeting — progress bars show exactly how close you are.',
-    why: 'Contracts pay large lump sums (the starter certification pays $60M). Note: contract payouts share one daily budget — 4 completions per rolling 24h to start — so they supplement services, never replace them.',
-    where: 'Contracts tab → Standard Contracts → Accept.',
-    targetTab: 'contracts',
-    icon: '\u{1F4DC}',
-    rewardMoney: 0,
   },
   {
     step: 6,
@@ -130,7 +136,7 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
     step: 7,
     id: 'next_orbit',
     title: 'Claim Your Next Orbit',
-    what: 'Unlock GEO orbit ($50M, no research needed) from the Map, then consider a GEO Telecom Satellite ($150M, $5.5M/mo net).',
+    what: 'Unlock GEO orbit ($50M, no research needed) from the Map, then consider a GEO Telecom Satellite ($75M, $5.5M/mo net).',
     why: 'Expansion is how income scales — each location has unique buildings and finite premium slots. GEO is the first affordable step off your starting turf.',
     where: 'Map tab → select GEO → Unlock.',
     targetTab: 'map',
@@ -155,6 +161,24 @@ export const ONBOARDING_STEP_MAP = new Map(ONBOARDING_STEPS.map(s => [s.step, s]
 
 /** tutorialStep value meaning "chain finished" (guide dismissed/complete). */
 export const ONBOARDING_DONE_STEP = ONBOARDING_STEPS.length + 1;
+
+// ─── Chain v2 → v3 step migration (Balance Pass 10) ─────────────────────────
+// v2 order: command_deck, first_build, first_income, first_research,
+// first_contract, first_trade, next_orbit, road_to_luna. v3 moves
+// first_contract to position 2. A save mid-chain keeps the objective it was
+// on (its step number shifts by one); a save that was ON the old contract
+// step (5) continues at first_trade (6) rather than being sent back to
+// step 2 — walking it back through build/income/research would re-detect
+// those objectives and grant their one-time rewards a second time.
+// Done sentinels (>= 9) stay done. Pure; save-load.ts calls it once.
+const V2_TO_V3_STEP: Record<number, number> = { 1: 1, 2: 3, 3: 4, 4: 5, 5: 6, 6: 6, 7: 7, 8: 8 };
+
+export function migrateOnboardingStepV2ToV3(step: number | undefined): number {
+  if (typeof step !== 'number' || !Number.isFinite(step)) return ONBOARDING_DONE_STEP;
+  if (step < 1) return step;
+  if (step >= 9) return ONBOARDING_DONE_STEP;
+  return V2_TO_V3_STEP[Math.floor(step)] ?? ONBOARDING_DONE_STEP;
+}
 
 // ─── Detection (pure, live-evaluated — returning-commander.ts pattern) ──────
 
@@ -211,10 +235,11 @@ export function getCurrentOnboardingStep(state: GameState): OnboardingStepDef | 
   return ONBOARDING_STEP_MAP.get(state.tutorialStep ?? 0) ?? null;
 }
 
-/** The very first minutes (orientation → first income). Used to hold back
+/** The very first minutes (orientation → first income; Pass 10 inserted the
+ *  contract step at 2, so first_income is now step 4). Used to hold back
  *  interruptions like the daily-bonus modal until the player has context. */
 export function isEarlyOnboarding(state: GameState): boolean {
-  return isOnboardingActive(state) && (state.tutorialStep ?? 0) <= 3;
+  return isOnboardingActive(state) && (state.tutorialStep ?? 0) <= 4;
 }
 
 /** Newcomer HUD mode (CLAUDE.md: "information density that scales with the

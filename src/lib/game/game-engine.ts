@@ -58,7 +58,7 @@ import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-co
 // nothing here is persisted beyond the one-shot "already announced" flag.
 import { getCurrentRealignmentEpoch, getNpcFactionBiasMultiplier, assembleEpochAddress } from './realignment';
 import { NPC_SEEDS } from './npc-companies';
-import { shouldAutoGraduate, graduateFrontier, isInFrontier, computeBookNetWorth, getGraduationGlideFraction } from './frontier';
+import { shouldAutoGraduate, graduateFrontier, isInFrontier, computeBookNetWorth, getGraduationGlideFraction, getFrontierRevenueMultiplier } from './frontier';
 import { rollMonthlyHazards, applyHazards, forecastSevereHazards, calculateResourceRepairCost } from './hazards';
 // Audit Wave D+E (Change #4 hazards/insurance, Change #5 markets, Change #9
 // sinks — see docs/GAME_SYSTEMS_AUDIT_2026-08.md A4/A5/C5) imports:
@@ -484,6 +484,12 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
     frontierSpotFloor: isInFrontier(state),
     graduationGlideFraction: getGraduationGlideFraction(state),
   };
+  // Balance Pass 10 (2026-09-12): Frontier service-revenue doubling — 2.0
+  // while the Protected Frontier is active, gliding to 1.0 over the 14-day
+  // graduation glide, exactly 1.0 for veterans (frontier.ts). Mirrored in
+  // away-operations.ts, economy-report.ts, ResourceBar.tsx and the server's
+  // resource-plausibility.ts ceiling.
+  const frontierRevenueMult = getFrontierRevenueMultiplier(state);
 
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
@@ -638,6 +644,7 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
       * reserveEfficiencyMult     // audit Wave E (C5 §7)
       * returningCommanderRevMult // LS2: decaying re-entry boost, 1.3x -> 1.0x over 14 days
       * staffingEfficiency        // Row 6: crew shortfall, 0.5-1.0 (0.7 floor in Frontier)
+      * frontierRevenueMult      // Pass 10: Frontier x2.0, gliding to 1.0 after graduation
       * DEV_REVENUE_MULTIPLIER
     );
     // Specialization maintenance_reduction (§1b) applies to operating costs.
