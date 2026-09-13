@@ -39,12 +39,23 @@ async function main() {
     cloudMoney = (cs?.money ?? cs?.state?.money ?? null) as number | null;
   } catch { /* unreadable save */ }
   const profileCount = await prisma.gameProfile.count({ where: { lastSyncAt: { gte: since } } });
+  // Last 3 clamp events for this account, in full, plus the contract-ish
+  // fields of the cloud save (which ids the client thinks it completed).
+  const lastEvents = gp ? events.filter((e) => e.profileId === gp.id).slice(0, 3).map((e) => ({ at: e.createdAt.toISOString(), details: e.details })) : [];
+  let saveContracts: Record<string, unknown> = {};
+  try {
+    const raw = gp?.cloudSave; const cs = (typeof raw === 'string' ? JSON.parse(raw) : raw) as Record<string, unknown> | null;
+    const st = (cs && typeof cs === 'object' && 'state' in cs ? (cs as { state: Record<string, unknown> }).state : cs) || {};
+    for (const k of Object.keys(st)) if (/contract|deliver|bid/i.test(k)) { const v = st[k]; saveContracts[k] = Array.isArray(v) ? { n: v.length, tail: v.slice(-4) } : (v && typeof v === 'object' ? { keys: Object.keys(v as object).slice(0, 12) } : v); }
+  } catch { saveContracts = { error: 'unreadable save' }; }
   const out = {
     since: since.toISOString(),
     activeProfiles7d: profileCount,
     clampEvents7d: events.length,
     profilesClamped: Object.keys(byProfile).length,
     top: Object.entries(byProfile).sort((a, b) => b[1].n - a[1].n).slice(0, 8),
+    lastEvents,
+    saveContracts,
     account: gp ? {
       email: user?.email, company: gp.companyName, serverMoney: gp.money, cloudMoney, gap: cloudMoney !== null ? Number(cloudMoney) - Number(gp.money) : null,
       lastSyncAt: gp.lastSyncAt, cloudSavedAt: gp.cloudSavedAt, totalEarned: gp.totalEarned, profileSince: gp.createdAt,
