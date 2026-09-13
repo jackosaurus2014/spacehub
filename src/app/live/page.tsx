@@ -178,6 +178,19 @@ function LiveHubContent() {
           accentColor="cyan"
         />
 
+        {/* 2026-09-13: the pad view is the "always something on" tab — link it
+            from the hub so it is reachable without knowing the URL. */}
+        <div className="mb-6">
+          <Link
+            href="/live/pad"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-sm text-slate-300 hover:text-white hover:border-white/20 transition-colors"
+          >
+            <span aria-hidden="true">🎥</span>
+            <span><span className="font-semibold text-white">Pad view</span> — the launch pads, around the clock</span>
+            <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+
         {/* Prominent hero: live + imminent missions */}
         <div className="mb-8">
           <LiveStreamsHeroSection />

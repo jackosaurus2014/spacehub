@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getNextLaunch, missionOf } from '@/lib/next-launch';
+import { decideLiveMode } from '@/lib/launch-live-window';
 import LiveRailClock from './LiveRailClock';
 
 // One server-rendered line above the nav on every page:
@@ -10,6 +11,11 @@ export default async function LiveRail() {
   const next = await getNextLaunch();
   const rocket = next?.rocket ? next.rocket.replace(/ Block 5$/, '') : null;
   const site = next?.location ? next.location.split(',')[0] : null;
+  // 2026-09-13 (Tier 2 #6): inside the live window the rail's one link is the
+  // live page, not the static record. No stream detection here — the rail is
+  // on every page, so it decides on the window alone (decideLiveMode with no
+  // streams), which is the cheap half of the same rule.
+  const railLive = next ? decideLiveMode({ id: next.id, name: next.name, status: next.status, launchDate: next.launchDate }).live : false;
   return (
     <div className="w-full border-b border-white/[0.06] bg-[#0B0A09] text-[12px] leading-none" role="region" aria-label="Next launch" data-site-chrome="launch-rail">
       <div className="container mx-auto px-4 h-8 flex items-center gap-2 overflow-hidden whitespace-nowrap">
@@ -23,7 +29,7 @@ export default async function LiveRail() {
             <span className="text-slate-500" aria-hidden="true">·</span>
             <span className="text-slate-200 font-medium truncate">{rocket ? `${rocket} · ` : ''}{missionOf(next.name)}</span>
             {site && <><span className="text-slate-500 hidden sm:inline" aria-hidden="true">·</span><span className="text-slate-400 hidden sm:inline truncate">{site}</span></>}
-            <Link href={`/launch/${next.id}`} className="ml-auto text-[#FF7A18] hover:text-[#FFA35C] font-semibold flex-shrink-0">Watch &rarr;</Link>
+            <Link href={railLive ? `/launch/${next.id}#live` : `/launch/${next.id}`} className="ml-auto text-[#FF7A18] hover:text-[#FFA35C] font-semibold flex-shrink-0">{railLive ? 'Watch live' : 'Watch'} &rarr;</Link>
           </>
         ) : (
           <>

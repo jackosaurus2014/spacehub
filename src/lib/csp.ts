@@ -310,6 +310,7 @@ export const NONCE_ELIGIBLE_ROUTES: readonly string[] = [
   '/learn/[track]/[moduleSlug]',
   '/learn/[track]/[moduleSlug]/[lessonSlug]',
   '/learn/zone',
+  '/live/pad',
   '/marketplace',
   '/marketplace/listings/[slug]',
   '/marketplace/rfq/[id]',

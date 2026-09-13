@@ -8385,3 +8385,26 @@ model EmailChangeToken {
   @@index([userId])
   @@index([expiresAt])
 }
+
+// ─── Launch live blog (2026-09-13, Tier 2 #6) ────────────────────────────────
+// Append-only operator log for a single launch, rendered newest-first on the
+// live page. Written only by the admin route; nothing deletes or edits a row,
+// so the record of a launch day is exactly what was said at the time.
+model LaunchLiveEntry {
+  id        String   @id @default(cuid())
+  eventId   String
+  // Short operator text. Plain text — HTML is stripped on write.
+  body      String
+  // Optional link and its label, rendered as one trailing anchor.
+  linkUrl   String?
+  linkLabel String?
+  // Optional image (absolute URL), rendered beneath the text.
+  imageUrl  String?
+  // update | milestone | hold | scrub | success — colours the entry rail.
+  kind      String   @default("update")
+  // Admin user id that wrote it; null for a cron/automated entry.
+  authorId  String?
+  createdAt DateTime @default(now())
+
+  @@index([eventId, createdAt])
+}

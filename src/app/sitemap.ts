@@ -177,6 +177,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/launch`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${BASE_URL}/live`, changeFrequency: 'daily' as const, priority: 1.0 },
     { url: `${BASE_URL}/live/artemis-ii-blog`, changeFrequency: 'always' as const, priority: 1.0 },
+    { url: `${BASE_URL}/live/pad`, changeFrequency: 'hourly' as const, priority: 0.8 },
     { url: `${BASE_URL}/ai-insights`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${BASE_URL}/search`, changeFrequency: 'weekly' as const, priority: 0.5 },
     { url: `${BASE_URL}/alerts`, changeFrequency: 'daily' as const, priority: 0.5 },
