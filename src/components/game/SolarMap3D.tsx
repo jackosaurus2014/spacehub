@@ -51,6 +51,10 @@ import { onMapPing, getPingVisual, PING_COLOR, type MapPingEvent } from '@/lib/g
 import { EFFECT_ASSETS } from '@/lib/game/assets';
 import { computeModeVisuals, type MapMode, type ModeVisual } from '@/lib/game/map-modes';
 import { ORBITAL_BODY_MAP } from '@/lib/game/orbital-elements';
+// Graphics Phase 3: the scene clock is the GAME calendar (server-time.ts)
+// and the bodies are placed from their J2000 elements at that date.
+import { sceneTimeAt, formatEphemerisMs, ephemerisMsForGameMonths, gameMonthsElapsed } from '@/lib/game/map-time';
+import { formatWindowLine, formatWindowChip, formatWindowPairLine, nextTransferWindow, transferRootForLocation, windowsForBody, TRANSFER_ORIGIN_ROOT, rootName } from '@/lib/game/launch-windows';
 // Wave A2 (map as command theater) — zoom tiers, body presentation data and
 // orbital-slot ring math, shared verbatim with the 2D canvas (map-modes.ts
 // precedent: one derivation, two renderers, never disagreeing).
@@ -208,6 +212,11 @@ interface SolarMap3DProps {
    *  whenever the camera crosses a local sphere, so the shell can draw the
    *  breadcrumb and the first-entry hint. */
   onLocalBodyChange?: (bodyId: string | null) => void;
+  /** Graphics Phase 3 item 2 — the time scrubber's offset from the live game
+   *  date, in game months. Presentation only: it moves every body along its
+   *  real orbit for a preview date. The shell refuses state-mutating actions
+   *  while it is non-zero (MapCommandCenter's guardPreview). */
+  previewMonths?: number;
 }
 
 // ── Flight mode (part a): fly-to rig + local-sphere tracker ─────────────────
@@ -431,10 +440,26 @@ function MapProbe({ posRef, localRef, flightRef, regionRef }: { posRef: Position
 
 // ── Scene rig — owns scene time and the per-frame position table ─────────────
 
-function SceneClock({ posRef, timeRef, reduced }: { posRef: PositionsRef; timeRef: React.MutableRefObject<number>; reduced: boolean }) {
-  useFrame((_, delta) => {
-    if (!reduced) timeRef.current += Math.min(delta, 0.1);
-    posRef.current = computeScenePositions(timeRef.current);
+// Graphics Phase 3 item 1: the clock is the GAME calendar, not a free-running
+// wall clock that started at 0 on mount. Every frame the rig asks map-time
+// for (a) the real UTC instant of the current game date plus the scrubber's
+// offset — which the Keplerian ephemeris is evaluated at, so a planet is
+// where the HUD's date says it is — and (b) the presentation seconds the
+// hand-tuned moon / orbital-pip orbits ride on. Under reduced motion the
+// second clock is frozen at mount (the moons and pips hold still) while the
+// ephemeris still answers for the previewed date: a scrub is a state change,
+// not an animation.
+function SceneClock({ posRef, timeRef, reduced, previewRef }: {
+  posRef: PositionsRef;
+  timeRef: React.MutableRefObject<number>;
+  reduced: boolean;
+  previewRef: React.MutableRefObject<number>;
+}) {
+  const frozenRef = useRef(Date.now());
+  useFrame(() => {
+    const t = sceneTimeAt(reduced ? frozenRef.current : Date.now(), previewRef.current);
+    timeRef.current = t.tSec;
+    posRef.current = computeScenePositions(t.tSec, t.ephemerisMs);
   });
   return null;
 }
@@ -1514,7 +1539,7 @@ function ScienceMarker({ locId, count, posRef }: { locId: string; count: number;
 
 // ── Main component ───────────────────────────────────────────────────────────
 
-export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard', alwaysLabels = false, onZoomTierChange, laneVolumes, onContextLost, layers, onToggleLayer, contacts = NO_CONTACTS, contactsAsOfMs = 0, cameraRequest, onLocalBodyChange }: SolarMap3DProps) {
+export default function SolarMap3D({ state, onSelectLocation, selectedLocationId, active = true, mapMode = 'standard', alwaysLabels = false, onZoomTierChange, laneVolumes, onContextLost, layers, onToggleLayer, contacts = NO_CONTACTS, contactsAsOfMs = 0, cameraRequest, onLocalBodyChange, previewMonths = 0 }: SolarMap3DProps) {
   const [selectedLoc, setSelectedLoc] = useState<string | null>(null);
   // Lanes / Ships / World — shell-controlled when `layers` is passed (item
   // 5: the phone icon strip owns the switches), private state otherwise.
@@ -1541,8 +1566,19 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const cameraRef = useRef<THREE.Camera | null>(null);
   const pointerDownRef = useRef<{ x: number; y: number } | null>(null);
-  const posRef = useRef<ScenePositions>(computeScenePositions(0));
+  // Seeded from the GAME clock, not t=0: the intro dolly and the home frame
+  // both read this before SceneClock's first useFrame, and the legacy phase
+  // layout would put Earth somewhere it no longer is.
+  const [initialPositions] = useState<ScenePositions>(() => {
+    const t0 = sceneTimeAt(Date.now(), previewMonths);
+    return computeScenePositions(t0.tSec, t0.ephemerisMs);
+  });
+  const posRef = useRef<ScenePositions>(initialPositions);
   const timeRef = useRef(0);
+  // Graphics Phase 3: the scrubber offset, in a ref so the frame loop reads
+  // it without re-mounting the scene rig on every thumb move.
+  const previewRef = useRef(previewMonths);
+  previewRef.current = previewMonths;
   const rootRef = useRef<HTMLDivElement>(null);
   // Flight mode (part a): the scene the camera is inside (React state for
   // mounting the local scene + the UI; a ref for the frame loop), the
@@ -1560,6 +1596,31 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
   const [region, setRegion] = useState<MapRegionId>('earth_environs');
   // Addendum (c): contacts per body for the Location List + local chip.
   const contactCounts = useMemo(() => countContactsByBody(contacts), [contacts]);
+  // ── Graphics Phase 3 item 3 — launch windows ──────────────────────────────
+  // A Hohmann ESTIMATE of the next departure opportunity from the corporate
+  // home (Earth) to each location's heliocentric body, and — inside a local
+  // scene — the soonest window involving THAT body in either direction.
+  // Always computed at the LIVE game date: the scrubber previews positions,
+  // it does not move the window schedule. Windows drift by hours, so this is
+  // computed once per mount rather than per frame.
+  const liveEphemerisMs = useMemo(() => ephemerisMsForGameMonths(Math.floor(gameMonthsElapsed(Date.now()))), []);
+  const windowLineByLoc = useMemo(() => {
+    const out: Record<string, { chip: string; line: string }> = {};
+    for (const group of LOCATIONS_BY_REGION) {
+      for (const loc of group.locations) {
+        const root = transferRootForLocation(loc.id);
+        if (!root || root === TRANSFER_ORIGIN_ROOT) continue;
+        const w = nextTransferWindow(TRANSFER_ORIGIN_ROOT, root, liveEphemerisMs);
+        if (w) out[loc.id] = { chip: formatWindowChip(w, formatEphemerisMs), line: formatWindowLine(w, formatEphemerisMs) };
+      }
+    }
+    return out;
+  }, [liveEphemerisMs]);
+  const localWindowLine = useMemo(() => {
+    if (!localBody) return null;
+    const w = windowsForBody(localBody, state.unlockedLocations || [], liveEphemerisMs, 1)[0];
+    return w ? formatWindowPairLine(w, formatEphemerisMs) : null;
+  }, [localBody, state.unlockedLocations, liveEphemerisMs]);
   const onLocalBodyChangeRef = useRef(onLocalBodyChange);
   onLocalBodyChangeRef.current = onLocalBodyChange;
   const handleLocalChange = useCallback((id: string | null) => {
@@ -2080,7 +2141,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         {/* Item 8: more and larger stars (4,200 → 7,000, factor 5 → 6.5);
             still monochrome and still static under reduced motion. */}
         <Stars radius={420} depth={90} count={7000} factor={6.5} saturation={0} fade speed={reduced ? 0 : 0.5} />
-        <SceneClock posRef={posRef} timeRef={timeRef} reduced={reduced} />
+        <SceneClock posRef={posRef} timeRef={timeRef} reduced={reduced} previewRef={previewRef} />
         <ZoomTierTracker tierRef={tierRef} onChange={handleTierChange} />
         <MapProbe posRef={posRef} localRef={localRef} flightRef={flightRef} regionRef={regionRef} />
         <Sun reduced={reduced} />
@@ -2359,6 +2420,15 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
                             </span>
                           )}
                         </span>
+                        {/* Phase 3 item 3: the next Hohmann departure window from
+                            Earth to this body — an estimate, and planning
+                            intelligence even for a location you have not
+                            unlocked yet. */}
+                        {windowLineByLoc[loc.id] && (
+                          <span className="block text-[10px] text-slate-500 truncate" title={`${windowLineByLoc[loc.id].line} — Hohmann estimate from Earth (circular coplanar orbits, one burn each end)`}>
+                            {windowLineByLoc[loc.id].chip}
+                          </span>
+                        )}
                         <span className="sr-only">
                           {unlocked ? ', unlocked' : ', locked'}{isSelected ? ', currently selected' : ''}
                           {standing === 'governor' ? ', you govern this zone' : standing === 'stakeholder' ? ', zone stakeholder' : ''}
@@ -2367,6 +2437,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
                           {slotRingByLoc[loc.id] ? `. ${slotRingByLoc[loc.id].srText}` : ''}
                           {showContacts && localBodyId && loc.id === ORBITAL_BODY_MAP.get(localBodyId)?.locationId && contactCounts[localBodyId] ? `. ${contactCountText(contactCounts[localBodyId])}` : ''}
                           {localBodyId && localBody === localBodyId ? `. ${localModel?.srText ?? ''}` : ''}
+                          {windowLineByLoc[loc.id] ? `. ${windowLineByLoc[loc.id].line} (Hohmann estimate)` : ''}
                           . Press C for the command menu.
                         </span>
                       </button>
@@ -2414,6 +2485,15 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         )}
         {showContacts && !localBody && contacts.length > 0 && (
           <DataChip icon="target">{contacts.length} contact{contacts.length === 1 ? '' : 's'}</DataChip>
+        )}
+        {/* Phase 3 item 3: inside a local scene, the soonest transfer window
+            involving this body in either direction. Estimate, labelled. */}
+        {localBody && localWindowLine && (
+          <DataChip icon="clock">
+            <span title="Hohmann estimate: circular coplanar orbits, one burn at each end. The engine's dispatch times are separate.">
+              {localWindowLine} (est.)
+            </span>
+          </DataChip>
         )}
       </div>
 

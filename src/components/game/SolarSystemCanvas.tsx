@@ -93,6 +93,12 @@ import {
 // the local body or the selected location. 2D parity for region identity.
 import { MAP_REGION_SKY, regionForBody, regionForLocation } from '@/lib/game/map-regions';
 import { ORBITAL_BODY_MAP } from '@/lib/game/orbital-elements';
+// Graphics Phase 3 (item 1): the 2D map shares the 3D map's ephemeris —
+// one derivation, two renderers (docs/GRAPHICS_REVIEW_2026-09-12.md (d)).
+import { computeScenePositions } from '@/lib/game/orbital-elements';
+import { planarLayout, PLANAR_SUN, type PlanarPoint } from '@/lib/game/map-planar';
+import { sceneTimeAt, formatEphemerisMs, ephemerisMsForGameMonths, gameMonthsElapsed } from '@/lib/game/map-time';
+import { formatWindowLine, formatWindowChip, formatWindowPairLine, nextTransferWindow, transferRootForLocation, windowsForBody, TRANSFER_ORIGIN_ROOT } from '@/lib/game/launch-windows';
 
 /** Quadratic-bezier point at parameter u — shared by the ship-transit
  *  polyline and its engine-trail sample points (Wave V7). */
@@ -196,6 +202,10 @@ interface SolarSystemCanvasProps {
    *  3D renderer; here every transition is a cut). */
   cameraRequest?: { kind: 'local' | 'system' | 'frame'; bodyId?: string | null; token: number } | null;
   onLocalBodyChange?: (bodyId: string | null) => void;
+  /** Graphics Phase 3 item 2 — the time scrubber's offset from the live game
+   *  date, in game months. Presentation only: the planets walk their real
+   *  orbits to the previewed date. The shell refuses orders while non-zero. */
+  previewMonths?: number;
 }
 
 /** Local-diagram zoom bounds. Zooming out past the floor leaves the local
@@ -205,46 +215,53 @@ const LOCAL_ZOOM_MAX = 2.6;
 
 interface LocalHit { id: string; x: number; y: number; r: number; kind: 'body' | 'moon' | 'ring' }
 
-// Visual layout: positions per location (this flat projection's own geometry).
-// y values intentionally spread to give the belt + moons some visual depth.
-// Wave A2.2: colour / kind / radius moved to map-bodies.BODY_PALETTE so the
-// location detail console renders the SAME body — merged back in below, so
-// every `layout.color` / `layout.radius` read site is unchanged.
-const LOCATION_POSITION: Record<string, { x: number; y: number }> = {
-  earth_surface: { x: 0.18, y: 0.50 },
-  leo:           { x: 0.215, y: 0.36 },
-  geo:           { x: 0.25,  y: 0.66 },
-  lunar_orbit:   { x: 0.32,  y: 0.40 },
-  lunar_surface: { x: 0.33,  y: 0.58 },
-  mars_orbit:    { x: 0.48,  y: 0.40 },
-  mars_surface:  { x: 0.48,  y: 0.60 },
-  asteroid_belt: { x: 0.60,  y: 0.50 },
-  jupiter_system:{ x: 0.73,  y: 0.45 },
-  saturn_system: { x: 0.85,  y: 0.55 },
-  outer_system:  { x: 0.94,  y: 0.50 },
-  // Colony locations — share body positions with orbits for visual proximity
-  mercury_surface: { x: 0.10, y: 0.52 },
-  venus_orbit:     { x: 0.14, y: 0.48 },
-  ceres_surface:   { x: 0.58, y: 0.47 },
-  io_surface:      { x: 0.70, y: 0.44 },
-  europa_surface:  { x: 0.72, y: 0.42 },
-  ganymede_surface:{ x: 0.74, y: 0.46 },
-  callisto_surface:{ x: 0.76, y: 0.48 },
-  titan_surface:   { x: 0.84, y: 0.58 },
-  enceladus_surface:{ x: 0.86, y: 0.53 },
-  titania_surface: { x: 0.93, y: 0.48 },
-  triton_surface:  { x: 0.95, y: 0.52 },
-  pluto_surface:   { x: 0.97, y: 0.50 },
-};
+// ─── Layout (graphics Phase 3) ───────────────────────────────────────────────
+// This used to be a hand-written table of frozen positions — a left-to-right
+// strip with the Sun pinned to the left edge. Phase 3 put the planets on real
+// Keplerian orbits driven by the GAME calendar, and the parity contract says
+// the 2D canvas cannot drift from the 3D one, so heliocentric positions now
+// come from the SAME computeScenePositions the WebGL map uses, projected to a
+// plan view by map-planar.ts. Sub-body clusters (LEO/GEO, the Moon, the
+// Galilean moons) keep their hand-tuned offsets there for legibility — see
+// that module's header for why.
+//
+// What stays here is the per-location STYLE (radius / colour / kind), which
+// was always a merge of map-bodies.BODY_PALETTE; every `layout.color` /
+// `layout.radius` read site is unchanged because layoutOf() still returns
+// one object with x, y and the style merged.
 
-const LOCATION_LAYOUT: Record<string, {
-  x: number; y: number; radius: number; color: string; glowColor: string; type: BodyKind;
-}> = Object.fromEntries(
-  Object.entries(LOCATION_POSITION).map(([id, pos]) => {
+interface LocationLayout extends PlanarPoint {
+  radius: number; color: string; glowColor: string; type: BodyKind;
+}
+
+/** Every game location the map draws, in draw order. */
+const LAYOUT_LOCATION_IDS: string[] = [
+  'earth_surface', 'leo', 'geo', 'lunar_orbit', 'lunar_surface',
+  'mars_orbit', 'mars_surface', 'asteroid_belt', 'jupiter_system',
+  'saturn_system', 'outer_system', 'mercury_surface', 'venus_orbit',
+  'ceres_surface', 'io_surface', 'europa_surface', 'ganymede_surface',
+  'callisto_surface', 'titan_surface', 'enceladus_surface',
+  'titania_surface', 'triton_surface', 'pluto_surface',
+];
+
+const LOCATION_STYLE: Record<string, { radius: number; color: string; glowColor: string; type: BodyKind }> =
+  Object.fromEntries(LAYOUT_LOCATION_IDS.map(id => {
     const p = getBodyPalette(id);
-    return [id, { x: pos.x, y: pos.y, radius: p.baseRadius, color: p.color, glowColor: p.glowColor, type: p.kind }];
-  }),
-);
+    return [id, { radius: p.baseRadius, color: p.color, glowColor: p.glowColor, type: p.kind }];
+  }));
+
+/** Normalised layout for one instant of the scene clock. */
+function buildLayout(tSec: number, ephemerisMs: number): Record<string, LocationLayout> {
+  const planar = planarLayout(computeScenePositions(tSec, ephemerisMs));
+  const out: Record<string, LocationLayout> = {};
+  for (const id of LAYOUT_LOCATION_IDS) {
+    const pt = planar[id];
+    const style = LOCATION_STYLE[id];
+    if (!pt || !style) continue;
+    out[id] = { x: pt.x, y: pt.y, ...style };
+  }
+  return out;
+}
 
 // Role → color for ship rendering (fallback chevron color when sprite unloaded)
 const SHIP_COLOR: Record<string, string> = {
@@ -335,7 +352,7 @@ function useImageCache(urls: string[]): { cache: Map<string, HTMLImageElement>; 
 
 const NO_CONTACTS: TrafficContact[] = [];
 
-export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true, alwaysLabels = false, onZoomTierChange, laneVolumes, layers, onToggleLayer, contacts = NO_CONTACTS, contactsAsOfMs = 0, cameraRequest, onLocalBodyChange }: SolarSystemCanvasProps) {
+export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, embedded, selectedLocationId, mapMode = 'standard', active = true, alwaysLabels = false, onZoomTierChange, laneVolumes, layers, onToggleLayer, contacts = NO_CONTACTS, contactsAsOfMs = 0, cameraRequest, onLocalBodyChange, previewMonths = 0 }: SolarSystemCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -512,8 +529,24 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     return stars;
   }, []);
 
+  // ── Graphics Phase 3: the live layout ────────────────────────────────────
+  // The layout is no longer a constant — the planets move with the game
+  // calendar and with the time scrubber. draw() rebuilds it once per frame
+  // into this ref, and EVERY consumer (drawing, hit-testing, centreOn, the
+  // Location List) reads it from here, so a click always hits what was last
+  // painted. Seeded synchronously so the first hit-test before the first
+  // frame still resolves.
+  const previewRef = useRef(previewMonths);
+  previewRef.current = previewMonths;
+  // Reduced motion: the moon / orbital-pip clock is frozen at mount so
+  // nothing spins, while the ephemeris still answers for the previewed date —
+  // scrubbing is a state change, not an animation.
+  const frozenClockRef = useRef(Date.now());
+  const layoutRef = useRef<Record<string, LocationLayout>>(
+    buildLayout(0, ephemerisMsForGameMonths(gameMonthsElapsed(Date.now()))),
+  );
   // Resolve a location id to its layout, if present.
-  const layoutOf = useCallback((locationId: string) => LOCATION_LAYOUT[locationId], []);
+  const layoutOf = useCallback((locationId: string) => layoutRef.current[locationId], []);
 
   // W9 parity subset: zone standing glyph per location (crown governor / diamond
   // stakeholder — text glyph, not color-only) and severe-hazard forecast
@@ -582,6 +615,27 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
   }, [localBody, selectedLoc]);
   // Addendum (c): contacts per body for the Location List + the local chip.
   const contactCounts = useMemo(() => countContactsByBody(contacts), [contacts]);
+  // ── Graphics Phase 3 item 3 — launch windows (parity with SolarMap3D) ─────
+  // The next Hohmann ESTIMATE of a departure from the corporate home (Earth)
+  // to each location's heliocentric body, plus the soonest window involving
+  // the body whose local diagram is open. Always at the LIVE game date: the
+  // scrubber previews positions, it does not move the schedule.
+  const liveEphemerisMs = useMemo(() => ephemerisMsForGameMonths(Math.floor(gameMonthsElapsed(Date.now()))), []);
+  const windowLineByLoc = useMemo(() => {
+    const out: Record<string, { chip: string; line: string }> = {};
+    for (const loc of LOCATIONS) {
+      const root = transferRootForLocation(loc.id);
+      if (!root || root === TRANSFER_ORIGIN_ROOT) continue;
+      const w = nextTransferWindow(TRANSFER_ORIGIN_ROOT, root, liveEphemerisMs);
+      if (w) out[loc.id] = { chip: formatWindowChip(w, formatEphemerisMs), line: formatWindowLine(w, formatEphemerisMs) };
+    }
+    return out;
+  }, [liveEphemerisMs]);
+  const localWindowLine = useMemo(() => {
+    if (!localBody) return null;
+    const w = windowsForBody(localBody, state.unlockedLocations || [], liveEphemerisMs, 1)[0];
+    return w ? formatWindowPairLine(w, formatEphemerisMs) : null;
+  }, [localBody, state.unlockedLocations, liveEphemerisMs]);
 
   // Selection lock-on (item 4): the reticle converges on to the body when a
   // new selection is acquired. Timestamped in a ref so the draw loop can ease
@@ -630,8 +684,14 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
     // ─── Stars (twinkling, 3-layer parallax) ─────────────────────
     // Farthest layer (0) barely shifts with pan; closest (2) tracks full offset.
+    // `tSec` stays the decorative wall clock (twinkle, pulses, ship jitter);
+    // the ORBITS run on the game calendar via sceneTimeAt (graphics Phase 3),
+    // so the 2D map and the 3D map place every body identically.
     const tSec = timestampMs * 0.001;
     const reducedMotion = reducedMotionRef.current;
+    const sceneT = sceneTimeAt(reducedMotion ? frozenClockRef.current : Date.now(), previewRef.current);
+    layoutRef.current = buildLayout(sceneT.tSec, sceneT.ephemerisMs);
+    const layout = layoutRef.current;
     const PARALLAX = [0.3, 0.6, 1.0] as const;
     for (const s of starfield) {
       const p = PARALLAX[s.layer];
@@ -663,6 +723,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         lockElapsedMs: timestampMs - selectionAtRef.current,
         hits: localHitsRef.current,
         shipPx: localShipPxRef.current,
+        layout,
       });
       contactPxRef.current = [];
       animRef.current = requestAnimationFrame(draw);
@@ -672,8 +733,10 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     // Zoom pass: BOTH axes scale with zoom. The original transform scaled x
     // only, so zooming never spread the near-Earth cluster vertically — the
     // root cause of leo/geo/lunar_orbit/lunar_surface being unclickable.
-    const sunX = 0.04 * w * zoom + offset.x;
-    const sunY = 0.5 * h * zoom + offset.y;
+    // Phase 3: the Sun is the CENTRE of the plan view (it used to be pinned
+    // to the left edge of the old strip layout).
+    const sunX = PLANAR_SUN.x * w * zoom + offset.x;
+    const sunY = PLANAR_SUN.y * h * zoom + offset.y;
 
     // ─── Shipping lane overlays (with animated traffic pulses) ───
     if (showLanes) {
@@ -751,19 +814,23 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     ctx.fill();
 
     // ─── Orbit lines (subtle) ─────────────────────────────────────
+    // Phase 3: these are real orbits now, so they are drawn as ELLIPSES —
+    // the plan view scales x by the stage width and y by its height, which
+    // is exactly the oblique read the 3D camera gives. The radius comes from
+    // the body's normalised distance to the Sun, not from its pixel distance,
+    // so the ring passes through the body on both axes.
     ctx.strokeStyle = 'rgba(100,116,139,0.08)';
     ctx.lineWidth = 0.5;
     const drawnOrbits = new Set<number>();
     for (const loc of LOCATIONS) {
       const layout = layoutOf(loc.id);
       if (!layout) continue;
-      const lx = layout.x * w * zoom + offset.x;
-      const ly = layout.y * h * zoom + offset.y;
-      const dist = Math.round(Math.sqrt(Math.pow(lx - sunX, 2) + Math.pow(ly - sunY, 2)));
-      if (drawnOrbits.has(dist)) continue;
-      drawnOrbits.add(dist);
+      const rNorm = Math.hypot(layout.x - PLANAR_SUN.x, layout.y - PLANAR_SUN.y);
+      const key = Math.round(rNorm * 400);
+      if (drawnOrbits.has(key)) continue;
+      drawnOrbits.add(key);
       ctx.beginPath();
-      ctx.arc(sunX, sunY, dist, 0, Math.PI * 2);
+      ctx.ellipse(sunX, sunY, rNorm * w * zoom, rNorm * h * zoom, 0, 0, Math.PI * 2);
       ctx.stroke();
     }
 
@@ -1418,7 +1485,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
     }
     if (localBody) exitLocal();
     const canvas = canvasRef.current;
-    const layout = LOCATION_LAYOUT[locId];
+    const layout = layoutRef.current[locId];
     if (!canvas || !layout) return;
     const rect = canvas.getBoundingClientRect();
     const z = camRef.current.zoom;
@@ -1528,7 +1595,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
 
     const candidates: HitCandidate[] = [];
     for (const loc of LOCATIONS) {
-      const layout = LOCATION_LAYOUT[loc.id];
+      const layout = layoutRef.current[loc.id];
       if (!layout) continue;
       candidates.push({
         id: loc.id,
@@ -1819,6 +1886,14 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                           </span>
                         )}
                       </span>
+                      {/* Phase 3 item 3: the next Hohmann departure window
+                          from Earth to this body — an estimate, and useful
+                          planning intelligence even while locked. */}
+                      {windowLineByLoc[loc.id] && (
+                        <span className="block text-[10px] text-slate-500 truncate" title={`${windowLineByLoc[loc.id].line} — Hohmann estimate from Earth (circular coplanar orbits, one burn each end)`}>
+                          {windowLineByLoc[loc.id].chip}
+                        </span>
+                      )}
                       <span className="sr-only">
                         {unlocked ? ', unlocked' : ', locked'}{isSelected ? ', currently selected' : ''}
                         {standing === 'governor' ? ', you govern this zone' : standing === 'stakeholder' ? ', zone stakeholder' : ''}
@@ -1827,6 +1902,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
                         {slotRings[loc.id] ? `. ${slotRings[loc.id].srText}` : ''}
                         {showContacts && localBodyId && loc.id === ORBITAL_BODY_MAP.get(localBodyId)?.locationId && contactCounts[localBodyId] ? `. ${contactCountText(contactCounts[localBodyId])}` : ''}
                         {localBodyId && localBody === localBodyId ? `. ${localModel?.srText ?? ''}` : ''}
+                        {windowLineByLoc[loc.id] ? `. ${windowLineByLoc[loc.id].line} (Hohmann estimate)` : ''}
                         . Press C for the command menu.
                       </span>
                     </button>
@@ -1976,6 +2052,15 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
             )}
             {showContacts && !localBody && contacts.length > 0 && (
               <DataChip icon="target">{contacts.length} contact{contacts.length === 1 ? '' : 's'}</DataChip>
+            )}
+            {/* Phase 3 item 3: inside a local diagram, the soonest transfer
+                window involving this body in either direction. */}
+            {localBody && localWindowLine && (
+              <DataChip icon="clock">
+                <span title="Hohmann estimate: circular coplanar orbits, one burn at each end. The engine's dispatch times are separate.">
+                  {localWindowLine} (est.)
+                </span>
+              </DataChip>
             )}
           </div>
         )}
@@ -2218,6 +2303,9 @@ interface LocalDrawOpts {
   lockElapsedMs: number;
   hits: LocalHit[];
   shipPx: { x: number; y: number; title: string; detail: string }[];
+  /** The live system layout (graphics Phase 3) — used to aim the exit
+   *  directions of lanes that leave this local scene. */
+  layout: Record<string, LocationLayout>;
 }
 
 function drawBodyDisc(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, locationId: string | undefined, color: string, unlocked: boolean, sprite: HTMLImageElement | undefined) {
@@ -2358,9 +2446,9 @@ function drawLocalDiagram(ctx: CanvasRenderingContext2D, w: number, h: number, m
   // tables (xz → canvas xy), exits toward the external location's layout
   // position.
   const exitDirs: Record<string, [number, number]> = {};
-  const home = LOCATION_POSITION[model.locationId];
+  const home = o.layout[model.locationId];
   for (const id of model.externalIds) {
-    const p = LOCATION_POSITION[id];
+    const p = o.layout[id];
     if (!p || !home) continue;
     const dx = p.x - home.x, dy = p.y - home.y;
     const len = Math.hypot(dx, dy) || 1;

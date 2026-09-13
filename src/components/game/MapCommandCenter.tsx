@@ -83,6 +83,20 @@ import { BRIDGE_LAYOUT_EVENT } from '@/lib/game/bridge-mode';
 // Flight mode part (a): breadcrumb state, the once-per-browser hint and the
 // body a selection resolves to (LEO → Earth) — shared with both renderers.
 import { buildBreadcrumb, localBodyForLocation, bodyName, LOCAL_HINT_KEY, LOCAL_HINT_TEXT } from '@/lib/game/map-flight';
+// Graphics Phase 3 (docs/GRAPHICS_REVIEW_2026-09-12.md (b) row 1): the map's
+// scene clock is the GAME calendar, and the scrubber offsets it. Both pure.
+import {
+  clampScrubMonths,
+  formatGameMonths,
+  gameMonthsElapsed,
+  ephemerisMsForGameMonths,
+  isPreviewing,
+  callUnlessPreviewing,
+  previewChipText,
+  PREVIEW_REFUSAL_TITLE,
+} from '@/lib/game/map-time';
+import { heliocentricRootOf, rootName, windowsForBody } from '@/lib/game/launch-windows';
+import TimeScrubber from './map/TimeScrubber';
 
 /** "System › Earth › Local" — the map bar's flight-mode breadcrumb. Each chip
  *  is a real button (click-back); the current one carries aria-current. */
@@ -302,6 +316,55 @@ export default function MapCommandCenter({
     playSound('click');
     setLayers(prev => toggleMapLayer(prev, key));
   }, []);
+  // ── Graphics Phase 3 — ephemeris time scrubber ───────────────────────────
+  // The map's scene clock is the GAME calendar (map-time.ts / server-time.ts),
+  // and this is the offset applied to it, in whole game months. It is
+  // PRESENTATION ONLY: it moves the bodies along their real orbits and
+  // nothing else. `nowMonths` stays null until the first client effect so the
+  // server-rendered markup never carries a wall-clock-derived date (hydration).
+  const [scrubMonths, setScrubMonths] = useState(0);
+  const [nowMonths, setNowMonths] = useState<number | null>(null);
+  useEffect(() => {
+    const tick = () => setNowMonths(gameMonthsElapsed(Date.now()));
+    tick();
+    // A game month is six real hours; a minute of resolution is plenty and
+    // keeps the label honest across a long session.
+    const h = window.setInterval(tick, 60_000);
+    return () => window.clearInterval(h);
+  }, []);
+  const previewing = isPreviewing(scrubMonths);
+  const previewLabel = formatGameMonths((nowMonths ?? 0) + scrubMonths);
+  const handleScrub = useCallback((months: number) => setScrubMonths(clampScrubMonths(months)), []);
+  // Leaving the solar layer (or having the map covered) drops the preview —
+  // the galactic layer and the panels are all live-state surfaces.
+  useEffect(() => { if (layer !== 'solar') setScrubMonths(0); }, [layer]);
+
+  // The refusal choke point. Every engine handler this shell hands downward
+  // (radial menu, context panel, keyboard paths) passes through here, so a
+  // preview can never commit an order against the present. Documented choice
+  // — refuse and explain, never silently snap back: see map-time.ts.
+  const previewRef = useRef(0);
+  previewRef.current = previewing ? scrubMonths : 0;
+  const previewLabelRef = useRef(previewLabel);
+  previewLabelRef.current = previewLabel;
+  const refusePreview = useCallback((message: string) => {
+    playSound('error');
+    toast.warning(message, PREVIEW_REFUSAL_TITLE);
+  }, []);
+  const guardPreview = useCallback(<A extends unknown[]>(fn: (...args: A) => void) => (...args: A) => {
+    callUnlessPreviewing(previewRef.current, previewLabelRef.current, fn, refusePreview, args);
+  }, [refusePreview]);
+  const guardedUnlock = useMemo(() => guardPreview(onUnlock), [guardPreview, onUnlock]);
+  const guardedClaimColony = useMemo(() => guardPreview(onClaimColony), [guardPreview, onClaimColony]);
+  const guardedBuild = useMemo(() => guardPreview(onBuild), [guardPreview, onBuild]);
+  const guardedSellBuilding = useMemo(() => guardPreview(onSellBuilding), [guardPreview, onSellBuilding]);
+  const guardedMothball = useMemo(() => (onMothballBuilding ? guardPreview(onMothballBuilding) : undefined), [guardPreview, onMothballBuilding]);
+  const guardedReactivate = useMemo(() => (onReactivateBuilding ? guardPreview(onReactivateBuilding) : undefined), [guardPreview, onReactivateBuilding]);
+  const guardedRushRepair = useMemo(() => (onRushRepairBuilding ? guardPreview(onRushRepairBuilding) : undefined), [guardPreview, onRushRepairBuilding]);
+  const guardedMarkUpgrade = useMemo(() => (onMarkUpgradeBuilding ? guardPreview(onMarkUpgradeBuilding) : undefined), [guardPreview, onMarkUpgradeBuilding]);
+  const guardedDispatchShip = useMemo(() => guardPreview(onDispatchShip), [guardPreview, onDispatchShip]);
+  const guardedLaunchExpedition = useMemo(() => guardPreview(onLaunchExpedition), [guardPreview, onLaunchExpedition]);
+
   const { available: worldAvailable } = useWorldState();
   // Ship traffic feed — polls every 60 s only while the solar layer is up,
   // the Contacts layer is on and the map is not covered by a panel overlay
@@ -357,6 +420,22 @@ export default function MapCommandCenter({
   }, [localHint]);
   useEffect(() => { if (layer !== 'solar') setLocalBody(null); }, [layer]);
   const selectedBody = selection?.kind === 'location' ? localBodyForLocation(selection.id) : null;
+  // Graphics Phase 3 item 3 — the transfer windows the scrubber marks.
+  // Scoped to the body in focus (the local scene, else the selection, else
+  // Earth) against the corporation's unlocked heliocentric roots. Recomputed
+  // on the whole game month, not every minute: windows move by hours, the
+  // numbers are Hohmann estimates, and this keeps the memo quiet.
+  const scrubFocusBody = localBody || selectedBody || 'earth';
+  const scrubSubject = useMemo(() => {
+    const root = heliocentricRootOf(scrubFocusBody);
+    return root ? rootName(root) : null;
+  }, [scrubFocusBody]);
+  const nowMonthFloor = nowMonths === null ? null : Math.floor(nowMonths);
+  const unlockedKey = (state.unlockedLocations || []).join(',');
+  const scrubWindows = useMemo(() => {
+    if (nowMonthFloor === null) return [];
+    return windowsForBody(scrubFocusBody, unlockedKey ? unlockedKey.split(',') : [], ephemerisMsForGameMonths(nowMonthFloor), 4);
+  }, [scrubFocusBody, unlockedKey, nowMonthFloor]);
   const [localNotice, setLocalNotice] = useState('');
   useEffect(() => {
     setLocalNotice(localBody ? `${bodyName(localBody)} local view.` : 'System view.');
@@ -527,7 +606,7 @@ export default function MapCommandCenter({
       case 'detail': setDetail({ view: 'overview', token: Date.now() }); break;
       case 'build': setDetail({ view: 'build', token: Date.now() }); break;
       case 'dispatch': setDetail({ view: 'dispatch', token: Date.now() }); break;
-      case 'unlock': onUnlock(locId); setDetail({ view: 'overview', token: Date.now() }); break;
+      case 'unlock': guardedUnlock(locId); setDetail({ view: 'overview', token: Date.now() }); break;
       // PvP Discoverability pass: the demand map lives in Markets →
       // Analytics, which is also where the price-campaign register and
       // declare form live. Before this pass the radial dropped the player on
@@ -536,7 +615,7 @@ export default function MapCommandCenter({
       case 'orders': onNavigateTab('fleet'); break;
       case 'slots': setShowSpatial(true); break;
     }
-  }, [radial, onUnlock, onNavigateTab]);
+  }, [radial, guardedUnlock, onNavigateTab]);
 
   /** Action list + name for whichever target the arc is open on. Order is
    *  stable within each derivation, so the ring never reshuffles. */
@@ -740,11 +819,12 @@ export default function MapCommandCenter({
             contactsAsOfMs={traffic.asOfMs}
             cameraRequest={cameraRequest}
             onLocalBodyChange={handleLocalBodyChange}
+            previewMonths={scrubMonths}
           />
         ) : (
           <SolarSystemCanvas
             state={state}
-            onUnlock={onUnlock}
+            onUnlock={guardedUnlock}
             embedded
             selectedLocationId={selection?.kind === 'location' ? selection.id : null}
             onSelectLocation={selectLocation}
@@ -759,6 +839,7 @@ export default function MapCommandCenter({
             contactsAsOfMs={traffic.asOfMs}
             cameraRequest={cameraRequest}
             onLocalBodyChange={handleLocalBodyChange}
+            previewMonths={scrubMonths}
           />
         )
       ) : (
@@ -820,6 +901,16 @@ export default function MapCommandCenter({
           <div className="pointer-events-auto hud-frame rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm px-1 max-w-full">
             <Breadcrumb compact localBody={localBody} selectedBody={selectedBody} onSystem={() => requestCamera('system')} onBody={id => requestCamera('local', id)} onLocal={id => requestCamera('local', id)} />
           </div>
+        )}
+        {layer === 'solar' && nowMonths !== null && (
+          <div className="pointer-events-auto hud-frame flex items-center rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm max-w-full">
+            <TimeScrubber compact nowMonths={nowMonths} scrubMonths={scrubMonths} onScrub={handleScrub} windows={scrubWindows} subject={scrubSubject} />
+          </div>
+        )}
+        {layer === 'solar' && previewing && (
+          <p className="pointer-events-auto hud-frame rounded-lg border border-amber-400/40 bg-[#050510]/95 backdrop-blur-sm px-2 py-1 text-[10px] font-semibold text-amber-200 max-w-full text-center" role="status" aria-live="polite">
+            {previewChipText(previewLabel)} — orders refused
+          </p>
         )}
         {layer === 'solar' && (
           <p className="pointer-events-auto hud-frame rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm px-2.5 py-1 text-[10px] text-slate-300 max-w-full text-center" role="status" aria-live="polite">
@@ -1000,6 +1091,25 @@ export default function MapCommandCenter({
               {showVolume ? '● Volume' : '○ Volume'}
             </button>
           </div>
+          {/* Graphics Phase 3 item 2 — the time scrubber. Presentation only:
+              it moves the bodies along their real orbits for a preview date
+              and refuses to let any order be given while it is off "now". */}
+          {nowMonths !== null && (
+            <div className="hud-frame flex items-center rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm overflow-hidden max-w-[min(94vw,620px)]">
+              <TimeScrubber
+                nowMonths={nowMonths}
+                scrubMonths={scrubMonths}
+                onScrub={handleScrub}
+                windows={scrubWindows}
+                subject={scrubSubject}
+              />
+            </div>
+          )}
+          {previewing && (
+            <p className="hud-frame rounded-lg border border-amber-400/40 bg-[#050510]/95 backdrop-blur-sm px-2.5 py-1 text-[10px] font-semibold text-amber-200 max-w-[min(94vw,460px)] text-center" role="status" aria-live="polite">
+              {previewChipText(previewLabel)} — presentation only. Orders are refused until you press Now.
+            </p>
+          )}
           {showVolume && (
             <p className="hud-frame rounded-lg border border-white/[0.08] bg-[#050510]/90 backdrop-blur-sm px-2.5 py-1 text-[10px] text-slate-300 max-w-[min(94vw,460px)] text-center" role="status" aria-live="polite">
               {!laneVolumes ? 'Loading lane volume…'
@@ -1196,16 +1306,16 @@ export default function MapCommandCenter({
           initialView={detail.view}
           viewToken={detail.token}
           onClose={() => { setSelection(null); setDetail(null); if (selection.kind === 'location') onRegionFocus(null); }}
-          onUnlock={onUnlock}
-          onClaimColony={onClaimColony}
-          onBuild={onBuild}
-          onSellBuilding={onSellBuilding}
-          onMothballBuilding={onMothballBuilding}
-          onReactivateBuilding={onReactivateBuilding}
-          onRushRepairBuilding={onRushRepairBuilding}
-          onMarkUpgradeBuilding={onMarkUpgradeBuilding}
-          onDispatchShip={onDispatchShip}
-          onLaunchExpedition={onLaunchExpedition}
+          onUnlock={guardedUnlock}
+          onClaimColony={guardedClaimColony}
+          onBuild={guardedBuild}
+          onSellBuilding={guardedSellBuilding}
+          onMothballBuilding={guardedMothball}
+          onReactivateBuilding={guardedReactivate}
+          onRushRepairBuilding={guardedRushRepair}
+          onMarkUpgradeBuilding={guardedMarkUpgrade}
+          onDispatchShip={guardedDispatchShip}
+          onLaunchExpedition={guardedLaunchExpedition}
           onNavigateTab={onNavigateTab}
         />
       )}

@@ -165,15 +165,229 @@ export interface ScenePositions {
 
 const DEG = Math.PI / 180;
 
-/** Compute every body + location-anchor world position at scene time tSec.
- *  Pass tSec = 0 for a deterministic static layout (reduced motion). */
-export function computeScenePositions(tSec: number): ScenePositions {
+// ── J2000 Keplerian elements + Kepler solver (graphics Phase 3, item 1) ─────
+// Until Phase 3 the heliocentric bodies rode a cosmetic constant-rate circle
+// from a hand-picked `phaseDeg` on a free-running wall clock: pretty, but the
+// planets were never where the game calendar said they were, so "is there a
+// window to Mars?" was unanswerable. These are the real elements.
+//
+// SOURCE: E. M. Standish, "Keplerian Elements for Approximate Positions of
+// the Major Planets" (JPL Solar System Dynamics), the 1800 AD – 2050 AD
+// table: six elements at the J2000 epoch plus their linear rates per Julian
+// century. Earth uses the Earth–Moon barycentre row, as that table does.
+// Ceres is not a major planet and is not in that table — its row is the JPL
+// Small-Body Database osculating element set at the same epoch, and is the
+// least precise row here.
+//
+// ACCURACY, stated plainly because launch windows are sold to players as
+// INTELLIGENCE: inside the table's own window the heliocentric longitudes
+// are good to a few arcminutes for the inner planets and ~10 arcminutes for
+// the outer ones. Space Tycoon's calendar runs 2026 → 2199 (server-time.ts),
+// so most game dates are an EXTRAPOLATION past 2050. Mean motion — the `L`
+// rate, which is what phase angles and synodic periods are made of — stays
+// accurate; the slowly drifting terms have secular rates below a degree per
+// century. Everything derived from this is labelled an estimate in the UI,
+// and nothing derived from it touches game state.
+
+export interface KeplerElements {
+  /** Semi-major axis: AU at J2000, AU per Julian century. */
+  aAU: number; aRate: number;
+  /** Eccentricity: value at J2000, change per Julian century. */
+  e: number; eRate: number;
+  /** Inclination to the ecliptic: degrees at J2000, degrees per century. */
+  incDeg: number; incRate: number;
+  /** Mean longitude L: degrees at J2000, degrees per century. */
+  meanLonDeg: number; meanLonRate: number;
+  /** Longitude of perihelion (curly pi): degrees at J2000, deg per century. */
+  periLonDeg: number; periLonRate: number;
+  /** Longitude of the ascending node: degrees at J2000, deg per century. */
+  nodeLonDeg: number; nodeLonRate: number;
+}
+
+/** J2000.0 = 2000 January 1.5 TT (JD 2451545.0). We treat the game's UTC
+ *  timestamps as TT; the ~70 s difference is far below this table's error. */
+export const J2000_EPOCH_MS = Date.UTC(2000, 0, 1, 12, 0, 0);
+export const DAYS_PER_JULIAN_CENTURY = 36525;
+export const MS_PER_DAY = 86_400_000;
+/** A sidereal year in days (Earth's actual orbital period), used for the
+ *  a^3/2 period law so Earth comes back out at 365.256 d, not 365.25. */
+export const SIDEREAL_YEAR_DAYS = 365.25636;
+
+export const KEPLER_ELEMENTS: Readonly<Record<string, KeplerElements>> = {
+  mercury: { aAU: 0.38709927, aRate: 0.00000037, e: 0.20563593, eRate: 0.00001906, incDeg: 7.00497902, incRate: -0.00594749, meanLonDeg: 252.25032350, meanLonRate: 149472.67411175, periLonDeg: 77.45779628, periLonRate: 0.16047689, nodeLonDeg: 48.33076593, nodeLonRate: -0.12534081 },
+  venus:   { aAU: 0.72333566, aRate: 0.00000390, e: 0.00677672, eRate: -0.00004107, incDeg: 3.39467605, incRate: -0.00078890, meanLonDeg: 181.97909950, meanLonRate: 58517.81538729, periLonDeg: 131.60246718, periLonRate: 0.00268329, nodeLonDeg: 76.67984255, nodeLonRate: -0.27769418 },
+  earth:   { aAU: 1.00000261, aRate: 0.00000562, e: 0.01671123, eRate: -0.00004392, incDeg: -0.00001531, incRate: -0.01294668, meanLonDeg: 100.46457166, meanLonRate: 35999.37244981, periLonDeg: 102.93768193, periLonRate: 0.32327364, nodeLonDeg: 0.0, nodeLonRate: 0.0 },
+  mars:    { aAU: 1.52371034, aRate: 0.00001847, e: 0.09339410, eRate: 0.00007882, incDeg: 1.84969142, incRate: -0.00813131, meanLonDeg: -4.55343205, meanLonRate: 19140.30268499, periLonDeg: -23.94362959, periLonRate: 0.44441088, nodeLonDeg: 49.55953891, nodeLonRate: -0.29257343 },
+  // JPL SBDB osculating elements at J2000 (a, e, i, node, argument of
+  // perihelion, M0); longitude of perihelion = node + argument, and
+  // L = that + M0. Only the mean longitude advances (n = 360/period).
+  ceres:   { aAU: 2.7658, aRate: 0, e: 0.078, eRate: 0, incDeg: 10.593, incRate: 0, meanLonDeg: 249.980, meanLonRate: 7825.5, periLonDeg: 153.991, periLonRate: 0, nodeLonDeg: 80.393, nodeLonRate: 0 },
+  jupiter: { aAU: 5.20288700, aRate: -0.00011607, e: 0.04838624, eRate: -0.00013253, incDeg: 1.30439695, incRate: -0.00183714, meanLonDeg: 34.39644051, meanLonRate: 3034.74612775, periLonDeg: 14.72847983, periLonRate: 0.21252668, nodeLonDeg: 100.47390909, nodeLonRate: 0.20469106 },
+  saturn:  { aAU: 9.53667594, aRate: -0.00125060, e: 0.05386179, eRate: -0.00050991, incDeg: 2.48599187, incRate: 0.00193609, meanLonDeg: 49.95424423, meanLonRate: 1222.49362201, periLonDeg: 92.59887831, periLonRate: -0.41897216, nodeLonDeg: 113.66242448, nodeLonRate: -0.28867794 },
+  uranus:  { aAU: 19.18916464, aRate: -0.00196176, e: 0.04725744, eRate: -0.00004397, incDeg: 0.77263783, incRate: -0.00242939, meanLonDeg: 313.23810451, meanLonRate: 428.48202785, periLonDeg: 170.95427630, periLonRate: 0.40805281, nodeLonDeg: 74.01692503, nodeLonRate: 0.04240589 },
+  neptune: { aAU: 30.06992276, aRate: 0.00026291, e: 0.00859048, eRate: 0.00005105, incDeg: 1.77004347, incRate: 0.00035372, meanLonDeg: -55.12002969, meanLonRate: 218.45945325, periLonDeg: 44.96476227, periLonRate: -0.32241464, nodeLonDeg: 131.78422574, nodeLonRate: -0.00508664 },
+  pluto:   { aAU: 39.48211675, aRate: -0.00031596, e: 0.24882730, eRate: 0.00005170, incDeg: 17.14001206, incRate: 0.00004818, meanLonDeg: 238.92903833, meanLonRate: 145.20780515, periLonDeg: 224.06891629, periLonRate: -0.04062942, nodeLonDeg: 110.30393684, nodeLonRate: -0.01183482 },
+};
+
+/** Body ids that carry real elements — the heliocentric set the ephemeris,
+ *  the orbit rings and the transfer-window maths all work over. */
+export const EPHEMERIS_BODY_IDS: readonly string[] = Object.keys(KEPLER_ELEMENTS);
+
+export function julianCenturiesSinceJ2000(dateMs: number): number {
+  return (dateMs - J2000_EPOCH_MS) / (DAYS_PER_JULIAN_CENTURY * MS_PER_DAY);
+}
+
+/** Degrees wrapped into [0, 360). */
+export function wrapDeg360(deg: number): number {
+  const d = deg % 360;
+  return d < 0 ? d + 360 : d;
+}
+
+/** Degrees wrapped into (-180, 180] — the convention every phase angle in
+ *  launch-windows.ts uses. */
+export function wrapDegSigned(deg: number): number {
+  const d = wrapDeg360(deg);
+  return d > 180 ? d - 360 : d;
+}
+
+/** Newton-Raphson iteration cap. Convergence for e < 0.3 (every body we
+ *  carry; Pluto is the worst at 0.249) takes 3-4 passes. */
+export const KEPLER_MAX_ITERATIONS = 60;
+/** Convergence tolerance on the eccentric anomaly, in DEGREES. 1e-9 degrees
+ *  is ~3 metres of along-track position at 1 AU — orders of magnitude finer
+ *  than the element table's own few-arcminute accuracy, so the solver is
+ *  never the limiting error term. */
+export const KEPLER_TOLERANCE_DEG = 1e-9;
+
+/**
+ * Solve Kepler's equation  M = E - e*sin(E)  for the eccentric anomaly E.
+ * Degrees in, degrees out (Standish's formulation: the eccentricity is
+ * carried in degrees so the sine term and the anomalies share units).
+ * Newton-Raphson from the standard first guess E0 = M + e*sin(M); stops when
+ * the correction falls below KEPLER_TOLERANCE_DEG or after
+ * KEPLER_MAX_ITERATIONS passes.
+ */
+export function solveKepler(meanAnomalyDeg: number, e: number): number {
+  const M = wrapDegSigned(meanAnomalyDeg);
+  const eStar = (180 / Math.PI) * e;
+  let E = M + eStar * Math.sin(M * DEG);
+  for (let i = 0; i < KEPLER_MAX_ITERATIONS; i++) {
+    const dM = M - (E - eStar * Math.sin(E * DEG));
+    const dE = dM / (1 - e * Math.cos(E * DEG));
+    E += dE;
+    if (Math.abs(dE) <= KEPLER_TOLERANCE_DEG) break;
+  }
+  return E;
+}
+
+export interface HeliocentricPosition {
+  /** J2000 ecliptic coordinates in AU: +x toward the vernal equinox, +z
+   *  toward ecliptic north. */
+  x: number; y: number; z: number;
+  /** Heliocentric distance, AU. */
+  rAU: number;
+  /** Ecliptic longitude, degrees in [0, 360). */
+  lonDeg: number;
+  /** Ecliptic latitude, degrees. */
+  latDeg: number;
+}
+
+/** Heliocentric position from an element set at a real UTC timestamp. */
+export function heliocentricFromElements(el: KeplerElements, dateMs: number): HeliocentricPosition {
+  const T = julianCenturiesSinceJ2000(dateMs);
+  const a = el.aAU + el.aRate * T;
+  const e = el.e + el.eRate * T;
+  const inc = (el.incDeg + el.incRate * T) * DEG;
+  const meanLon = el.meanLonDeg + el.meanLonRate * T;
+  const periLon = el.periLonDeg + el.periLonRate * T;
+  const nodeLonDeg = el.nodeLonDeg + el.nodeLonRate * T;
+  const nodeLon = nodeLonDeg * DEG;
+  const argPeri = (periLon - nodeLonDeg) * DEG;
+  const E = solveKepler(meanLon - periLon, e) * DEG;
+  // Perifocal plane.
+  const xp = a * (Math.cos(E) - e);
+  const yp = a * Math.sqrt(Math.max(0, 1 - e * e)) * Math.sin(E);
+  // Rotate perifocal -> J2000 ecliptic (argument of perihelion, inclination,
+  // then longitude of the ascending node).
+  const cw = Math.cos(argPeri), sw = Math.sin(argPeri);
+  const co = Math.cos(nodeLon), so = Math.sin(nodeLon);
+  const ci = Math.cos(inc), si = Math.sin(inc);
+  const x = (cw * co - sw * so * ci) * xp + (-sw * co - cw * so * ci) * yp;
+  const y = (cw * so + sw * co * ci) * xp + (-sw * so + cw * co * ci) * yp;
+  const z = (sw * si) * xp + (cw * si) * yp;
+  const rAU = Math.hypot(x, y, z);
+  return {
+    x, y, z, rAU,
+    lonDeg: wrapDeg360(Math.atan2(y, x) / DEG),
+    latDeg: rAU > 0 ? Math.asin(Math.max(-1, Math.min(1, z / rAU))) / DEG : 0,
+  };
+}
+
+/**
+ * Heliocentric position of a mapped body at a date. `date` is a REAL UTC
+ * instant — callers hand it the game calendar's date (map-time.ts's
+ * `ephemerisMsForGameMonths`), never the wall clock, so a body is where the
+ * HUD's game date says it is. Returns null for moons and for ids with no
+ * element set (moons ride their parent — see computeScenePositions).
+ */
+export function bodyPositionAt(bodyId: string, date: Date | number): HeliocentricPosition | null {
+  const el = KEPLER_ELEMENTS[bodyId];
+  if (!el) return null;
+  const ms = typeof date === 'number' ? date : date.getTime();
+  if (!Number.isFinite(ms)) return null;
+  return heliocentricFromElements(el, ms);
+}
+
+/**
+ * Map a real heliocentric position into the scene's LOG-SCALED coordinates:
+ * the direction is exactly the real one, the magnitude is squashed by
+ * sceneOrbitRadius so Mercury and Pluto can share a stage. Scene axes match
+ * the pre-Phase-3 layout — ecliptic x maps to scene x, ecliptic y to scene z,
+ * ecliptic north to scene +y.
+ */
+export function sceneVectorFromHeliocentric(p: HeliocentricPosition): Vec3 {
+  const k = sceneOrbitRadius(p.rAU) / Math.max(1e-9, p.rAU);
+  return [p.x * k, p.z * k, p.y * k];
+}
+
+/** Orbital period in days from the semi-major axis (Kepler's third law,
+ *  referenced to Earth's sidereal year). */
+export function orbitalPeriodDays(aAU: number): number {
+  return SIDEREAL_YEAR_DAYS * Math.pow(Math.max(1e-9, aAU), 1.5);
+}
+
+/**
+ * Compute every body + location-anchor world position.
+ *
+ * `tSec` drives the HAND-TUNED orbits — the moons' readability-curve periods
+ * (moonDisplayPeriodSec) and the orbital pips' display periods. Pass 0 for a
+ * deterministic static layout (reduced motion).
+ *
+ * `ephemerisMs` (graphics Phase 3) is the REAL UTC instant of the GAME
+ * calendar date — map-time.ts's `ephemerisMsForGameMonths(...)`. When given,
+ * every heliocentric body is placed from its J2000 elements by solving
+ * Kepler's equation, so the planets are where the game date says they are and
+ * scrubbing the timeline walks them along their real orbits. Omit it and the
+ * legacy cosmetic constant-rate circle from `phaseDeg` is used instead — that
+ * path is kept working for the existing unit tests and for any caller that
+ * only wants a deterministic layout.
+ */
+export function computeScenePositions(tSec: number, ephemerisMs?: number): ScenePositions {
   const bodies: Record<string, Vec3> = {};
   const anchors: Record<string, { pos: Vec3; r: number }> = {};
+  const useEphemeris = typeof ephemerisMs === 'number' && Number.isFinite(ephemerisMs);
 
   // Heliocentric bodies first (moons need their parents resolved).
   for (const b of ORBITAL_BODIES) {
     if (b.parent) continue;
+    if (useEphemeris) {
+      const helio = bodyPositionAt(b.id, ephemerisMs as number);
+      if (helio) {
+        bodies[b.id] = sceneVectorFromHeliocentric(helio);
+        continue;
+      }
+      // No element set for this body — fall through to the legacy circle.
+    }
     const R = sceneOrbitRadius(b.aAU!);
     const period = planetDisplayPeriodSec(b.periodDays);
     const theta = b.phaseDeg * DEG + (period !== 0 ? (tSec / Math.abs(period)) * Math.PI * 2 * Math.sign(period) : 0);
