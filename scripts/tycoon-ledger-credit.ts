@@ -1,7 +1,7 @@
 /**
  * Operator ledger credit/debit for a Space Tycoon profile (2026-09-13).
  *
- *   railway ssh -s spacehub -- npx tsx scripts/tycoon-ledger-credit.ts <email> <amount> "<note>"
+ *   railway ssh -s spacehub -- npx tsx scripts/tycoon-ledger-credit.ts <email|profile:ID> <amount> <note-without-shell-chars>
  *
  * Writes ONE GameLedgerEntry with reason `admin_adjustment` (positive or
  * negative). Nothing else is touched: on the profile's next sync the server
@@ -20,9 +20,11 @@ async function main() {
     console.error('usage: tycoon-ledger-credit.ts <email> <amount> "<note>"');
     process.exit(2);
   }
-  const user = await prisma.user.findUnique({ where: { email }, select: { id: true, gameProfile: { select: { id: true, money: true, companyName: true } } } });
-  if (!user?.gameProfile) { console.error('no game profile for ' + email); process.exit(1); }
-  const p = user.gameProfile;
+  // <email> or profile:<GameProfile.id> (players whose email the operator does not hold).
+  const p = email.startsWith('profile:')
+    ? await prisma.gameProfile.findUnique({ where: { id: email.slice(8) }, select: { id: true, money: true, companyName: true } })
+    : (await prisma.user.findUnique({ where: { email }, select: { gameProfile: { select: { id: true, money: true, companyName: true } } } }))?.gameProfile ?? null;
+  if (!p) { console.error('no game profile for ' + email); process.exit(1); }
   await recordLedger(prisma, { profileId: p.id, moneyDelta: amount, reason: 'admin_adjustment', refId: `admin:${new Date().toISOString().slice(0, 10)}:${note.slice(0, 80)}` });
   const last = await prisma.gameLedgerEntry.findFirst({ where: { profileId: p.id, reason: 'admin_adjustment' }, orderBy: { seq: 'desc' }, select: { seq: true, moneyDelta: true, refId: true, createdAt: true } });
   console.log('HEX ' + Buffer.from(JSON.stringify({ email, company: p.companyName, serverMoneyBefore: p.money, credited: amount, entry: last })).toString('hex'));
