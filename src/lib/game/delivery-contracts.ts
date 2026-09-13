@@ -196,7 +196,16 @@ export function computeTariffFeeRate(
 
 export const POOL_SIZE = 8;
 const POOL_TARGET_SIZE = POOL_SIZE;
-const POOL_REFRESH_MS = 4 * 60 * 60 * 1000; // 4 hours
+/** Exported (2026-09-13) so contract-credit.ts can recover a contract's
+ *  spawn bucket from its seed when pruning credited ids. */
+export const DELIVERY_POOL_REFRESH_MS = 4 * 60 * 60 * 1000; // 4 hours
+const POOL_REFRESH_MS = DELIVERY_POOL_REFRESH_MS;
+
+/** Payment noise band in generateContract — exported (2026-09-13) so the
+ *  sync's delivery credit bound (contract-credit.ts DELIVERY_CREDIT_MULT)
+ *  is derived from the constant the generator enforces. */
+export const DELIVERY_PAYMENT_NOISE_MIN = 0.9;
+export const DELIVERY_PAYMENT_NOISE_MAX = 1.1;
 
 // Wave E2 (docs/ECONOMY_PVP_2026-08.md §2.3 / §2.5 "one price truth"):
 // SUPERSEDES the E1 stopgap. E1 could only apply a flat 15% haircut
@@ -298,7 +307,10 @@ export function generateContract(
   // top of the faction's fixed baseline, matching "BALANCE table becomes
   // dynamic ±0.2" per the LS9 spec.
   const basePrice = resource.baseMarketPrice;
-  const payment = Math.round(basePrice * quantity * flavor.paymentMultiplier * postureMultiplier * (0.9 + rng() * 0.2));
+  const payment = Math.round(
+    basePrice * quantity * flavor.paymentMultiplier * postureMultiplier
+    * (DELIVERY_PAYMENT_NOISE_MIN + rng() * (DELIVERY_PAYMENT_NOISE_MAX - DELIVERY_PAYMENT_NOISE_MIN)),
+  );
 
   // Deadline: from flavor range, measured in real-time hours.
   const deadlineHours = randRange(rng, flavor.deadlineHoursRange[0], flavor.deadlineHoursRange[1]);

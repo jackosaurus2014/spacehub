@@ -26,13 +26,17 @@ import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMult
 import { SHIP_MAP, getTravelTime } from './ships';
 // Mining Phase A (2026-09-12): the Mining Order reducer (pure, clock-driven).
 import { advanceMiningOrders } from './mining-orders';
+// Mining Phase B (2026-09-13): claims lapse / upkeep (local-only play), rock
+// event cards on the single pendingChoice slot.
+import { advanceAsteroidClaims } from './asteroid-claims';
+import { rollMiningEventCards } from './random-events';
 import { getWorkforceBonuses, getRequiredCrew, getStaffingReport, type WorkforceState } from './workforce';
 import { getActiveBoostMultiplier, cleanupExpiredBoosts } from './speed-boosts';
 import type { ActiveBoost } from './speed-boosts';
 import { getGlobalActiveMarketEvents } from './market-events';
 import type { ActiveMarketEvent } from './market-events';
 import { checkAchievements } from './achievements';
-import { rollTimedEvent, calculateEventReward, EVENT_TEMPLATES } from './timed-events';
+import { rollTimedEvent, calculateEventReward, EVENT_TEMPLATES, TIMED_EVENT_COMPLETED_RETENTION_MS } from './timed-events';
 // AAA Round 1 E3.6: owned faction licences confer real effects (the Hive
 // biomaterial supply agreement is delivered in the tick; the routing/tribute
 // licences are read by cargo-logistics.ts and hazards.ts).
@@ -91,7 +95,7 @@ import {
 } from './science-missions';
 import {
   consumeServerReconciliation, applyReconciliationToState,
-  consumeMoneyCorrection, applyMoneyCorrectionToState,
+  consumeMoneyCorrectionDetail, applyMoneyCorrectionToState, buildMoneyCorrectionReport,
 } from './ledger-reconcile';
 // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): registry-rejected buildings.
 import { consumeAssetReconciliation, applyAssetReconciliationToState } from './asset-reconcile';
@@ -1817,20 +1821,31 @@ export function processFullTick(state: GameState): GameState {
   // guard above — a plausibility clamp must land even with no ledger rows
   // pending. Logged so the player can see why the balance moved.
   try {
-    const correction = consumeMoneyCorrection();
-    if (correction !== null && correction !== 0) {
+    const slot = consumeMoneyCorrectionDetail();
+    const correction = slot ? slot.delta : null;
+    if (slot && correction !== null && correction !== 0) {
       const applied = applyMoneyCorrectionToState(workingState, correction);
       const abs = Math.abs(correction);
       const amount = abs >= 1_000_000_000
         ? `$${(abs / 1_000_000_000).toFixed(2)}B`
         : abs >= 1_000_000 ? `$${(abs / 1_000_000).toFixed(1)}M` : `$${Math.round(abs / 1_000)}K`;
+      // 2026-09-13: a REMOVAL also posts a Mail item (Reports → Mail) that
+      // records the amount, the reason and the ids the server could not
+      // verify — one per server figure (id = the correction key), so a
+      // duplicate correction can never produce a second mail either.
+      let reports = applied.reports || [];
+      if (correction < 0) {
+        const report = buildMoneyCorrectionReport(correction, slot.detail, Date.now());
+        if (!reports.some(r => r.id === report.id)) reports = [...reports, report];
+      }
       workingState = {
         ...applied,
+        reports,
         eventLog: [{
           id: generateId(), date: applied.gameDate, type: 'random_event' as const,
           title: `🏦 Balance reconciled with the server: ${correction > 0 ? '+' : '−'}${amount}`,
           description: correction < 0
-            ? 'Income the server could not verify was removed so purchases match the balance shown.'
+            ? 'Income the server could not verify was removed so purchases match the balance shown. Details in Reports → Mail.'
             : 'The server credited more than this session had recorded.',
         }, ...applied.eventLog].slice(0, MAX_EVENT_LOG),
       };
@@ -2954,9 +2969,14 @@ export function processFullTick(state: GameState): GameState {
       newState = { ...newState, lastTimedEventSpawnMs: now };
     }
 
-    // Remove completed events older than 1 hour (give player time to see result)
+    // Remove completed events older than the retention window. This used to
+    // be 1 h ("give player time to see result"); it is 24 h since 2026-09-13
+    // because the sync reports completed occurrences to the server's money
+    // credit (contract-credit.ts computeTimedEventCredit) and a completion
+    // whose tab closed before the next sync must still be on the save when
+    // the player returns. ContractsPanel keeps showing them for 1 h only.
     const cleanedEvents = activeTimedEvents.filter(e => {
-      if (e.completed && e.completedAtMs && (now - e.completedAtMs) > 3600000) return false;
+      if (e.completed && e.completedAtMs && (now - e.completedAtMs) > TIMED_EVENT_COMPLETED_RETENTION_MS) return false;
       return true;
     });
 

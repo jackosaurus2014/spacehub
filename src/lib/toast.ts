@@ -2,12 +2,25 @@
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
+/** An optional action rendered as a link inside the toast (2026-09-13):
+ *  `href` renders an anchor, `onClick` a button; both dismiss the toast. */
+export interface ToastLink {
+  label: string;
+  href?: string;
+  onClick?: () => void;
+}
+
 export interface Toast {
   id: string;
   type: ToastType;
   message: string;
   title?: string;
   duration?: number;
+  link?: ToastLink;
+}
+
+export interface ToastOptions {
+  link?: ToastLink;
 }
 
 type ToastListener = (toast: Toast) => void;
@@ -32,9 +45,9 @@ export function onDismiss(listener: DismissListener): () => void {
   return () => { dismissListeners.delete(listener); };
 }
 
-function showToast(type: ToastType, message: string, title?: string, duration?: number): string {
+function showToast(type: ToastType, message: string, title?: string, duration?: number, options?: ToastOptions): string {
   const id = generateId();
-  const toast: Toast = { id, type, message, title, duration: duration ?? 5000 };
+  const toast: Toast = { id, type, message, title, duration: duration ?? 5000, ...(options?.link ? { link: options.link } : {}) };
   toastListeners.forEach((listener) => listener(toast));
   return id;
 }
@@ -44,12 +57,12 @@ export function dismissToast(id: string): void {
 }
 
 export const toast = {
-  success: (message: string, title?: string, duration?: number) =>
-    showToast('success', message, title, duration),
-  error: (message: string, title?: string, duration?: number) =>
-    showToast('error', message, title, duration),
-  warning: (message: string, title?: string, duration?: number) =>
-    showToast('warning', message, title, duration),
-  info: (message: string, title?: string, duration?: number) =>
-    showToast('info', message, title, duration),
+  success: (message: string, title?: string, duration?: number, options?: ToastOptions) =>
+    showToast('success', message, title, duration, options),
+  error: (message: string, title?: string, duration?: number, options?: ToastOptions) =>
+    showToast('error', message, title, duration, options),
+  warning: (message: string, title?: string, duration?: number, options?: ToastOptions) =>
+    showToast('warning', message, title, duration, options),
+  info: (message: string, title?: string, duration?: number, options?: ToastOptions) =>
+    showToast('info', message, title, duration, options),
 };

@@ -19,6 +19,9 @@ import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { getColonyClaimCost } from '@/lib/game/colonies';
 import { playSound, initAudio, setAmbientRegion } from '@/lib/game/sound-engine';
 import { requestSubView, onSubViewAnnounce } from '@/lib/game/sub-view';
+// 2026-09-13: lets non-React code (the money-correction toast's "Open Mail"
+// action in useGameSync) drive navigateToTab — same posture as sync-bridge.
+import { registerNavigate } from '@/lib/game/nav-bridge';
 import { updateMusicMood } from '@/lib/game/music-engine';
 import { getBuildingAsset } from '@/lib/game/assets';
 import Link from 'next/link';
@@ -960,6 +963,11 @@ export default function SpaceTycoonPage() {
     setActiveSubView(target.subView);
     if (target.subView) requestSubView(target.subView);
   }, [state, unlockedTabIds]);
+  // 2026-09-13: expose navigateToTab to non-React callers (nav-bridge.ts).
+  useEffect(() => {
+    registerNavigate(navigateToTab);
+    return () => registerNavigate(null);
+  }, [navigateToTab]);
   // Region focus drives the shell's background tint + planet texture overlay.
   // Set when the user clicks a location on the map, null = neutral palette.
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);

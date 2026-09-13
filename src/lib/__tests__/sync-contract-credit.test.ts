@@ -253,3 +253,160 @@ describe('POST /api/space-tycoon/sync — contract credit in the money clamp', (
     expect(mockGameProfile.upsert).not.toHaveBeenCalled();
   });
 });
+
+// ─── 2026-09-13: timed-event + delivery credits through the route ────────────
+
+import { EVENT_TEMPLATES, calculateEventReward } from '@/lib/game/timed-events';
+import { timedEventCreditId, maxTimedEventReward, DELIVERY_CREDIT_MULT } from '@/lib/game/contract-credit';
+import { generateContract, DELIVERY_POOL_REFRESH_MS } from '@/lib/game/delivery-contracts';
+import { RESOURCE_MAP } from '@/lib/game/resources';
+import type { GameState } from '@/lib/game/types';
+
+const PMB_TEMPLATE = EVENT_TEMPLATES.find(e => e.id === 'evt_precious_metals')!;
+const REH_TEMPLATE = EVENT_TEMPLATES.find(e => e.id === 'evt_rare_earth_hunt')!;
+/** A 14-service corporation (the founder's scale): PMB $280M, REH $210M. */
+const FOURTEEN_SERVICES = Array.from({ length: 14 }, (_, i) => ({
+  definitionId: 'svc_ground_tracking', locationId: 'earth_surface', linkedBuildingIds: [] as string[], _i: i,
+}));
+const PMB_REWARD = calculateEventReward(PMB_TEMPLATE, { activeServices: FOURTEEN_SERVICES } as unknown as GameState);
+const REH_REWARD = calculateEventReward(REH_TEMPLATE, { activeServices: FOURTEEN_SERVICES } as unknown as GameState);
+
+function eventOccurrence(templateId: string, startedAtMs: number, reward: number) {
+  return { id: timedEventCreditId(templateId, startedAtMs), templateId, startedAtMs, completedAtMs: startedAtMs + 3600_000, reward };
+}
+
+describe('POST /api/space-tycoon/sync — timed-event credit', () => {
+  it('the founder case: Precious Metals Bonanza + Rare Earth Hunt ($490M) pass the clamp in full and are persisted once', async () => {
+    expect(PMB_REWARD).toBe(280_000_000);
+    expect(REH_REWARD).toBe(210_000_000);
+    // The persisted row carries the 14 services the reward was scaled from.
+    setup(existingRow({ activeServicesData: FOURTEEN_SERVICES }));
+    const now = Date.now();
+    const pmb = eventOccurrence('evt_precious_metals', now - 5 * 3600_000, PMB_REWARD);
+    const reh = eventOccurrence('evt_rare_earth_hunt', now - 4 * 3600_000, REH_REWARD);
+    const claim = PREV_MONEY + PMB_REWARD + REH_REWARD;
+
+    const { res, json } = await postSync({ money: claim, completedTimedEvents: [pmb, reh] });
+
+    expect(res.status).toBe(200);
+    expect(persisted().money).toBe(claim);
+    expect(json.reconciledMoney).toBe(claim);
+    expect(json.timedEventCredit).toEqual({ creditedNow: [pmb.id, reh.id], headroomCredit: 490_000_000, rejected: [], deferred: 0 });
+    expect(persisted().creditedContractIds).toEqual([pmb.id, reh.id]);
+    expect(auditEvents()).not.toContain('client_money_implausible_rejected');
+    expect(typeof json.syncedAtMs).toBe('number');
+    expect(json.moneyClamp).toMatchObject({ wasClamped: false, rejectedExcess: 0 });
+
+    // Second sync with the same occurrences: nothing new is credited.
+    jest.clearAllMocks();
+    __resetRouteThrottle();
+    setup(existingRow({ activeServicesData: FOURTEEN_SERVICES, money: claim, creditedContractIds: [pmb.id, reh.id] }));
+    const again = await postSync({ money: claim + PMB_REWARD, completedTimedEvents: [pmb, reh] });
+    expect(again.json.timedEventCredit.creditedNow).toEqual([]);
+    expect(persisted().money as number).toBeLessThan(claim + PMB_REWARD);
+    expect(persisted().creditedContractIds).toEqual([pmb.id, reh.id]);
+    expect(again.json.moneyClamp.wasClamped).toBe(true);
+  });
+
+  it('the bound is the server-recomputed reward: a forged $5B reward on an empty row is credited at the bound', async () => {
+    setup(existingRow());
+    const now = Date.now();
+    const evt = eventOccurrence('evt_precious_metals', now - 3600_000, 5_000_000_000);
+    const { json } = await postSync({ money: PREV_MONEY + 5_000_000_000, completedTimedEvents: [evt] });
+    expect(json.timedEventCredit.headroomCredit).toBe(maxTimedEventReward('evt_precious_metals', 0));
+    expect(persisted().money as number).toBeLessThanOrEqual(PREV_MONEY + plausibleIncomeHeadroom(65_000, EMPTY_GROSS) + json.timedEventCredit.headroomCredit);
+    expect(auditEvents()).toContain('client_money_implausible_rejected');
+  });
+
+  it('this sync\'s validated service list also counts toward the bound (the reward was fixed at spawn)', async () => {
+    setup(existingRow());
+    const now = Date.now();
+    const evt = eventOccurrence('evt_rare_earth_hunt', now - 3600_000, REH_REWARD);
+    const { json } = await postSync({
+      money: PREV_MONEY + REH_REWARD,
+      activeServices: FOURTEEN_SERVICES.map(({ _i: _unused, ...s }) => s),
+      completedTimedEvents: [evt],
+    });
+    expect(json.timedEventCredit.headroomCredit).toBe(REH_REWARD);
+    expect(persisted().money).toBe(PREV_MONEY + REH_REWARD);
+  });
+
+  it('an occurrence outside its template window is rejected, audited, and named in unverifiedIncome', async () => {
+    setup(existingRow());
+    const now = Date.now();
+    const start = now - 30 * 3600_000; // PMB lasts 8 h
+    const evt = { ...eventOccurrence('evt_precious_metals', start, 40_000_000), completedAtMs: start + 20 * 3600_000 };
+    const { json } = await postSync({ money: PREV_MONEY + 40_000_000, completedTimedEvents: [evt] });
+    expect(json.timedEventCredit).toEqual({ creditedNow: [], headroomCredit: 0, rejected: [{ id: evt.id, reason: 'outside_window' }], deferred: 0 });
+    expect(json.unverifiedIncome.timedEvents).toEqual([evt.id]);
+    expect(auditEvents()).toContain('income_credit_rejected');
+    expect(persisted().creditedContractIds).toEqual([]);
+  });
+
+  it('a malformed completedTimedEvents body is a 400', async () => {
+    setup(existingRow());
+    const { res, json } = await postSync({ money: PREV_MONEY, completedTimedEvents: [{ id: 'evt:x:1' }] });
+    expect(res.status).toBe(400);
+    expect(json.field).toBe('completedTimedEvents[0].templateId');
+  });
+});
+
+describe('POST /api/space-tycoon/sync — delivery credit', () => {
+  const gen = generateContract('the-dominion', Math.floor(Date.now() / DELIVERY_POOL_REFRESH_MS) * 1000 + 37, Date.now(), 1.0);
+  const delivery = { id: gen.id, resourceId: gen.resourceId, quantity: gen.quantity, paymentMoney: gen.paymentMoney };
+
+  it('a delivery whose resources left the inventory passes the clamp and is persisted once', async () => {
+    setup(existingRow({ resources: { [gen.resourceId]: 2_000 } }));
+    const claim = PREV_MONEY + gen.paymentMoney;
+
+    const { json } = await postSync({ money: claim, resources: { [gen.resourceId]: 2_000 - gen.quantity }, completedDeliveries: [delivery] });
+
+    expect(persisted().money).toBe(claim);
+    expect(json.deliveryCredit).toEqual({ creditedNow: [gen.id], headroomCredit: gen.paymentMoney, rejected: [], deferred: 0 });
+    expect(persisted().creditedContractIds).toEqual([gen.id]);
+    expect(auditEvents()).not.toContain('client_money_implausible_rejected');
+  });
+
+  it('the resource gate: an unchanged inventory credits nothing, audits, and the id is not persisted', async () => {
+    setup(existingRow({ resources: { [gen.resourceId]: 2_000 } }));
+    const claim = PREV_MONEY + gen.paymentMoney;
+
+    const { json } = await postSync({ money: claim, resources: { [gen.resourceId]: 2_000 }, completedDeliveries: [delivery] });
+
+    expect(json.deliveryCredit).toEqual({ creditedNow: [], headroomCredit: 0, rejected: [{ id: gen.id, reason: 'resource_gate' }], deferred: 0 });
+    expect(json.unverifiedIncome.deliveries).toEqual([gen.id]);
+    expect(persisted().money as number).toBeLessThan(claim);
+    expect(persisted().creditedContractIds).toEqual([]);
+    expect(auditEvents()).toContain('income_credit_rejected');
+    const audit = mockMarketAuditLog.create.mock.calls.find(c => c[0].data.eventType === 'income_credit_rejected')![0].data;
+    expect(audit.details.deliveries.resourceGate[gen.resourceId]).toEqual({ claimed: gen.quantity, decrease: 0, passed: false });
+  });
+
+  it('an inflated payment is credited at the bound, never the claim', async () => {
+    setup(existingRow({ resources: { [gen.resourceId]: 2_000 } }));
+    const base = RESOURCE_MAP.get(gen.resourceId as never)!.baseMarketPrice;
+    const { json } = await postSync({
+      money: PREV_MONEY + 1e12,
+      resources: { [gen.resourceId]: 2_000 - gen.quantity },
+      completedDeliveries: [{ ...delivery, paymentMoney: 1e12 }],
+    });
+    expect(json.deliveryCredit.headroomCredit).toBeLessThanOrEqual(Math.round(gen.quantity * base * DELIVERY_CREDIT_MULT));
+    expect(json.deliveryCredit.headroomCredit).toBeLessThan(1e12);
+    expect(auditEvents()).toContain('client_money_implausible_rejected');
+  });
+
+  it('the three credits share the persisted set', async () => {
+    setup(existingRow({ creditedContractIds: [FIRST], resources: { [gen.resourceId]: 2_000 } }));
+    const now = Date.now();
+    const evt = eventOccurrence('evt_rare_earth_hunt', now - 3600_000, 30_000_000);
+    const second = CONTRACT_POOL[1].id;
+    await postSync({
+      money: PREV_MONEY,
+      resources: { [gen.resourceId]: 2_000 - gen.quantity },
+      completedContracts: [FIRST, second],
+      completedTimedEvents: [evt],
+      completedDeliveries: [delivery],
+    });
+    expect(persisted().creditedContractIds).toEqual([FIRST, second, evt.id, gen.id]);
+  });
+});

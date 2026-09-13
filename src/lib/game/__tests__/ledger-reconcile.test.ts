@@ -413,3 +413,107 @@ describe('money correction queue + apply', () => {
     expect(applyMoneyCorrectionToState(s, -50_000).money).toBe(100 - 50_000);
   });
 });
+
+// ─── 2026-09-13: never remove money silently twice + the Mail record ─────────
+
+import {
+  moneyCorrectionKey,
+  wasNegativeCorrectionQueued,
+  consumeMoneyCorrectionDetail,
+  buildMoneyCorrectionReport,
+  moneyCorrectionReportId,
+  formatCorrectionAmount,
+  MONEY_CORRECTION_KEY_MEMORY,
+  type MoneyCorrectionDetail,
+} from '../ledger-reconcile';
+
+function detailFor(reconciledMoney: number, syncedAtMs: number, extra: Partial<MoneyCorrectionDetail> = {}): MoneyCorrectionDetail {
+  return {
+    key: moneyCorrectionKey(reconciledMoney, syncedAtMs),
+    reconciledMoney,
+    syncedAtMs,
+    rejectedExcess: 0,
+    unverified: { contracts: [], timedEvents: [], deliveries: [] },
+    ...extra,
+  };
+}
+
+describe('negative money corrections are idempotent on (reconciledMoney, syncedAtMs)', () => {
+  beforeEach(() => __clearReconciliationQueue());
+
+  it('the same server figure is refused the second time, even after the first was consumed', () => {
+    const d = detailFor(101_000_000, 1_800_000_000_000);
+    expect(queueMoneyCorrection(-499_000_000, d)).toBe(true);
+    expect(consumeMoneyCorrection()).toBe(-499_000_000);
+    expect(queueMoneyCorrection(-499_000_000, d)).toBe(false);
+    expect(consumeMoneyCorrection()).toBeNull();
+    expect(wasNegativeCorrectionQueued(d.key)).toBe(true);
+  });
+
+  it('a different sync timestamp or figure is a new correction', () => {
+    expect(queueMoneyCorrection(-10_000_000, detailFor(101_000_000, 1))).toBe(true);
+    expect(queueMoneyCorrection(-10_000_000, detailFor(101_000_000, 2))).toBe(true);
+    expect(queueMoneyCorrection(-10_000_000, detailFor(102_000_000, 2))).toBe(true);
+    expect(moneyCorrectionKey(101_000_000, 1)).not.toBe(moneyCorrectionKey(101_000_000, 2));
+  });
+
+  it('positive corrections and detail-less negatives are never keyed', () => {
+    const d = detailFor(150_000_000, 5);
+    expect(queueMoneyCorrection(20_000_000, d)).toBe(true);
+    expect(queueMoneyCorrection(20_000_000, d)).toBe(true);
+    expect(wasNegativeCorrectionQueued(d.key)).toBe(false);
+    expect(queueMoneyCorrection(-5_000_000)).toBe(true);
+    expect(queueMoneyCorrection(-5_000_000)).toBe(true);
+  });
+
+  it('remembers a bounded number of keys (the newest win)', () => {
+    for (let i = 0; i < MONEY_CORRECTION_KEY_MEMORY + 5; i++) {
+      queueMoneyCorrection(-1_000_000, detailFor(1_000_000, i));
+    }
+    expect(wasNegativeCorrectionQueued(moneyCorrectionKey(1_000_000, 0))).toBe(false);
+    expect(wasNegativeCorrectionQueued(moneyCorrectionKey(1_000_000, MONEY_CORRECTION_KEY_MEMORY + 4))).toBe(true);
+  });
+
+  it('consumeMoneyCorrectionDetail hands the engine the delta and the detail, once', () => {
+    const d = detailFor(101_000_000, 9, { rejectedExcess: 499_000_000 });
+    queueMoneyCorrection(-499_000_000, d);
+    expect(consumeMoneyCorrectionDetail()).toEqual({ delta: -499_000_000, detail: d });
+    expect(consumeMoneyCorrectionDetail()).toBeNull();
+  });
+});
+
+describe('buildMoneyCorrectionReport — the Mail record', () => {
+  it('names the amount, the server figure, the rejected excess and every unverified id; id = the correction key', () => {
+    const d = detailFor(101_000_000, 1_800_000_000_000, {
+      rejectedExcess: 499_000_000,
+      unverified: { contracts: ['c_forged'], timedEvents: ['evt:evt_precious_metals:5'], deliveries: ['dlv-the-dominion-a-b'] },
+    });
+    const r = buildMoneyCorrectionReport(-499_000_000, d, 1_800_000_060_000);
+    expect(r.id).toBe(moneyCorrectionReportId(d.key));
+    expect(r.type).toBe('system_alert');
+    expect(r.read).toBe(false);
+    expect(r.createdAt).toBe(1_800_000_060_000);
+    expect(r.title).toBe('Balance reconciled: $499.0M removed');
+    expect(r.body).toContain('$499.0M was removed');
+    expect(r.body).toContain("server's figure ($101.0M)");
+    expect(r.body).toContain('Claim above the ceiling this sync: $499.0M');
+    expect(r.body).toContain('contracts: c_forged');
+    expect(r.body).toContain('timed events: evt:evt_precious_metals:5');
+    expect(r.body).toContain('deliveries: dlv-the-dominion-a-b');
+    expect(r.body).toContain('contact support');
+  });
+
+  it('explains a correction with no named ids, and survives a missing detail', () => {
+    const r = buildMoneyCorrectionReport(-2_500_000, detailFor(50_000_000, 3), 10);
+    expect(r.body).toContain('No specific contract, event or delivery was named');
+    const bare = buildMoneyCorrectionReport(-1_500_000_000, null, 10);
+    expect(bare.title).toBe('Balance reconciled: $1.50B removed');
+    expect(bare.id).toBe(moneyCorrectionReportId(moneyCorrectionKey(0, 10)));
+  });
+
+  it('formatCorrectionAmount picks B / M / K', () => {
+    expect(formatCorrectionAmount(1_500_000_000)).toBe('$1.50B');
+    expect(formatCorrectionAmount(20_000_000)).toBe('$20.0M');
+    expect(formatCorrectionAmount(450_000)).toBe('$450K');
+  });
+});

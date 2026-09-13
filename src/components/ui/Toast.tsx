@@ -50,7 +50,7 @@ interface ToastItemProps {
 }
 
 function ToastItem({ toast, onRemove }: ToastItemProps) {
-  const { type, message, title, duration = 5000 } = toast;
+  const { type, message, title, duration = 5000, link } = toast;
   const style = typeStyles[type];
   const [progress, setProgress] = useState(100);
   const [isExiting, setIsExiting] = useState(false);
@@ -145,6 +145,25 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
           <p className="text-sm text-white/70 leading-snug">
             {message}
           </p>
+          {link && (
+            link.href ? (
+              <a
+                href={link.href}
+                onClick={() => { link.onClick?.(); handleDismiss(); }}
+                className={`inline-block mt-1.5 text-xs font-semibold underline underline-offset-2 ${style.text} hover:opacity-80`}
+              >
+                {link.label}
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={() => { link.onClick?.(); handleDismiss(); }}
+                className={`inline-block mt-1.5 text-xs font-semibold underline underline-offset-2 ${style.text} hover:opacity-80`}
+              >
+                {link.label}
+              </button>
+            )
+          )}
         </div>
 
         {/* Close button */}

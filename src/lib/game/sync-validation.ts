@@ -56,7 +56,14 @@ export const SYNC_MAX_COMMANDERS = 30;
 /** Completed static-contract ids (contract-credit.ts). CONTRACT_POOL has
  *  ~20 entries; anything past the cap is dropped, never credited. */
 export const SYNC_MAX_CONTRACTS = 100;
+/** Completed faction delivery contracts (contract-credit.ts). The save keeps
+ *  the most recent 100 completions; the credit takes at most 20 new per sync. */
+export const SYNC_MAX_DELIVERIES = 100;
+/** Completed timed-event occurrences (contract-credit.ts). The engine keeps
+ *  at most 3 open events and retains completions for 24 h. */
+export const SYNC_MAX_TIMED_EVENTS = 20;
 export const SYNC_MAX_LICENSES = 12;
+const MAX_TIMESTAMP_MS = 4102444800000; // 2100-01-01
 /** JSON size cap on the client's own workforce object. */
 export const SYNC_MAX_WORKFORCE_BYTES = 32_768;
 
@@ -129,6 +136,29 @@ export interface ValidatedSyncEconomics {
    *  (contract-credit.ts). Id-shaped strings only; existence is checked
    *  against the pool at credit time, unknown ids are ignored there. */
   completedContracts: string[];
+  /** 2026-09-13: completed faction delivery contracts, so the money clamp
+   *  can credit each one once against the resources it consumed
+   *  (contract-credit.ts computeDeliveryCredit). Shape-checked here;
+   *  existence / resource gate / seed bound are applied at credit time. */
+  completedDeliveries: SyncCompletedDelivery[];
+  /** 2026-09-13: completed timed-event occurrences, credited once each
+   *  against the server-recomputed reward (computeTimedEventCredit). */
+  completedTimedEvents: SyncCompletedTimedEvent[];
+}
+
+export interface SyncCompletedDelivery {
+  id: string;
+  resourceId: string;
+  quantity: number;
+  paymentMoney: number;
+}
+
+export interface SyncCompletedTimedEvent {
+  id: string;
+  templateId: string;
+  startedAtMs: number;
+  completedAtMs: number;
+  reward: number;
 }
 
 export type SyncValidationResult =
@@ -355,6 +385,63 @@ function validateServices(raw: unknown): SyncService[] {
   return out;
 }
 
+function validateCompletedDeliveries(raw: unknown): SyncCompletedDelivery[] {
+  if (raw === undefined || raw === null) return [];
+  if (!Array.isArray(raw)) return fail('completedDeliveries', 'completedDeliveries must be an array');
+  if (raw.length > SYNC_MAX_DELIVERIES) return fail('completedDeliveries', `completedDeliveries has more than ${SYNC_MAX_DELIVERIES} entries`);
+  const out: SyncCompletedDelivery[] = [];
+  const seen = new Set<string>();
+  raw.forEach((d, i) => {
+    if (!d || typeof d !== 'object') return fail(`completedDeliveries[${i}]`, `completedDeliveries[${i}] must be an object`);
+    const r = d as Record<string, unknown>;
+    if (typeof r.id !== 'string' || !ID_RE.test(r.id)) return fail(`completedDeliveries[${i}].id`, `completedDeliveries[${i}].id must be an id`);
+    if (typeof r.resourceId !== 'string' || !SLUG_RE.test(r.resourceId)) {
+      return fail(`completedDeliveries[${i}].resourceId`, `completedDeliveries[${i}].resourceId must be a slug`);
+    }
+    const quantity = finiteNumber(r.quantity, `completedDeliveries[${i}].quantity`);
+    if (quantity < 0 || quantity > SYNC_RESOURCE_HARD_CAP) {
+      return fail(`completedDeliveries[${i}].quantity`, `completedDeliveries[${i}].quantity is out of range`);
+    }
+    const paymentMoney = finiteNumber(r.paymentMoney, `completedDeliveries[${i}].paymentMoney`);
+    if (paymentMoney < 0 || paymentMoney > SYNC_MONEY_HARD_CAP) {
+      return fail(`completedDeliveries[${i}].paymentMoney`, `completedDeliveries[${i}].paymentMoney is out of range`);
+    }
+    if (seen.has(r.id)) return; // duplicate — keep the first
+    seen.add(r.id);
+    out.push({ id: r.id, resourceId: r.resourceId, quantity, paymentMoney });
+  });
+  return out;
+}
+
+function validateCompletedTimedEvents(raw: unknown): SyncCompletedTimedEvent[] {
+  if (raw === undefined || raw === null) return [];
+  if (!Array.isArray(raw)) return fail('completedTimedEvents', 'completedTimedEvents must be an array');
+  if (raw.length > SYNC_MAX_TIMED_EVENTS) return fail('completedTimedEvents', `completedTimedEvents has more than ${SYNC_MAX_TIMED_EVENTS} entries`);
+  const out: SyncCompletedTimedEvent[] = [];
+  const seen = new Set<string>();
+  raw.forEach((e, i) => {
+    if (!e || typeof e !== 'object') return fail(`completedTimedEvents[${i}]`, `completedTimedEvents[${i}] must be an object`);
+    const r = e as Record<string, unknown>;
+    if (typeof r.id !== 'string' || !ID_RE.test(r.id)) return fail(`completedTimedEvents[${i}].id`, `completedTimedEvents[${i}].id must be an id`);
+    if (typeof r.templateId !== 'string' || !ID_RE.test(r.templateId)) {
+      return fail(`completedTimedEvents[${i}].templateId`, `completedTimedEvents[${i}].templateId must be an id`);
+    }
+    const startedAtMs = finiteNumber(r.startedAtMs, `completedTimedEvents[${i}].startedAtMs`);
+    const completedAtMs = finiteNumber(r.completedAtMs, `completedTimedEvents[${i}].completedAtMs`);
+    if (startedAtMs < 0 || startedAtMs > MAX_TIMESTAMP_MS || completedAtMs < 0 || completedAtMs > MAX_TIMESTAMP_MS) {
+      return fail(`completedTimedEvents[${i}].startedAtMs`, `completedTimedEvents[${i}] timestamps are out of range`);
+    }
+    const reward = finiteNumber(r.reward, `completedTimedEvents[${i}].reward`);
+    if (reward < 0 || reward > SYNC_MONEY_HARD_CAP) {
+      return fail(`completedTimedEvents[${i}].reward`, `completedTimedEvents[${i}].reward is out of range`);
+    }
+    if (seen.has(r.id)) return;
+    seen.add(r.id);
+    out.push({ id: r.id, templateId: r.templateId, startedAtMs, completedAtMs, reward });
+  });
+  return out;
+}
+
 function stringList(raw: unknown, field: string, max: number, re: RegExp): string[] {
   if (raw === undefined || raw === null) return [];
   if (!Array.isArray(raw)) return fail(field, `${field} must be an array`);
@@ -403,6 +490,8 @@ export function validateSyncEconomics(body: Record<string, unknown>): SyncValida
         .filter(l => LOCATION_MAP.has(l)),
       completedResearch: stringList(body.completedResearch, 'completedResearch', SYNC_MAX_RESEARCH, ID_RE),
       completedContracts: stringList(body.completedContracts, 'completedContracts', SYNC_MAX_CONTRACTS, ID_RE),
+      completedDeliveries: validateCompletedDeliveries(body.completedDeliveries),
+      completedTimedEvents: validateCompletedTimedEvents(body.completedTimedEvents),
     };
     return { ok: true, data };
   } catch (e) {

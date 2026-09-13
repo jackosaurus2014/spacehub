@@ -19,7 +19,7 @@
 // Solo players (not logged in, or with no server-side transactions) have an
 // empty ledger: delta = 0, nothing changes, zero behavior difference.
 
-import type { GameState } from './types';
+import type { GameState, GameReport } from './types';
 import { REAL_MS_PER_GAME_MONTH } from './server-time';
 
 /** Wire-format ledger entry as returned by the sync route. */
@@ -354,6 +354,7 @@ export function consumeServerReconciliation(): LedgerReconciliation | null {
 export function __clearReconciliationQueue(): void {
   pendingReconciliation = null;
   pendingMoneyCorrection = null;
+  appliedNegativeCorrectionKeys.length = 0;
 }
 
 // ─── Money correction (client adopts the server's reconciled balance) ────────
@@ -390,19 +391,123 @@ export function computeMoneyCorrection(
   return Math.abs(delta) >= MONEY_CORRECTION_MIN_ABS ? delta : 0;
 }
 
-let pendingMoneyCorrection: number | null = null;
+// ─── Never remove money silently twice (2026-09-13) ──────────────────────────
+// A negative correction is a REMOVAL from the player's balance. Two syncs can
+// answer with the same server figure (a forced funds-refusal push landing
+// next to the routine sync, a response arriving after a retry, two tabs on
+// one save), and applying the same removal twice took money that was never
+// even claimed. Every negative correction therefore carries the key of the
+// server figure it was computed from — `reconciledMoney` + the server's
+// persisted sync timestamp — and a key that has already been queued is
+// refused. Positive corrections (the server credited more) are not keyed:
+// re-applying one is bounded by the ledger ack cursor, and the figure is
+// re-derived on the next sync anyway.
+
+/** How many negative-correction keys the client remembers (the newest win). */
+export const MONEY_CORRECTION_KEY_MEMORY = 50;
+
+export interface MoneyCorrectionDetail {
+  /** Idempotency key: `<reconciledMoney>@<syncedAtMs>`. */
+  key: string;
+  /** The server's persisted figure this correction converges to. */
+  reconciledMoney: number;
+  /** The server's persisted sync timestamp (ms), 0 when it did not say. */
+  syncedAtMs: number;
+  /** How much of the client's claim the plausibility ceiling rejected. */
+  rejectedExcess: number;
+  /** The one-shot income ids the server saw but could not credit. */
+  unverified: { contracts: string[]; timedEvents: string[]; deliveries: string[] };
+}
+
+export function moneyCorrectionKey(reconciledMoney: number, syncedAtMs: number): string {
+  const m = Number.isFinite(reconciledMoney) ? Math.round(reconciledMoney) : 0;
+  const t = Number.isFinite(syncedAtMs) ? Math.round(syncedAtMs) : 0;
+  return `${m}@${t}`;
+}
+
+let pendingMoneyCorrection: { delta: number; detail: MoneyCorrectionDetail | null } | null = null;
+const appliedNegativeCorrectionKeys: string[] = [];
+
+/** True when a negative correction with this key has already been queued
+ *  in this session (it may or may not have been consumed yet). */
+export function wasNegativeCorrectionQueued(key: string): boolean {
+  return appliedNegativeCorrectionKeys.includes(key);
+}
 
 /** Queue a money correction; a newer one supersedes an unconsumed older
- *  one (it was computed from a newer server figure). */
-export function queueMoneyCorrection(delta: number): void {
-  if (!Number.isFinite(delta) || delta === 0) return;
-  pendingMoneyCorrection = Math.round(delta);
+ *  one (it was computed from a newer server figure). Returns false — and
+ *  queues nothing — for a zero / non-finite delta, or for a NEGATIVE delta
+ *  whose detail key was already queued (the same server figure twice). */
+export function queueMoneyCorrection(delta: number, detail: MoneyCorrectionDetail | null = null): boolean {
+  if (!Number.isFinite(delta) || delta === 0) return false;
+  const rounded = Math.round(delta);
+  if (rounded < 0 && detail?.key) {
+    if (appliedNegativeCorrectionKeys.includes(detail.key)) return false;
+    appliedNegativeCorrectionKeys.push(detail.key);
+    if (appliedNegativeCorrectionKeys.length > MONEY_CORRECTION_KEY_MEMORY) appliedNegativeCorrectionKeys.shift();
+  }
+  pendingMoneyCorrection = { delta: rounded, detail };
+  return true;
 }
 
 export function consumeMoneyCorrection(): number | null {
-  const d = pendingMoneyCorrection;
+  const slot = pendingMoneyCorrection;
   pendingMoneyCorrection = null;
-  return d;
+  return slot ? slot.delta : null;
+}
+
+/** Same slot as consumeMoneyCorrection, with the detail the engine turns
+ *  into the player's Mail record (buildMoneyCorrectionReport). */
+export function consumeMoneyCorrectionDetail(): { delta: number; detail: MoneyCorrectionDetail | null } | null {
+  const slot = pendingMoneyCorrection;
+  pendingMoneyCorrection = null;
+  return slot;
+}
+
+/** Compact money label for the toast / mail copy. */
+export function formatCorrectionAmount(abs: number): string {
+  if (abs >= 1_000_000_000) return `$${(abs / 1_000_000_000).toFixed(2)}B`;
+  if (abs >= 1_000_000) return `$${(abs / 1_000_000).toFixed(1)}M`;
+  return `$${Math.round(abs / 1_000)}K`;
+}
+
+export function moneyCorrectionReportId(key: string): string {
+  return `money-correction-${key}`;
+}
+
+/**
+ * The Mail item (GameReport, type system_alert) the engine posts when a
+ * negative correction is applied: what was removed, why, and the ids the
+ * server could not verify — the player's record of the event. Id is the
+ * correction key, so one server figure yields one mail.
+ */
+export function buildMoneyCorrectionReport(delta: number, detail: MoneyCorrectionDetail | null, nowMs: number = Date.now()): GameReport {
+  const removed = formatCorrectionAmount(Math.abs(delta));
+  const key = detail?.key ?? moneyCorrectionKey(0, nowMs);
+  const lines: string[] = [
+    `${removed} was removed from your balance so it matches the server's figure (${detail ? formatCorrectionAmount(detail.reconciledMoney) : 'unknown'}).`,
+    'The server only accepts income it can verify: building and service revenue at the rate your persisted state can gross, ledgered multiplayer settlements, and one-shot payouts it can bound — static contracts, timed-event rewards (recomputed from your service count) and faction deliveries (checked against the resources they consumed).',
+  ];
+  if (detail && detail.rejectedExcess > 0) {
+    lines.push(`Claim above the ceiling this sync: ${formatCorrectionAmount(detail.rejectedExcess)}.`);
+  }
+  const unv = detail?.unverified;
+  const unverifiedLines: string[] = [];
+  if (unv?.contracts.length) unverifiedLines.push(`contracts: ${unv.contracts.join(', ')}`);
+  if (unv?.timedEvents.length) unverifiedLines.push(`timed events: ${unv.timedEvents.join(', ')}`);
+  if (unv?.deliveries.length) unverifiedLines.push(`deliveries: ${unv.deliveries.join(', ')}`);
+  lines.push(unverifiedLines.length > 0
+    ? `Income the server could not verify this sync — ${unverifiedLines.join('; ')}.`
+    : 'No specific contract, event or delivery was named by the server this sync; the balance simply grew faster than your persisted operations can gross. Random-event cash and rewards the client cannot prove are the usual cause.');
+  lines.push('If you believe a legitimate payout was removed, contact support with this message; every removal is audited server-side and can be restored by ledger.');
+  return {
+    id: moneyCorrectionReportId(key),
+    type: 'system_alert',
+    title: `Balance reconciled: ${removed} removed`,
+    body: lines.join(' '),
+    createdAt: nowMs,
+    read: false,
+  };
 }
 
 /** Apply a money correction as a delta. Only `money` moves: the removed

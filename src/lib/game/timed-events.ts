@@ -370,6 +370,16 @@ try {
   RESEARCH_MAP_IMPORT = RESEARCH_MAP;
 } catch {}
 
+/** How long a COMPLETED event stays on the save (game-engine.ts step 8).
+ *  Was 1 h; 24 h since 2026-09-13 because the sync reports completed
+ *  occurrences to the server's money credit (contract-credit.ts
+ *  computeTimedEventCredit) and a completion whose tab closed before the
+ *  next sync must still be on the save when the player returns. Must stay
+ *  under TIMED_EVENT_CREDIT_MAX_AGE_MS (48 h). */
+export const TIMED_EVENT_COMPLETED_RETENTION_MS = 24 * 3600_000;
+/** How long ContractsPanel lists a completed event (the old 1 h). */
+export const TIMED_EVENT_COMPLETED_DISPLAY_MS = 3600_000;
+
 /** Pick a random event appropriate for the current time */
 export function rollTimedEvent(): TimedEventTemplate {
   const index = Math.floor(Math.random() * EVENT_TEMPLATES.length);

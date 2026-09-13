@@ -57,15 +57,31 @@ import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle
 // client's claim is no longer mirrored.
 import { hqStageForLocationId } from '@/lib/game/headquarters';
 import { completeDueHqRelocations, loadHeadquartersBlock } from '@/lib/game/hq-relocation-server';
+// Mining Phase B (2026-09-13): the sync hands the client the server's mining
+// block — claims, live surveyed intel, notices (asteroid-claims.ts
+// adoptServerMining). Best-effort like the headquarters block.
+import { loadMiningBlock } from '@/lib/game/server-mining';
 // Money desync fix (2026-09-12): verifiable one-shot contract income widens
 // the money clamp's headroom, each CONTRACT_POOL id credited once per profile
 // (GameProfile.creditedContractIds).
+// 2026-09-13 ("C-2 follow-up 2"): timed-event rewards and faction delivery
+// payouts are credited the same way — once per occurrence id (`evt:` /
+// `dlv-` prefixes in the same column), each bounded by what the server can
+// recompute (service count / consumed resources + seed regeneration).
 import {
   computeContractCredit,
+  computeTimedEventCredit,
+  computeDeliveryCredit,
   tierMultForProfile,
   readCreditedContractIds,
+  mergeCreditedIds,
+  pruneCreditedIds,
   MAX_NEW_CONTRACT_CREDITS_PER_SYNC,
+  MAX_NEW_TIMED_EVENT_CREDITS_PER_SYNC,
+  MAX_NEW_DELIVERY_CREDITS_PER_SYNC,
   type ContractCreditResult,
+  type TimedEventCreditResult,
+  type DeliveryCreditResult,
 } from '@/lib/game/contract-credit';
 import { tierFromProfileScalars } from '@/lib/game/corporation-tiers';
 import { loadAuthoritativeInventory } from '@/lib/game/server-inventory';
@@ -286,6 +302,13 @@ export async function POST(request: Request) {
     // when no prior row / the reconciliation block threw before it ran —
     // then the persisted credited set is carried forward unchanged).
     let contractCredit: ContractCreditResult | null = null;
+    // 2026-09-13: the timed-event and delivery credits for this sync (same
+    // null semantics as contractCredit), and the clamp outcome — returned to
+    // the client so the correction it applies can be explained (Mail item)
+    // and de-duplicated (reconciledMoney + syncedAtMs key).
+    let timedEventCredit: TimedEventCreditResult | null = null;
+    let deliveryCredit: DeliveryCreditResult | null = null;
+    let moneyClampInfo: { wasClamped: boolean; rejectedExcess: number; ceiling: number; headroom: number } | null = null;
 
     try {
       existingProfile = await prisma.gameProfile.findUnique({
@@ -388,16 +411,76 @@ export async function POST(request: Request) {
             } catch { /* audit log is best-effort */ }
           }
         }
+        // 2026-09-13: timed-event rewards (the founder's "Precious Metals
+        // Bonanza" / "Rare Earth Hunt" — $500M rejected) are bounded by the
+        // reward formula recomputed from the LARGEST service count the
+        // server can vouch for: the persisted row's list vs this sync's
+        // validated list (the reward was fixed at spawn, up to 12 h earlier).
+        const prevServiceCount = Array.isArray(existingProfile.activeServicesData) ? existingProfile.activeServicesData.length : 0;
+        const serviceCountForEvents = Math.max(prevServiceCount, economics.activeServices.length);
+        const previouslyCredited = readCreditedContractIds(existingProfile.creditedContractIds);
+        timedEventCredit = computeTimedEventCredit(
+          economics.completedTimedEvents, previouslyCredited, serviceCountForEvents, Date.now(),
+        );
+        // Delivery contracts are anchored on the resources they consumed:
+        // the persisted inventory from the last sync vs the one this sync
+        // carries (contract-credit.ts computeDeliveryCredit).
+        deliveryCredit = computeDeliveryCredit(
+          economics.completedDeliveries,
+          previouslyCredited,
+          existingProfile.resources as Record<string, number> | null,
+          clientResources,
+        );
+        if (timedEventCredit.rejected.length > 0 || timedEventCredit.deferred.length > 0
+          || deliveryCredit.rejected.length > 0 || deliveryCredit.deferred.length > 0) {
+          logger.warn('Sync income credit: timed-event / delivery claims rejected or deferred', {
+            userId: session.user.id, profileId: existingProfile.id,
+            timedEventsRejected: timedEventCredit.rejected.slice(0, 10),
+            timedEventsDeferred: timedEventCredit.deferred.length,
+            deliveriesRejected: deliveryCredit.rejected.slice(0, 20),
+            deliveriesDeferred: deliveryCredit.deferred.length,
+            resourceGate: deliveryCredit.resourceGate,
+          });
+          try {
+            await prisma.marketAuditLog.create({
+              data: {
+                eventType: 'income_credit_rejected',
+                profileId: existingProfile.id,
+                details: {
+                  timedEvents: {
+                    creditedNow: timedEventCredit.creditedNow,
+                    rejected: timedEventCredit.rejected.slice(0, 20),
+                    deferred: timedEventCredit.deferred.slice(0, 20),
+                    cap: MAX_NEW_TIMED_EVENT_CREDITS_PER_SYNC,
+                    serviceCount: serviceCountForEvents,
+                  },
+                  deliveries: {
+                    creditedNow: deliveryCredit.creditedNow,
+                    rejected: deliveryCredit.rejected.slice(0, 50),
+                    deferred: deliveryCredit.deferred.slice(0, 50),
+                    resourceGate: JSON.parse(JSON.stringify(deliveryCredit.resourceGate)),
+                    cap: MAX_NEW_DELIVERY_CREDITS_PER_SYNC,
+                  },
+                },
+                severity: 'warning',
+              },
+            });
+          } catch { /* audit log is best-effort */ }
+        }
+        const totalOneShotCredit = contractCredit.headroomCredit + timedEventCredit.headroomCredit + deliveryCredit.headroomCredit;
         const clamp = clampPlausibleMoney(
-          clientMoney, existingProfile.money, elapsedMs, serverMonthlyGross, contractCredit.headroomCredit,
+          clientMoney, existingProfile.money, elapsedMs, serverMonthlyGross, totalOneShotCredit,
         );
         plausibilityClampedMoney = clamp.clampedMoney;
+        moneyClampInfo = { wasClamped: clamp.wasClamped, rejectedExcess: clamp.rejectedExcess, ceiling: clamp.ceiling, headroom: clamp.headroom };
         if (clamp.wasClamped) {
           logger.warn('Client money claim exceeded plausibility ceiling — clamped', {
             userId: session.user.id, profileId: existingProfile.id,
             clientMoney, prevMoney: existingProfile.money, elapsedMs, serverMonthlyGross,
             headroom: clamp.headroom, ceiling: clamp.ceiling, rejectedExcess: clamp.rejectedExcess,
             contractCredit: contractCredit.headroomCredit, contractsCredited: contractCredit.creditedNow,
+            timedEventCredit: timedEventCredit.headroomCredit, timedEventsCredited: timedEventCredit.creditedNow,
+            deliveryCredit: deliveryCredit.headroomCredit, deliveriesCredited: deliveryCredit.creditedNow,
           });
           try {
             await prisma.marketAuditLog.create({
@@ -408,6 +491,8 @@ export async function POST(request: Request) {
                   clientMoney, prevMoney: existingProfile.money, elapsedMs, serverMonthlyGross,
                   headroom: clamp.headroom, ceiling: clamp.ceiling, rejectedExcess: clamp.rejectedExcess,
                   contractCredit: contractCredit.headroomCredit, contractsCredited: contractCredit.creditedNow,
+                  timedEventCredit: timedEventCredit.headroomCredit, timedEventsCredited: timedEventCredit.creditedNow,
+                  deliveryCredit: deliveryCredit.headroomCredit, deliveriesCredited: deliveryCredit.creditedNow,
                 },
                 severity: 'critical',
               },
@@ -515,6 +600,8 @@ export async function POST(request: Request) {
         // starts at the kit's money); an anonymous-play save's completed
         // contracts are credited on the SECOND sync, when the clamp runs.
         completedContracts: [],
+        completedDeliveries: [],
+        completedTimedEvents: [],
         buildingCount: firstSyncKit.buildings.filter(b => b.isComplete).length,
         researchCount: 0,
         serviceCount: firstSyncKit.activeServices.length,
@@ -1285,9 +1372,14 @@ export async function POST(request: Request) {
     // Money desync fix: the credited-contract set grows by this sync's
     // credits; a first sync starts empty, and a sync whose reconciliation
     // block threw before the credit ran carries the previous set forward.
-    const creditedContractIdsToPersist: string[] = contractCredit
-      ? contractCredit.creditedAfter
-      : readCreditedContractIds(existingProfile?.creditedContractIds);
+    // 2026-09-13: the three credits share the column (static ids forever,
+    // `evt:` / `dlv-` occurrence ids pruned after CREDITED_ID_RETENTION_MS).
+    const creditedContractIdsToPersist: string[] = pruneCreditedIds(mergeCreditedIds(
+      readCreditedContractIds(existingProfile?.creditedContractIds),
+      contractCredit?.creditedNow ?? [],
+      timedEventCredit?.creditedNow ?? [],
+      deliveryCredit?.creditedNow ?? [],
+    ));
 
     const profileColumns = {
       companyName: safeCompanyName,
@@ -2366,6 +2458,35 @@ export async function POST(request: Request) {
             unknown: contractCredit.unknownIds.length,
           }
         : null,
+      // 2026-09-13: the same telemetry for timed events and deliveries, the
+      // ids the server could NOT credit (so the client's Mail record can
+      // name them), and the clamp outcome + the persisted sync timestamp
+      // (the client's idempotency key for negative corrections).
+      timedEventCredit: timedEventCredit
+        ? {
+            creditedNow: timedEventCredit.creditedNow,
+            headroomCredit: timedEventCredit.headroomCredit,
+            rejected: timedEventCredit.rejected.slice(0, 20),
+            deferred: timedEventCredit.deferred.length,
+          }
+        : null,
+      deliveryCredit: deliveryCredit
+        ? {
+            creditedNow: deliveryCredit.creditedNow,
+            headroomCredit: deliveryCredit.headroomCredit,
+            rejected: deliveryCredit.rejected.slice(0, 50),
+            deferred: deliveryCredit.deferred.length,
+          }
+        : null,
+      unverifiedIncome: contractCredit
+        ? {
+            contracts: [...contractCredit.unknownIds, ...contractCredit.deferred].slice(0, 50),
+            timedEvents: [...(timedEventCredit?.rejected.map(r => r.id) ?? []), ...(timedEventCredit?.deferred ?? [])].slice(0, 50),
+            deliveries: [...(deliveryCredit?.rejected.map(r => r.id) ?? []), ...(deliveryCredit?.deferred ?? [])].slice(0, 50),
+          }
+        : null,
+      moneyClamp: moneyClampInfo,
+      syncedAtMs: profile.lastSyncAt instanceof Date ? profile.lastSyncAt.getTime() : Date.now(),
       resourceClamp: resourceClampInfo,
       // Phase 3 slice 1: building-registry reconciliation (mode, adoption,
       // and — in enforce — the instanceIds the client must remove).

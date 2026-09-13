@@ -6,13 +6,23 @@ import { TYCOON_EVENTS, trackTycoon, fireOnce } from '@/lib/game/funnel-events';
 import type { GameState } from '@/lib/game/types';
 import { getHeadquarters } from '@/lib/game/headquarters';
 import type { ServerHeadquartersBlock } from '@/lib/game/hq-relocation';
+import type { ServerMiningBlock } from '@/lib/game/asteroid-claims';
 import {
   queueServerReconciliation,
   queueMoneyCorrection,
   computeMoneyCorrection,
+  moneyCorrectionKey,
+  moneyCorrectionReportId,
+  formatCorrectionAmount,
   MONEY_CORRECTION_TOAST_MIN_ABS,
   type LedgerReconciliation,
+  type MoneyCorrectionDetail,
 } from '@/lib/game/ledger-reconcile';
+// 2026-09-13: completed timed-event occurrences ride the sync under the id
+// the server credits (contract-credit.ts); the toast's "Open Mail" action
+// drives the game shell through nav-bridge.ts.
+import { timedEventCreditId } from '@/lib/game/contract-credit';
+import { navigateTo } from '@/lib/game/nav-bridge';
 import { toast } from '@/lib/toast';
 import {
   queueServerEffects,
@@ -229,6 +239,24 @@ export function useGameSync(
         // one-shot payout once instead of rejecting it as implausible tick
         // income.
         completedContracts: (state.completedContracts || []).slice(0, 100),
+        // 2026-09-13 (contract-credit.ts): completed faction deliveries —
+        // the server credits each id once against the resources it consumed
+        // — and completed timed-event occurrences, credited once each
+        // against the reward formula recomputed from the service count.
+        completedDeliveries: (state.completedDeliveries || [])
+          .filter(c => c.status === 'completed')
+          .slice(0, 100)
+          .map(c => ({ id: c.id, resourceId: c.resourceId, quantity: c.quantity, paymentMoney: c.paymentMoney })),
+        completedTimedEvents: (state.activeTimedEvents || [])
+          .filter(e => e.completed && typeof e.completedAtMs === 'number')
+          .slice(0, 20)
+          .map(e => ({
+            id: timedEventCreditId(e.templateId, e.startedAtMs),
+            templateId: e.templateId,
+            startedAtMs: e.startedAtMs,
+            completedAtMs: e.completedAtMs as number,
+            reward: e.rewardAmount,
+          })),
         ships: (state.ships || []).map(s => ({
           instanceId: s.instanceId,
           definitionId: s.definitionId,
@@ -387,24 +415,50 @@ export function useGameSync(
         // skipped: its figure is the archetype kit by design (C-1), not a
         // clamp of this claim, and the second sync credits the save's
         // completed contracts before clamping.
+        // 2026-09-13: a NEGATIVE correction is keyed on the server figure
+        // (reconciledMoney + the persisted sync timestamp) and refused when
+        // that key was already queued — the same removal can never land
+        // twice; the engine also posts a Mail item (Reports → Mail) naming
+        // the amount and the ids the server could not verify, and the toast
+        // links to it.
         if (typeof data.reconciledMoney === 'number' && Number.isFinite(data.reconciledMoney) && data.firstSync !== true) {
           const correction = computeMoneyCorrection(data.reconciledMoney, payload.money, ledgerMoneyDeltaQueued);
           if (correction !== 0) {
-            queueMoneyCorrection(correction);
-            if (correction <= -MONEY_CORRECTION_TOAST_MIN_ABS) {
-              const abs = -correction;
-              const amount = abs >= 1_000_000_000
-                ? `$${(abs / 1_000_000_000).toFixed(2)}B`
-                : `$${(abs / 1_000_000).toFixed(1)}M`;
+            const syncedAtMs = typeof data.syncedAtMs === 'number' && Number.isFinite(data.syncedAtMs) ? data.syncedAtMs : 0;
+            const ids = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string').slice(0, 50) : []);
+            const unv = (data.unverifiedIncome && typeof data.unverifiedIncome === 'object') ? data.unverifiedIncome as Record<string, unknown> : {};
+            const detail: MoneyCorrectionDetail = {
+              key: moneyCorrectionKey(data.reconciledMoney, syncedAtMs),
+              reconciledMoney: data.reconciledMoney,
+              syncedAtMs,
+              rejectedExcess: typeof data.moneyClamp?.rejectedExcess === 'number' && Number.isFinite(data.moneyClamp.rejectedExcess)
+                ? Math.max(0, data.moneyClamp.rejectedExcess) : 0,
+              unverified: { contracts: ids(unv.contracts), timedEvents: ids(unv.timedEvents), deliveries: ids(unv.deliveries) },
+            };
+            const queued = queueMoneyCorrection(correction, detail);
+            if (!queued && correction < 0) {
+              console.warn('[space-tycoon] money correction skipped: same server figure already applied', { key: detail.key, correction });
+            }
+            if (queued && correction <= -MONEY_CORRECTION_TOAST_MIN_ABS) {
+              const amount = formatCorrectionAmount(-correction);
+              const unverifiedCount = detail.unverified.contracts.length + detail.unverified.timedEvents.length + detail.unverified.deliveries.length;
+              const why = unverifiedCount > 0
+                ? `The server could not verify ${unverifiedCount} payout${unverifiedCount === 1 ? '' : 's'} (contract, event or delivery ids are in the Mail record).`
+                : 'The balance grew faster than the server can verify from your persisted operations.';
               toast.warning(
-                `Balance adjusted to the server's figure (−${amount}). Income the server could not verify was removed.`,
+                `−${amount} was removed so your balance matches the server's figure (${formatCorrectionAmount(data.reconciledMoney)}). ${why}`,
                 'Balance reconciled',
-                8000,
+                12000,
+                { link: { label: 'Open the Mail record', onClick: () => { navigateTo('reports:mail'); } } },
               );
               console.warn('[space-tycoon] money correction', {
                 reconciledMoney: data.reconciledMoney, moneySent: payload.money,
                 ledgerMoneyDelta: ledgerMoneyDeltaQueued, correction,
+                key: detail.key, mailId: moneyCorrectionReportId(detail.key),
                 contractCredit: data.contractCredit ?? null,
+                timedEventCredit: data.timedEventCredit ?? null,
+                deliveryCredit: data.deliveryCredit ?? null,
+                unverified: detail.unverified,
               });
             }
           }

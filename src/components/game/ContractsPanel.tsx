@@ -12,6 +12,7 @@ import { RESOURCE_ASSETS } from '@/lib/game/assets';
 // but this panel never showed it, so a "COMPLETE!" contract that silently
 // didn't pay looked broken. Surface the budget and the queued-payout state.
 import { getDeliveryCapStatus } from '@/lib/game/delivery-contracts';
+import { TIMED_EVENT_COMPLETED_DISPLAY_MS } from '@/lib/game/timed-events';
 import HoloTip, { Concept } from './HoloTip';
 import Image from 'next/image';
 import GameIcon from './GameIcon';
@@ -50,7 +51,12 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
 
   // Timed competitive events
   const timedEvents = (state.activeTimedEvents || []).filter(e => !e.completed);
-  const completedTimedEvents = (state.activeTimedEvents || []).filter(e => e.completed);
+  // Completed events stay on the save for 24 h (the sync credits them to the
+  // server's money ceiling) but are listed here for the old 1 h only.
+  const displayCutoffMs = Date.now() - TIMED_EVENT_COMPLETED_DISPLAY_MS;
+  const completedTimedEvents = (state.activeTimedEvents || []).filter(
+    e => e.completed && (!e.completedAtMs || e.completedAtMs >= displayCutoffMs),
+  );
 
   // Shared daily contract budget (delivery-contracts.ts): legacy + delivery
   // completions draw from one rolling-24h pool.

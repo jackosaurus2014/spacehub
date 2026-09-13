@@ -567,6 +567,57 @@ Tests: `contract-credit.test.ts`, `sync-validation-contracts.test.ts`,
 `ledger-reconcile.test.ts`, `game-sync-money-correction.test.ts`,
 `sync-contract-credit.test.ts`.
 
+### C-2 follow-up 2 — timed-event + delivery credit, idempotent removals (2026-09-13)
+
+**Was.** The credit above covered static CONTRACT_POOL ids only. The founder
+completed "Precious Metals Bonanza" + "Rare Earth Hunt" (timed events,
+`timed-events.ts`, ~$490M on a 14-service corporation) and the ceiling
+rejected the lot — the dashboard showed $600M for a few seconds, then the
+client adopted the server's $101M. Faction delivery contracts
+(`delivery-contracts.ts deliverContract`) pay cash client-side the same way
+and were equally invisible.
+
+**Rule now** (`contract-credit.ts`, `sync-validation.ts`, `sync/route.ts`,
+`useGameSync.ts`, `ledger-reconcile.ts`, `game-engine.ts`). Every one-shot
+client-side payout is credited into the money ceiling once per occurrence
+id, and only for the amount the server can bound from what it holds:
+a timed event (`evt:<template>:<spawnMs>`, cap 5/sync, spawn/completion must
+fit the template's duration window, ≤48 h old) is credited at
+`min(claimed, calculateEventReward(template, max(persisted service count,
+this sync's service count)) x 1.5)`; a delivery (`dlv-…`, cap 20/sync) is
+credited at `min(claimed paymentMoney, quantity x baseMarketPrice x
+DELIVERY_CREDIT_MULT (≈19.6 = faction 1.5 x posture 1.2 x noise 1.1 x spot
+band 3.0 x Frontier 1.25 x reputation 1.6 x negotiator 1.5 x HQ 1.1),
+seed-regenerated payment at the posture band max x the settlement terms)`
+and ONLY when the server-persisted inventory fell by ≥50% of the claimed
+quantity for that resource since the last sync (else nothing for that
+resource, audited as `income_credit_rejected`). All three id kinds share
+`GameProfile.creditedContractIds`; occurrence ids are pruned after 30 days.
+On the client a negative correction is keyed on `reconciledMoney +
+syncedAtMs` and is never queued twice for the same key; every removal also
+posts a Mail item (Reports → Mail, id `money-correction-<key>`) naming the
+amount, the rejected excess and the ids the server could not verify, and the
+toast links to it. Completed timed events now stay on the save 24 h (listed
+1 h) so a closed tab cannot lose the claim.
+
+**Client-side cash that is server-authored already** (no credit needed):
+competitive contracts / races (`competitive-contracts/*` — claimed and
+ledgered server-side), PvP bidding payouts (`bidding/*`, `bid_*` ledger
+rows), corp contracts (`corp-contracts.ts` — escrow / release / penalty
+ledger rows), bounties, league rewards, mega-project shares.
+
+**Residual, unverifiable client-side income:** random-event cash
+(`random-events.ts`), mini-activity rewards and megastructure passive income
+above the monthly-gross allowance have no per-occurrence record the server
+can bound; they still surface as a visible, explained, once-only correction
+rather than a silent gap. A delivery whose resources were replaced by
+concurrent production within the same 60 s window can fail the 50% gate and
+be credited on no later sync (the inventory has moved on) — the audit row
+carries the gate figures so it can be restored by ledger.
+Tests: `income-credit.test.ts`, `sync-validation-contracts.test.ts`,
+`ledger-reconcile.test.ts`, `game-sync-money-correction.test.ts`,
+`sync-contract-credit.test.ts`.
+
 ### C-3 — Orbital-slot lease transfer debited a non-consenting buyer (fixed)
 
 **Was.** `action:'transfer'` let the seller supply `toCompanyName` (non-

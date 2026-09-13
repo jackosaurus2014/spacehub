@@ -26,6 +26,11 @@ jest.mock('@/lib/game/server-effects', () => ({ queueServerEffects: jest.fn() })
 jest.mock('@/lib/toast', () => ({
   toast: { success: jest.fn(), error: jest.fn(), warning: jest.fn(), info: jest.fn() },
 }));
+jest.mock('@/lib/game/nav-bridge', () => ({ navigateTo: jest.fn() }));
+import { navigateTo } from '@/lib/game/nav-bridge';
+import { moneyCorrectionKey } from '@/lib/game/ledger-reconcile';
+import { timedEventCreditId } from '@/lib/game/contract-credit';
+const mockNavigateTo = navigateTo as jest.MockedFunction<typeof navigateTo>;
 
 const mockQueueMoneyCorrection = queueMoneyCorrection as jest.MockedFunction<typeof queueMoneyCorrection>;
 const mockQueueLedger = queueServerReconciliation as jest.MockedFunction<typeof queueServerReconciliation>;
@@ -45,6 +50,14 @@ function fakeState(money: number, extra: Partial<GameState> = {}): GameState {
     ships: [],
     companyName: 'QA Corp',
     completedContracts: ['c_first_launch'],
+    completedDeliveries: [
+      { id: 'dlv-the-dominion-2n9c-1a2b', resourceId: 'iron', quantity: 120, paymentMoney: 6_000_000, status: 'completed', completedAtMs: 1_800_000_000_000 },
+      { id: 'dlv-the-dominion-2n9c-9z9z', resourceId: 'iron', quantity: 50, paymentMoney: 2_000_000, status: 'defaulted' },
+    ],
+    activeTimedEvents: [
+      { templateId: 'evt_precious_metals', startedAtMs: 1_800_000_000_000, completedAtMs: 1_800_003_600_000, rewardAmount: 280_000_000, completed: true },
+      { templateId: 'evt_iron_rush', startedAtMs: 1_800_000_000_000, rewardAmount: 20_000_000, completed: false },
+    ],
     ...extra,
   } as unknown as GameState;
 }
@@ -82,6 +95,9 @@ describe('useGameSync adopts reconciledMoney', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     console.warn = jest.fn();
+    // The real queue reports whether it accepted the correction (idempotency
+    // on the server figure); the mock defaults to "accepted".
+    mockQueueMoneyCorrection.mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -91,19 +107,59 @@ describe('useGameSync adopts reconciledMoney', () => {
     jest.clearAllMocks();
   });
 
-  it('sends completedContracts with the payload', async () => {
+  it('sends completedContracts, completed deliveries and completed timed-event occurrences with the payload', async () => {
     const body = await runSync(100_000_000, 100_000_000, { reconciledMoney: 100_000_000 });
     expect(body.completedContracts).toEqual(['c_first_launch']);
+    // Only status 'completed' deliveries, projected to the credit's four fields.
+    expect(body.completedDeliveries).toEqual([
+      { id: 'dlv-the-dominion-2n9c-1a2b', resourceId: 'iron', quantity: 120, paymentMoney: 6_000_000 },
+    ]);
+    // Only completed events, under the occurrence id the server credits.
+    expect(body.completedTimedEvents).toEqual([{
+      id: timedEventCreditId('evt_precious_metals', 1_800_000_000_000),
+      templateId: 'evt_precious_metals',
+      startedAtMs: 1_800_000_000_000,
+      completedAtMs: 1_800_003_600_000,
+      reward: 280_000_000,
+    }]);
   });
 
-  it('queues the delta against the SENT snapshot, not the ticked state, and toasts a large removal', async () => {
-    await runSync(100_000_000, 101_000_000, { reconciledMoney: 80_000_000, ledger: { maxSeq: 0, moneyDelta: 0, resourceDeltas: {} } });
+  it('queues the delta against the SENT snapshot, not the ticked state, keyed on the server figure, and toasts a large removal with a Mail link', async () => {
+    await runSync(100_000_000, 101_000_000, {
+      reconciledMoney: 80_000_000, syncedAtMs: 1_800_000_000_000,
+      ledger: { maxSeq: 0, moneyDelta: 0, resourceDeltas: {} },
+      moneyClamp: { wasClamped: true, rejectedExcess: 20_000_000, ceiling: 80_000_000, headroom: 0 },
+      unverifiedIncome: { contracts: [], timedEvents: ['evt:evt_precious_metals:5'], deliveries: [] },
+    });
     expect(mockQueueMoneyCorrection).toHaveBeenCalledTimes(1);
-    expect(mockQueueMoneyCorrection).toHaveBeenCalledWith(-20_000_000); // not −21M
+    expect(mockQueueMoneyCorrection).toHaveBeenCalledWith(-20_000_000, expect.objectContaining({ // not −21M
+      key: moneyCorrectionKey(80_000_000, 1_800_000_000_000),
+      reconciledMoney: 80_000_000,
+      syncedAtMs: 1_800_000_000_000,
+      rejectedExcess: 20_000_000,
+      unverified: { contracts: [], timedEvents: ['evt:evt_precious_metals:5'], deliveries: [] },
+    }));
     expect(mockToastWarning).toHaveBeenCalledTimes(1);
-    expect(mockToastWarning.mock.calls[0][0]).toContain('−$20.0M');
-    expect(mockToastWarning.mock.calls[0][0]).toContain('Income the server could not verify was removed');
+    const [message, title, , options] = mockToastWarning.mock.calls[0];
+    expect(message).toContain('−$20.0M was removed');
+    expect(message).toContain("server's figure ($80.0M)");
+    expect(message).toContain('could not verify 1 payout');
+    expect(title).toBe('Balance reconciled');
+    expect(options?.link?.label).toBe('Open the Mail record');
+    options!.link!.onClick!();
+    expect(mockNavigateTo).toHaveBeenCalledWith('reports:mail');
     expect(console.warn).toHaveBeenCalledWith('[space-tycoon] money correction', expect.objectContaining({ correction: -20_000_000 }));
+  });
+
+  it('a negative correction the queue refuses (same server figure already applied) shows no toast', async () => {
+    mockQueueMoneyCorrection.mockReturnValue(false);
+    await runSync(100_000_000, 100_000_000, { reconciledMoney: 80_000_000, syncedAtMs: 7 });
+    expect(mockQueueMoneyCorrection).toHaveBeenCalledTimes(1);
+    expect(mockToastWarning).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledWith(
+      '[space-tycoon] money correction skipped: same server figure already applied',
+      expect.objectContaining({ key: moneyCorrectionKey(80_000_000, 7) }),
+    );
   });
 
   it('subtracts the ledger delta it queues separately (no double-apply)', async () => {
@@ -113,16 +169,17 @@ describe('useGameSync adopts reconciledMoney', () => {
     });
     expect(mockQueueLedger).toHaveBeenCalledTimes(1);
     // 95M persisted = clamped(claim) 85M + 10M ledger → the clamp alone is −15M.
-    expect(mockQueueMoneyCorrection).toHaveBeenCalledWith(-15_000_000);
+    expect(mockQueueMoneyCorrection).toHaveBeenCalledWith(-15_000_000, expect.anything());
   });
 
   it('small negatives are queued without a toast; positives are queued without a toast', async () => {
     await runSync(100_000_000, 100_000_000, { reconciledMoney: 99_500_000 });
-    expect(mockQueueMoneyCorrection).toHaveBeenCalledWith(-500_000);
+    expect(mockQueueMoneyCorrection).toHaveBeenCalledWith(-500_000, expect.anything());
     expect(mockToastWarning).not.toHaveBeenCalled();
     jest.clearAllMocks();
+    mockQueueMoneyCorrection.mockReturnValue(true);
     await runSync(100_000_000, 100_000_000, { reconciledMoney: 105_000_000 });
-    expect(mockQueueMoneyCorrection).toHaveBeenCalledWith(5_000_000);
+    expect(mockQueueMoneyCorrection).toHaveBeenCalledWith(5_000_000, expect.anything());
     expect(mockToastWarning).not.toHaveBeenCalled();
   });
 
