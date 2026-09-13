@@ -49,6 +49,17 @@ import {
   type SyncShip,
 } from '@/lib/game/sync-validation';
 import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
+// Money desync fix (2026-09-12): verifiable one-shot contract income widens
+// the money clamp's headroom, each CONTRACT_POOL id credited once per profile
+// (GameProfile.creditedContractIds).
+import {
+  computeContractCredit,
+  tierMultForProfile,
+  readCreditedContractIds,
+  MAX_NEW_CONTRACT_CREDITS_PER_SYNC,
+  type ContractCreditResult,
+} from '@/lib/game/contract-credit';
+import { tierFromProfileScalars } from '@/lib/game/corporation-tiers';
 import { loadAuthoritativeInventory } from '@/lib/game/server-inventory';
 import { buildMarketSnapshot } from '@/lib/game/spot-price';
 import { isLedgerAvailable, recordSyncAuthoredLedger } from '@/lib/game/server-ledger';
@@ -256,8 +267,13 @@ export async function POST(request: Request) {
       resources: unknown; buildingsData: unknown; shipsData: unknown;
       activeServicesData: unknown; completedResearchList: string[]; workforceData: unknown;
       serverResources: unknown;
+      creditedContractIds?: unknown;
     } | null = null;
     let elapsedSinceLastSyncMs = 0;
+    // Money desync fix: the contract credit computed for this sync (null
+    // when no prior row / the reconciliation block threw before it ran —
+    // then the persisted credited set is carried forward unchanged).
+    let contractCredit: ContractCreditResult | null = null;
 
     try {
       existingProfile = await prisma.gameProfile.findUnique({
@@ -267,6 +283,7 @@ export async function POST(request: Request) {
           resources: true, buildingsData: true, shipsData: true,
           activeServicesData: true, completedResearchList: true, workforceData: true,
           serverResources: true,
+          creditedContractIds: true,
         },
       });
 
@@ -301,13 +318,58 @@ export async function POST(request: Request) {
         } catch (grossError) {
           logger.error('Server monthly gross computation failed — zero headroom this sync', { error: String(grossError) });
         }
-        const clamp = clampPlausibleMoney(clientMoney, existingProfile.money, elapsedMs, serverMonthlyGross);
+        // Money desync fix (2026-09-12, contract-credit.ts): the monthly
+        // gross above models tick income only; a static contract payout
+        // ($50M-$2B, one shot) was rejected almost entirely and, because
+        // each window clamps from the already-clamped row, never recovered.
+        // Every CONTRACT_POOL id the client reports completed and this
+        // profile has not been credited for lifts the ceiling ONCE by the
+        // contract's maximum plausible payout; the id is then persisted in
+        // creditedContractIds. Unknown ids are ignored; more than
+        // MAX_NEW_CONTRACT_CREDITS_PER_SYNC new ids wait for the next sync
+        // and are audited.
+        // Tier factor bounded by the tier the server can derive from the
+        // profile's own scalars (tierFromProfileScalars), not the ladder top.
+        contractCredit = computeContractCredit(
+          economics.completedContracts,
+          readCreditedContractIds(existingProfile.creditedContractIds),
+          undefined,
+          tierMultForProfile(tierFromProfileScalars({ totalEarned: existingProfile.totalEarned })),
+        );
+        if (contractCredit.deferred.length > 0 || contractCredit.unknownIds.length > 0) {
+          logger.warn('Sync completedContracts: ids deferred or unknown', {
+            userId: session.user.id, profileId: existingProfile.id,
+            deferred: contractCredit.deferred.length, unknown: contractCredit.unknownIds.slice(0, 10),
+            cap: MAX_NEW_CONTRACT_CREDITS_PER_SYNC,
+          });
+          if (contractCredit.deferred.length > 0) {
+            try {
+              await prisma.marketAuditLog.create({
+                data: {
+                  eventType: 'contract_credit_cap_exceeded',
+                  profileId: existingProfile.id,
+                  details: {
+                    creditedNow: contractCredit.creditedNow.length,
+                    deferred: contractCredit.deferred.slice(0, 50),
+                    unknown: contractCredit.unknownIds.length,
+                    cap: MAX_NEW_CONTRACT_CREDITS_PER_SYNC,
+                  },
+                  severity: 'warning',
+                },
+              });
+            } catch { /* audit log is best-effort */ }
+          }
+        }
+        const clamp = clampPlausibleMoney(
+          clientMoney, existingProfile.money, elapsedMs, serverMonthlyGross, contractCredit.headroomCredit,
+        );
         plausibilityClampedMoney = clamp.clampedMoney;
         if (clamp.wasClamped) {
           logger.warn('Client money claim exceeded plausibility ceiling — clamped', {
             userId: session.user.id, profileId: existingProfile.id,
             clientMoney, prevMoney: existingProfile.money, elapsedMs, serverMonthlyGross,
             headroom: clamp.headroom, ceiling: clamp.ceiling, rejectedExcess: clamp.rejectedExcess,
+            contractCredit: contractCredit.headroomCredit, contractsCredited: contractCredit.creditedNow,
           });
           try {
             await prisma.marketAuditLog.create({
@@ -317,6 +379,7 @@ export async function POST(request: Request) {
                 details: {
                   clientMoney, prevMoney: existingProfile.money, elapsedMs, serverMonthlyGross,
                   headroom: clamp.headroom, ceiling: clamp.ceiling, rejectedExcess: clamp.rejectedExcess,
+                  contractCredit: contractCredit.headroomCredit, contractsCredited: contractCredit.creditedNow,
                 },
                 severity: 'critical',
               },
@@ -420,6 +483,10 @@ export async function POST(request: Request) {
         activeServices: firstSyncKit.activeServices,
         unlockedLocations: firstSyncKit.unlockedLocations,
         completedResearch: firstSyncKit.completedResearch,
+        // Contract credit: nothing is credited on the first sync (the row
+        // starts at the kit's money); an anonymous-play save's completed
+        // contracts are credited on the SECOND sync, when the clamp runs.
+        completedContracts: [],
         buildingCount: firstSyncKit.buildings.filter(b => b.isComplete).length,
         researchCount: 0,
         serviceCount: firstSyncKit.activeServices.length,
@@ -1187,9 +1254,17 @@ export async function POST(request: Request) {
       throw new Error('Profile read inconsistency: row exists but was not loaded');
     }
 
+    // Money desync fix: the credited-contract set grows by this sync's
+    // credits; a first sync starts empty, and a sync whose reconciliation
+    // block threw before the credit ran carries the previous set forward.
+    const creditedContractIdsToPersist: string[] = contractCredit
+      ? contractCredit.creditedAfter
+      : readCreditedContractIds(existingProfile?.creditedContractIds);
+
     const profileColumns = {
       companyName: safeCompanyName,
       money: reconciledMoney, totalEarned, totalSpent, netWorth,
+      creditedContractIds: creditedContractIdsToPersist,
       buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear,
       resources: reconciledResources as object,
       buildingsData: safeBuildings as unknown as object,
@@ -2235,8 +2310,21 @@ export async function POST(request: Request) {
       startingArchetype: firstSyncKit ? firstSyncKit.archetypeId : undefined,
       netWorth,
       // One Wallet: reconciled balance + pending deltas for client adoption.
+      // Money desync fix (2026-09-12): useGameSync now ADOPTS reconciledMoney
+      // (delta against the figure it sent, minus the ledger delta it applies
+      // separately) instead of ignoring it.
       reconciledMoney,
       ledger: ledgerInfo,
+      // Contract credit telemetry (additive): which CONTRACT_POOL ids lifted
+      // the ceiling this sync and by how much.
+      contractCredit: contractCredit
+        ? {
+            creditedNow: contractCredit.creditedNow,
+            headroomCredit: contractCredit.headroomCredit,
+            deferred: contractCredit.deferred.length,
+            unknown: contractCredit.unknownIds.length,
+          }
+        : null,
       resourceClamp: resourceClampInfo,
       // Phase 3 slice 1: building-registry reconciliation (mode, adoption,
       // and — in enforce — the instanceIds the client must remove).

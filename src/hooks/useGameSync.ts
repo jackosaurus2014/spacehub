@@ -4,7 +4,14 @@ import { registerSyncNow, type SyncOutcome } from '@/lib/game/sync-bridge';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { TYCOON_EVENTS, trackTycoon, fireOnce } from '@/lib/game/funnel-events';
 import type { GameState } from '@/lib/game/types';
-import { queueServerReconciliation, type LedgerReconciliation } from '@/lib/game/ledger-reconcile';
+import {
+  queueServerReconciliation,
+  queueMoneyCorrection,
+  computeMoneyCorrection,
+  MONEY_CORRECTION_TOAST_MIN_ABS,
+  type LedgerReconciliation,
+} from '@/lib/game/ledger-reconcile';
+import { toast } from '@/lib/toast';
 import {
   queueServerEffects,
   type AllianceBonusSnapshot,
@@ -211,6 +218,11 @@ export function useGameSync(
         })),
         unlockedLocations: state.unlockedLocations,
         completedResearch: state.completedResearch,
+        // Money desync fix (2026-09-12, contract-credit.ts): completed
+        // CONTRACT_POOL ids, so the server's money clamp can credit each
+        // one-shot payout once instead of rejecting it as implausible tick
+        // income.
+        completedContracts: (state.completedContracts || []).slice(0, 100),
         ships: (state.ships || []).map(s => ({
           instanceId: s.instanceId,
           definitionId: s.definitionId,
@@ -341,10 +353,46 @@ export function useGameSync(
         // cursor move atomically inside processFullTick). The queue is
         // consumed at most once per reconciliation and the engine re-checks
         // the ack cursor, so a duplicate response cannot double-apply.
+        let ledgerMoneyDeltaQueued = 0;
         if (data.ledger && typeof data.ledger.maxSeq === 'number') {
           const ack = state.serverLedgerAck ?? 0;
           if (data.ledger.maxSeq > ack) {
             queueServerReconciliation(data.ledger as LedgerReconciliation);
+            ledgerMoneyDeltaQueued = typeof data.ledger.moneyDelta === 'number' ? data.ledger.moneyDelta : 0;
+          }
+        }
+
+        // Money desync fix (2026-09-12): ADOPT the server's reconciled
+        // balance. `reconciledMoney` is what the server persisted and what
+        // every purchase route validates against; the client used to ignore
+        // it, so a plausibility clamp left a permanent, invisible gap
+        // ("$185.5M shown, refused with you have $125M"). The delta is
+        // computed against the money figure THIS payload carried (the engine
+        // has ticked since) minus the ledger delta queued above (applied
+        // separately), and the engine applies it next tick. A first sync is
+        // skipped: its figure is the archetype kit by design (C-1), not a
+        // clamp of this claim, and the second sync credits the save's
+        // completed contracts before clamping.
+        if (typeof data.reconciledMoney === 'number' && Number.isFinite(data.reconciledMoney) && data.firstSync !== true) {
+          const correction = computeMoneyCorrection(data.reconciledMoney, payload.money, ledgerMoneyDeltaQueued);
+          if (correction !== 0) {
+            queueMoneyCorrection(correction);
+            if (correction <= -MONEY_CORRECTION_TOAST_MIN_ABS) {
+              const abs = -correction;
+              const amount = abs >= 1_000_000_000
+                ? `$${(abs / 1_000_000_000).toFixed(2)}B`
+                : `$${(abs / 1_000_000).toFixed(1)}M`;
+              toast.warning(
+                `Balance adjusted to the server's figure (−${amount}). Income the server could not verify was removed.`,
+                'Balance reconciled',
+                8000,
+              );
+              console.warn('[space-tycoon] money correction', {
+                reconciledMoney: data.reconciledMoney, moneySent: payload.money,
+                ledgerMoneyDelta: ledgerMoneyDeltaQueued, correction,
+                contractCredit: data.contractCredit ?? null,
+              });
+            }
           }
         }
 

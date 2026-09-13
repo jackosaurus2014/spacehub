@@ -219,6 +219,10 @@ model GameProfile {
   completedResearchList String[] @default([])
   shipsData             Json     @default("[]")
   workforceData         Json?
+  // Money desync fix (2026-09-12, src/lib/game/contract-credit.ts): static
+  // CONTRACT_POOL ids whose one-shot payout the sync's money clamp has
+  // already credited to this profile. Each id lifts the ceiling once, ever.
+  creditedContractIds   String[] @default([])
 
   // â”€â”€ Mechanic 1: Tiered Leaderboards â”€â”€
   leagueProfile  PlayerLeagueProfile?

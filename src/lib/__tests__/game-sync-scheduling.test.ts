@@ -22,6 +22,9 @@ import type { GameState } from '@/lib/game/types';
 
 jest.mock('@/lib/game/ledger-reconcile', () => ({
   queueServerReconciliation: jest.fn(),
+  queueMoneyCorrection: jest.fn(),
+  computeMoneyCorrection: jest.fn(() => 0),
+  MONEY_CORRECTION_TOAST_MIN_ABS: 1_000_000,
   CLIENT_APPLIED_LEDGER_REASONS: new Set<string>(),
   PENDING_EXCLUDED_LEDGER_REASONS: new Set<string>(),
 }));

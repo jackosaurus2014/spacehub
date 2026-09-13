@@ -52,6 +52,9 @@ export const SYNC_MAX_LOCATIONS = 30;
 export const SYNC_MAX_RESEARCH = 500;
 export const SYNC_MAX_COUNT = 100_000;
 export const SYNC_MAX_COMMANDERS = 30;
+/** Completed static-contract ids (contract-credit.ts). CONTRACT_POOL has
+ *  ~20 entries; anything past the cap is dropped, never credited. */
+export const SYNC_MAX_CONTRACTS = 100;
 export const SYNC_MAX_LICENSES = 12;
 /** JSON size cap on the client's own workforce object. */
 export const SYNC_MAX_WORKFORCE_BYTES = 32_768;
@@ -116,6 +119,11 @@ export interface ValidatedSyncEconomics {
   activeServices: SyncService[];
   unlockedLocations: string[];
   completedResearch: string[];
+  /** Money desync fix (2026-09-12): completed CONTRACT_POOL ids, so the
+   *  sync's money clamp can credit each one-shot payout once
+   *  (contract-credit.ts). Id-shaped strings only; existence is checked
+   *  against the pool at credit time, unknown ids are ignored there. */
+  completedContracts: string[];
 }
 
 export type SyncValidationResult =
@@ -386,6 +394,7 @@ export function validateSyncEconomics(body: Record<string, unknown>): SyncValida
       unlockedLocations: stringList(body.unlockedLocations, 'unlockedLocations', SYNC_MAX_LOCATIONS, SLUG_RE)
         .filter(l => LOCATION_MAP.has(l)),
       completedResearch: stringList(body.completedResearch, 'completedResearch', SYNC_MAX_RESEARCH, ID_RE),
+      completedContracts: stringList(body.completedContracts, 'completedContracts', SYNC_MAX_CONTRACTS, ID_RE),
     };
     return { ok: true, data };
   } catch (e) {

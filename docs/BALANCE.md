@@ -2520,6 +2520,7 @@ elapsedMs      = clamp(now - lastSyncAt, 0, 30 d); 0 below 5 s (no floor)
 elapsedMonths  = elapsedMs / 21,600,000
 headroom       = min( serverMonthlyGross x 2.0 x elapsedMonths,
                       $500 per ms x elapsedMs )            // $500K/s backstop
+                 + contractCredit                          // 2026-09-12, below
 ceiling        = prevMoney + headroom  (+ server-verified ledger deltas)
 ```
 
@@ -2544,10 +2545,22 @@ rejects the 360x defect outright (a 60 s claim of one month's gross is
 clamped). Tightening further means persisting legacy/tier/reputation on the
 profile so they can be evaluated for real — a follow-up, not this pass.
 
-One-off client-side credits larger than one window's headroom (science
-payoffs, narrative rewards) are absorbed over subsequent syncs as headroom
-accrues; the client's own balance is never touched, only the persisted
-figure lags.
+**Contract credit (2026-09-12, `src/lib/game/contract-credit.ts`).** One-off
+client-side credits were NOT absorbed over later syncs — each window clamps
+from the already-clamped row, so a $60M starter-contract payout was rejected
+permanently and every purchase route then refused against a server balance
+the dashboard never showed. The sync now carries `completedContracts`; for
+every CONTRACT_POOL id not yet in `GameProfile.creditedContractIds` the
+server adds `reward.money x max tier mult (23.4) x max reputation contract
+mult (1.6) x (1 + negotiator cap 0.5) x (1 + world-event cap 0.10)` to that
+sync's headroom (`contractCredit`), then persists the id — once, ever, at
+most 20 new ids per sync (audited beyond). The client also ADOPTS
+`reconciledMoney` after every sync (delta against the figure it sent, minus
+the ledger delta it applies separately; toast on a removal >= $1M), so any
+clamp that remains is visible instead of a silent gap. Still unverified
+client-side income: random-event cash (+$50M / +$100M / +$300M gross, at most
+one event per 6 h game-month, no per-event record in the save) and any
+megastructure passive income above the `totalEarned`-gated allowance.
 
 ### Migration (D2)
 

@@ -538,6 +538,35 @@ request the same way.
   429 as "another tab synced", not an error. The client interval is 60 s
   (30 s floor), so honest clients never see it.
 
+### C-2 follow-up — money desync: contract credit + client adoption (2026-09-12)
+
+**Was.** The ceiling's headroom modelled tick income only, so a one-shot
+CONTRACT_POOL payout ($50M-$2B on the client) was rejected almost entirely
+and — because each window clamps from the already-clamped row — never
+recovered; the client ignored `reconciledMoney`, so the dashboard kept
+showing money every purchase route refused ("$185.5M shown, you have $125M").
+
+**Now** (`contract-credit.ts`, `ledger-reconcile.ts`, `sync/route.ts`,
+`useGameSync.ts`, `game-engine.ts`): the sync body carries
+`completedContracts` (validated id list, cap 100); every real CONTRACT_POOL
+id not yet in the new `GameProfile.creditedContractIds` column adds its
+MAXIMUM plausible payout (reward x max tier x max reputation x (1 + negotiator
+cap) x (1 + world-event cap), derived from the same constants
+`applyContractReward` uses) to `clampPlausibleMoney`'s `extraHeadroom` for
+that sync, then is persisted — once per profile, ever, at most
+`MAX_NEW_CONTRACT_CREDITS_PER_SYNC` (20) per sync (`contract_credit_cap_exceeded`
+audit beyond); unknown ids are ignored; `MONEY_HEADROOM_MULT` and the
+backstop are untouched and ledger deltas are still added after the clamp.
+The client adopts the figure: `reconciledMoney − moneySent − ledgerDelta`
+is queued (`queueMoneyCorrection`) and applied as a delta on the next tick,
+with a toast for a removal >= $1M — a remaining clamp is visible, never a
+permanent silent gap. Random-event cash and megastructure passive income
+above the allowance remain unverifiable client-side (no per-event record in
+the save); they now surface as a visible correction rather than a hidden one.
+Tests: `contract-credit.test.ts`, `sync-validation-contracts.test.ts`,
+`ledger-reconcile.test.ts`, `game-sync-money-correction.test.ts`,
+`sync-contract-credit.test.ts`.
+
 ### C-3 — Orbital-slot lease transfer debited a non-consenting buyer (fixed)
 
 **Was.** `action:'transfer'` let the seller supply `toCompanyName` (non-

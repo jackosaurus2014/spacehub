@@ -180,10 +180,21 @@ export function reconcileBalance(
 // approaches. There is NO per-request floor (exploit batch C-2). Ledger-
 // mediated income (contracts, mega-projects, bounties...) is NOT subject to
 // this ceiling — it is added on top via `moneyDelta`, which is independently
-// server-verified. One-off client-side credits larger than one window's
-// headroom (a science-mission payoff, a narrative reward) are absorbed over
-// the following syncs as headroom accrues — the persisted figure lags, the
-// client's own balance is never touched.
+// server-verified.
+//
+// Money desync fix (2026-09-12): one-off client-side credits were NOT
+// absorbed over later syncs — each window clamps from the already-clamped
+// server figure, so a $60M starter-contract payout was rejected for good and
+// every purchase route then refused against a server balance the dashboard
+// never showed. Two changes close it:
+//   1. Verifiable one-shot income widens the headroom (`extraHeadroom` on
+//      clampPlausibleMoney): the route credits each completed CONTRACT_POOL
+//      id once, ever, at its maximum plausible payout (contract-credit.ts).
+//   2. The client ADOPTS the server figure: useGameSync computes
+//      reconciledMoney − (money it sent) − (ledger delta it applies) and
+//      queues it as a money correction the engine applies next tick
+//      (queueMoneyCorrection below), with a toast when a large removal
+//      happens. A remaining clamp is visible, never a silent permanent gap.
 
 /** Multiplier on the state-derived monthly gross — headroom for the
  *  multipliers the server cannot see and for tick bursts after a tab wakes. */
@@ -250,16 +261,25 @@ export interface PlausibilityClampResult {
  * hazards are unrestricted) — only clamps implausible upward jumps. Headroom
  * is strictly time-proportional: a re-sync inside
  * MIN_PLAUSIBILITY_ELAPSED_MS gets none.
+ *
+ * `extraHeadroom` is server-VERIFIED one-shot income for this window
+ * (contract-credit.ts: Σ maximum payout of newly completed CONTRACT_POOL
+ * ids, each credited once per profile). It is added on top of the
+ * time-proportional term — it does not loosen MONEY_HEADROOM_MULT or the
+ * backstop, and it is granted even inside the no-growth window because a
+ * contract completion is not tick income.
  */
 export function clampPlausibleMoney(
   clientMoney: number,
   prevMoney: number,
   elapsedMs: number,
   serverMonthlyGross: number,
+  extraHeadroom: number = 0,
 ): PlausibilityClampResult {
   const safeClient = Number.isFinite(clientMoney) ? clientMoney : 0;
   const safePrev = Number.isFinite(prevMoney) ? prevMoney : 0;
-  const headroom = plausibleIncomeHeadroom(elapsedMs, serverMonthlyGross);
+  const extra = Number.isFinite(extraHeadroom) && extraHeadroom > 0 ? Math.round(extraHeadroom) : 0;
+  const headroom = plausibleIncomeHeadroom(elapsedMs, serverMonthlyGross) + extra;
   const ceiling = safePrev + headroom;
 
   if (safeClient > ceiling) {
@@ -329,4 +349,62 @@ export function consumeServerReconciliation(): LedgerReconciliation | null {
 /** Test helper — clears the queue. */
 export function __clearReconciliationQueue(): void {
   pendingReconciliation = null;
+  pendingMoneyCorrection = null;
+}
+
+// ─── Money correction (client adopts the server's reconciled balance) ────────
+// Money desync fix (2026-09-12, header). The sync response's
+// `reconciledMoney` is what the server persisted and what every purchase
+// route will validate against. useGameSync turns it into a signed delta
+// against the figure it SENT (not the current state — the engine has ticked
+// since) and queues it here; processFullTick applies it as a delta, so
+// income earned between send and apply is preserved. A parallel single-slot
+// queue rather than a field on LedgerReconciliation: the ledger hand-off is
+// guarded by the ack cursor (maxSeq <= ack → no-op), and a clamp correction
+// must apply even when no ledger rows are pending.
+
+/** Ignore corrections smaller than this (rounding / in-flight tick noise). */
+export const MONEY_CORRECTION_MIN_ABS = 1_000;
+/** A negative correction at least this large is surfaced with a toast. */
+export const MONEY_CORRECTION_TOAST_MIN_ABS = 1_000_000;
+
+/**
+ * The signed delta the client must apply so its balance matches the
+ * server's reconciled figure. `ledgerMoneyDelta` is the pending-ledger sum
+ * the client applies separately through queueServerReconciliation (0 when
+ * nothing was queued) — subtracting it leaves exactly the clamp. Returns 0
+ * when the inputs are not finite or the delta is below the noise floor.
+ */
+export function computeMoneyCorrection(
+  reconciledMoney: number,
+  moneySent: number,
+  ledgerMoneyDelta: number = 0,
+): number {
+  if (!Number.isFinite(reconciledMoney) || !Number.isFinite(moneySent)) return 0;
+  const ledger = Number.isFinite(ledgerMoneyDelta) ? ledgerMoneyDelta : 0;
+  const delta = Math.round(reconciledMoney - ledger - moneySent);
+  return Math.abs(delta) >= MONEY_CORRECTION_MIN_ABS ? delta : 0;
+}
+
+let pendingMoneyCorrection: number | null = null;
+
+/** Queue a money correction; a newer one supersedes an unconsumed older
+ *  one (it was computed from a newer server figure). */
+export function queueMoneyCorrection(delta: number): void {
+  if (!Number.isFinite(delta) || delta === 0) return;
+  pendingMoneyCorrection = Math.round(delta);
+}
+
+export function consumeMoneyCorrection(): number | null {
+  const d = pendingMoneyCorrection;
+  pendingMoneyCorrection = null;
+  return d;
+}
+
+/** Apply a money correction as a delta. Only `money` moves: the removed
+ *  amount was never server-verified income, and totalEarned / totalSpent
+ *  are the client's own counters, persisted unclamped. */
+export function applyMoneyCorrectionToState(state: GameState, delta: number): GameState {
+  if (!Number.isFinite(delta) || delta === 0) return state;
+  return { ...state, money: state.money + Math.round(delta) };
 }

@@ -14,6 +14,17 @@
  * landing inside that window, so a throttled push waits the window out and
  * pushes again before reporting success. Nothing else should call this:
  * the periodic timers stay the only routine sync path.
+ *
+ * Root cause, closed the same day (contract-credit.ts, ledger-reconcile.ts
+ * "Money correction"): the server's money clamp modelled tick income only,
+ * so a one-shot contract payout was rejected as implausible and — because
+ * each window clamps from the already-clamped row — never recovered. The
+ * sync now carries `completedContracts`; the server credits each real
+ * CONTRACT_POOL id once, ever (GameProfile.creditedContractIds), at its
+ * maximum plausible payout, and the client adopts `reconciledMoney` after
+ * every sync (delta against the figure it sent, toast when a large removal
+ * happens). A forced push therefore converges the two figures instead of
+ * merely re-sending a claim the server will clamp again.
  */
 export type SyncOutcome =
   | { outcome: 'ok' }

@@ -32,6 +32,11 @@ export interface WorkerDefinition {
   };
 }
 
+/** Hard cap on the negotiator contractPayBonus (workforce + programs.ts
+ *  completion bonuses combined). The sync route's contract credit
+ *  (contract-credit.ts) derives the maximum plausible payout from this. */
+export const MAX_CONTRACT_PAY_BONUS = 0.5;
+
 export const WORKER_TYPES: WorkerDefinition[] = [
   {
     type: 'engineer', name: 'Engineer', icon: '👷', salary: 500_000,
@@ -173,7 +178,7 @@ export function getWorkforceBonuses(workforce: WorkforceState): {
     researchSpeed: Math.min(researchSpeed, 0.5),
     miningOutput: Math.min(miningOutput, 1.0),
     serviceRevenue: Math.min(serviceRevenue, 0.5),
-    contractPayBonus: Math.min(contractPayBonus, 0.5),
+    contractPayBonus: Math.min(contractPayBonus, MAX_CONTRACT_PAY_BONUS),
     hazardMitigation: Math.min(hazardMitigation, 0.8),
     crewSurvival: Math.min(crewSurvival, 0.9),
     shipEfficiency: Math.min(shipEfficiency, 0.5),

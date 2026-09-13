@@ -51,7 +51,7 @@ import type {
   GameState, ProgramTrack, ProgramInstance, ProgramsState,
 } from './types';
 import type { WorkerType, WorkforceState } from './workforce';
-import { DEFAULT_WORKFORCE, getWorkforceBonuses } from './workforce';
+import { DEFAULT_WORKFORCE, getWorkforceBonuses, MAX_CONTRACT_PAY_BONUS } from './workforce';
 import type { CommanderClass, CommanderRarity } from './commanders';
 import { COMMANDER_MAP, getLevelFromXp } from './commanders';
 import { generateId, hashStringToSeed, mulberry32 } from './formulas';
@@ -619,7 +619,7 @@ export function mergeProgramWorkforceBonuses(
     researchSpeed: Math.min(0.5, wfBonuses.researchSpeed + p.researchSpeed),
     miningOutput: Math.min(1.0, wfBonuses.miningOutput + p.miningOutput),
     serviceRevenue: Math.min(0.5, wfBonuses.serviceRevenue + p.serviceRevenue),
-    contractPayBonus: Math.min(0.5, wfBonuses.contractPayBonus + p.contractPayBonus),
+    contractPayBonus: Math.min(MAX_CONTRACT_PAY_BONUS, wfBonuses.contractPayBonus + p.contractPayBonus),
     hazardMitigation: Math.min(0.8, wfBonuses.hazardMitigation + p.hazardMitigation),
     crewSurvival: Math.min(0.9, wfBonuses.crewSurvival + p.crewSurvival),
     shipEfficiency: Math.min(0.5, wfBonuses.shipEfficiency + p.shipEfficiency),

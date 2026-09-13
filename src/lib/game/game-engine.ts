@@ -83,7 +83,10 @@ import {
   getForecastHorizonMonths,
   getScienceHazardDamageMultipliers,
 } from './science-missions';
-import { consumeServerReconciliation, applyReconciliationToState } from './ledger-reconcile';
+import {
+  consumeServerReconciliation, applyReconciliationToState,
+  consumeMoneyCorrection, applyMoneyCorrectionToState,
+} from './ledger-reconcile';
 // Phase 3 slice 1 (docs/SECURITY_AUDIT_2026-09.md): registry-rejected buildings.
 import { consumeAssetReconciliation, applyAssetReconciliationToState } from './asset-reconcile';
 // Audit Wave B (Change #2 "dead-multiplier pack" + Change #6 + A10) imports:
@@ -1768,6 +1771,35 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Ledger reconciliation apply error (non-fatal):', err);
+  }
+
+  // 0a1. Money desync fix (2026-09-12, ledger-reconcile.ts "Money
+  // correction"): adopt the server's reconciled balance. useGameSync queued
+  // reconciledMoney − moneySent − ledgerDelta; applied as a DELTA so income
+  // ticked since the payload was built survives. Independent of the ack
+  // guard above — a plausibility clamp must land even with no ledger rows
+  // pending. Logged so the player can see why the balance moved.
+  try {
+    const correction = consumeMoneyCorrection();
+    if (correction !== null && correction !== 0) {
+      const applied = applyMoneyCorrectionToState(workingState, correction);
+      const abs = Math.abs(correction);
+      const amount = abs >= 1_000_000_000
+        ? `$${(abs / 1_000_000_000).toFixed(2)}B`
+        : abs >= 1_000_000 ? `$${(abs / 1_000_000).toFixed(1)}M` : `$${Math.round(abs / 1_000)}K`;
+      workingState = {
+        ...applied,
+        eventLog: [{
+          id: generateId(), date: applied.gameDate, type: 'random_event' as const,
+          title: `🏦 Balance reconciled with the server: ${correction > 0 ? '+' : '−'}${amount}`,
+          description: correction < 0
+            ? 'Income the server could not verify was removed so purchases match the balance shown.'
+            : 'The server credited more than this session had recorded.',
+        }, ...applied.eventLog].slice(0, MAX_EVENT_LOG),
+      };
+    }
+  } catch (err) {
+    console.error('Money correction apply error (non-fatal):', err);
   }
 
   // 0a2. Phase 3 slice 1: remove buildings the server registry rejected

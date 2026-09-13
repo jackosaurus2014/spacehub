@@ -312,3 +312,104 @@ describe('reconciliation hand-off queue', () => {
     expect(consumeServerReconciliation()).toBeNull();
   });
 });
+
+// ─── Money desync fix (2026-09-12): verified one-shot headroom + client
+// adoption of the server figure ───────────────────────────────────────────────
+
+import {
+  computeMoneyCorrection,
+  queueMoneyCorrection,
+  consumeMoneyCorrection,
+  applyMoneyCorrectionToState,
+  MONEY_CORRECTION_MIN_ABS,
+} from '../ledger-reconcile';
+
+describe('clampPlausibleMoney — extraHeadroom (contract credit)', () => {
+  it('adds the verified one-shot credit on top of the time-proportional term', () => {
+    const elapsed = 60_000;
+    const base = plausibleIncomeHeadroom(elapsed, GROSS);
+    const credit = 60_000_000;
+    const r = clampPlausibleMoney(1_000_000_000, 100_000_000, elapsed, GROSS, credit);
+    expect(r.headroom).toBe(base + credit);
+    expect(r.ceiling).toBe(100_000_000 + base + credit);
+    expect(r.clampedMoney).toBe(r.ceiling);
+    expect(r.wasClamped).toBe(true);
+  });
+
+  it('a claim inside prev + headroom + credit passes untouched', () => {
+    const r = clampPlausibleMoney(160_000_000, 100_000_000, 60_000, GROSS, 60_000_000);
+    expect(r.wasClamped).toBe(false);
+    expect(r.clampedMoney).toBe(160_000_000);
+  });
+
+  it('is granted even inside the no-growth window (a contract is not tick income)', () => {
+    const r = clampPlausibleMoney(160_000_000, 100_000_000, 1_000, GROSS, 60_000_000);
+    expect(plausibleIncomeHeadroom(1_000, GROSS)).toBe(0);
+    expect(r.headroom).toBe(60_000_000);
+    expect(r.wasClamped).toBe(false);
+  });
+
+  it('does not loosen the constants: without a credit the ceiling is unchanged', () => {
+    const a = clampPlausibleMoney(1e12, 1e6, 60_000, GROSS);
+    const b = clampPlausibleMoney(1e12, 1e6, 60_000, GROSS, 0);
+    const c = clampPlausibleMoney(1e12, 1e6, 60_000, GROSS, -5_000_000);
+    const d = clampPlausibleMoney(1e12, 1e6, 60_000, GROSS, Number.NaN);
+    expect(b).toEqual(a);
+    expect(c).toEqual(a);
+    expect(d).toEqual(a);
+    expect(a.headroom).toBe(plausibleIncomeHeadroom(60_000, GROSS));
+    expect(MONEY_HEADROOM_MULT).toBe(2.0);
+    expect(MAX_ABSOLUTE_INCOME_PER_MS).toBe(500);
+  });
+});
+
+describe('computeMoneyCorrection', () => {
+  it('is the server figure minus what was sent, minus the ledger delta applied separately', () => {
+    expect(computeMoneyCorrection(80_000_000, 100_000_000)).toBe(-20_000_000);
+    expect(computeMoneyCorrection(95_000_000, 100_000_000, 10_000_000)).toBe(-15_000_000);
+    expect(computeMoneyCorrection(105_000_000, 100_000_000)).toBe(5_000_000);
+  });
+
+  it('ignores noise below the floor and non-finite inputs', () => {
+    expect(computeMoneyCorrection(100_000_500, 100_000_000)).toBe(0);
+    expect(computeMoneyCorrection(100_000_000 - MONEY_CORRECTION_MIN_ABS, 100_000_000)).toBe(-MONEY_CORRECTION_MIN_ABS);
+    expect(computeMoneyCorrection(Number.NaN, 100)).toBe(0);
+    expect(computeMoneyCorrection(100, Number.POSITIVE_INFINITY)).toBe(0);
+    expect(computeMoneyCorrection(50, 100, Number.NaN)).toBe(0); // |−50| < floor
+  });
+});
+
+describe('money correction queue + apply', () => {
+  beforeEach(() => __clearReconciliationQueue());
+
+  it('single slot: the newest correction supersedes an unconsumed one; consumed once', () => {
+    queueMoneyCorrection(-20_000_000);
+    queueMoneyCorrection(-5_000_000);
+    expect(consumeMoneyCorrection()).toBe(-5_000_000);
+    expect(consumeMoneyCorrection()).toBeNull();
+  });
+
+  it('zero / non-finite corrections are not queued', () => {
+    queueMoneyCorrection(0);
+    queueMoneyCorrection(Number.NaN);
+    expect(consumeMoneyCorrection()).toBeNull();
+  });
+
+  it('applies as a delta so income ticked since the payload survives; only money moves', () => {
+    const s = minimalState({ money: 101_000_000, totalEarned: 500, totalSpent: 200 });
+    const out = applyMoneyCorrectionToState(s, -20_000_000);
+    expect(out.money).toBe(81_000_000);
+    expect(out.totalEarned).toBe(500);
+    expect(out.totalSpent).toBe(200);
+    expect(out.resources).toBe(s.resources);
+    expect(applyMoneyCorrectionToState(s, 0)).toBe(s);
+  });
+
+  it('is independent of the ledger ack guard', () => {
+    const s = minimalState({ money: 100, serverLedgerAck: 10 });
+    // A ledger reconciliation at/below the ack is a no-op...
+    expect(applyReconciliationToState(s, { maxSeq: 10, moneyDelta: 5, resourceDeltas: {} })).toBe(s);
+    // ...but a money correction still lands.
+    expect(applyMoneyCorrectionToState(s, -50_000).money).toBe(100 - 50_000);
+  });
+});
