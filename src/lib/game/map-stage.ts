@@ -76,9 +76,15 @@ export function computeStageLayout(tab: GameTab, desktopStage: boolean, wideView
   return { kind: 'panel', mapMounted: false, mapCovered: false, overlayOpen: false, mapHidden: false };
 }
 
-/** Overlay dismissal: Escape (and only Escape) returns to the map tab.
- *  Returns the tab to switch to, or null to ignore the key. Callers must
- *  only invoke this while the overlay is open. */
-export function overlayDismissTab(key: string): GameTab | null {
-  return key === 'Escape' ? 'map' : null;
+/** The two stage tabs a panel overlay can sit over. CC-1 (2026-09-13):
+ *  the Bridge (dashboard) is a stage like the map, so Escape returns to
+ *  whichever of the two the panel was opened from. */
+export type StageTab = 'map' | 'dashboard';
+
+/** Overlay dismissal: Escape (and only Escape) returns to the stage the
+ *  overlay was opened over (`from`, default map). Returns the tab to switch
+ *  to, or null to ignore the key. Callers must only invoke this while the
+ *  overlay is open. */
+export function overlayDismissTab(key: string, from: StageTab = 'map'): GameTab | null {
+  return key === 'Escape' ? from : null;
 }

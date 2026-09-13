@@ -236,7 +236,7 @@ import type { OrderQueueTarget } from '@/lib/game/order-queue';
 // (≥1280px) the map stays mounted behind every non-map tab, which renders
 // as an overlay over the frozen/dimmed map. Pure layout decisions live in
 // map-stage.ts so the open/close state machine is unit-testable.
-import { computeStageLayout, overlayDismissTab, STAGE_MEDIA_QUERY, STAGE_HIDDEN_MEDIA_QUERY } from '@/lib/game/map-stage';
+import { computeStageLayout, overlayDismissTab, STAGE_MEDIA_QUERY, STAGE_HIDDEN_MEDIA_QUERY, type StageTab } from '@/lib/game/map-stage';
 import ContractsHubPanel from '@/components/game/ContractsHubPanel';
 import StandingsHubPanel from '@/components/game/StandingsHubPanel';
 import MarketHubPanel from '@/components/game/MarketHubPanel';
@@ -991,8 +991,16 @@ export default function SpaceTycoonPage() {
     return () => mq.removeEventListener('change', apply);
   }, []);
   const stageLayout = computeStageLayout(tab, desktopStage, wideViewport);
-  // Escape closes the panel overlay and returns to the map (keyboard path;
-  // pointer path is the dimmed-margin backdrop button in the JSX below).
+  // The stage a panel overlay was opened from: the Bridge (dashboard) or the
+  // map. Escape and the backdrop return there (CC-1, 2026-09-13).
+  const lastStageTabRef = useRef<StageTab>('dashboard');
+  useEffect(() => {
+    if (tab === 'map' || tab === 'dashboard') lastStageTabRef.current = tab;
+  }, [tab]);
+
+  // Escape closes the panel overlay and returns to the stage it was opened
+  // from (keyboard path; pointer path is the dimmed-margin backdrop button
+  // in the JSX below).
   useEffect(() => {
     if (!stageLayout.overlayOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -1000,7 +1008,7 @@ export default function SpaceTycoonPage() {
       // Escape-to-close, a dropdown, etc.) — the overlay dismiss is the
       // lowest-priority Escape handler on the page.
       if (e.defaultPrevented) return;
-      const dismissTo = overlayDismissTab(e.key);
+      const dismissTo = overlayDismissTab(e.key, lastStageTabRef.current);
       if (!dismissTo) return;
       e.preventDefault();
       playSound('click');
@@ -3000,7 +3008,7 @@ export default function SpaceTycoonPage() {
         {stageLayout.overlayOpen && (
           <button
             type="button"
-            onClick={() => { playSound('click'); navigateToTab('map'); }}
+            onClick={() => { playSound('click'); navigateToTab(lastStageTabRef.current); }}
             aria-label="Close panel and return to the map"
             title="Return to the map (Esc)"
             className="absolute inset-0 w-full h-full bg-black/55 backdrop-blur-sm cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-cyan-400"
@@ -3017,7 +3025,7 @@ export default function SpaceTycoonPage() {
           key={tab}
           ref={stageLayout.overlayOpen ? overlaySheetRef : undefined}
           role={stageLayout.overlayOpen ? 'dialog' : undefined}
-          aria-label={stageLayout.overlayOpen ? `${TAB_CATALOG.find(t => t.id === tab)?.label || tab} console (Escape returns to the map)` : undefined}
+          aria-label={stageLayout.overlayOpen ? `${TAB_CATALOG.find(t => t.id === tab)?.label || tab} console (Escape returns to the ${lastStageTabRef.current === 'dashboard' ? 'Bridge' : 'map'})` : undefined}
           tabIndex={stageLayout.overlayOpen ? -1 : undefined}
           className={`overflow-y-auto p-2 sm:p-4 max-w-5xl mx-auto w-full tab-crossfade game-scroll ${
             stageLayout.overlayOpen ? 'relative flex-1 min-h-0 outline-none' : 'flex-1'

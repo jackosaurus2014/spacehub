@@ -115,6 +115,8 @@ describe('computeStageLayout', () => {
 describe('overlayDismissTab (Escape handling)', () => {
   it('Escape returns to the map tab', () => {
     expect(overlayDismissTab('Escape')).toBe('map');
+    expect(overlayDismissTab('Escape', 'dashboard')).toBe('dashboard');
+    expect(overlayDismissTab('Escape', 'map')).toBe('map');
   });
 
   it('other keys are ignored', () => {
