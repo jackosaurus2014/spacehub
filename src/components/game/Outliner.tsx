@@ -34,8 +34,8 @@
 // component needing to expose any new prop/callback surface.
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode, type KeyboardEvent as ReactKeyboardEvent } from 'react';
-import type { GameState, GameTab } from '@/lib/game/types';
-import { deriveAttentionItems, deriveHoldingsGroups, type SituationItem } from '@/lib/game/outliner';
+import type { DismissedNotice, GameState, GameTab } from '@/lib/game/types';
+import { deriveAttentionView, deriveHoldingsGroups, type DismissalMap, type SituationItem } from '@/lib/game/outliner';
 import { buildOrderQueue, type OrderQueueTarget, type OrderQueueItem } from '@/lib/game/order-queue';
 import { getMissionCalendarEntries } from '@/lib/game/world-calendar';
 import { formatCountdown } from '@/lib/game/formulas';
@@ -63,10 +63,13 @@ function topSeverity(items: SituationItem[]): SituationItem['severity'] | null {
 }
 
 /** Roving arrow-key focus within a section's row list (spec: "full keyboard
- *  traversal — arrow keys within sections"). Attach to the row container. */
+ *  traversal — arrow keys within sections"). Attach to the row container.
+ *  Secondary per-row controls (the Attention dismiss "x", Undo, the
+ *  "N dismissed" toggle) opt out via data-outliner-secondary so Up/Down
+ *  still steps ROW to ROW; Tab reaches them normally. */
 function handleRovingArrowKeys(e: ReactKeyboardEvent<HTMLDivElement>) {
   if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-  const focusables = Array.from(e.currentTarget.querySelectorAll<HTMLButtonElement>('button'));
+  const focusables = Array.from(e.currentTarget.querySelectorAll<HTMLButtonElement>('button:not([data-outliner-secondary])'));
   const currentIndex = focusables.indexOf(document.activeElement as HTMLButtonElement);
   if (currentIndex === -1) return;
   e.preventDefault();
@@ -77,13 +80,19 @@ function handleRovingArrowKeys(e: ReactKeyboardEvent<HTMLDivElement>) {
 // ─── Section shell ───────────────────────────────────────────────────────
 
 function Section({
-  id, title, icon, count, severity, defaultOpen = true, children,
+  id, title, icon, count, severity, defaultOpen = true, showWhenEmpty = false, children,
 }: {
   id: string; title: string; icon: IconName; count: number;
-  severity?: SituationItem['severity'] | null; defaultOpen?: boolean; children: ReactNode;
+  severity?: SituationItem['severity'] | null; defaultOpen?: boolean;
+  /** Keep the section mounted at count 0. Used by Attention when every item
+   *  has been dismissed: the "N dismissed" control lives inside the section,
+   *  and dismissals must never become invisible (see outliner.ts's dismissal
+   *  header — nothing is silently discarded). */
+  showWhenEmpty?: boolean;
+  children: ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
-  if (count === 0) return null;
+  if (count === 0 && !showWhenEmpty) return null;
   return (
     <div className="border-t border-white/[0.06] first:border-t-0">
       <button
@@ -110,7 +119,7 @@ function Section({
   );
 }
 
-function Row({ id, icon, label, sub, badge, severity, onClick, pingTarget }: {
+function Row({ id, icon, label, sub, badge, severity, onClick, pingTarget, onDismiss, onRestore, dimmed }: {
   /** Stable row id — see the file-header "Row DOM convention" comment. */
   id: string;
   icon: IconName; label: string; sub?: string;
@@ -121,28 +130,83 @@ function Row({ id, icon, label, sub, badge, severity, onClick, pingTarget }: {
    *  quirk), and because an operations row's own id is its queue-item id,
    *  not the location the ping names. */
   pingTarget?: string;
+  /** Attention only (2026-09-13). When present the row is dismissible, and
+   *  ALL THREE entry points funnel here: the hover/focus "x" control,
+   *  right-click on the row (the founder's own suggestion — preventDefault
+   *  so the browser menu never appears), and Delete/Backspace while the row
+   *  has keyboard focus. Absent = not dismissible and no affordance renders,
+   *  which is also what happens when the host cannot persist the dismissal. */
+  onDismiss?: () => void;
+  /** Shown instead of the dismiss control on a revealed dismissed row. */
+  onRestore?: () => void;
+  /** Renders the row muted (a revealed dismissed row). */
+  dimmed?: boolean;
 }) {
+  const handleRowKeyDown = onDismiss
+    ? (e: ReactKeyboardEvent<HTMLButtonElement>) => {
+        if (e.key !== 'Delete' && e.key !== 'Backspace') return;
+        // Backspace would otherwise be a browser "back" gesture in some
+        // configurations; the row list's roving handler ignores both keys.
+        e.preventDefault();
+        e.stopPropagation();
+        onDismiss();
+      }
+    : undefined;
+
   return (
-    <button
-      type="button"
-      id={id}
-      data-ping-target={pingTarget}
-      onClick={onClick}
-      className="outliner-row w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left hover:bg-white/[0.05] focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors"
-      style={{ minHeight: 40 }}
+    <div
+      className={`group w-full min-w-0 flex items-center gap-1 rounded-lg transition-colors hover:bg-white/[0.05] ${dimmed ? 'opacity-60' : ''}`}
+      onContextMenu={onDismiss ? (e) => { e.preventDefault(); onDismiss(); } : undefined}
     >
-      <span className="shrink-0 relative">
-        <GameIcon name={icon} size={15} />
-        {severity && severity !== 'info' && (
-          <span className={`absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full ${SEVERITY_DOT[severity]}`} aria-hidden="true" />
-        )}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[11px] text-white truncate">{label}</span>
-        {sub && <span className="block text-[10px] text-slate-500 truncate">{sub}</span>}
-      </span>
-      {badge && <span className="shrink-0 text-[10px] font-hud text-cyan-300/80">{badge}</span>}
-    </button>
+      <button
+        type="button"
+        id={id}
+        data-ping-target={pingTarget}
+        onClick={onClick}
+        onKeyDown={handleRowKeyDown}
+        className="outliner-row min-w-0 flex-1 flex items-center gap-2 px-2 py-1.5 rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors"
+        style={{ minHeight: 40 }}
+      >
+        <span className="shrink-0 relative">
+          <GameIcon name={icon} size={15} />
+          {severity && severity !== 'info' && (
+            <span className={`absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full ${SEVERITY_DOT[severity]}`} aria-hidden="true" />
+          )}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[11px] text-white truncate">{label}</span>
+          {sub && <span className="block text-[10px] text-slate-500 truncate">{sub}</span>}
+        </span>
+        {badge && <span className="shrink-0 text-[10px] font-hud text-cyan-300/80">{badge}</span>}
+      </button>
+      {onDismiss && (
+        <button
+          type="button"
+          data-outliner-secondary=""
+          onClick={onDismiss}
+          aria-label={`Dismiss: ${label}`}
+          title="Dismiss — right-click the row, or press Delete"
+          // Hover-reveal only on the >=1280px docked rail, where a pointer
+          // is guaranteed; the drawer/sheet variants (<1280px, touch) keep
+          // it permanently visible. Focus reveals it either way, so a
+          // keyboard user can always Tab to it.
+          className="shrink-0 mr-1 w-7 h-7 flex items-center justify-center rounded-md text-slate-500 hover:text-white hover:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-opacity opacity-100 xl:opacity-0 xl:group-hover:opacity-100 xl:focus:opacity-100 xl:focus-visible:opacity-100"
+        >
+          <GameIcon name="close" size={12} />
+        </button>
+      )}
+      {onRestore && (
+        <button
+          type="button"
+          data-outliner-secondary=""
+          onClick={onRestore}
+          aria-label={`Restore: ${label}`}
+          className="shrink-0 mr-1 px-2 h-7 flex items-center rounded-md text-[10px] font-semibold text-cyan-400 hover:text-cyan-200 hover:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors"
+        >
+          Undo
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -153,16 +217,50 @@ interface OutlinerBodyProps {
   now: number;
   onNavigateTab: (tab: GameTab) => void;
   onFocusMap: (target: OrderQueueTarget) => void;
+  /** 2026-09-13 — persist the player's Attention dismissals. Omitted by a
+   *  host that cannot write GameState, in which case no dismiss affordance
+   *  is offered at all (better than a control that silently forgets). */
+  onDismissedNoticesChange?: (next: DismissalMap) => void;
+  /** rail | drawer | sheet — the three variants can be mounted at once, so
+   *  ids that must stay unique in the document are suffixed with it. */
+  variantKey: string;
 }
 
-function OutlinerBody({ state, now, onNavigateTab, onFocusMap }: OutlinerBodyProps) {
-  const attention = useMemo(
-    () => deriveAttentionItems(state, now),
+function OutlinerBody({ state, now, onNavigateTab, onFocusMap, onDismissedNoticesChange, variantKey }: OutlinerBodyProps) {
+  // Attention (2026-09-13): one derivation, three lists — what shows, what
+  // the player has dismissed, and the post-prune dismissal map. The rail
+  // renders `visible`; `dismissed` is only reachable through the "N
+  // dismissed" control below, so nothing is ever silently discarded.
+  const attentionView = useMemo(
+    () => deriveAttentionView(state, now),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [state.buildings, state.ships, state.commandQueue, state.activeResearch, state.activeResearch2,
       state.completedResearch, state.money, state.hazardWarnings, state.recentHazards,
-      state.activeDeliveries, state.accordDocket, state.reports, now],
+      state.activeDeliveries, state.accordDocket, state.reports, state.dismissedNotices, now],
   );
+  const attention = attentionView.visible;
+  const dismissedItems = attentionView.dismissed;
+
+  const [showDismissed, setShowDismissed] = useState(false);
+  /** Politely announced to screen readers on dismiss/restore. */
+  const [announcement, setAnnouncement] = useState('');
+
+  const dismissAttention = useCallback((item: SituationItem) => {
+    if (!onDismissedNoticesChange) return;
+    onDismissedNoticesChange({
+      ...attentionView.dismissals,
+      [item.id]: { atMs: Date.now(), severity: item.severity } satisfies DismissedNotice,
+    });
+    setAnnouncement(`Dismissed: ${item.label}. It stays in the Situation Log, and returns if the condition worsens or recurs.`);
+  }, [onDismissedNoticesChange, attentionView.dismissals]);
+
+  const restoreAttention = useCallback((item: SituationItem) => {
+    if (!onDismissedNoticesChange) return;
+    const next = { ...attentionView.dismissals };
+    delete next[item.id];
+    onDismissedNoticesChange(next);
+    setAnnouncement(`Restored: ${item.label}.`);
+  }, [onDismissedNoticesChange, attentionView.dismissals]);
 
   const operations = useMemo(
     () => buildOrderQueue(state),
@@ -199,7 +297,15 @@ function OutlinerBody({ state, now, onNavigateTab, onFocusMap }: OutlinerBodyPro
 
   return (
     <div>
-      <Section id="attention" title="Attention" icon="warning" count={attention.length} severity={topSeverity(attention)}>
+      <Section
+        id="attention"
+        title="Attention"
+        icon="warning"
+        count={attention.length}
+        severity={topSeverity(attention)}
+        showWhenEmpty={dismissedItems.length > 0}
+      >
+        <span role="status" aria-live="polite" className="sr-only">{announcement}</span>
         {attention.slice(0, 12).map(item => (
           <Row
             key={item.id}
@@ -209,16 +315,50 @@ function OutlinerBody({ state, now, onNavigateTab, onFocusMap }: OutlinerBodyPro
             sub={item.detail}
             severity={item.severity}
             onClick={() => activateAttention(item)}
+            onDismiss={onDismissedNoticesChange ? () => dismissAttention(item) : undefined}
           />
         ))}
         {attention.length > 12 && (
           <button
             type="button"
+            data-outliner-secondary=""
             onClick={() => onNavigateTab('reports')}
             className="w-full text-center text-[10px] text-cyan-400 hover:text-cyan-300 py-1.5 min-h-[36px]"
           >
             +{attention.length - 12} more in the Situation Log
           </button>
+        )}
+        {dismissedItems.length > 0 && (
+          <>
+            <button
+              type="button"
+              data-outliner-secondary=""
+              onClick={() => setShowDismissed(v => !v)}
+              aria-expanded={showDismissed}
+              aria-controls={`outliner-attention-dismissed-${variantKey}`}
+              className="w-full flex items-center justify-center gap-1 text-[10px] text-slate-500 hover:text-slate-300 py-1.5 min-h-[36px]"
+            >
+              <GameIcon name={showDismissed ? 'chevron-up' : 'chevron-down'} size={11} />
+              {dismissedItems.length} dismissed
+            </button>
+            {showDismissed && (
+              <div id={`outliner-attention-dismissed-${variantKey}`} className="space-y-1">
+                {dismissedItems.map(item => (
+                  <Row
+                    key={item.id}
+                    id={`outliner-row-attention-${item.id}`}
+                    icon={item.icon}
+                    label={item.label}
+                    sub={item.detail}
+                    severity={item.severity}
+                    dimmed
+                    onClick={() => activateAttention(item)}
+                    onRestore={onDismissedNoticesChange ? () => restoreAttention(item) : undefined}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </Section>
 
@@ -301,9 +441,15 @@ export interface OutlinerProps {
   activeTab: GameTab;
   onNavigateTab: (tab: GameTab) => void;
   onFocusMap: (target: OrderQueueTarget) => void;
+  /** 2026-09-13 — write the player's Attention dismissals back into
+   *  GameState (page.tsx merges it into `state.dismissedNotices`). Also the
+   *  channel the self-healing prune uses: when a dismissed condition clears
+   *  or escalates, outliner.ts drops the record and this fires once with the
+   *  smaller map. Omit it and the rail simply offers no dismiss control. */
+  onDismissedNoticesChange?: (next: DismissalMap) => void;
 }
 
-export default function Outliner({ state, activeTab, onNavigateTab, onFocusMap }: OutlinerProps) {
+export default function Outliner({ state, activeTab, onNavigateTab, onFocusMap, onDismissedNoticesChange }: OutlinerProps) {
   // Wave A4.2 (docs/VISUAL_AAA_2026-08.md §A4.2) — the money-flash hook the
   // V3 row-DOM convention was written for. Subscribes once, on the outer
   // shell rather than inside OutlinerBody, because the rail/drawer/sheet can
@@ -350,9 +496,25 @@ export default function Outliner({ state, activeTab, onNavigateTab, onFocusMap }
     });
   }, []);
 
-  const attentionForBadge = useMemo(() => deriveAttentionItems(state, now), [state, now]);
+  // Badges/counts read the FILTERED list, so a dismissed critical cannot
+  // leave a red dot lit on the collapsed rail or the phone status strip.
+  const attentionView = useMemo(() => deriveAttentionView(state, now), [state, now]);
+  const attentionForBadge = attentionView.visible;
   const attentionCount = attentionForBadge.length;
   const attentionSeverity = topSeverity(attentionForBadge);
+
+  // Self-heal: dismissals whose condition has cleared (or whose item has
+  // escalated in severity) are dropped by deriveAttentionView. Write the
+  // smaller map back exactly once — the next render sees dismissalsChanged
+  // === false, so this cannot loop. Lives on the outer shell, which is
+  // mounted once, rather than in OutlinerBody (rail + drawer can both be
+  // mounted at the same breakpoint).
+  const dismissalsChanged = attentionView.dismissalsChanged;
+  const prunedDismissals = attentionView.dismissals;
+  useEffect(() => {
+    if (!dismissalsChanged || !onDismissedNoticesChange) return;
+    onDismissedNoticesChange(prunedDismissals);
+  }, [dismissalsChanged, prunedDismissals, onDismissedNoticesChange]);
   const nextCalendar = useMemo(
     () => getMissionCalendarEntries(state, { nowMs: now, horizonDays: 14 })[0] || null,
     [state, now],
@@ -406,7 +568,7 @@ export default function Outliner({ state, activeTab, onNavigateTab, onFocusMap }
             )}
           </div>
         ) : (
-          <OutlinerBody state={state} now={now} onNavigateTab={onNavigateTab} onFocusMap={onFocusMap} />
+          <OutlinerBody state={state} now={now} onNavigateTab={onNavigateTab} onFocusMap={onFocusMap} onDismissedNoticesChange={onDismissedNoticesChange} variantKey="rail" />
         )}
       </nav>
 
@@ -454,7 +616,7 @@ export default function Outliner({ state, activeTab, onNavigateTab, onFocusMap }
                   <GameIcon name="close" size={16} />
                 </button>
               </div>
-              <OutlinerBody state={state} now={now} onNavigateTab={wrappedNavigate} onFocusMap={wrappedFocusMap} />
+              <OutlinerBody state={state} now={now} onNavigateTab={wrappedNavigate} onFocusMap={wrappedFocusMap} onDismissedNoticesChange={onDismissedNoticesChange} variantKey="drawer" />
             </div>
           </div>
         )}
@@ -519,7 +681,7 @@ export default function Outliner({ state, activeTab, onNavigateTab, onFocusMap }
                   <GameIcon name="close" size={16} />
                 </button>
               </div>
-              <OutlinerBody state={state} now={now} onNavigateTab={wrappedNavigate} onFocusMap={wrappedFocusMap} />
+              <OutlinerBody state={state} now={now} onNavigateTab={wrappedNavigate} onFocusMap={wrappedFocusMap} onDismissedNoticesChange={onDismissedNoticesChange} variantKey="sheet" />
             </div>
           </div>
         )}

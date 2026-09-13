@@ -547,6 +547,19 @@ export interface GameStats {
   missionsToOuterPlanets: number;
 }
 
+// ─── Outliner notice dismissals (2026-09-13) ────────────────────────────────
+
+export interface DismissedNotice {
+  /** Real-clock ms at which the player dismissed the notice. */
+  atMs: number;
+  /** The severity the item carried when it was dismissed. Spelled out as a
+   *  literal union rather than imported from situation-log.ts so types.ts
+   *  stays free of derivation-module imports (same discipline as
+   *  HeadquartersState.stage above); it MUST stay identical to that
+   *  module's SituationSeverity — outliner.ts asserts the two match. */
+  severity: 'critical' | 'warning' | 'info';
+}
+
 // ─── Headquarters (CC-1) ────────────────────────────────────────────────────
 
 export interface HeadquartersState {
@@ -702,6 +715,22 @@ export interface GameState {
    *  defaultHeadquarters: Earth Operations Center, moved in at founding).
    *  `project` is reserved for CC-2's relocation project. */
   headquarters?: HeadquartersState;
+
+  /** Outliner "Attention" dismissals (2026-09-13, founder request: "a way to
+   *  delete stale notices from the Attention section"). Keyed by
+   *  SituationItem.id -> when it was dismissed and the severity it carried
+   *  AT THAT MOMENT. Nothing in the Attention section is stored — every row
+   *  is re-derived from live state each render — so a "stale" notice is a
+   *  condition the player has seen and chosen to live with. Hiding one is
+   *  therefore a DISMISSAL, never a deletion: the Situation Log keeps
+   *  showing it, and outliner.ts self-heals the map two ways (see
+   *  pruneDismissals): a dismissal whose id is no longer derived is dropped
+   *  (so a genuine recurrence re-surfaces), and an item whose severity has
+   *  climbed above `severity` re-appears and loses its dismissal. Purely
+   *  client-side presentation state — hiding a row grants nothing, so the
+   *  server has no authority over it; it rides the sync like the rest of
+   *  the save. Absent on pre-2026-09-13 saves (migrated to {}). */
+  dismissedNotices?: Record<string, DismissedNotice>;
 
   // Competitive milestones
   claimedMilestones?: Record<string, string>;

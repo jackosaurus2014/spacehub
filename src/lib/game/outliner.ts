@@ -4,7 +4,7 @@
 // section) and situation-log.ts (the Attention section's deep-link target)
 // for the sibling derivations this module builds on.
 
-import type { GameState, GameTab, LocationType } from './types';
+import type { DismissedNotice, GameState, GameTab, LocationType } from './types';
 import { LOCATIONS, LOCATION_MAP } from './solar-system';
 import { BUILDING_MAP, getPowerByLocation } from './buildings';
 import { canStartConstruction } from './construction-slots';
@@ -12,6 +12,7 @@ import { attemptResearchStart, attemptBuildStart } from './command-queue';
 import { deriveSituationLog, type SituationItem, type SituationSeverity } from './situation-log';
 
 export type { SituationItem, SituationSeverity };
+export type { DismissedNotice };
 
 // ─── Attention section ──────────────────────────────────────────────────────
 
@@ -39,8 +40,13 @@ function humanizeStallReason(reason: string): string {
  * "Attention deep-links into the Situation Log" spec requirement — same
  * items, same navigation target, just surfaced earlier). Pure, deterministic,
  * sorted critical -> warning -> info, then soonest atMs.
+ *
+ * This is the RAW list — every condition that currently holds, dismissals
+ * ignored. It is what pruneDismissals() is measured against. Renderers and
+ * badges should call deriveAttentionItems() (below), which subtracts the
+ * player's dismissals.
  */
-export function deriveAttentionItems(state: GameState, nowMs: number = Date.now()): SituationItem[] {
+export function deriveAllAttentionItems(state: GameState, nowMs: number = Date.now()): SituationItem[] {
   const items: SituationItem[] = [];
 
   // Damaged buildings.
@@ -150,6 +156,154 @@ function sortBySeverity(items: SituationItem[]): SituationItem[] {
     if (rankDiff !== 0) return rankDiff;
     return (a.atMs ?? Infinity) - (b.atMs ?? Infinity);
   });
+}
+
+// ─── Notice dismissals (2026-09-13) ─────────────────────────────────────────
+// Founder request: "we need a way to delete stale notices from the Attention
+// section of the Outliner. Possibly allow right clicking of a notice to
+// delete it."
+//
+// Nothing here is deletable in the literal sense: every Attention row is
+// recomputed from live GameState on every render (see above), so there is no
+// stored record to remove. A "stale" notice is a live condition the player
+// has seen and decided to live with — a building they will not repair, a
+// deliberately parked ship, a senate docket they are ignoring. So the verb is
+// DISMISS, and the feature has to be honest about what it hides:
+//
+//   * The Situation Log (situation-log.ts / SituationLog.tsx) is the
+//     canonical record and keeps showing everything. Dismissal is an
+//     Outliner-rail affordance only.
+//   * PRUNE — a dismissal whose id is no longer produced by the derivation
+//     is dropped. Once the condition clears, the dismissal dies with it, so a
+//     genuine RECURRENCE surfaces again instead of being muted forever.
+//   * ESCALATE — if the item's severity is now higher than it was when
+//     dismissed (a 20%-damaged building crossing 50% into critical), the row
+//     comes back and its dismissal is dropped.
+//
+// Both rules live in pure functions here; the pruning RESULT is handed to the
+// caller to write into state (deriveAttentionView().dismissals) — nothing in
+// this module mutates GameState.
+//
+// Known, deliberate edge: `att-ships-idle` is one aggregated row with a
+// stable id, so dismissing "3 ships idle" also hides a later "9 ships idle"
+// until the fleet is fully tasked (the id stops being derived, the dismissal
+// prunes, and the row returns on the next idle ship). Its severity is 'info'
+// and cannot escalate. That is the honest cost of aggregating the row, not a
+// silent mute: the count stays visible under "N dismissed".
+
+/** Higher = more urgent. Only used to compare a live item against the
+ *  severity recorded at dismissal time (the escalate rule). */
+const DISMISSAL_SEVERITY_RANK: Record<SituationSeverity, number> = { info: 0, warning: 1, critical: 2 };
+
+/** Compile-time guard that types.ts's inlined DismissedNotice['severity']
+ *  union has not drifted from situation-log.ts's SituationSeverity. */
+const _severityUnionsMatch: DismissedNotice['severity'] extends SituationSeverity
+  ? (SituationSeverity extends DismissedNotice['severity'] ? true : never)
+  : never = true;
+void _severityUnionsMatch;
+
+export type DismissalMap = Record<string, DismissedNotice>;
+
+/** Normalizes the (optional, possibly malformed-from-a-save) map. */
+export function readDismissals(state: GameState): DismissalMap {
+  const raw = state.dismissedNotices;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  return raw;
+}
+
+/**
+ * Is this item currently hidden? True only when a dismissal exists for its id
+ * AND the item has not escalated past the severity it was dismissed at.
+ * Pure — safe to call from a render.
+ */
+export function isDismissed(item: Pick<SituationItem, 'id' | 'severity'>, dismissals: DismissalMap): boolean {
+  const record = dismissals[item.id];
+  if (!record) return false;
+  const dismissedRank = DISMISSAL_SEVERITY_RANK[record.severity] ?? DISMISSAL_SEVERITY_RANK.info;
+  return DISMISSAL_SEVERITY_RANK[item.severity] <= dismissedRank;
+}
+
+/**
+ * The self-healing pass. Given the player's dismissals and the RAW derivation
+ * for this instant, returns the dismissals that survive:
+ *   - id no longer derived  -> pruned (the condition cleared)
+ *   - severity has climbed  -> pruned (the item re-asserts itself)
+ *   - otherwise             -> kept
+ * `changed` tells the caller whether it is worth writing back to state. The
+ * input map is never mutated.
+ */
+export function pruneDismissals(
+  dismissals: DismissalMap,
+  items: SituationItem[],
+): { dismissals: DismissalMap; changed: boolean } {
+  const live = new Map(items.map(i => [i.id, i]));
+  const next: DismissalMap = {};
+  let changed = false;
+  for (const [id, record] of Object.entries(dismissals)) {
+    const item = live.get(id);
+    if (!item) { changed = true; continue; }                          // prune: condition cleared
+    if (!isDismissed(item, dismissals)) { changed = true; continue; }  // prune: escalated
+    next[id] = record;
+  }
+  return { dismissals: next, changed };
+}
+
+export interface AttentionView {
+  /** Every condition that currently holds, dismissals ignored. */
+  all: SituationItem[];
+  /** What the rail renders, and what every count/badge must use. */
+  visible: SituationItem[];
+  /** Dismissed-but-still-true items, for the "N dismissed" reveal. */
+  dismissed: SituationItem[];
+  /** The dismissal map after prune/escalate — write this back to state when
+   *  `dismissalsChanged` is true. */
+  dismissals: DismissalMap;
+  dismissalsChanged: boolean;
+}
+
+/**
+ * One pass over the Attention derivation for renderers that need all three
+ * lists plus the pruning result (Outliner.tsx). Pure.
+ */
+export function deriveAttentionView(state: GameState, nowMs: number = Date.now()): AttentionView {
+  const all = deriveAllAttentionItems(state, nowMs);
+  const { dismissals, changed } = pruneDismissals(readDismissals(state), all);
+  const visible: SituationItem[] = [];
+  const dismissed: SituationItem[] = [];
+  for (const item of all) (isDismissed(item, dismissals) ? dismissed : visible).push(item);
+  return { all, visible, dismissed, dismissals, dismissalsChanged: changed };
+}
+
+/**
+ * The Attention list minus the player's dismissals — the list every consumer
+ * (rows, section count, collapsed-rail badge, mobile status strip) must use,
+ * so a dismissed critical cannot keep a red dot lit. Callers that need the
+ * unfiltered list use deriveAllAttentionItems().
+ */
+export function deriveAttentionItems(state: GameState, nowMs: number = Date.now()): SituationItem[] {
+  return deriveAttentionView(state, nowMs).visible;
+}
+
+/** Record a dismissal, stamping the severity it is being dismissed AT (the
+ *  escalate rule's baseline). Returns a new GameState; never mutates. */
+export function dismissNotice(
+  state: GameState,
+  item: Pick<SituationItem, 'id' | 'severity'>,
+  atMs: number = Date.now(),
+): GameState {
+  return {
+    ...state,
+    dismissedNotices: { ...readDismissals(state), [item.id]: { atMs, severity: item.severity } },
+  };
+}
+
+/** Undo a dismissal (the "N dismissed" reveal's Undo control). */
+export function restoreNotice(state: GameState, id: string): GameState {
+  const current = readDismissals(state);
+  if (!(id in current)) return state;
+  const next = { ...current };
+  delete next[id];
+  return { ...state, dismissedNotices: next };
 }
 
 // ─── Holdings section ────────────────────────────────────────────────────────

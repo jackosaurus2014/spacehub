@@ -91,6 +91,9 @@ export function getNewGameState(): GameState {
     hasTradedOnMarket: false,
     // CC-1: every corporation is founded at the Earth Operations Center.
     headquarters: defaultHeadquarters(foundedAt),
+    // Outliner Attention dismissals (2026-09-13) — a new corporation has
+    // dismissed nothing.
+    dismissedNotices: {},
     // V10 fields — mining bonuses from survey probes
     miningBonuses: [],
     // V11 — Protected Frontier (new-player onramp shield)
@@ -896,6 +899,15 @@ export function migrateLoadedState(state: GameState): GameState | null {
     // (or a malformed block) reads as the Earth Operations Center, moved in
     // on the corporation's founding day.
     migrateHeadquarters(state);
+
+    // Outliner notice dismissals (2026-09-13, founder request). Additive, no
+    // version bump: a pre-feature save has dismissed nothing, so it reads as
+    // an empty map and every Attention row shows exactly as it did before.
+    // A malformed/array block is replaced rather than trusted — the worst
+    // case of getting this wrong is a permanently hidden critical notice.
+    if (!state.dismissedNotices || typeof state.dismissedNotices !== 'object' || Array.isArray(state.dismissedNotices)) {
+      state.dismissedNotices = {};
+    }
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

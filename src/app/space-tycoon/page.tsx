@@ -3560,6 +3560,13 @@ export default function SpaceTycoonPage() {
           navigateToTab('map');
           setMapFocusRequest({ target, token: Date.now() });
         }}
+        // 2026-09-13 (founder: "a way to delete stale notices from the
+        // Attention section"): the Outliner hands back the whole dismissal
+        // map — a dismiss, an undo, or outliner.ts's self-healing prune of a
+        // condition that cleared or escalated. Client presentation state
+        // only (hiding a row grants nothing), so it just rides the save and
+        // the sync; autosave picks it up on the next interval.
+        onDismissedNoticesChange={(next) => setState(prev => (prev ? { ...prev, dismissedNotices: next } : prev))}
       />
       </div>
 
