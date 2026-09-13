@@ -6,7 +6,9 @@
 
 import type { DismissedNotice, GameState, GameTab, LocationType } from './types';
 import { LOCATIONS, LOCATION_MAP } from './solar-system';
-import { BUILDING_MAP, getPowerByLocation } from './buildings';
+import { BUILDING_MAP, getPowerByLocation, findPowerCure } from './buildings';
+import { RESEARCH_MAP } from './research-tree';
+import { formatMoney } from './formulas';
 import { canStartConstruction } from './construction-slots';
 import { attemptResearchStart, attemptBuildStart } from './command-queue';
 import { deriveSituationLog, type SituationItem, type SituationSeverity } from './situation-log';
@@ -68,6 +70,62 @@ export function deriveAllAttentionItems(state: GameState, nowMs: number = Date.n
       severity: b.damagePct >= 0.5 ? 'critical' : 'warning',
       tab: 'map',
       target: { kind: 'location', id: b.locationId },
+    });
+  }
+
+  // Power-starved locations (2026-09-13, founder report: "Energy needs should
+  // be more obvious"). game-engine.ts §1 multiplies EVERY service at a
+  // location by that location's power ratio. The founder had two Lunar Relay
+  // Satellites (3 MW each) in lunar orbit with nothing generating there —
+  // ratio 0 — so both had been earning exactly nothing since the month they
+  // completed, and no surface in the game said so. Damaged buildings got a
+  // row; silently dead ones did not. They do now.
+  //
+  // Category is 'building_status' (the existing "this building is not earning
+  // what you think it is" bucket, alongside mothballed/decommissioning) —
+  // same shape, no new union member needed in situation-log.ts.
+  //
+  // The id is `att-power-<locationId>`: stable across renders (no counts, no
+  // ratios, no timestamps in it) so a dismissal sticks, and it stops being
+  // derived the instant generation covers demand, which is exactly when
+  // pruneDismissals() should drop the dismissal. Severity climbs to critical
+  // at ratio 0, so the escalate rule re-surfaces a site that goes fully dark
+  // after being dismissed at 'warning'.
+  const powerByLocation = getPowerByLocation(state.buildings);
+  for (const [locationId, power] of Object.entries(powerByLocation)) {
+    if (power.ratio >= 1) continue;
+    const earners = state.buildings.filter(b => {
+      if (!b.isComplete || b.locationId !== locationId) return false;
+      return (BUILDING_MAP.get(b.definitionId)?.enabledServices || []).length > 0;
+    });
+    if (earners.length === 0) continue;
+    const locName = LOCATION_MAP.get(locationId)?.name || locationId;
+    const shortfall = Math.max(0, power.required - power.generated);
+    const cure = findPowerCure(locationId, shortfall, state.completedResearch || []);
+    let remedy: string;
+    if (!cure) {
+      remedy = 'No power plant can be built at this location — move these operations somewhere that can be powered.';
+    } else {
+      const missing = cure.missingResearch
+        .map(r => RESEARCH_MAP.get(r)?.name || r.replace(/_/g, ' '))
+        .join(' + ');
+      const copies = cure.unitsNeeded > 1 ? `${cure.unitsNeeded}x ` : '';
+      remedy = `Cure: build ${copies}${cure.def.name} (+${cure.netPowerGenerated} MW, ${formatMoney(cure.def.baseCost)})`
+        + (missing ? ` — needs ${missing} research first.` : '.');
+    }
+    items.push({
+      id: `att-power-${locationId}`,
+      category: 'building_status',
+      icon: 'power',
+      label: power.generated === 0
+        ? `${locName}: no power — ${earners.length} building${earners.length === 1 ? '' : 's'} earning nothing`
+        : `${locName}: power short ${shortfall} MW`,
+      detail: `${locName} generates ${power.generated} of ${power.required} MW, so every service there earns `
+        + `${Math.round(power.ratio * 100)}% of its revenue (${earners.length} completed revenue building`
+        + `${earners.length === 1 ? '' : 's'} affected). ${remedy}`,
+      severity: power.generated === 0 ? 'critical' : 'warning',
+      tab: 'map',
+      target: { kind: 'location', id: locationId },
     });
   }
 

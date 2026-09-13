@@ -102,7 +102,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── SPACE STATIONS ───────────────────────────────────────────────────
   { id: 'space_station_small', crew: { engineers: 1, operators: 1, scientists: 1 }, name: 'Orbital Outpost', category: 'space_station', tier: 1,
     description: 'Small modular space station in LEO. 4-person crew capacity.',
-    tooltip: 'YOUR FIRST SPACE STATION (+15% REVENUE BONUS). Activates LEO Space Tourism at $12M/mo vs $4M cost = $8M/mo net. Also boosts ALL service revenue in LEO by +15% (stacks with other stations). Requires "Modular Spacecraft" research and costs aluminum (50) + titanium (20). A slow-payback but strategic build — it unlocks tourism — a key revenue category — and counts toward station contracts. Essential mid-game milestone. (Check the live projection on the build card before committing $250M.)',
+    tooltip: 'YOUR FIRST SPACE STATION (+15% REVENUE BONUS). Activates LEO Space Tourism at $12M/mo vs $4M cost = $8M/mo net. Also boosts ALL service revenue in LEO by +15% (stacks with other stations). Requires "Modular Spacecraft" research and costs aluminum (50) + titanium (20). A slow-payback but strategic build — it unlocks tourism — a key revenue category — and counts toward station contracts. Essential mid-game milestone. (Check the live projection on the build card before committing $250M.) POWER: draws 5 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 250_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['modular_spacecraft'], requiredLocation: 'leo', enabledServices: ['svc_tourism_leo'],
     realBuildSeconds: 900, resourceCost: { aluminum: 50, titanium: 20 }, powerRequired: 5,
@@ -113,7 +113,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { hazardShielding: 0.03, crewQuarters: 2 } },
   { id: 'space_station_lunar', crew: { engineers: 1, operators: 2, scientists: 1 }, name: 'Lunar Gateway', category: 'space_station', tier: 2,
     description: 'Orbital station around the Moon. Staging point for surface operations.',
-    tooltip: 'CISLUNAR HUB (+15% REVENUE BONUS). Activates Lunar Gateway Tours at $25M/mo vs $10M cost = $15M/mo net. Also boosts ALL service revenue in Lunar Orbit by +15%. Positions you as a lunar operator and fulfills "station at location" competitive contracts. Requires Lunar Orbit unlock ($1B) plus research. The $15M/mo net profit justifies the $2B cost over time, and you need a presence here for late-game lunar dominance.',
+    tooltip: 'CISLUNAR HUB (+15% REVENUE BONUS). Activates Lunar Gateway Tours at $25M/mo vs $10M cost = $15M/mo net. Also boosts ALL service revenue in Lunar Orbit by +15%. Positions you as a lunar operator and fulfills "station at location" competitive contracts. Requires Lunar Orbit unlock ($1B) plus research. The $15M/mo net profit justifies the $2B cost over time, and you need a presence here for late-game lunar dominance. POWER: draws 8 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 2_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 8_000_000,
     requiredResearch: ['modular_spacecraft', 'reusable_boosters'], requiredLocation: 'lunar_orbit', enabledServices: ['svc_tourism_lunar_gateway'],
     realBuildSeconds: 1200, resourceCost: { aluminum: 100, titanium: 40, iron: 80 }, powerRequired: 8,
@@ -121,7 +121,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { hazardShielding: 0.04, diplomacy: 0.04, crewQuarters: 3 } },
   { id: 'space_station_mars', crew: { engineers: 2, operators: 2, scientists: 1 }, name: 'Mars Orbital Station', category: 'space_station', tier: 3,
     description: 'Permanent crewed station in Mars orbit.',
-    tooltip: 'MARS COMMAND CENTER (+15% REVENUE BONUS). Activates Mars Station Operations at $45M/mo vs $15M cost = $30M/mo net. Also boosts ALL service revenue in Mars Orbit by +15%. One of the highest-profit services in the game. Requires "Interplanetary Cruisers" research. Critical for Mars colonization contracts and late-game competitive milestones.',
+    tooltip: 'MARS COMMAND CENTER (+15% REVENUE BONUS). Activates Mars Station Operations at $45M/mo vs $15M cost = $30M/mo net. Also boosts ALL service revenue in Mars Orbit by +15%. One of the highest-profit services in the game. Requires "Interplanetary Cruisers" research. Critical for Mars colonization contracts and late-game competitive milestones. POWER: draws 10 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 8_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 10_000_000,
     requiredResearch: ['interplanetary_cruisers'], requiredLocation: 'mars_orbit', enabledServices: ['svc_mars_station_ops'],
     realBuildSeconds: 3600, resourceCost: { titanium: 100, aluminum: 200, rare_earth: 30, iron: 300 }, powerRequired: 10,
@@ -131,7 +131,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── DATA CENTERS ─────────────────────────────────────────────────────
   { id: 'datacenter_orbital', crew: { engineers: 1, scientists: 1 }, name: 'Orbital Data Center', category: 'datacenter', tier: 2,
     description: 'AI compute facility in orbit. Free cooling, solar powered.',
-    tooltip: 'HIGH-MARGIN TECH PLAY. Activates Orbital AI Compute at $12M/mo vs $4M cost = $8M/mo net. Excellent 67% profit margin. Requires "Rad-Hardened Processors" research. The AI datacenter revenue is a strong return per dollar invested early — saturates fast if others build here too. Build as soon as you complete the research.',
+    tooltip: 'HIGH-MARGIN TECH PLAY. Activates Orbital AI Compute at $12M/mo vs $4M cost = $8M/mo net. Excellent 67% profit margin. Requires "Rad-Hardened Processors" research. The AI datacenter revenue is a strong return per dollar invested early — saturates fast if others build here too. Build as soon as you complete the research. POWER: draws 10 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 300_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 2_000_000,
     requiredResearch: ['rad_hard_processors'], requiredLocation: 'leo', enabledServices: ['svc_ai_datacenter'],
     realBuildSeconds: 420, resourceCost: { rare_earth: 15, titanium: 10 }, powerRequired: 10,
@@ -139,7 +139,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { researchSpeed: 0.03 } }, // E3: compute spares, 2 × $1.5M = 25% of $12M gross
   { id: 'datacenter_geo', crew: { engineers: 2, scientists: 2 }, name: 'GEO Data Center', category: 'datacenter', tier: 3,
     description: 'Heavy AI compute anchored in a premium geostationary slot. Constant sun, fixed ground footprint, zero handover latency.',
-    tooltip: 'PRIME-ORBIT COMPUTE. Activates GEO AI Compute at $22M/mo vs $7M cost = $15M/mo net — but it sits in the contested GEO belt, so congestion raises upkeep as the belt fills, and it consumes a satellite bus every 10 months for station-keeping hardware. Requires "Rad-Hardened Processors" + "Edge AI". The step up from the LEO Orbital Data Center for corporations ready to fight for premium slots.',
+    tooltip: 'PRIME-ORBIT COMPUTE. Activates GEO AI Compute at $22M/mo vs $7M cost = $15M/mo net — but it sits in the contested GEO belt, so congestion raises upkeep as the belt fills, and it consumes a satellite bus every 10 months for station-keeping hardware. Requires "Rad-Hardened Processors" + "Edge AI". The step up from the LEO Orbital Data Center for corporations ready to fight for premium slots. POWER: draws 14 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 900_000_000, buildTimeMonths: 16, maintenanceCostPerMonth: 4_000_000,
     requiredResearch: ['rad_hard_processors', 'edge_ai'], requiredLocation: 'geo', enabledServices: ['svc_ai_datacenter_geo'],
     realBuildSeconds: 1200, resourceCost: { rare_earth: 25, titanium: 20 }, powerRequired: 14,
@@ -161,21 +161,21 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { researchSpeed: 0.05 } },
   { id: 'research_lab_orbital', crew: { engineers: 1, scientists: 1 }, name: 'Orbital Research Laboratory', category: 'datacenter', tier: 2,
     description: 'Microgravity materials science and protein crystallography in low-Earth orbit.',
-    tooltip: 'MICROGRAVITY SCIENCE. +5% research speed, stacking with the Terrestrial Research Institute. Occupies a LEO slot — congestion raises its upkeep as the shells fill. Requires "Orbital Assembly".',
+    tooltip: 'MICROGRAVITY SCIENCE. +5% research speed, stacking with the Terrestrial Research Institute. Occupies a LEO slot — congestion raises its upkeep as the shells fill. Requires "Orbital Assembly". POWER: draws 6 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 550_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 2_500_000,
     requiredResearch: ['orbital_assembly'], requiredLocation: 'leo', enabledServices: [],
     realBuildSeconds: 900, resourceCost: { aluminum: 40, titanium: 15, rare_earth: 8 }, powerRequired: 6,
     capabilities: { researchSpeed: 0.05 } },
   { id: 'research_station_lunar', crew: { engineers: 2, scientists: 2 }, name: 'Lunar Research Station', category: 'datacenter', tier: 3,
     description: 'Far-side radio quiet, vacuum labs, and one-sixth gravity for long-duration experiments.',
-    tooltip: 'FAR-SIDE SCIENCE. +6% research speed. The Moon offers radio quiet and stable vacuum no orbit can match. Requires "Regolith Processing".',
+    tooltip: 'FAR-SIDE SCIENCE. +6% research speed. The Moon offers radio quiet and stable vacuum no orbit can match. Requires "Regolith Processing". POWER: draws 8 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 1_800_000_000, buildTimeMonths: 20, maintenanceCostPerMonth: 3_500_000,
     requiredResearch: ['regolith_processing'], requiredLocation: 'lunar_surface', enabledServices: [],
     realBuildSeconds: 2400, resourceCost: { iron: 120, aluminum: 80, rare_earth: 15 }, powerRequired: 8,
     capabilities: { researchSpeed: 0.06 } },
   { id: 'research_station_mars', crew: { engineers: 2, scientists: 2 }, name: 'Mars Research Complex', category: 'datacenter', tier: 3,
     description: 'Planetary science headquarters: geology, ISRU pilot plants, and a permanent scientific staff on Mars.',
-    tooltip: 'PLANETARY SCIENCE HQ. +7% research speed — the largest single lab in the family. A serious late-mid-game commitment on the Martian surface. Requires "Edge AI" for its autonomous lab systems.',
+    tooltip: 'PLANETARY SCIENCE HQ. +7% research speed — the largest single lab in the family. A serious late-mid-game commitment on the Martian surface. Requires "Edge AI" for its autonomous lab systems. POWER: draws 10 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 3_000_000_000, buildTimeMonths: 30, maintenanceCostPerMonth: 4_500_000,
     requiredResearch: ['edge_ai'], requiredLocation: 'mars_surface', enabledServices: [],
     realBuildSeconds: 3600, resourceCost: { iron: 250, titanium: 100, rare_earth: 30 }, powerRequired: 10,
@@ -183,7 +183,7 @@ export const BUILDINGS: BuildingDefinition[] = [
 
   { id: 'datacenter_mars_orbit', crew: { engineers: 2, scientists: 2 }, name: 'Mars Data Relay', category: 'datacenter', tier: 3,
     description: 'Data processing and relay facility at Mars.',
-    tooltip: 'DEEP-SPACE COMPUTE. Activates Mars Data Processing at $25M/mo vs $8M cost = $17M/mo net. Required for Mars operations communication and data relay. Requires "Edge AI" research. A long-horizon investment, but essential infrastructure if you\'re building a Mars presence. Also enables Propellant Brokerage when combined with other Mars infrastructure.',
+    tooltip: 'DEEP-SPACE COMPUTE. Activates Mars Data Processing at $25M/mo vs $8M cost = $17M/mo net. Required for Mars operations communication and data relay. Requires "Edge AI" research. A long-horizon investment, but essential infrastructure if you\'re building a Mars presence. Also enables Propellant Brokerage when combined with other Mars infrastructure. POWER: draws 20 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 3_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['edge_ai'], requiredLocation: 'mars_orbit', enabledServices: ['svc_ai_mars'],
     realBuildSeconds: 2700, resourceCost: { rare_earth: 50, titanium: 40, iron: 100 }, powerRequired: 20,
@@ -207,13 +207,13 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── MINING ───────────────────────────────────────────────────────────
   { id: 'mining_lunar_basic', crew: { engineers: 1, miners: 2 }, name: 'Basic Lunar Extractor', category: 'mining_enterprise', tier: 1,
     description: 'Simple surface skimmer that scrapes loose regolith ice. Small output, but no advanced materials needed to build.',
-    tooltip: 'BOOTSTRAP MINING. Money-only build ($125M, no resource inputs) so you can start producing lunar water before having iron/aluminum. Output is 20 water + 0.5 helium-3 per game month — modest but enough to unlock follow-on construction and start earning Lunar Basic Water Sales revenue. Upgrade to the full Lunar Ice Mine when you have the metals to afford it.',
+    tooltip: 'BOOTSTRAP MINING. Money-only build ($125M, no resource inputs) so you can start producing lunar water before having iron/aluminum. Output is 20 water + 0.5 helium-3 per game month — modest but enough to unlock follow-on construction and start earning Lunar Basic Water Sales revenue. Upgrade to the full Lunar Ice Mine when you have the metals to afford it. POWER: draws 3 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 125_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 800_000,
     requiredResearch: [], requiredLocation: 'lunar_surface', enabledServices: ['svc_mining_lunar_basic'],
     realBuildSeconds: 420, powerRequired: 3 },
   { id: 'mining_lunar_ice', crew: { engineers: 1, miners: 2 }, name: 'Lunar Ice Mine', category: 'mining_enterprise', tier: 2,
     description: 'Extract water ice from permanently shadowed craters.',
-    tooltip: 'YOUR GATEWAY TO RESOURCES. Activates Lunar Water Sales at $18M/mo vs $7M cost = $11M/mo net. More importantly, it produces 100 lunar water + 2 helium-3 per game month — resources you NEED for advanced buildings and research. Water sells for $50K/unit on the global Market (already open from turn one). Once built, your resource economy begins. Requires "Resource Prospecting" research + Lunar Surface unlock ($2B).',
+    tooltip: 'YOUR GATEWAY TO RESOURCES. Activates Lunar Water Sales at $18M/mo vs $7M cost = $11M/mo net. More importantly, it produces 100 lunar water + 2 helium-3 per game month — resources you NEED for advanced buildings and research. Water sells for $50K/unit on the global Market (already open from turn one). Once built, your resource economy begins. Requires "Resource Prospecting" research + Lunar Surface unlock ($2B). POWER: draws 10 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 1_500_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 3_000_000,
     requiredResearch: ['resource_prospecting'], requiredLocation: 'lunar_surface', enabledServices: ['svc_mining_lunar'],
     realBuildSeconds: 1200, resourceCost: { iron: 80, aluminum: 40, titanium: 15 }, powerRequired: 10,
@@ -223,28 +223,28 @@ export const BUILDINGS: BuildingDefinition[] = [
     consumesPerMonth: { rocket_fuel: 5 } },
   { id: 'mining_mars', crew: { engineers: 1, miners: 3 }, name: 'Mars Mining Operation', category: 'mining_enterprise', tier: 3,
     description: 'Extract metals and water from Martian regolith.',
-    tooltip: 'BULK METAL PRODUCTION. Activates Mars Resource Extraction at $35M/mo vs $13M cost = $22M/mo net. Produces 200 iron + 50 aluminum + 80 Mars water per month — massive quantities of building materials. If you\'re running low on iron and aluminum for construction, this is the solution. Requires "Regolith Processing" research + Mars Surface unlock ($25B). Expensive to set up but the resource output fuels your entire expansion.',
+    tooltip: 'BULK METAL PRODUCTION. Activates Mars Resource Extraction at $35M/mo vs $13M cost = $22M/mo net. Produces 200 iron + 50 aluminum + 80 Mars water per month — massive quantities of building materials. If you\'re running low on iron and aluminum for construction, this is the solution. Requires "Regolith Processing" research + Mars Surface unlock ($25B). Expensive to set up but the resource output fuels your entire expansion. POWER: draws 15 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 5_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 8_000_000,
     requiredResearch: ['regolith_processing'], requiredLocation: 'mars_surface', enabledServices: ['svc_mining_mars'],
     realBuildSeconds: 2700, resourceCost: { iron: 200, titanium: 80, aluminum: 100, rare_earth: 20 }, powerRequired: 15,
     consumesPerMonth: { rocket_fuel: 5 } },
   { id: 'mining_asteroid', crew: { engineers: 1, miners: 3 }, name: 'Asteroid Mining Rig', category: 'mining_enterprise', tier: 3,
     description: 'Capture and process metallic asteroids.',
-    tooltip: 'PRECIOUS METALS BONANZA. Activates Asteroid Metals at $50M/mo vs $18M cost = $32M/mo net. Produces 500 iron + 10 platinum + 15 gold + 20 rare earth + 30 titanium per month. This is where the REAL money is — platinum ($500K/unit) and gold ($300K/unit) are the most valuable tradeable resources. Requires "Asteroid Capture" research + Belt unlock ($15B). The $32M/mo net plus resource value makes this one of the best investments in the game.',
+    tooltip: 'PRECIOUS METALS BONANZA. Activates Asteroid Metals at $50M/mo vs $18M cost = $32M/mo net. Produces 500 iron + 10 platinum + 15 gold + 20 rare earth + 30 titanium per month. This is where the REAL money is — platinum ($500K/unit) and gold ($300K/unit) are the most valuable tradeable resources. Requires "Asteroid Capture" research + Belt unlock ($15B). The $32M/mo net plus resource value makes this one of the best investments in the game. POWER: draws 12 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 8_000_000_000, buildTimeMonths: 30, maintenanceCostPerMonth: 10_000_000,
     requiredResearch: ['asteroid_capture'], requiredLocation: 'asteroid_belt', enabledServices: ['svc_mining_asteroid'],
     realBuildSeconds: 3600, resourceCost: { titanium: 100, iron: 300, rare_earth: 30 }, powerRequired: 12,
     consumesPerMonth: { rocket_fuel: 5 } },
   { id: 'mining_europa', crew: { engineers: 2, miners: 5 }, name: 'Europa Ice Drill', category: 'mining_enterprise', tier: 4,
     description: 'Drill through Europa\'s ice shell for subsurface ocean resources.',
-    tooltip: 'EXOTIC MATERIALS SOURCE. Activates Europa Subsurface Resources at $200M/mo vs $45M operating cost, against a $120M/mo flagship upkeep floor (0.4% of the $30B build) = ~$35M/mo net at neutral multipliers — one of the highest-profit services in the game. Produces 5 exotic materials ($2M each) + 200 lunar water per month. Exotic materials are needed for Tier 5 research and endgame construction. Requires "Deep Drilling" research + Jupiter unlock ($100B). The $75M/mo net profit makes this worth the massive investment.',
+    tooltip: 'EXOTIC MATERIALS SOURCE. Activates Europa Subsurface Resources at $200M/mo vs $45M operating cost, against a $120M/mo flagship upkeep floor (0.4% of the $30B build) = ~$35M/mo net at neutral multipliers — one of the highest-profit services in the game. Produces 5 exotic materials ($2M each) + 200 lunar water per month. Exotic materials are needed for Tier 5 research and endgame construction. Requires "Deep Drilling" research + Jupiter unlock ($100B). The $75M/mo net profit makes this worth the massive investment. POWER: draws 15 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 30_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 20_000_000,
     requiredResearch: ['deep_drilling'], requiredLocation: 'jupiter_system', enabledServices: ['svc_mining_europa'],
     realBuildSeconds: 5400, resourceCost: { titanium: 200, rare_earth: 80, platinum_group: 20 }, powerRequired: 15,
     consumesPerMonth: { rocket_fuel: 5 } },
   { id: 'mining_titan', crew: { engineers: 2, miners: 5 }, name: 'Titan Hydrocarbon Harvester', category: 'mining_enterprise', tier: 4,
     description: 'Harvest methane and ethane from Titan\'s lakes.',
-    tooltip: 'HIGHEST REVENUE SERVICE IN THE GAME. Activates Titan Hydrocarbon Exports at $265M/mo vs $55M operating cost, against a $160M/mo flagship upkeep floor (0.4% of the $40B build) = ~$50M/mo net at neutral multipliers. Produces 300 methane + 150 ethane per month. The $105M/mo net is the single best revenue source available. Requires "Deep Drilling" research + Saturn unlock ($200B). Late-game mega-investment that funds everything else. Build as soon as you can afford the Saturn system.',
+    tooltip: 'HIGHEST REVENUE SERVICE IN THE GAME. Activates Titan Hydrocarbon Exports at $265M/mo vs $55M operating cost, against a $160M/mo flagship upkeep floor (0.4% of the $40B build) = ~$50M/mo net at neutral multipliers. Produces 300 methane + 150 ethane per month. The $105M/mo net is the single best revenue source available. Requires "Deep Drilling" research + Saturn unlock ($200B). Late-game mega-investment that funds everything else. Build as soon as you can afford the Saturn system. POWER: draws 15 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 40_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 25_000_000,
     requiredResearch: ['deep_drilling'], requiredLocation: 'saturn_system', enabledServices: ['svc_mining_titan'],
     realBuildSeconds: 5400, resourceCost: { titanium: 250, rare_earth: 100, platinum_group: 30 }, powerRequired: 15,
@@ -260,14 +260,14 @@ export const BUILDINGS: BuildingDefinition[] = [
     maxPerPlayer: 1 }, // Early-fab wave: one per corporation — Earth launch/environmental permits cap ground industry; scaling up means orbit.
   { id: 'fabrication_orbital', crew: { engineers: 2, operators: 1 }, name: 'Orbital Fabrication Lab', category: 'fabrication_facility', tier: 2,
     description: 'Manufacture components in microgravity.',
-    tooltip: 'UNLOCKS CRAFTING. Activates Orbital Manufacturing at $10M/mo vs $4M cost = $6M/mo net. More importantly, this unlocks the Crafting tab — letting you refine raw resources into higher-value products (steel ingots, electronics, solar panels). Also produces 5 titanium + 3 rare earth per month passively. Requires "Orbital Assembly" research. Build to unlock the entire production chain system.',
+    tooltip: 'UNLOCKS CRAFTING. Activates Orbital Manufacturing at $10M/mo vs $4M cost = $6M/mo net. More importantly, this unlocks the Crafting tab — letting you refine raw resources into higher-value products (steel ingots, electronics, solar panels). Also produces 5 titanium + 3 rare earth per month passively. Requires "Orbital Assembly" research. Build to unlock the entire production chain system. POWER: draws 8 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 600_000_000, buildTimeMonths: 14, maintenanceCostPerMonth: 3_000_000,
     requiredResearch: ['orbital_assembly'], requiredLocation: 'leo', enabledServices: ['svc_fabrication_orbital'],
     realBuildSeconds: 900, resourceCost: { iron: 60, aluminum: 40, rare_earth: 10 }, powerRequired: 8,
     capabilities: { shipyardSlots: 1 } },
   { id: 'fabrication_lunar', crew: { engineers: 2, operators: 1 }, name: 'Lunar Manufacturing Plant', category: 'fabrication_facility', tier: 2,
     description: 'Use lunar materials to build components on-site.',
-    tooltip: 'LUNAR INDUSTRY. Activates Lunar Manufacturing at $15M/mo vs $6M cost = $9M/mo net. Produces 30 aluminum + 50 iron per month — a steady stream of building materials without needing mining ships. Combined with your Lunar Ice Mine, creates a self-sustaining lunar economy. Requires both "Orbital Assembly" and "Regolith Processing" research. Build alongside your lunar mining operation.',
+    tooltip: 'LUNAR INDUSTRY. Activates Lunar Manufacturing at $15M/mo vs $6M cost = $9M/mo net. Produces 30 aluminum + 50 iron per month — a steady stream of building materials without needing mining ships. Combined with your Lunar Ice Mine, creates a self-sustaining lunar economy. Requires both "Orbital Assembly" and "Regolith Processing" research. Build alongside your lunar mining operation. POWER: draws 12 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 2_000_000_000, buildTimeMonths: 20, maintenanceCostPerMonth: 4_000_000,
     requiredResearch: ['orbital_assembly', 'regolith_processing'], requiredLocation: 'lunar_surface', enabledServices: ['svc_fabrication_lunar'],
     realBuildSeconds: 1200, resourceCost: { iron: 100, aluminum: 60, lunar_water: 30, titanium: 20 }, powerRequired: 12,
@@ -276,7 +276,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── HABITATS ─────────────────────────────────────────────────────────
   { id: 'habitat_lunar', crew: { engineers: 1, operators: 2, scientists: 1 }, name: 'Lunar Habitat', category: 'space_station', tier: 2,
     description: 'Pressurized habitat on the lunar surface. 8-person capacity.',
-    tooltip: 'LUNAR TOURISM HUB (+15% REVENUE BONUS). Activates Lunar Tourism at $30M/mo vs $12M cost = $18M/mo net. Also boosts ALL service revenue on the Lunar Surface by +15% (stacks with other stations). The highest-revenue lunar service. Lunar Tourism is a premium revenue stream that attracts wealthy tourists. Requires "Modular Spacecraft" + "Resource Prospecting" research plus lunar water (50) and metals to build. A very long-horizon investment at $3B, but steady income is valuable for mid-game stability.',
+    tooltip: 'LUNAR TOURISM HUB (+15% REVENUE BONUS). Activates Lunar Tourism at $30M/mo vs $12M cost = $18M/mo net. Also boosts ALL service revenue on the Lunar Surface by +15% (stacks with other stations). The highest-revenue lunar service. Lunar Tourism is a premium revenue stream that attracts wealthy tourists. Requires "Modular Spacecraft" + "Resource Prospecting" research plus lunar water (50) and metals to build. A very long-horizon investment at $3B, but steady income is valuable for mid-game stability. POWER: draws 8 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 3_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['modular_spacecraft', 'resource_prospecting'], requiredLocation: 'lunar_surface', enabledServices: ['svc_tourism_moon'],
     realBuildSeconds: 1500, resourceCost: { aluminum: 80, titanium: 30, lunar_water: 50, iron: 60 }, powerRequired: 8,
@@ -284,7 +284,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { crewQuarters: 4, trainingSpeed: 0.05 } },
   { id: 'habitat_mars', crew: { engineers: 2, operators: 2, scientists: 1 }, name: 'Mars Habitat', category: 'space_station', tier: 3,
     description: 'First permanent human settlement on Mars.',
-    tooltip: 'MARS COLONIZATION (+15% REVENUE BONUS). Activates Mars Tourism at $80M/mo vs $35M cost = $45M/mo net — one of the top 5 revenue sources in the game. Also boosts ALL service revenue on Mars Surface by +15% (stacks with other stations). Establishes humanity\'s first Mars settlement and counts toward the "Mars Colonization Initiative" contract ($1B reward). Requires "Interplanetary Cruisers" + "Regolith Processing" research. At $15B cost and heavy resource requirements, this is a late mid-game milestone that defines your Mars strategy.',
+    tooltip: 'MARS COLONIZATION (+15% REVENUE BONUS). Activates Mars Tourism at $80M/mo vs $35M cost = $45M/mo net — one of the top 5 revenue sources in the game. Also boosts ALL service revenue on Mars Surface by +15% (stacks with other stations). Establishes humanity\'s first Mars settlement and counts toward the "Mars Colonization Initiative" contract ($1B reward). Requires "Interplanetary Cruisers" + "Regolith Processing" research. At $15B cost and heavy resource requirements, this is a late mid-game milestone that defines your Mars strategy. POWER: draws 12 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 15_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 12_000_000,
     requiredResearch: ['interplanetary_cruisers', 'regolith_processing'], requiredLocation: 'mars_surface', enabledServices: ['svc_tourism_mars'],
     realBuildSeconds: 3600, resourceCost: { titanium: 120, aluminum: 150, iron: 200, mars_water: 50, rare_earth: 25 }, powerRequired: 12,
@@ -302,7 +302,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── RELAY SATELLITES ───────────────────────────────────────────────
   { id: 'sat_lunar_relay', crew: { operators: 2 }, name: 'Lunar Relay Satellite', category: 'satellite', tier: 2,
     description: 'Communication relay for cislunar operations and debris tracking.',
-    tooltip: 'TWO SERVICES IN ONE. Activates both Debris Removal ($12M/mo, $5M cost = $7M net) AND Space Insurance ($8M/mo, $1.8M cost = $6.2M net). Combined: $13.2M/mo net from a single $200M building. Best ROI of any satellite. Requires "Reusable Boosters" research + Lunar Orbit unlock ($1B). Build this as soon as you unlock Lunar Orbit — two revenue streams from one building.',
+    tooltip: 'TWO SERVICES IN ONE. Activates both Debris Removal ($12M/mo, $5M cost = $7M net) AND Space Insurance ($8M/mo, $1.8M cost = $6.2M net). Combined: $13.2M/mo net from a single $200M building. Best ROI of any satellite. Requires "Reusable Boosters" research + Lunar Orbit unlock ($1B). Build this as soon as you unlock Lunar Orbit — two revenue streams from one building. POWER: draws 3 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 200_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 800_000,
     requiredResearch: ['reusable_boosters'], requiredLocation: 'lunar_orbit', enabledServices: ['svc_debris_removal', 'svc_space_insurance'],
     realBuildSeconds: 720, resourceCost: { aluminum: 15, rare_earth: 5 }, powerRequired: 3,
@@ -318,7 +318,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── MARS SURFACE INFRASTRUCTURE ────────────────────────────────────
   { id: 'fabrication_mars', crew: { engineers: 3, operators: 2 }, name: 'Mars Manufacturing Plant', category: 'fabrication_facility', tier: 3,
     description: 'Manufacture components using Martian resources. Key to Mars self-sufficiency.',
-    tooltip: 'MARS SELF-SUFFICIENCY + PROPELLANT DEPOT. Activates Propellant Depot Services at $20M/mo vs $7M cost = $13M/mo net. Makes Mars operations sustainable by manufacturing components locally instead of shipping from Earth. Combined with Mars Mining, creates a self-sufficient Mars economy. Requires "Orbital Assembly" + "Regolith Processing" research. Essential for long-term Mars presence.',
+    tooltip: 'MARS SELF-SUFFICIENCY + PROPELLANT DEPOT. Activates Propellant Depot Services at $20M/mo vs $7M cost = $13M/mo net. Makes Mars operations sustainable by manufacturing components locally instead of shipping from Earth. Combined with Mars Mining, creates a self-sufficient Mars economy. Requires "Orbital Assembly" + "Regolith Processing" research. Essential for long-term Mars presence. POWER: draws 15 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 8_000_000_000, buildTimeMonths: 28, maintenanceCostPerMonth: 6_000_000,
     requiredResearch: ['orbital_assembly', 'regolith_processing'], requiredLocation: 'mars_surface', enabledServices: ['svc_propellant_depot'],
     realBuildSeconds: 2400, resourceCost: { titanium: 80, aluminum: 100, iron: 150, mars_water: 40 }, powerRequired: 15,
@@ -385,14 +385,14 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── ASTEROID BELT INFRASTRUCTURE ───────────────────────────────────
   { id: 'fabrication_asteroid', crew: { engineers: 3, operators: 2 }, name: 'Asteroid Refinery', category: 'fabrication_facility', tier: 3,
     description: 'Process asteroid materials in-situ. Reduces transport costs dramatically.',
-    tooltip: 'ASTEROID SURVEY DATA. Activates Asteroid Survey Data service at $28M/mo vs $10M cost = $18M/mo net. Processes raw asteroid materials on-site, eliminating the need to ship unrefined ore back to Earth. Also a prerequisite for advanced asteroid belt operations. Requires "Asteroid Capture" + "Orbital Assembly" research. Build after your Asteroid Mining Rig is operational.',
+    tooltip: 'ASTEROID SURVEY DATA. Activates Asteroid Survey Data service at $28M/mo vs $10M cost = $18M/mo net. Processes raw asteroid materials on-site, eliminating the need to ship unrefined ore back to Earth. Also a prerequisite for advanced asteroid belt operations. Requires "Asteroid Capture" + "Orbital Assembly" research. Build after your Asteroid Mining Rig is operational. POWER: draws 10 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 12_000_000_000, buildTimeMonths: 30, maintenanceCostPerMonth: 8_000_000,
     requiredResearch: ['asteroid_capture', 'orbital_assembly'], requiredLocation: 'asteroid_belt', enabledServices: ['svc_asteroid_survey'],
     realBuildSeconds: 2700, resourceCost: { titanium: 100, iron: 200, platinum_group: 10, rare_earth: 30 }, powerRequired: 10,
     capabilities: { inventoryProtection: 0.15 } }, // 45 min
   { id: 'space_station_belt', crew: { engineers: 2, operators: 2, scientists: 1 }, name: 'Ceres Station', category: 'space_station', tier: 3,
     description: 'Deep-space outpost at Ceres. Hub for asteroid belt operations.',
-    tooltip: 'DEEP-SPACE HUB (+15% REVENUE BONUS). Establishes a permanent presence at Ceres — the largest object in the asteroid belt. Boosts ALL service revenue at the Asteroid Belt by +15%. Serves as a staging point for asteroid mining ships, reducing transit times. Adds to your station count for competitive contracts. At $15B it\'s a prestige investment that signals dominance of the Belt. Required for serious endgame asteroid belt operations.',
+    tooltip: 'DEEP-SPACE HUB (+15% REVENUE BONUS). Establishes a permanent presence at Ceres — the largest object in the asteroid belt. Boosts ALL service revenue at the Asteroid Belt by +15%. Serves as a staging point for asteroid mining ships, reducing transit times. Adds to your station count for competitive contracts. At $15B it\'s a prestige investment that signals dominance of the Belt. Required for serious endgame asteroid belt operations. POWER: draws 8 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 15_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 10_000_000,
     requiredResearch: ['asteroid_capture', 'modular_spacecraft'], requiredLocation: 'asteroid_belt', enabledServices: [],
     realBuildSeconds: 3600, resourceCost: { titanium: 150, aluminum: 200, iron: 300, rare_earth: 40 }, powerRequired: 8,
@@ -402,7 +402,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── JUPITER SYSTEM INFRASTRUCTURE ──────────────────────────────────
   { id: 'space_station_jupiter', crew: { engineers: 3, operators: 3, scientists: 2 }, name: 'Jovian Station', category: 'space_station', tier: 4,
     description: 'Orbital research platform in Jupiter system. Supports Europa operations.',
-    tooltip: 'JUPITER COMMAND (+15% REVENUE BONUS). Staging platform for Europa mining and Jovian moon exploration. Boosts ALL service revenue in the Jupiter System by +15%. Supports your Europa Ice Drill operations and fulfills "Jupiter Expedition" competitive contracts (up to $5B reward + "Jovian Pioneer" title). At $50B it\'s a major late-game investment, but Jupiter system access is required for exotic materials production. Build alongside Europa Ice Drill.',
+    tooltip: 'JUPITER COMMAND (+15% REVENUE BONUS). Staging platform for Europa mining and Jovian moon exploration. Boosts ALL service revenue in the Jupiter System by +15%. Supports your Europa Ice Drill operations and fulfills "Jupiter Expedition" competitive contracts (up to $5B reward + "Jovian Pioneer" title). At $50B it\'s a major late-game investment, but Jupiter system access is required for exotic materials production. Build alongside Europa Ice Drill. POWER: draws 10 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 50_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 30_000_000,
     requiredResearch: ['nuclear_thermal', 'interplanetary_cruisers'], requiredLocation: 'jupiter_system', enabledServices: [],
     realBuildSeconds: 7200, resourceCost: { titanium: 200, platinum_group: 25, rare_earth: 60, exotic_materials: 3 }, powerRequired: 10, powerGenerated: 15,
@@ -410,7 +410,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { hazardShielding: 0.06, diplomacy: 0.05, crewQuarters: 4, expeditionSupport: 0.04 } }, // 2 hr — nuclear powered, net +5 MW
   { id: 'datacenter_jupiter', crew: { engineers: 2, scientists: 3 }, name: 'Jupiter Relay Hub', category: 'datacenter', tier: 4,
     description: 'Deep-space data relay and edge computing center for outer system.',
-    tooltip: 'OUTER SYSTEM COMMS. Provides communication relay for Jupiter and Saturn operations. Without this, your outer system facilities operate in isolation. Edge computing processes scientific data locally instead of transmitting raw data back to Earth. Requires "Nuclear Thermal" + "Edge AI" research. Build to support your Jupiter and Saturn expansion.',
+    tooltip: 'OUTER SYSTEM COMMS. Provides communication relay for Jupiter and Saturn operations. Without this, your outer system facilities operate in isolation. Edge computing processes scientific data locally instead of transmitting raw data back to Earth. Requires "Nuclear Thermal" + "Edge AI" research. Build to support your Jupiter and Saturn expansion. POWER: draws 15 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     // M1/F1: maintenance cut 15M->5M and electronics_package upkeep trimmed
     // 3->1/mo (still a real recipe tie, not free) so the flagship T4 comms
     // building isn't a first-copy loss once its required reactor's own
@@ -424,7 +424,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── SATURN SYSTEM INFRASTRUCTURE ───────────────────────────────────
   { id: 'space_station_saturn', crew: { engineers: 3, operators: 3, scientists: 2 }, name: 'Kronos Station', category: 'space_station', tier: 4,
     description: 'Saturn orbital platform. Staging for Titan and Enceladus operations.',
-    tooltip: 'SATURN COMMAND (+15% REVENUE BONUS). Staging platform for Titan Hydrocarbon Harvester — the highest-revenue building in the game ($105M/mo net). Boosts ALL service revenue in the Saturn System by +15%. Without Kronos Station, Titan operations have no support infrastructure. Also fulfills deep-space station competitive contracts. At $80B it\'s the most expensive station, but Titan\'s $105M/mo revenue justifies the investment.',
+    tooltip: 'SATURN COMMAND (+15% REVENUE BONUS). Staging platform for Titan Hydrocarbon Harvester — the highest-revenue building in the game ($105M/mo net). Boosts ALL service revenue in the Saturn System by +15%. Without Kronos Station, Titan operations have no support infrastructure. Also fulfills deep-space station competitive contracts. At $80B it\'s the most expensive station, but Titan\'s $105M/mo revenue justifies the investment. POWER: draws 12 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 80_000_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 40_000_000,
     requiredResearch: ['nuclear_thermal', 'interplanetary_cruisers', 'deep_drilling'], requiredLocation: 'saturn_system', enabledServices: [],
     realBuildSeconds: 7200, resourceCost: { titanium: 300, platinum_group: 40, rare_earth: 80, exotic_materials: 5 }, powerRequired: 12, powerGenerated: 20,
@@ -432,7 +432,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { hazardShielding: 0.06, diplomacy: 0.05, crewQuarters: 4, inventoryProtection: 0.15 } }, // 2 hr — nuclear powered, net +8 MW
   { id: 'fabrication_titan', crew: { engineers: 4, operators: 3 }, name: 'Titan Chemical Plant', category: 'fabrication_facility', tier: 4,
     description: 'Process Titan hydrocarbons into rocket fuel and industrial chemicals.',
-    tooltip: 'FUEL REFINERY. Processes Titan\'s methane and ethane into rocket fuel and industrial chemicals on-site. Reduces the cost of fueling deep-space missions from Saturn. Combined with Titan Hydrocarbon Harvester, creates a self-sustaining fuel production chain. At $25B it\'s expensive but essential for efficient outer system operations.',
+    tooltip: 'FUEL REFINERY. Processes Titan\'s methane and ethane into rocket fuel and industrial chemicals on-site. Reduces the cost of fueling deep-space missions from Saturn. Combined with Titan Hydrocarbon Harvester, creates a self-sustaining fuel production chain. At $25B it\'s expensive but essential for efficient outer system operations. POWER: draws 12 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     // M1/F1: maintenance cut 18M->8M (frontier premium, see docs/MEANINGFUL_2026-08.md §5 M1.2).
     baseCost: 25_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 8_000_000,
     requiredResearch: ['deep_drilling', 'orbital_assembly'], requiredLocation: 'saturn_system', enabledServices: ['svc_titan_processing'],
@@ -442,7 +442,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── OUTER SYSTEM INFRASTRUCTURE ────────────────────────────────────
   { id: 'outpost_outer', crew: { engineers: 4, operators: 5, scientists: 3 }, name: 'Deep Space Outpost', category: 'space_station', tier: 5,
     description: 'Humanity\'s farthest permanent settlement. Research and exploration hub.',
-    tooltip: 'ENDGAME PRESTIGE (+15% REVENUE BONUS). Humanity\'s most distant permanent outpost — beyond Neptune. Boosts ALL service revenue in the Outer System by +15%. The ultimate achievement in the game. Requires "Fusion Drive" + "Generation Ships" research (Tier 5) and the Outer System unlock ($500B). At $200B with exotic materials (20) and helium-3 (10) required, this is the final building milestone. Fulfills the "Architect of the Final Frontier" competitive contract.',
+    tooltip: 'ENDGAME PRESTIGE (+15% REVENUE BONUS). Humanity\'s most distant permanent outpost — beyond Neptune. Boosts ALL service revenue in the Outer System by +15%. The ultimate achievement in the game. Requires "Fusion Drive" + "Generation Ships" research (Tier 5) and the Outer System unlock ($500B). At $200B with exotic materials (20) and helium-3 (10) required, this is the final building milestone. Fulfills the "Architect of the Final Frontier" competitive contract. POWER: draws 10 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 200_000_000_000, buildTimeMonths: 96, maintenanceCostPerMonth: 60_000_000,
     requiredResearch: ['fusion_drive', 'generation_ships'], requiredLocation: 'outer_system', enabledServices: [],
     realBuildSeconds: 14400, resourceCost: { titanium: 500, platinum_group: 100, exotic_materials: 20, helium3: 10 }, powerRequired: 10, powerGenerated: 50,
@@ -484,7 +484,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // sinks-first invariant).
   { id: 'propellant_plant_lunar', crew: { engineers: 2, operators: 1 }, name: 'Lunar Propellant Plant', category: 'fabrication_facility', tier: 2,
     description: 'Electrolyzes lunar ice into cryogenic propellant. The Moon becomes a gas station.',
-    tooltip: 'VERTICAL INTEGRATION FOR LAUNCH CORPS. Passively converts 30 lunar water into 20 rocket fuel every game month — no crafting queue needed. Pair with a Lunar Ice Mine and your launch pads (which consume propellant every month, per their recipes) never buy fuel at market spread again. When fuel spot spikes, sell the surplus instead. Requires "Water ISRU" research.',
+    tooltip: 'VERTICAL INTEGRATION FOR LAUNCH CORPS. Passively converts 30 lunar water into 20 rocket fuel every game month — no crafting queue needed. Pair with a Lunar Ice Mine and your launch pads (which consume propellant every month, per their recipes) never buy fuel at market spread again. When fuel spot spikes, sell the surplus instead. Requires "Water ISRU" research. POWER: draws 8 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 900_000_000, buildTimeMonths: 14, maintenanceCostPerMonth: 1_500_000,
     requiredResearch: ['isru_water'], requiredLocation: 'lunar_surface', enabledServices: [],
     realBuildSeconds: 900, resourceCost: { iron: 60, aluminum: 30 }, powerRequired: 8,
@@ -492,7 +492,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { logisticsSupport: 0.05 } },
   { id: 'propellant_plant_mars', crew: { engineers: 3, operators: 2 }, name: 'Mars Propellant Plant', category: 'fabrication_facility', tier: 3,
     description: 'ISRU propellant production from Martian subsurface ice. Fuels the outbound frontier.',
-    tooltip: 'THE FRONTIER FUEL DEPOT. Converts 30 Mars water into 20 rocket fuel per game month, passively. Mars-side fuel supply is what makes deep-system mining recipes (5 fuel/mo haulers) and heavy freight sustainable without hauling propellant up Earth\'s gravity well. New T3 construction pays part of its cost in components — the E3 component sink.',
+    tooltip: 'THE FRONTIER FUEL DEPOT. Converts 30 Mars water into 20 rocket fuel per game month, passively. Mars-side fuel supply is what makes deep-system mining recipes (5 fuel/mo haulers) and heavy freight sustainable without hauling propellant up Earth\'s gravity well. New T3 construction pays part of its cost in components — the E3 component sink. POWER: draws 10 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 2_500_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 2_500_000,
     requiredResearch: ['isru_water', 'regolith_processing'], requiredLocation: 'mars_surface', enabledServices: [],
     realBuildSeconds: 1500, resourceCost: { structural_beams: 10, steel_ingots: 20, iron: 100 }, powerRequired: 10,
@@ -500,7 +500,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { logisticsSupport: 0.05 } },
   { id: 'agri_dome', crew: { engineers: 2, operators: 1 }, name: 'Agricultural Dome', category: 'fabrication_facility', tier: 2,
     description: 'Pressurized hydroponic farm dome. Grows the organics that keep crews alive.',
-    tooltip: 'THE FOOD CHAIN STARTS HERE. Converts 10 Mars water + 5 ammonia into 8 organic compounds per game month — the key feedstock for Life Support Works. Every crewed station and habitat in the game consumes life support packs monthly, so organics demand scales with the whole server\'s population. Requires "Hydroponic Agriculture" research.',
+    tooltip: 'THE FOOD CHAIN STARTS HERE. Converts 10 Mars water + 5 ammonia into 8 organic compounds per game month — the key feedstock for Life Support Works. Every crewed station and habitat in the game consumes life support packs monthly, so organics demand scales with the whole server\'s population. Requires "Hydroponic Agriculture" research. POWER: draws 8 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 1_200_000_000, buildTimeMonths: 16, maintenanceCostPerMonth: 3_500_000,
     requiredResearch: ['hydroponic_agriculture'], requiredLocation: 'mars_surface', enabledServices: [],
     realBuildSeconds: 1200, resourceCost: { aluminum: 60, iron: 80, mars_water: 20 }, powerRequired: 8,
@@ -508,7 +508,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { crewQuarters: 2 } },
   { id: 'life_support_works', crew: { engineers: 2, operators: 1 }, name: 'Life Support Works', category: 'fabrication_facility', tier: 2,
     description: 'Assembles water, ammonia, and organics into sealed life-support cartridges.',
-    tooltip: 'THE PAYROLL OF MATTER. Produces 8 life support packs per game month from water, ammonia, and organic compounds. Packs are a PLAYER-ONLY market (the NPC maker quotes none) and every crewed building on the server consumes them monthly — undersupply hits rivals\' efficiency AND crew morale. Ceres ammonia logistics is the classic supply line. Requires "Oxygen Extraction" research.',
+    tooltip: 'THE PAYROLL OF MATTER. Produces 8 life support packs per game month from water, ammonia, and organic compounds. Packs are a PLAYER-ONLY market (the NPC maker quotes none) and every crewed building on the server consumes them monthly — undersupply hits rivals\' efficiency AND crew morale. Ceres ammonia logistics is the classic supply line. Requires "Oxygen Extraction" research. POWER: draws 10 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 1_500_000_000, buildTimeMonths: 16, maintenanceCostPerMonth: 1_500_000,
     requiredResearch: ['isru_oxygen'], requiredLocation: 'lunar_surface', enabledServices: [],
     realBuildSeconds: 1200, resourceCost: { iron: 80, aluminum: 50, titanium: 15 }, powerRequired: 10,
@@ -516,7 +516,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     capabilities: { crewQuarters: 2 } },
   { id: 'orbital_refinery', crew: { engineers: 3, operators: 2 }, name: 'Orbital Refinery', category: 'fabrication_facility', tier: 3,
     description: 'Belt-anchored bulk refinery. Moves tier-1 smelting off the fab queue into passive throughput.',
-    tooltip: 'PASSIVE BULK REFINING AT THE SOURCE. Converts 200 iron + 80 aluminum into 100 steel ingots + 40 aluminum alloy every game month — no crafting queue time. Anchor it next to an Asteroid Mining Rig (500 iron/mo at the same location) and refine in situ, then freight the dense product: the classic Δv play. Requires "Orbital Refining Complex" research. Construction pays in components.',
+    tooltip: 'PASSIVE BULK REFINING AT THE SOURCE. Converts 200 iron + 80 aluminum into 100 steel ingots + 40 aluminum alloy every game month — no crafting queue time. Anchor it next to an Asteroid Mining Rig (500 iron/mo at the same location) and refine in situ, then freight the dense product: the classic Δv play. Requires "Orbital Refining Complex" research. Construction pays in components. POWER: draws 12 MW — every revenue figure above is a BEST CASE at full power. An underpowered location scales the service revenue here by its power ratio, to zero when nothing generates there. Check the power line on the build card before committing.',
     baseCost: 6_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['orbital_refining_complex'], requiredLocation: 'asteroid_belt', enabledServices: [],
     realBuildSeconds: 2400, resourceCost: { structural_beams: 15, electronics_package: 3, steel_ingots: 25, titanium: 60 }, powerRequired: 12,
@@ -1123,6 +1123,81 @@ export function getPowerByLocation(
   }
   return withRatio;
 }
+
+// ─── Power visibility (2026-09-13, founder report) ──────────────────────────
+// "Energy needs should be more obvious. In the build section for the various
+// satellites it doesn't show any energy needs that I can see. We should warn
+// players about that up front." Two Lunar Relay Satellites (3 MW each) sat at
+// lunar_orbit with nothing generating there, so getPowerByLocation reported
+// { generated: 0, required: 6, ratio: 0 } and both had been earning NOTHING
+// since they completed — with no surface in the game saying so. The helpers
+// below are the catalog half of the fix: whether a location tracks power at
+// all, and WHICH building cures a deficit there.
+
+/** Does this location meter power? False for Earth surface (grid power). */
+export function isUnlimitedPowerLocation(locationId: string): boolean {
+  return UNLIMITED_POWER_LOCATIONS.has(locationId);
+}
+
+/** The standard power caveat stamped onto every powerRequired building's
+ *  tooltip. The authored economics prose quotes revenue minus operating (and
+ *  sometimes maintenance) and can NOT account for the location's power ratio,
+ *  inputs or marginal overhead — so rather than chase the live model with
+ *  static text, every such tooltip is explicitly labelled a best case at full
+ *  power. buildings-power-spec.test.ts guards that every definition carrying
+ *  powerRequired > 0 ends its tooltip with exactly this sentence. */
+export function powerSpecCaveat(powerRequired: number): string {
+  return `POWER: draws ${powerRequired} MW — every revenue figure above is a BEST CASE at full power.`
+    + ' An underpowered location scales the service revenue here by its power ratio,'
+    + ' to zero when nothing generates there.'
+    + ' Check the power line on the build card before committing.';
+}
+
+export interface PowerCure {
+  def: BuildingDefinition;
+  /** MW this one copy adds to the location (generation minus its own draw). */
+  netPowerGenerated: number;
+  /** Research ids the player has NOT completed — empty means buildable now. */
+  missingResearch: string[];
+  /** Copies needed to cover the shortfall handed in (>= 1). */
+  unitsNeeded: number;
+}
+
+/**
+ * The cheapest building that generates power AT this location, preferring one
+ * the player can already build. Returns null when the catalog offers no
+ * generator there (some locations genuinely have none — say so rather than
+ * inventing a cure). Pure: same inputs, same answer.
+ */
+export function findPowerCure(
+  locationId: string,
+  shortfallMW: number,
+  completedResearch: string[] = [],
+): PowerCure | null {
+  const done = new Set(completedResearch);
+  const candidates = BUILDINGS
+    .filter(b => b.requiredLocation === locationId && (b.powerGenerated || 0) > (b.powerRequired || 0))
+    .map(def => ({
+      def,
+      netPowerGenerated: (def.powerGenerated || 0) - (def.powerRequired || 0),
+      missingResearch: (def.requiredResearch || []).filter(r => !done.has(r)),
+    }));
+  if (candidates.length === 0) return null;
+  candidates.sort((a, b) => {
+    // Buildable-now first, then cheapest, then most power (stable tiebreak).
+    const aGated = a.missingResearch.length > 0 ? 1 : 0;
+    const bGated = b.missingResearch.length > 0 ? 1 : 0;
+    if (aGated !== bGated) return aGated - bGated;
+    if (a.def.baseCost !== b.def.baseCost) return a.def.baseCost - b.def.baseCost;
+    return b.netPowerGenerated - a.netPowerGenerated;
+  });
+  const best = candidates[0];
+  return {
+    ...best,
+    unitsNeeded: Math.max(1, Math.ceil(Math.max(0, shortfallMW) / best.netPowerGenerated)),
+  };
+}
+
 
 /** Early-fab wave (2026-08-31): per-corporation building cap. Counts the
  *  player's instances of `def` across ALL locations, under-construction

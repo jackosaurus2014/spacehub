@@ -20,7 +20,7 @@
 import { useState } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { formatMoney, formatDuration, scaledBuildingCost } from '@/lib/game/formulas';
-import { BUILDINGS, BUILDING_MAP, scaledBuildTime, getBuildingDerivedStats, checkBuildingCap } from '@/lib/game/buildings';
+import { BUILDINGS, BUILDING_MAP, scaledBuildTime, getBuildingDerivedStats, checkBuildingCap, findPowerCure } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { getBuildingAsset, LOCATION_ASSETS } from '@/lib/game/assets';
@@ -67,6 +67,7 @@ import {
 // SAME formulas the tick uses — the spec's preferred fix ("replaced by a live
 // P&L preview — better").
 import { computeBuildPreview, computeMarkUpgradePreview } from '@/lib/game/build-preview';
+import type { BuildPower } from '@/lib/game/build-preview';
 // D4 (docs/BALANCE.md "Mark-II tier"): in-place refits — the rung between
 // "another copy at the 0.35 saturation floor" and the next catalog tier.
 import { MARK_NAMES, MARK_REVENUE_MULT, MARK_MAINTENANCE_MULT, getMarkLevel, isMarkUpgradeInProgress } from '@/lib/game/mark-upgrades';
@@ -161,6 +162,98 @@ function PurposeChips({ definitionId }: { definitionId: string }) {
           </span>
         </HoloTip>
       ))}
+    </div>
+  );
+}
+
+/** Power visibility (2026-09-13, founder report: "Energy needs should be more
+ *  obvious. In the build section for the various satellites it doesn't show
+ *  any energy needs that I can see. We should warn players about that up
+ *  front."). Every build card now states, before any money moves: what this
+ *  building draws (or generates), what the LOCATION generates against what it
+ *  needs, and — when the site cannot cover it — what that does to revenue and
+ *  which building fixes it.
+ *
+ *  It is a WARNING, never a gate. The Build button stays live: the founder's
+ *  game stays in the founder's hands (he may be building the station first and
+ *  the array next month, on purpose). Compare the slotGate treatment above,
+ *  which genuinely blocks — this one only refuses to stay quiet. */
+function PowerNotice({ state, locationId, power }: { state: GameState; locationId: string; power: BuildPower }) {
+  const locName = LOCATION_MAP.get(locationId)?.name || locationId;
+
+  if (power.unlimited) {
+    return (
+      <p className="mb-2 flex flex-wrap items-center gap-1.5 text-[10px] text-[var(--ink-3)]">
+        <span className={OVERLINE}>Power</span>
+        <GameIcon name="power" size={10} />
+        <span>
+          {power.powerRequired > 0 ? `Draws ${power.powerRequired} MW. ` : 'Draws no power. '}
+          {locName} runs on grid power — unlimited, never a revenue penalty.
+        </span>
+      </p>
+    );
+  }
+
+  const starved = power.after.ratio < 1;
+  const pct = Math.round(power.after.ratio * 100);
+  const selfLine = power.powerGenerated > 0
+    ? `Generates ${power.powerGenerated} MW${power.powerRequired > 0 ? ` (draws ${power.powerRequired} MW — net +${power.powerGenerated - power.powerRequired} MW)` : ''}.`
+    : power.powerRequired > 0
+      ? `Draws ${power.powerRequired} MW.`
+      : 'Draws no power of its own.';
+  const balanceLine = `${locName} generates ${power.before.generated} of ${power.before.required} MW today`
+    + `, ${power.after.generated} of ${power.after.required} MW with this build.`;
+
+  if (!starved) {
+    return (
+      <p className="mb-2 flex flex-wrap items-start gap-1.5 text-[10px] leading-relaxed text-[var(--ink-2)]">
+        <span className={OVERLINE}>Power</span>
+        <GameIcon name="power" size={10} className="mt-0.5 shrink-0" />
+        <span className="flex-1">
+          {selfLine} {balanceLine} Fully powered — services here earn 100% of their revenue.
+        </span>
+      </p>
+    );
+  }
+
+  // Starved. Name the deficit, the consequence, and the cure — the same
+  // can't-miss treatment the "LEASE REQUIRED" slot gate gets.
+  const dark = power.after.generated === 0;
+  const cure = findPowerCure(locationId, power.shortfallMW, state.completedResearch || []);
+  const missingResearch = (cure?.missingResearch || [])
+    .map(r => RESEARCH_MAP.get(r)?.name || r.replace(/_/g, ' '))
+    .join(' + ');
+  return (
+    <div
+      className="mb-2 rounded-[var(--radius-control)] border border-[var(--crit)] bg-[var(--surface)] p-2 text-[10px] leading-relaxed text-[var(--ink-2)]"
+      role="status"
+    >
+      <div className="flex items-start gap-1.5">
+        <StatusPip state="scrub" label={dark ? 'NO POWER HERE' : 'POWER SHORTFALL'} />
+        <div className="flex-1">
+          <p className="text-[var(--ink)]">
+            {locName} generates <span className="font-mono tabular-nums">{power.before.generated}</span> of{' '}
+            <span className="font-mono tabular-nums">{power.before.required}</span> MW
+            {dark ? ' — nothing there makes power' : ''}.
+          </p>
+          <p className="mt-0.5">
+            {selfLine} That takes this location to{' '}
+            <span className="font-mono tabular-nums text-[var(--ink)]">{power.after.generated}/{power.after.required} MW</span>, so{' '}
+            <span className="text-[var(--crit)]">every service here earns {pct}% of its revenue</span>
+            {pct === 0 ? ' — nothing at all' : ''}. The projection above is already scaled down by that.
+          </p>
+          <p className="mt-0.5">
+            {cure
+              ? <>Cure: build {cure.unitsNeeded > 1 ? `${cure.unitsNeeded}x ` : ''}
+                  <span className="text-[var(--ink)]">{cure.def.name}</span>{' '}
+                  (+{cure.netPowerGenerated} MW, {formatMoney(cure.def.baseCost)})
+                  {missingResearch ? <> — you still need <span className="text-[var(--caution)]">{missingResearch}</span> research.</> : ' — buildable now.'}
+                  {' '}Covering {power.shortfallMW} MW restores full revenue here.
+                </>
+              : <>No power plant can be built at {locName} — these operations cannot be powered here.</>}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -475,6 +568,12 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
             if (derived.storageCapacity > 0)           specRows.push({ id: 'storage', stat: 'Storage', value: `${derived.storageCapacity.toLocaleString()} m³` });
             if (derived.dockingCapacity > 0)           specRows.push({ id: 'dock', stat: 'Docking', value: `${derived.dockingCapacity} ships` });
             if (derived.crewQuarters > 0)              specRows.push({ id: 'crew', stat: 'Crew qtrs', value: derived.crewQuarters.toString() });
+            // Founder report (2026-09-13): energy belongs in the spec table too,
+            // not only in the warning above — a reader scanning specs should
+            // never have to infer that a building draws power.
+            if (bld.powerRequired)  specRows.push({ id: 'powerdraw', stat: 'Power draw', value: `${bld.powerRequired} MW` });
+            if (bld.powerGenerated) specRows.push({ id: 'powergen', stat: 'Power output', value: `+${bld.powerGenerated} MW` });
+            if (!bld.powerRequired && !bld.powerGenerated) specRows.push({ id: 'powernone', stat: 'Power draw', value: 'none' });
             specRows.push({ id: 'structure', stat: 'Structure', value: derived.structuralIntegrity.toLocaleString() });
             if (derived.shieldingRating > 0)           specRows.push({ id: 'shield', stat: 'Shield', value: `${Math.round(derived.shieldingRating * 100)}%` });
             specRows.push({ id: 'maxup', stat: 'Max upgrade', value: `L${derived.maxUpgradeLevel}` });
@@ -529,6 +628,20 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                       </span>
                     </div>
                   </div>
+                  {/* Founder report (2026-09-13): "LOSS-MAKING" plus a big
+                      negative number explains nothing. When the cause is
+                      structural — power starvation, a saturated demand pool,
+                      duplicate saturation, congestion — say which. */}
+                  {!positive && preview.lossReasons.length > 0 && (
+                    <ul className="mt-1 space-y-0.5 text-[10px] leading-relaxed text-[var(--ink-2)]">
+                      {preview.lossReasons.map(r => (
+                        <li key={r.kind} className="flex items-start gap-1">
+                          <span aria-hidden="true" className="text-[var(--crit)]">-</span>
+                          <span>{r.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                   {/* Construction Purposes wave: the projection is P&L-only —
                       name the non-revenue value qualitatively so a thin
                       payback doesn't read as "worthless building". */}
@@ -538,6 +651,10 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                     </div>
                   )}
                 </div>
+                {/* Founder report (2026-09-13): energy needs, up front, on
+                    every card — draw or output, the location's balance, and
+                    the cure when it does not cover. Warning, never a gate. */}
+                <PowerNotice state={state} locationId={selectedLocation} power={preview.power} />
                 {!capCheck.allowed && (
                   <p className="mb-2 flex items-start gap-2 text-[10px] text-[var(--ink-2)] rounded-[var(--radius-badge)] border border-[var(--line)] bg-[var(--elev)] px-2 py-1" role="status">
                     <StatusPip state="scrub" label="CAPPED" />
@@ -574,12 +691,21 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                   if (!svc) return null;
                   const net = svc.revenuePerMonth - svc.operatingCostPerMonth - getEffectiveMaintenancePerMonth(bld); // D5 flagship floor
                   return (
-                    <div className="flex items-center gap-1 mb-2 text-[10px] font-mono tabular-nums">
+                    <div className="flex flex-wrap items-center gap-1 mb-2 text-[10px] font-mono tabular-nums">
                       <span className="text-[var(--ink-2)]">Earns {formatMoney(svc.revenuePerMonth)}/mo</span>
                       <span className="text-[var(--ink-3)]" aria-hidden="true">→</span>
                       <span style={{ color: net >= 0 ? 'var(--go)' : 'var(--crit)' }}>
                         <span aria-hidden="true">{net >= 0 ? '▲' : '▼'}</span> Net {formatMoney(net)}/mo
                       </span>
+                      {/* Founder report (2026-09-13): this authored line is
+                          revenue minus operating minus maintenance ONLY — it
+                          ignores power, inputs and overhead, so it is labelled
+                          a best case, the same convention buildings.ts stamps
+                          on every powerRequired tooltip. The live projection
+                          at the top of the card is the real number. */}
+                      {bld.powerRequired ? (
+                        <span className="font-body text-[var(--ink-3)]">best case at full power</span>
+                      ) : null}
                     </div>
                   );
                 })()}

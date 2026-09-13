@@ -17,8 +17,10 @@
 //     duplicate curve, keyed off how many of this building the player already
 //     has at this location (so the 5th satellite's preview differs correctly
 //     from the 1st's).
-//   - the location's CURRENT power ratio (getPowerByLocation) — honestly
-//     reflects today's power balance, not a hypothetical fully-built-out one.
+//   - the location's power ratio (getPowerByLocation) WITH THIS BUILD'S OWN
+//     draw counted (see the power-visibility note below) — what the tick will
+//     actually apply the month after this thing finishes, not the emptier
+//     balance that exists while it is still on the pad.
 //   - RESOURCE_MAP base price for recipe input cost (consumesPerMonth) — the
 //     floor cost of the 'market' supply policy, same anchor the sim harness
 //     uses; NOT a live spot read (deliberately conservative/simple so the
@@ -41,7 +43,7 @@
 // (BALANCE.md's stacking-cap design keeps every bonus non-negative).
 
 import type { GameState, BuildingDefinition, BuildingInstance } from './types';
-import { getPowerByLocation, BUILDING_MAP } from './buildings';
+import { getPowerByLocation, BUILDING_MAP, isUnlimitedPowerLocation } from './buildings';
 import { getEffectiveMaintenancePerMonth } from './flagship-economics';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import {
@@ -55,6 +57,64 @@ import { RESOURCE_MAP, type ResourceId } from './resources';
 import { serviceSaturationMultiplier, corporateOverheadMonthly, scaledBuildingCost } from './formulas';
 import { getServiceDemandMultiplier } from './service-pricing';
 import { gameDateToMonthIndex } from './demand-pools';
+
+// ─── Power visibility (2026-09-13, founder report) ─────────────────────
+// "Energy needs should be more obvious. In the build section for the various
+// satellites it doesn't show any energy needs that I can see. We should warn
+// players about that up front."
+//
+// Two things were wrong, both fixed here:
+//
+//  1. The preview COMPUTED a power ratio and then threw the facts away —
+//     nothing came back for the UI to render, so no build card in the game
+//     ever mentioned power. BuildPower (below) is the whole balance sheet.
+//
+//  2. It used the ratio as it stands BEFORE the build, and only when the
+//     definition itself carried powerRequired. Both diverged from the tick:
+//     game-engine.ts §1 multiplies EVERY service at a location by that
+//     location's ratio (`locPower ? locPower.ratio : 1`), whatever the owning
+//     building's own power fields say — and by the time revenue is earned,
+//     this building's draw is part of the location's `required`. So the first
+//     8 MW station at an empty orbit previewed at full revenue and then
+//     earned nothing. The preview now scales by the AFTER ratio, for every
+//     service, exactly as the tick will.
+
+export interface PowerBalance {
+  generated: number;
+  required: number;
+  /** min(1, generated/required); 1 when nothing here draws power. */
+  ratio: number;
+}
+
+export interface BuildPower {
+  /** This definition's own draw, MW. 0 when it needs none. */
+  powerRequired: number;
+  /** What this definition ADDS to local supply, MW (generators only). */
+  powerGenerated: number;
+  /** Earth surface: grid power, never metered. Everything below reads as
+   *  fully powered and the UI should say "unlimited" rather than a ratio. */
+  unlimited: boolean;
+  /** The location's balance right now, this build not counted. */
+  before: PowerBalance;
+  /** The balance once this build completes — its draw AND its generation
+   *  included. This is the ratio the tick will use. */
+  after: PowerBalance;
+  /** The fraction of authored service revenue this build will actually earn
+   *  at this location once complete (=== after.ratio). 1 = full. */
+  revenueScale: number;
+  /** MW of additional generation needed at this location to reach ratio 1
+   *  after this build. 0 when the site is covered. */
+  shortfallMW: number;
+}
+
+/** Why a projection is negative, when the cause is STRUCTURAL rather than
+ *  "this building is just expensive". Empty when the build projects a profit
+ *  or when nothing structural is dragging it down. */
+export interface BuildLossReason {
+  kind: 'power' | 'demand_pool' | 'saturation' | 'congestion';
+  /** One sentence, written for the card. */
+  text: string;
+}
 
 export interface BuildPreview {
   /** Scaled cost of THIS copy (accounts for existing-count cost scaling). */
@@ -74,6 +134,42 @@ export interface BuildPreview {
   /** Months to recover scaledCost from projectedNetMonthly, or null when net
    *  <= 0 ("never" — the honest F1-era answer for a trap purchase). */
   paybackMonths: number | null;
+  /** Everything the card needs to talk about energy BEFORE the money is
+   *  spent. Always present, including for buildings that draw nothing — the
+   *  location's ratio is location-wide, so it still governs their revenue. */
+  power: BuildPower;
+  /** Structural explanations for a negative projection. Populated only when
+   *  projectedNetMonthly <= 0. */
+  lossReasons: BuildLossReason[];
+}
+
+/** The location's power balance before/after adding one copy of `def`. Pure.
+ *  Exported so the Outliner can describe a starved location with the exact
+ *  same arithmetic (pass a zero draw — nothing in flight). */
+export function computeBuildPower(
+  powerByLocation: Record<string, PowerBalance>,
+  def: Pick<BuildingDefinition, 'powerRequired' | 'powerGenerated'>,
+  locationId: string,
+): BuildPower {
+  const unlimited = isUnlimitedPowerLocation(locationId);
+  const current = powerByLocation[locationId];
+  const before: PowerBalance = current
+    ? { generated: current.generated, required: current.required, ratio: current.ratio }
+    : { generated: 0, required: 0, ratio: 1 };
+  const powerRequired = def.powerRequired || 0;
+  const powerGenerated = def.powerGenerated || 0;
+  const generated = before.generated + powerGenerated;
+  const required = before.required + powerRequired;
+  const ratio = unlimited || required <= 0 ? 1 : Math.min(1, generated / required);
+  return {
+    powerRequired,
+    powerGenerated,
+    unlimited,
+    before: unlimited ? { generated: 0, required: 0, ratio: 1 } : before,
+    after: unlimited ? { generated: 0, required: 0, ratio: 1 } : { generated, required, ratio },
+    revenueScale: ratio,
+    shortfallMW: unlimited ? 0 : Math.max(0, required - generated),
+  };
 }
 
 /**
@@ -92,10 +188,12 @@ export function computeBuildPreview(
   const monthIndex = gameDateToMonthIndex(state.gameDate);
 
   const powerByLocation = getPowerByLocation(state.buildings || []);
-  const powerRatio = def.powerRequired && powerByLocation[locationId]
-    ? powerByLocation[locationId].ratio
-    : 1; // no power requirement, or an unlimited-power location (Earth)
+  const power = computeBuildPower(powerByLocation, def, locationId);
+  // Location-wide, exactly like game-engine.ts §1 — NOT gated on this
+  // definition carrying powerRequired, and counting this build's own draw.
+  const powerRatio = power.revenueScale;
 
+  const saturation = serviceSaturationMultiplier(existingCountAtLocation);
   let revenue = 0;
   let operating = 0;
   let poolMultiplier: number | null = null;
@@ -105,7 +203,7 @@ export function computeBuildPreview(
     operating += sDef.operatingCostPerMonth;
     const mult = getServiceDemandMultiplier(state, svcId, locationId, monthIndex);
     if (poolMultiplier === null) poolMultiplier = mult;
-    revenue += sDef.revenuePerMonth * serviceSaturationMultiplier(existingCountAtLocation) * mult * powerRatio;
+    revenue += sDef.revenuePerMonth * saturation * mult * powerRatio;
   }
 
   let inputCost = 0;
@@ -120,12 +218,47 @@ export function computeBuildPreview(
   // projection is honest at crowded slot-pool locations.
   // D5: flagship upkeep floor (>= $20B buildings) so the card never promises
   // the authored sticker maintenance a flagship no longer pays.
-  const maintenance = getEffectiveMaintenancePerMonth(def) * getCongestionMaintenanceMultiplier(state, locationId);
+  const congestionMult = getCongestionMaintenanceMultiplier(state, locationId);
+  const maintenance = getEffectiveMaintenancePerMonth(def) * congestionMult;
   const completedCount = (state.buildings || []).filter(b => b.isComplete).length;
   const overheadDelta = corporateOverheadMonthly(completedCount + 1) - corporateOverheadMonthly(completedCount);
 
   const scaledCost = scaledBuildingCost(def.baseCost, existingCountAtLocation);
   const net = revenue - operating - inputCost - maintenance - overheadDelta;
+
+  // Why is it negative? A number alone teaches nothing — name the structural
+  // cause when there is one. The founder's Lunar Gateway projected
+  // -$20,049,763/mo and the card said only "LOSS-MAKING".
+  const lossReasons: BuildLossReason[] = [];
+  if (net <= 0) {
+    const earnsRevenue = (def.enabledServices || []).length > 0;
+    if (earnsRevenue && power.revenueScale < 1) {
+      lossReasons.push({
+        kind: 'power',
+        text: power.after.generated === 0
+          ? `Nothing generates power at this location — service revenue scales to 0% while ${power.after.required} MW goes unmet.`
+          : `Power shortfall: ${power.after.generated} of ${power.after.required} MW generated here, so service revenue scales to ${Math.round(power.revenueScale * 100)}%.`,
+      });
+    }
+    if (earnsRevenue && poolMultiplier !== null && poolMultiplier < 1) {
+      lossReasons.push({
+        kind: 'demand_pool',
+        text: `The demand pool for this service here is saturated (${poolMultiplier.toFixed(2)}x) — the customers are already being served.`,
+      });
+    }
+    if (earnsRevenue && existingCountAtLocation > 0 && saturation < 1) {
+      lossReasons.push({
+        kind: 'saturation',
+        text: `Copy #${existingCountAtLocation + 1} here earns ${Math.round(saturation * 100)}% of what the first copy earns (duplicate saturation).`,
+      });
+    }
+    if (congestionMult > 1) {
+      lossReasons.push({
+        kind: 'congestion',
+        text: `This location is congested — maintenance runs at ${congestionMult.toFixed(2)}x the sticker rate.`,
+      });
+    }
+  }
 
   return {
     scaledCost,
@@ -137,6 +270,8 @@ export function computeBuildPreview(
     projectedNetMonthly: Math.round(net),
     poolMultiplier,
     paybackMonths: net > 0 ? Math.ceil(scaledCost / net) : null,
+    power,
+    lossReasons,
   };
 }
 
@@ -179,9 +314,9 @@ export interface MarkUpgradePreview {
 function instanceRevenueMonthly(state: GameState, inst: BuildingInstance, def: BuildingDefinition): number {
   const monthIndex = gameDateToMonthIndex(state.gameDate);
   const powerByLocation = getPowerByLocation(state.buildings || []);
-  const powerRatio = def.powerRequired && powerByLocation[inst.locationId]
-    ? powerByLocation[inst.locationId].ratio
-    : 1;
+  // Location-wide ratio, like the tick (game-engine.ts §1). This instance is
+  // already built, so the location's `required` already counts its own draw.
+  const powerRatio = powerByLocation[inst.locationId]?.ratio ?? 1;
   // Saturation position = this instance's index among same-definition
   // buildings at the location (the tick counts per (service, location)
   // bucket in activeServices order, which follows build order).
