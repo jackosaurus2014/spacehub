@@ -137,6 +137,10 @@ export const SHIP_ASSETS: Record<string, string> = {
   // SHIP_ART_BACKLOG below.
   servicer_tug: `${BASE}/ship-prospector-drone.webp`,
   fleet_tender: `${BASE}/ship-fuel-tanker.webp`,
+  // Mining Phase A (2026-09-12): borrowed renders until the art batch lands —
+  // SHIP_ART_BACKLOG below carries the Gemini briefs.
+  prospector_barge: `${BASE}/ship-ore-harvester.webp`,
+  hauler: `${BASE}/ship-heavy-transport.webp`,
   // Interstellar hulls (Wave 10) — these previously borrowed other hulls' art
   // (ship-scout-angle2 / ship-transport-l). Wave A6 gave them dedicated
   // renders: the Starfarer's warp-coil rings and the Ark's rotating habitat
@@ -157,6 +161,14 @@ export const SHIP_ART_BACKLOG: Record<string, { borrows: string; brief: string }
   fleet_tender: {
     borrows: 'fuel_tanker',
     brief: 'Fleet Tender: mid-size roving repair tender, drone bays along the flanks, self-healing hull plant amidships; top-down plan view, amber support accent.',
+  },
+  prospector_barge: {
+    borrows: 'ore_harvester',
+    brief: 'Prospector Barge: slow flat-decked mining barge, a folded survey dish forward and a rock-grapple aft, ore bins amidships; top-down plan view, amber mining accent.',
+  },
+  hauler: {
+    borrows: 'heavy_transport',
+    brief: 'Hauler: ore tug — an oversized open bulk hold on a skeletal low-thrust frame, small engine cluster, no crew module to speak of; top-down plan view, cyan logistics accent.',
   },
 };
 

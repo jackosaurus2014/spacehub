@@ -32,6 +32,10 @@ import type { DemandPoolSnapshot } from './demand-pools';
 import type { ExtractionPressureSnapshot } from './extraction-pressure';
 import type { LaborMarketSnapshot } from './labor-market';
 import type { LaneBonusSnapshot } from './trade-lanes';
+// Interactive asteroid mining Phase A (2026-09-12): the order on a ship and
+// the corporation's survey records (both leaf modules — no engine logic).
+import type { MiningOrder, HeldOre } from './ships';
+import type { SurveyRecord } from './asteroids';
 
 export interface GameDate {
   year: number;
@@ -739,6 +743,11 @@ export interface GameState {
     /** V15 (audit Wave D / A4): persistent hull damage 0-0.85. Penalizes
      *  mining rate until auto-repair (money sink) restores the hull. */
     hullDamagePct?: number;
+    /** Mining Phase A (2026-09-12): the active Mining Order (ships.ts). The
+     *  tick derives status/route from it; completion clears it. */
+    miningOrder?: MiningOrder;
+    /** Mining Phase A: ore aboard after a 'hold' order, until a Return. */
+    heldOre?: HeldOre;
   }[];
 
   // Prestige (deprecated — kept for migration; see legacy-system.ts)
@@ -1546,6 +1555,17 @@ export interface GameState {
    *  of engine logic (share-registry.ts is pure). */
   equity?: import('./share-registry').EquitySnapshot | null;
 
+  /** Mining Phase A (docs/SPACE_MINING_DESIGN_2026-09-12.md, 2026-09-12).
+   *  [SAVE] additive, no version bump (constants.ts SAVE_VERSION note):
+   *  save-load.ts defaults both. One-time-use survey probes in stock
+   *  (bought through /assets/mining 'buy_probes'; server truth = ServerAsset
+   *  rows of kind 'survey_probe'). */
+  surveyProbes?: number;
+  /** The corporation's revealed rocks, keyed by asteroid id. Server truth =
+   *  AsteroidSurvey rows; a synced save only ever writes what the survey
+   *  route or a survey order returned. Local-only play rolls its own. */
+  asteroidIntel?: Record<string, SurveyRecord>;
+
   /** V32 — Wave E3 "The Consumption Engine" (docs/ECONOMY_PVP_2026-08.md
    *  §2.2/§E3, engine: consumption.ts). Additive. Tracks the world-month
    *  consumption grid (dedupe between live tick and away catch-up — the two
@@ -1989,7 +2009,7 @@ export interface ScienceMissionState {
 // Legacy save tab ids for the six removed values are mapped forward by
 // resolveLegacyTab() in space-tycoon/page.tsx so old saves/links never dead-end.
 // 'science' added in 4X Wave W6 (flagship scientific missions — science-missions.ts).
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'predictions' | 'leaderboard' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'modules' | 'discoveries' | 'science' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory' | 'governance' | 'sourcing';
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'predictions' | 'leaderboard' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'modules' | 'discoveries' | 'science' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory' | 'governance' | 'sourcing' | 'mining';
 
 // ─── Live-Service Wave LS1 "Night Shift" — command queues, standing
 // directives, away operations. docs/LIVE_SERVICE_2026-08.md §LS1. Types live

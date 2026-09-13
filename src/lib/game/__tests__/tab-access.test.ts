@@ -219,7 +219,7 @@ const ALL_TABS: GameTab[] = [
   'contracts', 'alliance', 'bounties', 'predictions', 'leaderboard', 'seasons', 'territory', 'speedruns',
   'espionage', 'megaproject', 'megastructures', 'reports', 'commanders', 'factions', 'modules',
   'discoveries', 'science', 'interstellar', 'subsidiaries', 'specialization', 'victory', 'governance',
-  'sourcing',
+  'sourcing', 'mining',
 ];
 
 describe('hubs — the catalogue', () => {

@@ -210,6 +210,12 @@ import { checkVictories } from '@/lib/game/victory-conditions';
 import { shouldGenerateQuarterlyReport, recordQuarterlyReport, getTotalGameMonthsElapsed } from '@/lib/game/quarterly-reports';
 import BuildPanel from '@/components/game/BuildPanel';
 import SourcingPanel from '@/components/game/SourcingPanel';
+// Interactive asteroid mining Phase A (2026-09-12).
+import MiningPanel from '@/components/game/MiningPanel';
+import { getAsteroid, rollAsteroidIntel, LOCAL_INTEL_SALT, SURVEY_PROBE_COST, type AsteroidIntel } from '@/lib/game/asteroids';
+import { planMiningOrder, materializeOrder, canTakeMiningOrder, MINING_PLAN_ERROR_TEXT, type MiningOrderRequest } from '@/lib/game/mining-orders';
+import { getShipCargoCapacity, getFuelEfficiencyMultiplier } from '@/lib/game/cargo-logistics';
+import type { MiningOrder } from '@/lib/game/ships';
 import MapCommandCenter from '@/components/game/MapCommandCenter';
 // Wave V3 (docs/VISUAL_DEPTH_2026-08.md §V3) — persistent right-rail
 // Outliner + the Situation Log it deep-links into (absorbed by
@@ -2357,6 +2363,116 @@ export default function SpaceTycoonPage() {
     });
   }, []);
 
+  // ─── Mining Orders (interactive asteroid mining Phase A, 2026-09-12) ──
+  // docs/SPACE_MINING_DESIGN_2026-09-12.md §4. SERVER-FIRST like the ship
+  // order above: /assets/mining quotes the schedule with the same planner
+  // the client previews, burns the fuel through the ledger and owns
+  // completion (server-mining.ts) — the local order carries
+  // serverAuthoritative: true and the tick credits nothing for it. 'local'
+  // (no profile) runs the pure planner and credits itself on completion.
+  const handleMiningOrder = useCallback((req: MiningOrderRequest) => {
+    const cur = stateRef.current;
+    if (!cur) return;
+    const ship = (cur.ships || []).find(s => s.instanceId === req.shipInstanceId);
+    const def = ship ? SHIP_MAP.get(ship.definitionId) : undefined;
+    if (!ship || !def) return;
+    if (!canTakeMiningOrder(ship)) { reportAssetFailure({ message: `${ship.name} is busy.` }, 'Mining', () => playSound('error')); return; }
+    const rock = req.asteroidId ? getAsteroid(req.asteroidId) ?? null : null;
+    const intel = rock ? (cur.asteroidIntel?.[rock.id] ?? null) : null;
+    const localPlan = planMiningOrder({
+      def, cargoCapacity: getShipCargoCapacity(cur, ship.instanceId), mode: req.mode, rock, intel,
+      fillUnits: req.fillUnits, thenAction: req.thenAction, originId: ship.currentLocation, destinationId: req.destinationId,
+      heldOre: ship.heldOre ?? null, hullDamagePct: ship.hullDamagePct, fuelEfficiencyMult: getFuelEfficiencyMultiplier(cur), nowMs: Date.now(),
+    });
+    if (!localPlan.ok) { reportAssetFailure({ message: MINING_PLAN_ERROR_TEXT[localPlan.error] }, 'Mining', () => playSound('error')); return; }
+    if (cur.money < localPlan.order.fuelCost) { reportAssetFailure({ message: `Fuel bill is ${formatMoney(localPlan.order.fuelCost)} — not enough cash.` }, 'Mining', () => playSound('error')); return; }
+    const orderId = generateId();
+    playSound('click');
+    void requestAssetOp('mining', {
+      op: 'order', instanceId: orderId, shipInstanceId: ship.instanceId, mode: req.mode, asteroidId: req.asteroidId,
+      fillUnits: localPlan.order.fillUnits, thenAction: localPlan.order.thenAction, originId: ship.currentLocation, destinationId: localPlan.order.destinationId,
+    }, 'mining order').then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Mining', () => playSound('error')); return; }
+      const server = res.kind === 'ok' ? res.data as { order?: Omit<MiningOrder, 'id' | 'serverAuthoritative'>; intel?: AsteroidIntel } : null;
+      const order: MiningOrder = server?.order
+        ? { ...server.order, id: orderId, serverAuthoritative: true, ...(server.intel ? { intel: server.intel } : {}) }
+        : materializeOrder(localPlan, orderId, false);
+      playSound('build_start');
+      setState(prev => {
+        if (!prev) return prev;
+        const target = (prev.ships || []).find(s => s.instanceId === ship.instanceId);
+        if (!target || target.miningOrder) return prev; // idempotent
+        const rockName = rock?.name || 'held ore';
+        const ships = (prev.ships || []).map(s => s.instanceId !== ship.instanceId ? s : {
+          ...s,
+          miningOrder: order,
+          heldOre: order.mode === 'return' ? undefined : s.heldOre,
+          status: 'in_transit' as const,
+          miningOperation: undefined,
+          route: { from: order.originId, to: order.mode === 'return' ? order.destinationId : order.parentLocationId, departedAtMs: order.startedAtMs, arrivalAtMs: order.mode === 'return' ? order.completesAtMs : order.arrivesAtMs, cargo: {} },
+        });
+        const verb = order.mode === 'survey' ? 'Survey order' : order.mode === 'return' ? 'Return order' : 'Mining order';
+        return {
+          ...prev,
+          ships,
+          money: prev.money - order.fuelCost,
+          totalSpent: prev.totalSpent + order.fuelCost,
+          eventLog: [{ id: generateId(), date: prev.gameDate, type: 'build_complete' as const, title: `${verb}: ${target.name} → ${rockName}`, description: `${order.mode === 'mine' ? `${order.fillUnits} units, ${order.thenAction.replace('_', ' & ')}. ` : ''}Fuel ${formatMoney(order.fuelCost)} · back ${formatCountdown(Math.max(0, (order.completesAtMs - Date.now()) / 1000))}.` }, ...prev.eventLog].slice(0, 50),
+        };
+      });
+    });
+  }, []);
+
+  const handleSurveyProbe = useCallback((asteroidId: string) => {
+    const cur = stateRef.current;
+    const rock = getAsteroid(asteroidId);
+    if (!cur || !rock) return;
+    if (cur.asteroidIntel?.[asteroidId]) return;
+    if ((cur.surveyProbes || 0) < 1) { reportAssetFailure({ message: 'No survey probes in stock — buy probes first, or send a survey-capable ship.' }, 'Survey', () => playSound('error')); return; }
+    playSound('click');
+    void requestAssetOp('mining', { op: 'survey_probe', asteroidId }, 'survey').then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Survey', () => playSound('error')); return; }
+      const server = res.kind === 'ok' ? res.data as { intel?: AsteroidIntel; probes?: number } : null;
+      const intel: AsteroidIntel = server?.intel ?? rollAsteroidIntel(rock, LOCAL_INTEL_SALT);
+      playSound('build_start');
+      setState(prev => {
+        if (!prev) return prev;
+        if (prev.asteroidIntel?.[asteroidId]) return prev; // idempotent
+        const probes = typeof server?.probes === 'number' ? server.probes : Math.max(0, (prev.surveyProbes || 0) - 1);
+        return {
+          ...prev,
+          surveyProbes: probes,
+          asteroidIntel: { ...(prev.asteroidIntel || {}), [asteroidId]: { ...intel, surveyedAtMs: Date.now(), via: 'probe' as const } },
+          eventLog: [{ id: generateId(), date: prev.gameDate, type: 'random_event' as const, title: `🔭 Probe surveyed ${rock.name}`, description: `Grade ${intel.grade.toFixed(2)}, reserve ${intel.reserve.toLocaleString()} units, rubble risk ${(intel.risk * 100).toFixed(0)}%.` }, ...prev.eventLog].slice(0, 50),
+        };
+      });
+    });
+  }, []);
+
+  const handleBuyProbes = useCallback((count: number) => {
+    const cur = stateRef.current;
+    if (!cur) return;
+    const n = Math.max(1, Math.min(10, Math.floor(count)));
+    const cost = n * SURVEY_PROBE_COST;
+    if (cur.money < cost) { reportAssetFailure({ message: `${n} probe${n === 1 ? '' : 's'} cost ${formatMoney(cost)} — not enough cash.` }, 'Survey', () => playSound('error')); return; }
+    playSound('click');
+    void requestAssetOp('mining', { op: 'buy_probes', count: n }, 'probe purchase').then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Survey', () => playSound('error')); return; }
+      const server = res.kind === 'ok' ? res.data as { probes?: number; cost?: number } : null;
+      playSound('money');
+      setState(prev => {
+        if (!prev) return prev;
+        const paid = typeof server?.cost === 'number' ? server.cost : cost;
+        return {
+          ...prev,
+          money: prev.money - paid,
+          totalSpent: prev.totalSpent + paid,
+          surveyProbes: typeof server?.probes === 'number' ? server.probes : (prev.surveyProbes || 0) + n,
+        };
+      });
+    });
+  }, []);
+
   // ─── Dispatch Ship (freight / transit order) ────────────────────────
   // Shared by the Fleet tab's transport flow AND the Wave 9 map command
   // center's "Dispatch ship here" action — one engine call, two entry
@@ -2522,6 +2638,7 @@ export default function SpaceTycoonPage() {
     { id: 'crafting', label: 'Manufacture', icon: 'crafting' },
     { id: 'market', label: 'Markets', icon: 'market' },
     { id: 'sourcing', label: 'Sourcing', icon: 'sourcing' },
+    { id: 'mining', label: 'Mining', icon: 'mining' },
     { id: 'workforce', label: 'Crew', icon: 'workforce' },
     { id: 'alliance', label: 'Corporation', icon: 'alliance' },
     { id: 'bounties', label: 'Bounties', icon: 'bounties' },
@@ -2805,6 +2922,7 @@ export default function SpaceTycoonPage() {
         />}
         {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onOpenSourcing={() => { playSound('click'); navigateToTab('markets:sourcing'); }} onMothballBuilding={handleMothballBuilding} onReactivateBuilding={handleReactivateBuilding} onRushRepairBuilding={handleRushRepairBuilding} onMarkUpgradeBuilding={handleMarkUpgradeBuilding} onDispatchShip={handleDispatchShip} />}
         {tab === 'sourcing' && <SourcingPanel state={state} onSetSupplyPolicy={handleSetSupplyPolicy} onNavigate={(navTab) => { playSound('click'); navigateToTab(navTab); }} />}
+        {tab === 'mining' && <MiningPanel state={state} onPlaceOrder={handleMiningOrder} onSurveyProbe={handleSurveyProbe} onBuyProbes={handleBuyProbes} onNavigate={(navTab) => { playSound('click'); navigateToTab(navTab); }} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'fleet' && <FleetPanel

@@ -18,6 +18,9 @@ import { REAL_SECONDS_PER_GAME_MONTH } from './server-time';
 import type { GameState, GameTab } from './types';
 import { RESEARCH_MAP } from './research-tree';
 import { resolveIcon, type IconName } from './icons';
+// Mining Phase A (2026-09-12): one row per active Mining Order.
+import { describeMiningOrder } from './mining-orders';
+import { getAsteroid } from './asteroids';
 
 // Clock unification (2026-09-02): ETAs are quoted on the world calendar
 // (server-time.ts, 6 real hours per game-month) — the shadow "30 ticks x 2 s"
@@ -82,6 +85,25 @@ export function buildOrderQueue(state: GameState): OrderQueueItem[] {
 
   for (const s of state.ships || []) {
     if (!s.isBuilt) continue;
+    // Mining Phase A: a ship on a Mining Order shows ONE row for the whole
+    // order (outbound → mining → returning), not the transit/mining rows the
+    // legacy statuses below would produce. Clicking opens the Mining tab.
+    if (s.miningOrder) {
+      const o = s.miningOrder;
+      const p = describeMiningOrder(o, nowMs);
+      const rockName = o.asteroidId ? (getAsteroid(o.asteroidId)?.name || o.asteroidId) : 'held ore';
+      items.push({
+        id: `mining-order-${s.instanceId}`,
+        icon: o.mode === 'survey' ? 'ship-survey' : 'mining',
+        label: s.name,
+        sub: `${p.label} · ${rockName}`,
+        pct: p.pct,
+        etaSeconds: p.etaSeconds,
+        target: { kind: 'location', id: p.phase === 'returning' ? o.destinationId : o.parentLocationId },
+        tab: 'mining',
+      });
+      continue;
+    }
     if (s.status === 'in_transit' && s.route) {
       const toLoc = LOCATION_MAP.get(s.route.to);
       const total = Math.max(1, s.route.arrivalAtMs - s.route.departedAtMs);

@@ -35,7 +35,7 @@ export type IconName =
   | 'bounties' | 'predictions' | 'megaproject' | 'megastructures' | 'espionage'
   | 'territory' | 'speedruns' | 'seasons' | 'leaderboard' | 'commanders'
   | 'factions' | 'modules' | 'discoveries' | 'science' | 'interstellar'
-  | 'subsidiaries' | 'specialization' | 'victory' | 'governance' | 'sourcing'
+  | 'subsidiaries' | 'specialization' | 'victory' | 'governance' | 'sourcing' | 'mining'
   // ── Resource categories (resources.ts ResourceDefinition.category) ─────
   | 'resource-water' | 'resource-metal' | 'resource-precious'
   | 'resource-rare-earth' | 'resource-hydrocarbon' | 'resource-exotic'
@@ -44,6 +44,8 @@ export type IconName =
   // goods tiers + adopted colony-resource categories.
   | 'resource-refined' | 'resource-component' | 'resource-product'
   | 'resource-industrial' | 'resource-energy'
+  // Mining Phase A (2026-09-12): raw asteroid ore.
+  | 'resource-ore'
   // ── Ship roles (ships.ts ShipRole) ──────────────────────────────────────
   | 'ship-transport' | 'ship-mining' | 'ship-survey' | 'ship-tanker'
   // ── Building categories (buildings.ts) ──────────────────────────────────
@@ -121,6 +123,9 @@ export const ICONS: Record<IconName, IconDef> = {
   // Sourcing (2026-09-12): a supply crate with an inbound arrow — inputs
   // arriving at a building, distinct from Markets' chart and Manufacture's hammer.
   sourcing: { meaning: 'Sourcing — supply crate with inbound arrow', els: [r(3, 11, 10, 9, 1), l(3, 15, 13, 15), l(8, 11, 8, 20), pl('14,7 21,7'), pl('18,4 21,7 18,10')] },
+  // Mining (2026-09-12): a faceted rock with a survey beam — an asteroid
+  // being worked, distinct from the ship-role pickaxe (ship-mining).
+  mining: { meaning: 'Mining — asteroid with survey beam', els: [pg('8,6 15,4 20,9 19,16 12,20 5,16 4,10', 'none'), l(9, 11, 14, 14), l(3, 3, 8, 6), c(3, 3, 1, 'currentColor')] },
   workforce: { meaning: 'Crew — hard-hat operator', els: [c(12, 7, 3, 'none'), p('M8 7a4 4 0 0 1 8 0'), p('M5 21v-3a7 7 0 0 1 14 0v3')] },
   alliance: { meaning: 'Corporation — office tower', els: [r(6, 3, 12, 18, 1), l(9, 7, 9, 7), l(12, 7, 12, 7), l(15, 7, 15, 7), l(9, 11, 9, 11), l(12, 11, 12, 11), l(15, 11, 15, 11), l(9, 15, 9, 15), l(12, 15, 12, 15), l(15, 15, 15, 15), r(10, 17, 4, 4)] },
   bounties: { meaning: 'Bounties — target crosshair', els: [c(12, 12, 8, 'none'), c(12, 12, 4, 'none'), c(12, 12, 0.8, 'currentColor'), l(12, 2, 12, 5), l(12, 19, 12, 22), l(2, 12, 5, 12), l(19, 12, 22, 12)] },
@@ -159,6 +164,7 @@ export const ICONS: Record<IconName, IconDef> = {
   'resource-product': { meaning: 'Product (tier-3/4) crafted resources — assembled module', els: [r(4, 7, 16, 12, 1), l(4, 11, 20, 11), l(9, 7, 9, 3), l(15, 7, 15, 3)] },
   'resource-industrial': { meaning: 'Industrial (adopted colony) resources — barrel', els: [r(7, 5, 10, 15, 2), l(7, 10, 17, 10), l(7, 15, 17, 15)] },
   'resource-energy': { meaning: 'Energy (adopted colony) resources — bolt', els: [pg('13,2 4,14 11,14 9,22 20,10 13,10')] },
+  'resource-ore': { meaning: 'Raw asteroid ore — faceted rock', els: [pg('8,5 15,4 20,9 19,16 12,20 5,16 4,10', 'none'), l(8, 5, 12, 11), l(12, 11, 19, 9), l(12, 11, 12, 20)] },
 
   // ── Ship roles ────────────────────────────────────────────────────────
   'ship-transport': { meaning: 'Transport ship role', els: [p('M3 16l2-6h10l3 6z'), r(4, 16, 16, 3, 1), c(8, 19.5, 1.3, 'none'), c(16, 19.5, 1.3, 'none')] },

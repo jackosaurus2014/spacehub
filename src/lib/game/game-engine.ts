@@ -24,6 +24,8 @@ import { advanceSystemicCrisis } from './systemic-crises';
 import { checkMilestones } from './milestones';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { SHIP_MAP, getTravelTime } from './ships';
+// Mining Phase A (2026-09-12): the Mining Order reducer (pure, clock-driven).
+import { advanceMiningOrders } from './mining-orders';
 import { getWorkforceBonuses, getRequiredCrew, getStaffingReport, type WorkforceState } from './workforce';
 import { getActiveBoostMultiplier, cleanupExpiredBoosts } from './speed-boosts';
 import type { ActiveBoost } from './speed-boosts';
@@ -2249,6 +2251,13 @@ export function processFullTick(state: GameState): GameState {
           }
         }
 
+        // Mining Phase A (2026-09-12): a ship on a Mining Order is driven by
+        // mining-orders.ts advanceMiningOrders (called right after this
+        // block) — the legacy parked-mining, auto-rove, transit-arrival and
+        // survey branches below must not touch it (its route carries no
+        // cargo and its ore is credited only on completion).
+        if (ship.isBuilt && ship.miningOrder) return ship;
+
         // Mining production (with workforce, prestige, and location bonuses, fractional per tick)
         if (ship.isBuilt && ship.status === 'mining' && ship.miningOperation) {
           const shipDef = SHIP_MAP.get(ship.definitionId);
@@ -2502,6 +2511,17 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Ship processing error (non-fatal):', err);
+  }
+
+  // 6a-mining. Interactive asteroid mining Phase A (docs/
+  // SPACE_MINING_DESIGN_2026-09-12.md §4): advance every Mining Order to
+  // now. Pure reducer, same object back when nothing moved. On a synced
+  // profile it credits nothing (server-mining.ts completes the order and
+  // the ledger delivers the ore); local-only play credits itself.
+  try {
+    newState = advanceMiningOrders(newState, Date.now());
+  } catch (err) {
+    console.error('Mining order processing error (non-fatal):', err);
   }
 
   // 6e. AAA Round 1 E3.2 — lifetime legacy trackers, part 2.

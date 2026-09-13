@@ -89,6 +89,10 @@ export interface SyncShip {
   isBuilt: boolean;
   hullDamagePct?: number;
   miningOperation?: { resourceId: string; startedAtMs: number; locationId: string };
+  /** Mining Phase A: the schedule of the active order (display/audit only —
+   *  the MiningOrder table is the server's truth; nothing here credits). */
+  miningOrder?: { id: string; mode: string; asteroidId: string | null; fieldId: string; oreId: string; fillUnits: number; thenAction: string; completesAtMs: number };
+  heldOre?: { oreId: string; units: number; asteroidId: string | null; fieldId: string };
 }
 
 export interface SyncService {
@@ -281,6 +285,31 @@ function validateShips(raw: unknown): SyncShip[] {
         resourceId: mo.resourceId,
         locationId: mo.locationId,
         startedAtMs: clampNum(mo.startedAtMs, 0, 4102444800000, 0),
+      };
+    }
+    // Mining Phase A: carry the order/held-ore shape through (bounded,
+    // slug-checked). Persisted for the registry's ship view only.
+    const ord = r.miningOrder as Record<string, unknown> | null | undefined;
+    if (ord && typeof ord === 'object' && typeof ord.id === 'string' && ID_RE.test(ord.id)
+      && typeof ord.oreId === 'string' && SLUG_RE.test(ord.oreId) && typeof ord.fieldId === 'string' && SLUG_RE.test(ord.fieldId)) {
+      item.miningOrder = {
+        id: ord.id,
+        mode: typeof ord.mode === 'string' && ['mine', 'survey', 'return'].includes(ord.mode) ? ord.mode : 'mine',
+        asteroidId: typeof ord.asteroidId === 'string' && SLUG_RE.test(ord.asteroidId) ? ord.asteroidId : null,
+        fieldId: ord.fieldId,
+        oreId: ord.oreId,
+        fillUnits: clampNum(ord.fillUnits, 0, 100_000, 0),
+        thenAction: typeof ord.thenAction === 'string' && ['return_sell', 'return_store', 'hold'].includes(ord.thenAction) ? ord.thenAction : 'return_store',
+        completesAtMs: clampNum(ord.completesAtMs, 0, 4102444800000, 0),
+      };
+    }
+    const held = r.heldOre as Record<string, unknown> | null | undefined;
+    if (held && typeof held === 'object' && typeof held.oreId === 'string' && SLUG_RE.test(held.oreId) && typeof held.fieldId === 'string' && SLUG_RE.test(held.fieldId)) {
+      item.heldOre = {
+        oreId: held.oreId,
+        units: clampNum(held.units, 0, 100_000, 0),
+        asteroidId: typeof held.asteroidId === 'string' && SLUG_RE.test(held.asteroidId) ? held.asteroidId : null,
+        fieldId: held.fieldId,
       };
     }
     out.push(item);

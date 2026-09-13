@@ -118,6 +118,16 @@ export type LedgerReason =
   // re-accession bond is forfeit to the Accord on signature.
   | 'chair_filing_fee_burn'
   | 'accord_reaccession_bond_burn'
+  // Interactive asteroid mining Phase A (docs/SPACE_MINING_DESIGN_2026-09-12.md,
+  // 2026-09-12). mining_order_fuel and survey_probe_purchase are BURNED (no
+  // matching credit — the delta-v bill and the consumable, BALANCE.md sinks).
+  // mining_order_ore is the ONLY path that creates ore on a synced profile
+  // (server-mining.ts completeDueMiningOrders); mining_order_sale is the
+  // 'return & sell' proceeds at spot minus the broker fee.
+  | 'mining_order_fuel'
+  | 'mining_order_ore'
+  | 'mining_order_sale'
+  | 'survey_probe_purchase'
   // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md): the Accord
   // Stabilization Assessment. BURNED — the pool is a sink, not an escrow, so
   // there is nothing to refund and nothing to exploit by pledging and

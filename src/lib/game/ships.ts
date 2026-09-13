@@ -73,6 +73,72 @@ export interface ShipDefinition {
    *  every hull already has) via getShipCrew — authoring this field is only
    *  needed when a hull's split differs from its role's default. */
   crew?: ShipCrew;
+  /** Interactive asteroid mining Phase A (docs/SPACE_MINING_DESIGN_2026-09-12.md
+   *  §4): ore units per REAL HOUR this hull extracts from a surveyed
+   *  grade-1.0 rock (mining-orders.ts computeExtractionRate). Absent = the
+   *  hull cannot take a Mining Order. Independent of the legacy
+   *  `miningRate` (the parked-ship trickle), which is untouched. */
+  oreExtractionPerHour?: number;
+  /** Phase A survey capability (founder ruling 2026-09-12): a hull that can
+   *  survey a rock on station — unlimited surveys, the fuel to get there is
+   *  the cost. Probes (SURVEY_PROBE_COST) are the consumable alternative. */
+  survey?: boolean;
+}
+
+// ─── Mining Orders (Phase A, design doc §4) ──────────────────────────────────
+// A Mining Order is a state machine on ShipInstance. Every timestamp is fixed
+// at creation (the server quotes the same schedule from the same pure
+// planner — mining-orders.ts), so the client tick only READS the clock:
+//   transit_out → mining → returning → complete      (mode 'mine')
+//   transit_out → complete                            (mode 'survey')
+//   returning   → complete                            (mode 'return')
+// Ore reaches inventory only through the completion path (server ledger row
+// for a synced profile; the local reducer for local-only play).
+
+export type MiningOrderMode = 'mine' | 'survey' | 'return';
+export type MiningThenAction = 'return_sell' | 'return_store' | 'hold';
+export type MiningOrderPhase = 'transit_out' | 'mining' | 'returning' | 'complete';
+
+export interface MiningOrder {
+  /** Client-generated instance id (asset-route-shared parseInstanceId shape). */
+  id: string;
+  mode: MiningOrderMode;
+  /** null for a 'return' order (it carries whatever the ship held). */
+  asteroidId: string | null;
+  fieldId: string;
+  /** The field's parent location — where the ship physically goes. */
+  parentLocationId: string;
+  oreId: string;
+  /** Units to extract (mine) or carry home (return). */
+  fillUnits: number;
+  thenAction: MiningThenAction;
+  /** Where the order started (a return leg ends here). */
+  originId: string;
+  /** Where the ore lands: originId for return legs, parentLocationId for hold. */
+  destinationId: string;
+  startedAtMs: number;
+  arrivesAtMs: number;
+  miningEndsAtMs: number;
+  completesAtMs: number;
+  fuelCost: number;
+  /** Effective units/hour the schedule was quoted at. */
+  ratePerHour: number;
+  surveyed: boolean;
+  /** true when /assets/mining accepted the order — completion credits come
+   *  from the server ledger, never from the client. */
+  serverAuthoritative: boolean;
+  /** Survey orders: the reveal the server returned at creation, applied to
+   *  asteroidIntel when the ship arrives (the survey row's surveyedAt IS the
+   *  arrival time, so the mining rate cannot be claimed early). */
+  intel?: { grade: number; reserve: number; risk: number };
+}
+
+/** Ore sitting in a hull after a 'hold' order (no inventory has it yet). */
+export interface HeldOre {
+  oreId: string;
+  units: number;
+  asteroidId: string | null;
+  fieldId: string;
 }
 
 /** Row 6: a hull's flight crew. Ships draw on pilots and engineers; miners,
@@ -162,6 +228,11 @@ export interface ShipInstance {
   buildStartedAtMs?: number;
   buildDurationSeconds?: number;
   isBuilt: boolean;
+  /** Phase A: the active Mining Order (see MiningOrder). */
+  miningOrder?: MiningOrder;
+  /** Phase A: ore held aboard after a 'hold' order, until a 'return' order. */
+  heldOre?: HeldOre;
+  hullDamagePct?: number;
 }
 
 // ─── Survey Expedition System ────────────────────────────────────────────────
@@ -240,6 +311,21 @@ export const SHIPS: ShipDefinition[] = [
     requiredResearch: ['interplanetary_cruisers'], buildTimeSeconds: 1200, tier: 3,
     maintenancePerMonth: 3_000_000,
   },
+  // Mining Phase A (docs/SPACE_MINING_DESIGN_2026-09-12.md §5): the ore tug.
+  // Doc gate was `logistics_2`, which does not exist in the tree; the
+  // nearest real T1/T2 spacecraft tech is Modular Spacecraft (the Freighter's
+  // own gate). Enormous hold, terrible delta-v budget, no mining — it exists
+  // to make the miners-stay / haulers-cycle corporate pattern possible.
+  {
+    id: 'hauler', name: 'Hauler', icon: '🛢️', role: 'transport',
+    description: 'Ore tug. An 800-unit bulk hold on a low-thrust frame — slow, cheap per unit, and useless for anything but volume.',
+    tooltip: 'WHY BUILD: Ore is bulk. A Hauler carries 800 units (4x a Freighter) and ore counts at a fifth of its units against any hold, so one Hauler cycling between a field and a refinery moves what four Freighters would. The trade: a delta-v budget so poor it never wants to leave the lane it is on. Park miners at a field on HOLD orders and let the Hauler do the running. LOGISTICS BONUS when idle, same as any transport.',
+    cargoCapacity: 800, baseCost: 220_000_000,
+    resourceCost: { iron: 120, aluminum: 60, titanium: 10 },
+    requiredResearch: ['modular_spacecraft'], buildTimeSeconds: 720, tier: 2,
+    maintenancePerMonth: 900_000,
+    stats: { warpFactor: 0.6, deltaVBudget: 6_000, sublightSpeed: 1_400, fuelCapacity: 1_400, crewRequired: 3, moduleSlots: 3, hardpointTypes: ['cargo', 'cargo', 'engine'] },
+  },
 
   // TANKER — doubles capacity for water/fuel, reduces propellant depot costs
   {
@@ -263,6 +349,23 @@ export const SHIPS: ShipDefinition[] = [
     resourceCost: {},
     requiredResearch: [], buildTimeSeconds: 120, tier: 1,
     maintenancePerMonth: 80_000,
+    oreExtractionPerHour: 12,
+  },
+  // Mining Phase A (docs/SPACE_MINING_DESIGN_2026-09-12.md §5): the solo
+  // player's first belt ship. Slow, cheap, and it surveys the rock it sits on.
+  {
+    id: 'prospector_barge', name: 'Prospector Barge', icon: '🚧', role: 'mining',
+    description: 'A slow mining barge with an onboard detailed sensor: it surveys the rock it sits on while it mines it.',
+    tooltip: 'WHY BUILD: Your first interactive miner. Take a Mining Order on any near-Earth or inner-belt rock: fly out, fill the 200-unit hold at 50 ore/hour on a surveyed grade-1.0 rock, and come home to sell or store. Its sensor surveys a rock for free on a SURVEY order (unlimited — the fuel to get there is the cost), so a barge is "one ship that does both, adequately" against the probe-plus-drone pairing. Unsurveyed rocks mine at 15% — survey first.',
+    cargoCapacity: 200, miningRate: 4,
+    miningTargets: ['iron', 'aluminum'],
+    baseCost: 180_000_000,
+    resourceCost: { iron: 60, aluminum: 40 },
+    requiredResearch: ['resource_prospecting'], buildTimeSeconds: 420, tier: 2,
+    maintenancePerMonth: 400_000,
+    oreExtractionPerHour: 50,
+    survey: true,
+    stats: { surveyRange: 0.5, surveyAccuracy: 0.8, warpFactor: 0.6 },
   },
   {
     id: 'mining_drone', name: 'Mining Drone', icon: '⛏️', role: 'mining',
@@ -274,6 +377,7 @@ export const SHIPS: ShipDefinition[] = [
     resourceCost: { iron: 15, aluminum: 10 },
     requiredResearch: ['resource_prospecting'], buildTimeSeconds: 240, tier: 1,
     maintenancePerMonth: 150_000,
+    oreExtractionPerHour: 30,
   },
   {
     id: 'ore_harvester', name: 'Ore Harvester', icon: '🔩', role: 'mining',
@@ -285,6 +389,7 @@ export const SHIPS: ShipDefinition[] = [
     resourceCost: { titanium: 20, iron: 50, aluminum: 30 },
     requiredResearch: ['regolith_processing'], buildTimeSeconds: 600, tier: 2,
     maintenancePerMonth: 600_000,
+    oreExtractionPerHour: 55,
   },
   {
     id: 'asteroid_miner', name: 'Asteroid Mining Ship', icon: '☄️', role: 'mining',
@@ -296,6 +401,7 @@ export const SHIPS: ShipDefinition[] = [
     resourceCost: { titanium: 60, rare_earth: 15, aluminum: 40 },
     requiredResearch: ['asteroid_capture'], buildTimeSeconds: 900, tier: 3,
     maintenancePerMonth: 2_000_000,
+    oreExtractionPerHour: 90,
   },
   {
     id: 'deep_space_miner', name: 'Deep Space Miner', icon: '🌌', role: 'mining',
@@ -307,6 +413,7 @@ export const SHIPS: ShipDefinition[] = [
     resourceCost: { titanium: 100, rare_earth: 40, platinum_group: 10 },
     requiredResearch: ['nuclear_thermal'], buildTimeSeconds: 1500, tier: 4,
     maintenancePerMonth: 5_000_000,
+    oreExtractionPerHour: 70,
   },
 
   // SURVEY — single-use probes that discover resources and anomalies
@@ -334,6 +441,7 @@ export const SHIPS: ShipDefinition[] = [
     requiredResearch: ['jump_drive'], buildTimeSeconds: 43_200, tier: 5,
     maintenancePerMonth: 60_000_000, // ~0.24% of hull/month, matching deep_space_miner's 0.5% at half rate for a ship that spends most months in transit
     stats: { crewRequired: 12, crewCapacity: 20, lifeSupportDays: 4_000, shieldingRating: 0.35, hullIntegrity: 1_500 },
+    survey: true,
   },
   {
     id: 'colony_ark', name: 'Colony Ark', icon: '🛸', role: 'transport',

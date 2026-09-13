@@ -74,7 +74,9 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     // tier 2 alongside the rest of the Venture unlocks — a solo tier-1
     // startup is still learning the basics; by tier 2 players have market
     // fluency and can reason about stakes.
-    unlockedTabs: ['fleet', 'reports', 'modules', 'discoveries', 'specialization', 'predictions'],
+    // 'mining' (2026-09-12, interactive asteroid mining Phase A): Mining
+    // Orders need hulls, so it unlocks with Fleet.
+    unlockedTabs: ['fleet', 'mining', 'reports', 'modules', 'discoveries', 'specialization', 'predictions'],
   },
   {
     tier: 3, name: 'Enterprise', icon: '🏢', color: '#a78bfa',

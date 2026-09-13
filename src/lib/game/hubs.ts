@@ -81,6 +81,10 @@ export const HUB_CATALOG: readonly HubDef[] = [
       { id: 'crafting', label: 'Manufacture', icon: 'crafting', tab: 'crafting' },
       { id: 'research', label: 'Research', icon: 'research', tab: 'research' },
       { id: 'fleet', label: 'Fleet', icon: 'fleet', tab: 'fleet' },
+      // Mining (2026-09-12, docs/SPACE_MINING_DESIGN_2026-09-12.md Phase A):
+      // fields → rocks, survey state, mining-capable ships and their orders,
+      // and the Mining Order form. Tier 2 with Fleet (ships are tier-2 content).
+      { id: 'mining', label: 'Mining', icon: 'mining', tab: 'mining' },
       { id: 'modules', label: 'Modules', icon: 'modules', tab: 'modules' },
       { id: 'megastructures', label: 'Megastructures', icon: 'megastructures', tab: 'megastructures' },
       { id: 'megaproject', label: 'Mega-Project', icon: 'megaproject', tab: 'megaproject' },

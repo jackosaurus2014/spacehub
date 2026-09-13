@@ -260,6 +260,10 @@ export function getNewGameState(): GameState {
     // al.) is created lazily after Frontier graduation, never stored in the
     // save.
     equity: null,
+    // Mining Phase A (2026-09-12, docs/SPACE_MINING_DESIGN_2026-09-12.md):
+    // no probes bought, no rocks surveyed. Mining Orders live on ships[].
+    surveyProbes: 0,
+    asteroidIntel: {},
   };
 }
 
@@ -851,6 +855,24 @@ export function migrateLoadedState(state: GameState): GameState | null {
     // V42 — stamp current-epoch saves so a future WORLD_EPOCH bump can tell
     // them apart from new-era saves.
     if (state.worldEpoch === undefined) state.worldEpoch = WORLD_EPOCH;
+
+    // Mining Phase A (2026-09-12, docs/SPACE_MINING_DESIGN_2026-09-12.md §8
+    // row A). Additive, no version bump (constants.ts SAVE_VERSION note):
+    // an existing save has bought no probes and surveyed no rocks; its
+    // ships carry no Mining Order (the tick ignores ships without one, so
+    // the legacy parked-miner path is byte-identical). A ship that somehow
+    // round-tripped with a malformed order (no schedule) is put back idle
+    // rather than left stuck.
+    if (typeof state.surveyProbes !== 'number' || !Number.isFinite(state.surveyProbes) || state.surveyProbes < 0) state.surveyProbes = 0;
+    if (!state.asteroidIntel || typeof state.asteroidIntel !== 'object') state.asteroidIntel = {};
+    if (Array.isArray(state.ships)) {
+      state.ships = state.ships.map(s => {
+        const o = s.miningOrder;
+        if (!o) return s;
+        const valid = typeof o.completesAtMs === 'number' && typeof o.startedAtMs === 'number' && typeof o.oreId === 'string' && typeof o.mode === 'string';
+        return valid ? s : { ...s, miningOrder: undefined, status: s.status === 'building' ? s.status : 'idle' as const, route: undefined };
+      });
+    }
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

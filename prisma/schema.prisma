@@ -199,6 +199,8 @@ model GameProfile {
   colonyClaims       ColonyClaim[]
   // Phase 3 slice 1: server-authoritative assets (buildings first).
   serverAssets       ServerAsset[]
+  asteroidSurveys    AsteroidSurvey[]
+  miningOrders       MiningOrder[]
   economicSnapshots  EconomicSnapshot[]
 
   // Cloud save (2026-09-09): the player's full client GameState, pushed with
@@ -476,6 +478,99 @@ model ServerAsset {
   @@unique([profileId, instanceId])
   @@index([profileId, kind, status])
   @@index([kind, status, completesAt])
+}
+
+// ─── Interactive asteroid mining Phase A (docs/SPACE_MINING_DESIGN_2026-09-12.md
+// §3-4, 2026-09-12). World-scoped rocks: identity (id/name/class/deltaV) is
+// public and deterministic per epoch (src/lib/game/asteroids.ts
+// generateAsteroidCatalog); grade/reserve/risk are HIDDEN until a
+// corporation surveys the rock (AsteroidSurvey). scripts/seed-asteroids.ts
+// upserts on the stable id, so a re-run never duplicates. `reserve`
+// decrements on order completion (server-mining.ts); exhaustion/respawn and
+// claims are Phase B.
+model Asteroid {
+  id             String    @id
+  epoch          Int
+  fieldId        String
+  index          Int
+  name           String
+  class          String
+  deltaVExtra    Float
+  positionSeed   Float
+  grade          Float
+  reserve        Float
+  initialReserve Float
+  risk           Float
+  exhaustedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  surveys AsteroidSurvey[]
+  orders  MiningOrder[]
+
+  @@index([fieldId])
+  @@index([epoch, fieldId])
+}
+
+/// One corporation's survey of one rock. `surveyedAt` is when the reveal
+/// takes effect (a survey ORDER stamps its arrival time, so the full mining
+/// rate cannot be claimed before the ship is on station).
+model AsteroidSurvey {
+  id         String      @id @default(cuid())
+  profileId  String
+  profile    GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  asteroidId String
+  asteroid   Asteroid    @relation(fields: [asteroidId], references: [id], onDelete: Cascade)
+  surveyedAt DateTime
+  via        String      @default("probe")
+  createdAt  DateTime    @default(now())
+
+  @@unique([profileId, asteroidId])
+  @@index([asteroidId])
+}
+
+/// A Mining Order (design doc §4): the server's copy of the schedule the
+/// pure planner quoted. Created paid (fuel burned through the ledger,
+/// mining_order_fuel); flips pending → complete | held when completesAt <=
+/// now (server-mining.ts completeDueMiningOrders — the cron plus a lazy pass
+/// on the route), and THAT flip is the only thing that ledgers ore
+/// (mining_order_ore) or sale proceeds (mining_order_sale) for a profile.
+/// `held` = ore aboard the ship at the field until a 'return' order
+/// (status → returned when one is created). `instanceId` is the client's
+/// order id (retry-safe, unique per profile).
+model MiningOrder {
+  id             String      @id @default(cuid())
+  profileId      String
+  profile        GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  instanceId     String
+  shipInstanceId String
+  mode           String
+  asteroidId     String?
+  asteroid       Asteroid?   @relation(fields: [asteroidId], references: [id], onDelete: SetNull)
+  fieldId        String
+  oreId          String
+  fillUnits      Int
+  thenAction     String
+  originId       String
+  destinationId  String
+  startedAt      DateTime
+  arrivesAt      DateTime
+  miningEndsAt   DateTime
+  completesAt    DateTime
+  fuelPaid       Float       @default(0)
+  ratePerHour    Float       @default(0)
+  surveyed       Boolean     @default(false)
+  status         String      @default("pending")
+  unitsCredited  Int         @default(0)
+  saleProceeds   Float       @default(0)
+  ledgerSeq      Int?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@unique([profileId, instanceId])
+  @@index([profileId, status])
+  @@index([status, completesAt])
+  @@index([shipInstanceId])
 }
 
 model MarketResource {

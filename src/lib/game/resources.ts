@@ -44,7 +44,15 @@ export type ResourceId =
   | 'organic_compounds'
   | 'deuterium'
   | 'bio_samples'
-  | 'antimatter_precursors';
+  | 'antimatter_precursors'
+  // ─── Interactive asteroid mining Phase A (docs/SPACE_MINING_DESIGN_2026-09-12.md
+  // §4 "Processing"; founder ruling 2026-09-12: ore is a REAL intermediate).
+  // Raw ore by spectral class — hauled, stored, sold like any resource;
+  // Phase C adds the refinery ratios. Ids fixed now so no save migrates.
+  | 'ore_carbonaceous'
+  | 'ore_silicate'
+  | 'ore_metallic'
+  | 'ore_exotic';
 
 export interface ResourceDefinition {
   id: ResourceId;
@@ -54,7 +62,11 @@ export interface ResourceDefinition {
     // Wave E2: crafted-goods tiers (§E2 "category refined/component/product")
     | 'refined' | 'component' | 'product'
     // Wave E2: adopted colony-resource categories (verbatim from colonies.ts)
-    | 'industrial' | 'energy';
+    | 'industrial' | 'energy'
+    // Mining Phase A (2026-09-12): raw asteroid ore — bulk, low value per
+    // unit, refined in Phase C. cargo-logistics.ts weighs it at
+    // ORE_LOAD_WEIGHT against a hold.
+    | 'ore';
   description: string;
   baseMarketPrice: number; // $ per unit
   minPrice: number;
@@ -328,6 +340,36 @@ export const RESOURCES: ResourceDefinition[] = [
     description: 'Triton Archive antimatter-precursor compounds. Interstellar-era propulsion research feedstock.',
     baseMarketPrice: 50_000_000, minPrice: 10_000_000, maxPrice: 200_000_000, volatility: 0.20,
     startingSupply: 3, npcRestockPerHour: 0.015,
+  },
+
+  // ─── RAW ASTEROID ORE (mining Phase A, 2026-09-12) ─────────────────────
+  // Priced BELOW the refined goods each class yields (Phase C ratios), so
+  // hauling ore is the low-margin option and refining near the field is the
+  // reason depots and refinery barges exist. NPC restock is thin: the NPC
+  // backdrop mines little ore of its own, so player supply moves the price.
+  {
+    id: 'ore_carbonaceous', name: 'Carbonaceous Ore', icon: '🪨', category: 'ore',
+    description: 'Raw C-type asteroid material: water ice, carbon, organics. Refines to water and organics (Phase C).',
+    baseMarketPrice: 14_000, minPrice: 3_500, maxPrice: 70_000, volatility: 0.04,
+    startingSupply: 800, npcRestockPerHour: 4,
+  },
+  {
+    id: 'ore_silicate', name: 'Silicate Ore', icon: '🪨', category: 'ore',
+    description: 'Raw S-type asteroid material: iron, nickel, silicates. The bulk starter ore — cheap, heavy, everywhere.',
+    baseMarketPrice: 7_000, minPrice: 1_500, maxPrice: 35_000, volatility: 0.03,
+    startingSupply: 1_500, npcRestockPerHour: 8,
+  },
+  {
+    id: 'ore_metallic', name: 'Metallic Ore', icon: '🪨', category: 'ore',
+    description: 'Raw M-type asteroid material: iron-nickel with platinum-group and gold inclusions. The prize of the belt.',
+    baseMarketPrice: 10_000, minPrice: 2_500, maxPrice: 50_000, volatility: 0.06,
+    startingSupply: 400, npcRestockPerHour: 2,
+  },
+  {
+    id: 'ore_exotic', name: 'Exotic Ore', icon: '🪨', category: 'ore',
+    description: 'Raw X-type material from the outer swarms: exotic-bearing matrices no fixed refinery on Earth is tuned for yet.',
+    baseMarketPrice: 70_000, minPrice: 15_000, maxPrice: 350_000, volatility: 0.10,
+    startingSupply: 60, npcRestockPerHour: 0.3,
   },
 ];
 

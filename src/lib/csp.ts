@@ -221,6 +221,7 @@ export const NONCE_ELIGIBLE_ROUTES: readonly string[] = [
   '/advertise',
   '/ai-insights/[slug]',
   '/amas/[id]',
+  '/brief/am',
   '/briefs',
   '/build-guides',
   '/build-guides/[slug]',

@@ -35,6 +35,8 @@ import { LANES } from './spatial-strategy';
 import { LOCATION_MAP } from './solar-system';
 import { RESOURCE_MAP } from './resources';
 import type { ResourceId } from './resources';
+// Mining Phase A: raw ore is bulk — a quarter load-unit per unit on any hull.
+import { ORE_LOAD_WEIGHT } from './asteroids';
 import { getResearchBonuses } from './research-tree';
 import { getFittedModulesForShip } from './modules';
 import { generateId } from './formulas';
@@ -223,7 +225,9 @@ export function getCargoLoadUnits(role: string | undefined, cargo: Record<string
     if (!qty || qty <= 0) continue;
     const cat = RESOURCE_MAP.get(resId as ResourceId)?.category;
     const isLiquid = cat === 'water' || cat === 'hydrocarbon';
-    load += qty * (role === 'tanker' && isLiquid ? TANKER_LIQUID_WEIGHT : 1);
+    // Mining Phase A: ore (asteroids.ts ORE_LOAD_WEIGHT) is loose bulk on any
+    // hull — the Hauler's 800-unit hold is priced on this.
+    load += qty * (cat === 'ore' ? ORE_LOAD_WEIGHT : role === 'tanker' && isLiquid ? TANKER_LIQUID_WEIGHT : 1);
   }
   return load;
 }
