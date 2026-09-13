@@ -8,6 +8,8 @@ name: Nightly QA
 # reach the site fails the job, and GitHub notifies the repo owner.
 #
 # Secrets: CRON_SECRET (same value as Railway's). Optional: none.
+# NOTE: GitHub fires schedule/workflow_dispatch only from the default branch
+# (master); keep this file identical on master and dev.
 
 on:
   schedule:
@@ -36,6 +38,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # The probes live on dev (the deployed branch); the workflow file must
+          # also exist on the default branch (master) for schedules to fire.
+          ref: dev
           sparse-checkout: scripts/qa
           sparse-checkout-cone-mode: false
 
