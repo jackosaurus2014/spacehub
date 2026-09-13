@@ -145,7 +145,15 @@ framing are prerequisites) and before graphics Phase 2; CC-2 needs mining
 Phase B's claim/lease plumbing for seats. Total ≈ 120–160 hours across the
 autumn, each phase shippable and visible.
 
-## 8. Open decisions for Jay
+## 8. Decisions (Jay, 2026-09-13: "go with your recommendations on all four calls. let's use blender")
+
+All four resolved as recommended: bonuses ±10–15%, one HQ per corporation,
+rendered plates with live actors (Blender headless on the RTX 4090, depth
+pass → parallax layers; see art/blender/), rivals' HQ public on the corp page
+with the relocation project hidden until complete. CC-1 art track started the
+same night; the code track follows graphics Phase 1.
+
+### The four calls as originally posed
 
 1. **Bonus size.** ±10–15% per seat (recommended: meaningful, never
    dominant) versus larger swings that make relocation mandatory.
