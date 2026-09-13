@@ -103,7 +103,7 @@ class Report {
   constructor(module) { this.module = module; this.checks = []; this.t0 = Date.now(); }
   add(id, ok, detail = '') {
     this.checks.push({ id, ok: !!ok, detail: String(detail || '').slice(0, 2000) });
-    console.log(`${ok ? 'PASS' : 'FAIL'}  ${id}${detail ? '  — ' + String(detail).slice(0, 160) : ''}`);
+    console.log(`${ok ? 'PASS' : 'FAIL'}  ${id}${detail ? '  — ' + String(detail).slice(0, process.env.QA_VERBOSE ? 4000 : 160) : ''}`);
     return !!ok;
   }
   get failed() { return this.checks.filter((c) => !c.ok); }

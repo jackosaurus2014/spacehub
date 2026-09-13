@@ -121,13 +121,17 @@ export function useGameSync(
   const onServerDataRef = useRef(onServerData);
   onServerDataRef.current = onServerData;
 
-  const doSync = useCallback(async () => {
+  const doSync = useCallback(async (opts?: { force?: boolean }) => {
     const state = stateRef.current;
     const onServerData = onServerDataRef.current;
     if (!state) return;
 
-    // Rate limit: don't sync more than once per 30 seconds
-    if (Date.now() - lastSyncRef.current < 30_000) return;
+    // Rate limit: don't sync more than once per 30 seconds. A forced sync
+    // (the funds-refusal retry in asset-client, 2026-09-12) skips it: the
+    // whole point of that path is to push the balance the server is missing,
+    // and the live probe showed the retry firing with NO sync whenever the
+    // routine sync had run in the last 30 s.
+    if (!opts?.force && Date.now() - lastSyncRef.current < 30_000) return;
     // Cloud save (2026-09-09): ride the full client state along with the
     // sync every CLOUD_SAVE_INTERVAL_MS (and on the first sync of a session)
     // so a signed-in player can continue on another device.
@@ -473,7 +477,7 @@ export function useGameSync(
   // the server validates purchases against its last-synced balance.
   useEffect(() => {
     if (!state) return;
-    registerSyncNow(doSync);
+    registerSyncNow(() => doSync({ force: true }));
     return () => registerSyncNow(null);
   }, [doSync, !!state]);
 

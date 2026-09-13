@@ -24,6 +24,85 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { BLUR_PLACEHOLDER_1_1 } from '@/lib/blur-placeholder';
 
+// ════════════════════════════════════════
+// Hydration-safe clock (fixed 2026-09-12)
+// ════════════════════════════════════════
+//
+// This island is server-rendered with seeded events (page.tsx), so every
+// date-derived branch and every locale-formatted date below runs twice: once
+// on the server (UTC, at request time) and once in the browser (visitor's
+// zone, a second or more later). React 19 reported minified error #418 (text
+// mismatch) on 3 of 4 probe loads because e.g. "02:30 PM" (UTC) was
+// hydrated against "10:30 AM" (EDT), and "Live Now" / "Next 48 Hours"
+// membership was decided by two different `Date.now()` readings.
+//
+// The fix has two halves, and every render-path clock read in this file must
+// go through them (src/app/mission-control/__tests__/hydration-guard.test.ts
+// enforces it):
+//   1. `now` is the SERVER's timestamp (`initialNow`, from page.tsx) on the
+//      server render AND on the hydration render, so both sides agree on
+//      what is past, imminent or within 48 hours. After mount it becomes the
+//      real wall clock and ticks.
+//   2. Locale-formatted dates render in UTC until mounted (`local: false`),
+//      which both sides produce identically, then switch to the visitor's
+//      zone. suppressHydrationWarning would be wrong here: React does not
+//      repaint a suppressed text node, so a static date would stay in UTC
+//      forever. LiveCountdown keeps suppressHydrationWarning because it
+//      ticks every second and repaints itself.
+interface Clock {
+  /** Epoch ms. Server request time until mounted, then the wall clock. */
+  now: number;
+  /** False on the server render and the hydration render; true after mount. */
+  local: boolean;
+}
+
+const CLOCK_TICK_MS = 30 * 1000;
+
+function useHydratedClock(initialNow?: string): Clock {
+  const [clock, setClock] = useState<Clock>(() => {
+    const parsed = initialNow ? Date.parse(initialNow) : NaN;
+    // page.tsx always passes initialNow; the wall-clock fallback only exists
+    // so a caller that forgets it degrades to the old behaviour, not to NaN.
+    return { now: Number.isFinite(parsed) ? parsed : Date.now(), local: false };
+  });
+
+  useEffect(() => {
+    const tick = () => setClock({ now: Date.now(), local: true });
+    tick();
+    const id = setInterval(tick, CLOCK_TICK_MS);
+    return () => clearInterval(id);
+  }, []);
+
+  return clock;
+}
+
+/** Zone designator present ("Z", "+00:00", "-0500")? Naive strings parse as local time on both sides. */
+const HAS_ZONE = /(?:[zZ]|[+-]\d{2}:?\d{2})$/;
+
+/**
+ * Locale date formatting that hydrates cleanly. Before mount (`local` false)
+ * a zoned instant is formatted in UTC, which Node and the browser print
+ * identically; after mount it is the visitor's local time. A naive string
+ * (no zone designator — the EPIC/NASA feeds) is parsed as local time on both
+ * sides, so forcing UTC would *create* a mismatch; it is left in the zone it
+ * was parsed in. U+202F (ICU 72+ puts it before AM/PM) is normalised so an
+ * older browser ICU cannot disagree with the server's on the pre-mount text.
+ */
+function fmtDate(value: Date | string, opts: Intl.DateTimeFormatOptions, local: boolean): string {
+  const naive = typeof value === 'string' && !HAS_ZONE.test(value);
+  const date = value instanceof Date ? value : new Date(value);
+  const zoned = local || naive ? opts : { ...opts, timeZone: 'UTC' };
+  return date.toLocaleDateString('en-US', zoned).replace(/\u202f/g, ' ');
+}
+
+/** Same contract as fmtDate, for the time-of-day half. */
+function fmtTime(value: Date | string, opts: Intl.DateTimeFormatOptions, local: boolean): string {
+  const naive = typeof value === 'string' && !HAS_ZONE.test(value);
+  const date = value instanceof Date ? value : new Date(value);
+  const zoned = local || naive ? opts : { ...opts, timeZone: 'UTC' };
+  return date.toLocaleTimeString('en-US', zoned).replace(/\u202f/g, ' ');
+}
+
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
   { value: 'all', label: 'All Events', icon: '🌌' },
   { value: 'launch', label: 'Launches', icon: '🚀' },
@@ -297,7 +376,7 @@ const FALLBACK_DSN_ANTENNAS: DsnAntenna[] = [
 ];
 
 // Countdown timer component for imminent launches
-function CountdownCard({ event }: { event: SpaceEvent }) {
+function CountdownCard({ event, clock }: { event: SpaceEvent; clock: Clock }) {
   const [countdown, setCountdown] = useState<string>('');
   const [isExpired, setIsExpired] = useState(false);
   const typeInfo = EVENT_TYPE_INFO[event.type] || EVENT_TYPE_INFO.launch;
@@ -406,17 +485,17 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
               </div>
               <div className="flex items-center justify-between mt-1">
                 <div className="text-xs text-slate-400">
-                  {launchDate.toLocaleDateString('en-US', {
+                  {fmtDate(launchDate, {
                     weekday: 'short',
                     month: 'short',
                     day: 'numeric',
-                  })}{' '}
+                  }, clock.local)}{' '}
                   at{' '}
-                  {launchDate.toLocaleTimeString('en-US', {
+                  {fmtTime(launchDate, {
                     hour: '2-digit',
                     minute: '2-digit',
                     timeZoneName: 'short',
-                  })}
+                  }, clock.local)}
                 </div>
                 {watchUrlFor(event) ? (
                   <a
@@ -452,11 +531,13 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
   );
 }
 
-// Helper function to check if a mission is live or within 1 hour of launch
-function isLiveOrImminent(event: SpaceEvent): boolean {
+// Helper function to check if a mission is live or within 1 hour of launch.
+// `nowMs` comes from the hydrated clock so the server and the hydration
+// render agree on membership.
+function isLiveOrImminent(event: SpaceEvent, nowMs: number): boolean {
   if (event.isLive) return true;
 
-  const now = new Date();
+  const now = new Date(nowMs);
   const launchDate = event.launchDate ? new Date(event.launchDate) : null;
   const windowStart = event.windowStart ? new Date(event.windowStart) : null;
   const windowEnd = event.windowEnd ? new Date(event.windowEnd) : null;
@@ -477,7 +558,7 @@ function isLiveOrImminent(event: SpaceEvent): boolean {
 }
 
 // Live Now Section - shows missions that are currently live or about to go live
-function LiveNowSection({ events }: { events: SpaceEvent[] }) {
+function LiveNowSection({ events, clock }: { events: SpaceEvent[]; clock: Clock }) {
   const [selectedMission, setSelectedMission] = useState<SpaceEvent | null>(null);
   const [countdown, setCountdown] = useState<Record<string, string>>({});
   // Community/creator livestreams from the existing detector endpoint
@@ -516,7 +597,7 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
   // Get live/imminent missions
   const liveMissions = useMemo(() => {
     return events
-      .filter(isLiveOrImminent)
+      .filter((e) => isLiveOrImminent(e, clock.now))
       .sort((a, b) => {
         // Prioritize currently live missions
         if (a.isLive && !b.isLive) return -1;
@@ -526,7 +607,7 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
         const bDate = b.launchDate ? new Date(b.launchDate).getTime() : 0;
         return aDate - bDate;
       });
-  }, [events]);
+  }, [events, clock.now]);
 
   // Update countdown every second
   useEffect(() => {
@@ -626,7 +707,7 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
           {selectedMission && (
             <MissionStream
               mission={selectedMission}
-              isLive={selectedMission.isLive || isLiveOrImminent(selectedMission)}
+              isLive={selectedMission.isLive || isLiveOrImminent(selectedMission, clock.now)}
               communityStreams={communityStreams}
             />
           )}
@@ -640,7 +721,7 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
           {liveMissions.map((mission) => {
             const typeInfo = EVENT_TYPE_INFO[mission.type] || EVENT_TYPE_INFO.launch;
             const isSelected = selectedMission?.id === mission.id;
-            const msSinceLaunch = mission.launchDate ? Date.now() - new Date(mission.launchDate).getTime() : -1;
+            const msSinceLaunch = mission.launchDate ? clock.now - new Date(mission.launchDate).getTime() : -1;
             const isActuallyLive = mission.isLive || (msSinceLaunch >= 0 && msSinceLaunch <= 90 * 60 * 1000);
             const phaseInfo = mission.missionPhase ? MISSION_PHASE_INFO[mission.missionPhase] : null;
 
@@ -714,10 +795,10 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
 }
 
 // Upcoming in 48 Hours Section
-function UpcomingIn48Hours({ events }: { events: SpaceEvent[] }) {
+function UpcomingIn48Hours({ events, clock }: { events: SpaceEvent[]; clock: Clock }) {
   const upcomingEvents = useMemo(() => {
-    const now = new Date();
-    const in48Hours = new Date(Date.now() + 48 * 60 * 60 * 1000);
+    const now = new Date(clock.now);
+    const in48Hours = new Date(clock.now + 48 * 60 * 60 * 1000);
 
     return events
       .filter(e => {
@@ -726,7 +807,7 @@ function UpcomingIn48Hours({ events }: { events: SpaceEvent[] }) {
         return launchDate > now && launchDate < in48Hours;
       })
       .sort((a, b) => new Date(a.launchDate!).getTime() - new Date(b.launchDate!).getTime());
-  }, [events]);
+  }, [events, clock.now]);
 
   if (upcomingEvents.length === 0) {
     return (
@@ -755,26 +836,26 @@ function UpcomingIn48Hours({ events }: { events: SpaceEvent[] }) {
       </h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {upcomingEvents.map((event) => (
-          <CountdownCard key={event.id} event={event} />
+          <CountdownCard key={event.id} event={event} clock={clock} />
         ))}
       </div>
     </div>
   );
 }
 
-function EventCard({ event }: { event: SpaceEvent }) {
+function EventCard({ event, clock }: { event: SpaceEvent; clock: Clock }) {
   const typeInfo = EVENT_TYPE_INFO[event.type] || EVENT_TYPE_INFO.launch;
   const launchDate = event.launchDate ? new Date(event.launchDate) : null;
-  const isPast = launchDate && launchDate < new Date();
+  const now = new Date(clock.now);
+  const isPast = launchDate && launchDate < now;
   const isWithin48Hours = launchDate &&
-    launchDate > new Date() &&
-    launchDate < new Date(Date.now() + 48 * 60 * 60 * 1000);
+    launchDate > now &&
+    launchDate < new Date(clock.now + 48 * 60 * 60 * 1000);
   const isLiveOrImminent = event.isLive || (launchDate && isLiveOrImminentCheck(event));
   const phaseInfo = event.missionPhase ? MISSION_PHASE_INFO[event.missionPhase] : null;
 
   // Helper to check live status
   function isLiveOrImminentCheck(e: SpaceEvent): boolean {
-    const now = new Date();
     const ld = e.launchDate ? new Date(e.launchDate) : null;
     if (!ld) return false;
     const timeDiff = ld.getTime() - now.getTime();
@@ -839,17 +920,17 @@ function EventCard({ event }: { event: SpaceEvent }) {
             {launchDate && (
               <span className={`flex items-center gap-1 ${isPast && !event.isLive ? 'line-through opacity-60' : ''}`}>
                 <span>📅</span>
-                {launchDate.toLocaleDateString('en-US', {
+                {fmtDate(launchDate, {
                   weekday: 'short',
                   month: 'short',
                   day: 'numeric',
                   year: 'numeric',
-                })}
+                }, clock.local)}
                 {' '}
-                {launchDate.toLocaleTimeString('en-US', {
+                {fmtTime(launchDate, {
                   hour: '2-digit',
                   minute: '2-digit',
-                })}
+                }, clock.local)}
               </span>
             )}
             {event.location && (
@@ -1061,7 +1142,7 @@ function LiveCountdown({ targetMs }: { targetMs: number }) {
 // one — the `> now` date guard is the whole point of this function), and
 // falls back to a static, honestly-labeled NET mission when the live feed
 // doesn't have one dated yet.
-function FeaturedMissionCard({ mission }: { mission: SpaceEvent | null }) {
+function FeaturedMissionCard({ mission, local }: { mission: SpaceEvent | null; local: boolean }) {
   if (!mission) {
     return (
       <Link href={FALLBACK_MARQUEE_MISSION.href} className="block mb-8 group">
@@ -1143,11 +1224,11 @@ function FeaturedMissionCard({ mission }: { mission: SpaceEvent | null }) {
               <LiveCountdown targetMs={launchDate.getTime()} />
             ) : (
               <div className="text-3xl sm:text-4xl font-bold font-display tracking-tight text-white">
-                {launchDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                {fmtDate(launchDate, { month: 'long', year: 'numeric' }, local)}
               </div>
             )}
             <div className="text-sm text-slate-400 mt-2 font-medium">
-              {launchDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
+              {fmtDate(launchDate, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }, local)}
             </div>
             <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-cyan-400 font-medium group-hover:gap-2.5 transition-all">
               Mission details
@@ -1162,10 +1243,11 @@ function FeaturedMissionCard({ mission }: { mission: SpaceEvent | null }) {
   );
 }
 
-function MissionControlContent({ initialEvents }: { initialEvents?: SpaceEvent[] }) {
+function MissionControlContent({ initialEvents, initialNow }: { initialEvents?: SpaceEvent[]; initialNow?: string }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const clock = useHydratedClock(initialNow);
 
   const initialType = (searchParams.get('type') as SpaceEventType | 'all') || 'all';
 
@@ -1301,12 +1383,12 @@ function MissionControlContent({ initialEvents }: { initialEvents?: SpaceEvent[]
   // Next upcoming marquee mission — date guard (`> now`) ensures a past
   // mission (e.g. a completed Artemis II) can never be featured here.
   const featuredMission = useMemo(() => {
-    const now = Date.now();
+    const now = clock.now;
     const upcoming = events
       .filter((e) => MARQUEE_EVENT_TYPES.includes(e.type) && e.launchDate && new Date(e.launchDate).getTime() > now)
       .sort((a, b) => new Date(a.launchDate!).getTime() - new Date(b.launchDate!).getTime());
     return upcoming[0] || null;
-  }, [events]);
+  }, [events, clock.now]);
 
   // Filter and group events
   const groupedEvents = useMemo(() => {
@@ -1326,11 +1408,14 @@ function MissionControlContent({ initialEvents }: { initialEvents?: SpaceEvent[]
 
     const grouped: GroupedEvents = {};
 
+    // Grouped by UTC month until mounted, then by the visitor's local month,
+    // matching the zone the card dates are shown in.
+    const local = clock.local;
     filtered.forEach((event) => {
       if (!event.launchDate) return;
       const date = new Date(event.launchDate);
-      const year = date.getFullYear().toString();
-      const month = date.toLocaleDateString('en-US', { month: 'long' });
+      const year = (local ? date.getFullYear() : date.getUTCFullYear()).toString();
+      const month = fmtDate(date, { month: 'long' }, local);
 
       if (!grouped[year]) grouped[year] = {};
       if (!grouped[year][month]) grouped[year][month] = [];
@@ -1338,7 +1423,7 @@ function MissionControlContent({ initialEvents }: { initialEvents?: SpaceEvent[]
     });
 
     return grouped;
-  }, [events, searchQuery]);
+  }, [events, searchQuery, clock.local]);
   const orderedTimelineIds = Object.keys(groupedEvents).flatMap((y) => Object.values(groupedEvents[y] as Record<string, { id: string }[]>).flatMap((arr) => arr.map((ev) => ev.id)));
   const visibleIds = new Set(orderedTimelineIds.slice(0, timelineLimit));
   const hiddenTimelineCount = Math.max(0, orderedTimelineIds.length - timelineLimit);
@@ -1436,8 +1521,8 @@ function MissionControlContent({ initialEvents }: { initialEvents?: SpaceEvent[]
           <StaggerItem><div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-green-400">
               {events.filter(e => {
-                const d = e.launchDate ? new Date(e.launchDate) : null;
-                return d && d > new Date() && d < new Date(Date.now() + 48 * 60 * 60 * 1000);
+                const d = e.launchDate ? new Date(e.launchDate).getTime() : null;
+                return d !== null && d > clock.now && d < clock.now + 48 * 60 * 60 * 1000;
               }).length}
             </div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Next 48 Hours</div>
@@ -1457,11 +1542,11 @@ function MissionControlContent({ initialEvents }: { initialEvents?: SpaceEvent[]
         </StaggerContainer>
 
         {/* Live Now Section */}
-        {!loading && <ScrollReveal delay={0.1}><LiveNowSection events={events} /></ScrollReveal>}
+        {!loading && <ScrollReveal delay={0.1}><LiveNowSection events={events} clock={clock} /></ScrollReveal>}
 
         {/* ═══════ Featured Mission Card (below Live Now, above Upcoming — founder layout 8/15) ═══════ */}
         <ScrollReveal>
-          <FeaturedMissionCard mission={featuredMission} />
+          <FeaturedMissionCard mission={featuredMission} local={clock.local} />
         </ScrollReveal>
 
         <div className="flex flex-wrap justify-end gap-x-4 gap-y-1 -mt-4 mb-6">
@@ -1512,7 +1597,7 @@ function MissionControlContent({ initialEvents }: { initialEvents?: SpaceEvent[]
         </ScrollReveal>
 
         {/* Upcoming in 48 Hours Section */}
-        {!loading && <ScrollReveal delay={0.2}><UpcomingIn48Hours events={events} /></ScrollReveal>}
+        {!loading && <ScrollReveal delay={0.2}><UpcomingIn48Hours events={events} clock={clock} /></ScrollReveal>}
 
         {/* Timeline */}
         {loading ? (
@@ -1569,7 +1654,7 @@ function MissionControlContent({ initialEvents }: { initialEvents?: SpaceEvent[]
                         <div className="space-y-4">
                           {monthEvents.filter((event) => visibleIds.has(event.id)).map((event) => (
                             <div key={event.id}>
-                              <EventCard event={event} />
+                              <EventCard event={event} clock={clock} />
                               {event.isLive && event.streamUrl && (
                                 <LiveStreamEmbed event={event} />
                               )}
@@ -1621,7 +1706,7 @@ function MissionControlContent({ initialEvents }: { initialEvents?: SpaceEvent[]
                       <Link key={d.slug} href={`/mission-debriefs/${d.slug}`} className="card p-4 hover:border-cyan-500/30 transition-colors group">
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <span className={`text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded border ${tone}`}>{d.status}</span>
-                          <span className="text-[11px] text-slate-500">{new Date(d.missionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          <span className="text-[11px] text-slate-500">{fmtDate(d.missionDate, { month: 'short', day: 'numeric', year: 'numeric' }, clock.local)}</span>
                         </div>
                         <h3 className="text-sm font-semibold text-white group-hover:text-cyan-300 transition-colors mb-1.5 line-clamp-2">{d.missionName}</h3>
                         <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">{d.executiveSummary}</p>
@@ -1653,13 +1738,13 @@ function MissionControlContent({ initialEvents }: { initialEvents?: SpaceEvent[]
                         </div>
                         <div className="p-3">
                           <div className="text-xs text-slate-400 mb-1">
-                            {new Date(img.date).toLocaleDateString('en-US', {
+                            {fmtDate(img.date, {
                               month: 'short',
                               day: 'numeric',
                               year: 'numeric',
                               hour: '2-digit',
                               minute: '2-digit',
-                            })}
+                            }, clock.local)}
                           </div>
                           {img.caption && (
                             <p className="text-white/90 text-sm line-clamp-2">{img.caption}</p>
@@ -1700,11 +1785,11 @@ function MissionControlContent({ initialEvents }: { initialEvents?: SpaceEvent[]
                       <div className="p-3">
                         <h3 className="text-white text-sm font-semibold line-clamp-2">{img.title}</h3>
                         <div className="text-xs text-slate-400 mt-1">
-                          {new Date(img.date_created).toLocaleDateString('en-US', {
+                          {fmtDate(img.date_created, {
                             month: 'short',
                             day: 'numeric',
                             year: 'numeric',
-                          })}
+                          }, clock.local)}
                         </div>
                         {img.description && (
                           <p className="text-slate-400 text-xs mt-2 line-clamp-3">{img.description}</p>
@@ -1823,9 +1908,15 @@ export interface MissionControlClientProps {
    * JSON has no Date.
    */
   initialEvents?: SpaceEvent[];
+  /**
+   * The server's request time as an ISO string. The first client render uses
+   * it instead of Date.now() so past/imminent/48-hour decisions hydrate
+   * against identical HTML (see useHydratedClock).
+   */
+  initialNow?: string;
 }
 
-export default function MissionControlClient({ initialEvents }: MissionControlClientProps) {
+export default function MissionControlClient({ initialEvents, initialNow }: MissionControlClientProps) {
   return (
     <>
       <BreadcrumbSchema items={[
@@ -1839,7 +1930,7 @@ export default function MissionControlClient({ initialEvents }: MissionControlCl
           </div>
         }
       >
-        <MissionControlContent initialEvents={initialEvents} />
+        <MissionControlContent initialEvents={initialEvents} initialNow={initialNow} />
       </Suspense>
     </>
   );

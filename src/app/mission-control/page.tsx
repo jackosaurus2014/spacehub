@@ -325,7 +325,9 @@ export default async function MissionControlPage() {
         )}
       </div>
 
-      <MissionControlClient initialEvents={initialEvents} />
+      {/* initialNow: the client island's first render uses this instant, not
+          Date.now(), so its HTML hydrates cleanly (see useHydratedClock). */}
+      <MissionControlClient initialEvents={initialEvents} initialNow={now.toISOString()} />
 
       {/* Structured data — server-rendered so crawlers see it without hydration. */}
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Mission Control' }]} />

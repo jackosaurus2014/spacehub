@@ -35,7 +35,9 @@ async function clickText(page, re, scope = 'button, [role="tab"]') {
   return page.evaluate((src, flags, scope) => {
     const rx = new RegExp(src, flags);
     const vis = (el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
-    const b = [...document.querySelectorAll(scope)].find((x) => vis(x) && !x.disabled && rx.test(x.innerText.trim().replace(/\s+/g, ' ')));
+    // Scope to the game: the site nav has its own "Markets" button that would otherwise match first.
+    const root = document.querySelector('main') || document;
+    const b = [...root.querySelectorAll(scope)].find((x) => vis(x) && !x.disabled && rx.test(x.innerText.trim().replace(/\s+/g, ' ')));
     if (!b) return null;
     b.click();
     return b.innerText.trim().replace(/\s+/g, ' ').slice(0, 60);
@@ -64,25 +66,31 @@ async function waitFor(fn, ms, step = 500) {
   // Network ledger: every game API call in order, with the injected refusal.
   const calls = [];
   let injected = false;
+  let injectedRequest = null;
   await page.setRequestInterception(true);
   page.on('request', (req) => {
     const u = req.url();
     if (req.method() === 'POST' && /\/api\/space-tycoon\/assets\/research$/.test(u) && !injected) {
       injected = true;
-      calls.push({ path: 'assets/research', status: 400, injected: true, body: req.postData() || '' });
+      injectedRequest = req;
       return req.respond({ status: 400, contentType: 'application/json', body: JSON.stringify({ error: 'Insufficient funds: QA-injected refusal (you have $0)', code: 'insufficient_funds' }) });
     }
+    const ms = u.match(/\/api\/space-tycoon\/(sync|assets\/[a-z]+)(\?|$)/);
+    if (ms && req.method() === 'POST') calls.push({ path: ms[1], sent: true, body: req.postData() || '' });
     req.continue();
   });
-  page.on('response', (res) => {
+  page.on('response', async (res) => {
     const u = res.url();
     const m = u.match(/\/api\/space-tycoon\/(sync|assets\/[a-z]+)(\?|$)/);
     if (!m) return;
     const req = res.request();
     if (req.method() !== 'POST') return;
-    calls.push({ path: m[1], status: res.status(), body: req.postData() || '' });
+    let reply = '';
+    if (res.status() !== 200) { try { reply = (await res.text()).slice(0, 160); } catch {} }
+    calls.push({ path: m[1], status: res.status(), body: req.postData() || '', reply, injected: req === injectedRequest });
   });
-  const postsTo = (p) => calls.filter((c) => c.path === p);
+  const postsTo = (p) => calls.filter((c) => c.path === p && !c.sent);
+  const ledger = () => calls.map((c) => `${c.path}${c.sent ? '↑' : c.injected ? '(injected 400)' : ' ' + c.status + (c.reply ? ' ' + JSON.stringify(c.reply) : '')}`).join(' → ');
 
   try {
     await loginAs(page, cred);
@@ -125,9 +133,9 @@ async function waitFor(fn, ms, step = 500) {
     report.add('research:server-200', !!researchCall && researchCall.status === 200, researchCall ? `POST assets/research ${researchCall.status} (after the injected refusal)` : 'no real POST assets/research within 30s');
     {
       const iInj = calls.findIndex((c) => c.injected);
-      const iRetry = calls.findIndex((c, i) => i > iInj && c.path === 'assets/research' && !c.injected);
-      const syncBetween = iInj >= 0 && iRetry > iInj && calls.slice(iInj + 1, iRetry).some((c) => c.path === 'sync' && c.status === 200);
-      report.add('funds:sync-then-retry', iInj >= 0 && iRetry > iInj && syncBetween && calls[iRetry].status === 200, `calls: ${calls.map((c) => `${c.path}${c.injected ? '(injected 400)' : ' ' + c.status}`).join(' → ')}`);
+      const iRetry = calls.findIndex((c, i) => i > iInj && c.path === 'assets/research' && !c.injected && !c.sent);
+      const syncBetween = iInj >= 0 && iRetry > iInj && calls.slice(iInj + 1, iRetry).some((c) => c.path === 'sync');
+      report.add('funds:sync-then-retry', iInj >= 0 && iRetry > iInj && syncBetween && calls[iRetry].status === 200, `calls: ${ledger()}`);
     }
 
     // Outliner research countdown (desktop rail ≥1280px)
@@ -190,7 +198,8 @@ async function waitFor(fn, ms, step = 500) {
     const sourcingTab = marketsHub ? await clickText(page, /^Sourcing$/, '[role="tab"], button') : null;
     await sleep(1500);
     const sourcingText = sourcingTab ? await page.evaluate(() => (document.querySelector('main') || document.body).innerText.replace(/\s+/g, ' ')) : '';
-    report.add('markets:sourcing-tab', !!sourcingTab && /standing market order|supply locally|sourcing/i.test(sourcingText), sourcingTab ? `tab "${sourcingTab}" opened${/standing market order|supply locally/i.test(sourcingText) ? ', policy controls present' : ', policy controls NOT found'}` : `Markets hub ${marketsHub ? 'opened but no Sourcing tab' : 'not found'}`);
+    const visibleTabs = sourcingTab ? '' : await page.evaluate(() => [...(document.querySelector('main') || document).querySelectorAll('[role="tab"], [role="tablist"] button')].filter((b) => b.getBoundingClientRect().width > 0).map((b) => b.innerText.trim().replace(/\s+/g, ' ').slice(0, 20)).join(' | '));
+    report.add('markets:sourcing-tab', !!sourcingTab && /standing market order|supply locally|sourcing/i.test(sourcingText), sourcingTab ? `tab "${sourcingTab}" opened${/standing market order|supply locally/i.test(sourcingText) ? ', policy controls present' : ', policy controls NOT found'}` : `Markets hub ${marketsHub ? 'opened but no Sourcing tab; tabs seen: ' + visibleTabs : 'not found'}`);
 
     const errs = drain();
     report.add('page:no-errors', !errs.crashed && errs.pageErrors.length === 0 && errs.consoleErrors.length === 0, [errs.crashed && `crashed: ${errs.crashed}`, errs.pageErrors[0] && `pageerror: ${errs.pageErrors[0]}`, errs.consoleErrors[0] && `console: ${errs.consoleErrors[0]}`].filter(Boolean).join('; ') || 'clean');
