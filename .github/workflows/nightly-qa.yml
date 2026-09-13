@@ -1,0 +1,54 @@
+name: Nightly QA
+
+# Real-browser checks against production (2026-09-12): the smoke probe renders
+# the highest-traffic pages, the Space Tycoon probe plays a disposable QA
+# account through research, construction, the funds-retry path and cloud
+# save. Each probe posts its results to /api/qa/report, which records the run
+# and emails the alerts inbox when anything fails. A probe that cannot even
+# reach the site fails the job, and GitHub notifies the repo owner.
+#
+# Secrets: CRON_SECRET (same value as Railway's). Optional: none.
+
+on:
+  schedule:
+    - cron: '30 10 * * *' # 10:30 UTC, after the 06:30 jobs sync and the 01:00 content run
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-qa
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        probe: [smoke, tycoon]
+    env:
+      SITE_URL: https://spacenexus.us
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+      QA_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/qa
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Puppeteer (only dependency; downloads Chrome)
+        run: |
+          mkdir -p qa-runner && cd qa-runner
+          npm init -y >/dev/null
+          npm install --no-audit --no-fund puppeteer@24.40.0
+
+      - name: Run ${{ matrix.probe }} probe
+        working-directory: qa-runner
+        run: node ../scripts/qa/${{ matrix.probe }}-probe.js

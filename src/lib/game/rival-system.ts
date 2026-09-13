@@ -4,6 +4,7 @@
 // asynchronous ghost-rival system.
 
 import prisma from '@/lib/db';
+import { notQaProfile } from '@/lib/qa-accounts';
 import { getCurrentWeekId } from './weekly-events';
 
 // GAME_DESIGN_REVIEW_2026-09 row 14 — the rivalry stake lives in the pure
@@ -153,6 +154,7 @@ export async function findRivalCandidates(
 
   const profiles = await prisma.gameProfile.findMany({
     where: {
+      ...notQaProfile,
       id: { notIn: [playerId, ...existingRivalIds] },
       lastSyncAt: { gt: cutoff },
     },

@@ -72,7 +72,7 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
       <div className="mt-4 text-center">
         <Link
           href="/guide"
-          className="text-xs text-slate-500 hover:text-white/70 transition-colors"
+          className="inline-flex min-h-[44px] items-center px-2 text-xs text-slate-500 hover:text-white/70 transition-colors"
         >
           View all guides
         </Link>

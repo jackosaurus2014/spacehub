@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { notQaProfile } from '@/lib/qa-accounts';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,6 +18,7 @@ export async function GET(request: NextRequest) {
     const sortField = validSorts.includes(sort) ? sort : 'netWorth';
 
     const profiles = await prisma.gameProfile.findMany({
+      where: notQaProfile,
       orderBy: { [sortField]: 'desc' },
       take: limit,
       select: {

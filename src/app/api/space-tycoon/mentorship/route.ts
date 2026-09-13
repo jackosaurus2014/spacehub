@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
+import { notQaProfile } from '@/lib/qa-accounts';
 import { logger } from '@/lib/logger';
 import { calculateMentorshipRewards } from '@/lib/game/catchup-mechanics';
 import { MAX_MENTEES_PER_MENTOR } from '@/lib/game/constants';
@@ -104,7 +105,7 @@ export async function GET() {
     let availableMentors: { id: string; companyName: string; netWorth: number }[] = [];
     if (!asMenteeRows) {
       const candidates = await prisma.gameProfile.findMany({
-        where: { mentorOptIn: true, id: { not: me.id } },
+        where: { ...notQaProfile, mentorOptIn: true, id: { not: me.id } },
         select: {
           id: true, companyName: true, netWorth: true,
           mentorshipsAsMentor: { where: { status: 'active' }, select: { id: true } },

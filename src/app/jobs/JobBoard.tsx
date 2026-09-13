@@ -109,10 +109,10 @@ export default function JobBoard({ initialTotal }: { initialTotal?: number }) {
           <h2 id="board-heading" className="text-xl font-semibold text-white">Search {total.toLocaleString()} open roles</h2>
           <p className="text-sm text-slate-400">Every listing carries a salary band — the employer&apos;s range when posted, otherwise a SpaceNexus estimate.</p>
         </div>
-        <div className="flex items-center gap-4">
-          <Link href="/jobs/companies" className="text-sm text-slate-300 hover:text-white min-h-[44px] inline-flex items-center">Companies hiring</Link>
-          <Link href="/hire#post-a-job" className="text-sm text-slate-300 hover:text-white min-h-[44px] inline-flex items-center">Hiring? Post a job</Link>
-          <Link href="/jobs/saved" className="text-sm text-cyan-300 hover:underline min-h-[44px] inline-flex items-center">Saved jobs{savedCount ? ` (${savedCount})` : ''} →</Link>
+        <div className="flex flex-wrap items-center gap-x-4">
+          <Link href="/jobs/companies" className="text-sm text-slate-300 hover:text-white min-h-[44px] inline-flex items-center whitespace-nowrap">Companies hiring</Link>
+          <Link href="/hire#post-a-job" className="text-sm text-slate-300 hover:text-white min-h-[44px] inline-flex items-center whitespace-nowrap">Hiring? Post a job</Link>
+          <Link href="/jobs/saved" className="text-sm text-cyan-300 hover:underline min-h-[44px] inline-flex items-center whitespace-nowrap">Saved jobs{savedCount ? ` (${savedCount})` : ''} →</Link>
         </div>
       </div>
 

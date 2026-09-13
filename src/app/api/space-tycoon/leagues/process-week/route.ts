@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { notQaProfile } from '@/lib/qa-accounts';
 import { requireCronSecret } from '@/lib/errors';
 import {
   assignPlayerToLeague,
@@ -323,6 +324,7 @@ export async function POST(request: NextRequest) {
     const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
     const activePlayers = await prisma.gameProfile.findMany({
       where: {
+        ...notQaProfile,
         lastSyncAt: { gt: twoWeeksAgo },
       },
       select: {

@@ -572,7 +572,35 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     label: 'No module has an active content key older than 4x its freshness-policy TTL',
     run: () => checkStaleModuleContent(),
   },
+  // Nightly QA probes (scripts/qa/, .github/workflows/nightly-qa.yml) post to
+  // /api/qa/report, which writes a DataRefreshLog row per run. A run that
+  // FAILS emails on its own; these checks catch the probe not running at all
+  // (workflow disabled, secret rotated, runner broken).
+  {
+    id: 'qa-smoke-ran',
+    label: 'Nightly smoke probe reported within 36h',
+    run: () => checkQaProbeRan('qa-smoke'),
+  },
+  {
+    id: 'qa-tycoon-ran',
+    label: 'Nightly Space Tycoon probe reported within 36h',
+    run: () => checkQaProbeRan('qa-tycoon'),
+  },
 ];
+
+async function checkQaProbeRan(module: 'qa-smoke' | 'qa-tycoon'): Promise<AccuracyCheckOutcome> {
+  const last = await prisma.dataRefreshLog.findFirst({
+    where: { module, refreshType: 'nightly-probe' },
+    orderBy: { createdAt: 'desc' },
+    select: { createdAt: true, status: true, itemsChecked: true, itemsUpdated: true },
+  });
+  if (!last) return { ok: false, detail: `No ${module} run recorded yet (workflow never reported)` };
+  const ageH = (Date.now() - last.createdAt.getTime()) / 3600_000;
+  return {
+    ok: ageH <= 36,
+    detail: `Last ${module} run ${ageH.toFixed(1)}h ago: ${last.status} (${last.itemsUpdated}/${last.itemsChecked} checks ok)`,
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Runner
@@ -807,7 +835,7 @@ export async function runContentAccuracySentinel(
       const jobName = `content-accuracy: ${failed.map((f) => f.id).join(', ')}`;
       // Housekeeping failures (an article waiting for review, a slow table)
       // are warnings; anything else is a live accuracy fault (2026-09-11).
-      const HOUSEKEEPING = new Set(['stuck-transitional-rows', 'table-pipeline-liveness']);
+      const HOUSEKEEPING = new Set(['stuck-transitional-rows', 'table-pipeline-liveness', 'qa-smoke-ran', 'qa-tycoon-ran']);
       const severity = failed.every((x) => HOUSEKEEPING.has(x.id)) ? 'warning' : 'critical';
       const detail = failed.map((x) => `${x.id}: ${x.detail}`).join(' | ');
       await sendFreshnessAlert(jobName, null, 1440, { severity, detail });

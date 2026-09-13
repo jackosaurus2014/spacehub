@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
+import { notQaProfile } from '@/lib/qa-accounts';
 import {
   BRACKETS,
   getBracket,
@@ -77,6 +78,7 @@ export async function GET(request: NextRequest) {
 
     // ── Query potential targets ──
     const whereClause: Record<string, unknown> = {
+      ...notQaProfile,
       id: {
         notIn: [attackerProfile.id, ...allianceMemberIds],
       },

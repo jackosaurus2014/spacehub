@@ -19,6 +19,7 @@
 // factor 1 — fees are never inflated by a broken read.
 
 import prisma from '@/lib/db';
+import { notQaProfile } from '@/lib/qa-accounts';
 import { REAL_MS_PER_GAME_MONTH } from './server-time';
 import {
   computeFeeIndexFactor, type FeeIndexSnapshot,
@@ -64,6 +65,7 @@ export async function getServerFeeIndexSnapshot(nowMs: number = Date.now()): Pro
   try {
     const rows = await prisma.gameProfile.findMany({
       where: {
+        ...notQaProfile,
         lastSyncAt: { gt: new Date(nowMs - 30 * DAY_MS) },
         createdAt: { lt: new Date(nowMs - 7 * DAY_MS) },
       },

@@ -163,7 +163,7 @@ export default async function SpaceLaunchSchedule2026Page() {
 
           {/* Content */}
           <ScrollReveal delay={0.1}>
-          <article className="card p-8 space-y-10">
+          <article className="card p-4 sm:p-8 space-y-10">
             {/* Overview */}
             <section id="overview">
                 <h2 className="text-2xl font-bold text-white mb-4">Launch Activity Overview</h2>
@@ -210,12 +210,12 @@ export default async function SpaceLaunchSchedule2026Page() {
                 </p>
                 {cadence && cadence.providers.length > 0 ? (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-sm min-w-[520px]">
+                    <table className="w-full text-sm sm:min-w-[520px]">
                       <thead>
                         <tr className="border-b border-white/[0.06]">
                           <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Provider</th>
                           <th className="py-3 pr-4 text-right text-slate-300 font-semibold">{cadence.year} to date</th>
-                          <th className="py-3 pr-4 text-right text-slate-300 font-semibold">Same date {cadence.year - 1}</th>
+                          <th className="py-3 pr-4 text-right text-slate-300 font-semibold hidden sm:table-cell">Same date {cadence.year - 1}</th>
                           <th className="py-3 pr-4 text-right text-slate-300 font-semibold">Change</th>
                           <th className="py-3 text-right text-slate-300 font-semibold">Success</th>
                         </tr>
@@ -225,7 +225,7 @@ export default async function SpaceLaunchSchedule2026Page() {
                           <tr key={p.provider} className="border-b border-white/[0.06]">
                             <td className="py-3 pr-4 text-white font-medium">{p.provider}</td>
                             <td className="py-3 pr-4 text-right text-white tabular-nums">{p.thisYear}</td>
-                            <td className="py-3 pr-4 text-right text-slate-400 tabular-nums">{p.lastYearToDate}</td>
+                            <td className="py-3 pr-4 text-right text-slate-400 tabular-nums hidden sm:table-cell">{p.lastYearToDate}</td>
                             <td className={`py-3 pr-4 text-right tabular-nums ${p.delta > 0 ? 'text-emerald-300' : p.delta < 0 ? 'text-red-300' : 'text-slate-400'}`}>{p.delta > 0 ? '+' : ''}{p.delta}</td>
                             <td className="py-3 text-right text-slate-300 tabular-nums">{p.successRate}%</td>
                           </tr>
@@ -348,12 +348,12 @@ export default async function SpaceLaunchSchedule2026Page() {
                 </p>
                 {flying.length > 0 ? (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-sm min-w-[560px]">
+                    <table className="w-full text-sm sm:min-w-[560px]">
                       <thead>
                         <tr className="border-b border-white/[0.06]">
                           <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Vehicle</th>
                           <th className="py-3 pr-4 text-right text-slate-300 font-semibold">This year</th>
-                          <th className="py-3 pr-4 text-right text-slate-300 font-semibold">Last 90 days</th>
+                          <th className="py-3 pr-4 text-right text-slate-300 font-semibold hidden sm:table-cell">Last 90 days</th>
                           <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Next launch</th>
                           <th className="py-3 text-right text-slate-300 font-semibold">To LEO</th>
                         </tr>
@@ -363,7 +363,7 @@ export default async function SpaceLaunchSchedule2026Page() {
                           <tr key={r.slug} className="border-b border-white/[0.06]">
                             <td className="py-3 pr-4 text-white font-medium"><Link href={`/rockets/${r.slug}`} className="hover:text-cyan-300">{r.name}</Link><span className="text-slate-500 text-xs"> · {r.manufacturer}</span></td>
                             <td className="py-3 pr-4 text-right text-white tabular-nums">{r.thisYear}{r.thisYearFailed > 0 ? <span className="text-red-300 text-xs"> ({r.thisYearFailed} failed)</span> : null}</td>
-                            <td className="py-3 pr-4 text-right text-slate-300 tabular-nums">{r.last90Days}</td>
+                            <td className="py-3 pr-4 text-right text-slate-300 tabular-nums hidden sm:table-cell">{r.last90Days}</td>
                             <td className="py-3 pr-4 text-slate-300">{r.nextLaunch ? fmtNextLaunch(r.nextLaunch, r.nextLaunchPrecision) : '—'}</td>
                             <td className="py-3 text-right text-slate-400 tabular-nums">{r.payloadLeoKg.toLocaleString('en-US')} kg</td>
                           </tr>

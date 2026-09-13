@@ -8,6 +8,7 @@ import { serverRegisterSchema, validateBody } from '@/lib/validations';
 import { generateVerificationEmail } from '@/lib/newsletter/email-templates';
 import { TRIAL_DRIP_SEQUENCE } from '@/lib/newsletter/trial-drip-templates';
 import { TRIAL_DAYS } from '@/lib/subscription';
+import { isQaEmail } from '@/lib/qa-accounts';
 
 export const dynamic = 'force-dynamic';
 
@@ -70,6 +71,12 @@ export async function POST(req: NextRequest) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
     const verifyUrl = `${appUrl}/verify-email?token=${verificationToken}`;
     const { html, text } = generateVerificationEmail(verifyUrl, name || undefined);
+
+    // QA probe accounts (@spacenexus.internal, see src/lib/qa-accounts.ts) get
+    // no mail: the domain does not exist and a bounce only hurts reputation.
+    if (isQaEmail(email)) {
+      return NextResponse.json({ message: 'Registration successful. You can now sign in.' });
+    }
 
     try {
       const { Resend } = await import('resend');

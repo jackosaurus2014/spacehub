@@ -27,7 +27,7 @@ export default async function JobsByCompanyPage() {
   return (
     <div className="min-h-screen bg-black">
       <div className="container mx-auto px-4 py-10 max-w-5xl">
-        <nav className="text-sm text-slate-500 mb-4"><Link href="/jobs" className="hover:text-white">Jobs</Link> / Companies hiring</nav>
+        <nav className="hidden md:block text-sm text-slate-500 mb-4"><Link href="/jobs" className="hover:text-white">Jobs</Link> / Companies hiring</nav>
         <h1 className="text-3xl font-bold text-white">Space companies hiring now</h1>
         <p className="text-slate-400 mt-2 max-w-3xl">
           {data.rows.length.toLocaleString('en-US')} employers with {data.totalActive.toLocaleString('en-US')} open roles, synced from company careers pages and updated daily. Click a company for its live listings, or see <Link href="/guide/space-industry-salaries" className="text-cyan-300 hover:underline">what these roles pay</Link>.

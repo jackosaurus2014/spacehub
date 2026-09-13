@@ -134,6 +134,9 @@ const CRON_JOBS: CronJobDef[] = [
   // meetings, partnerships, marketplace interest, moderation reports).
   // Emails only when something has sat unanswered past its threshold.
   { schedule: '0 15 * * *',    path: '/api/cron/reachout-sentinel',         label: 'reachout-sentinel',          maxStaleMinutes: 1560 },
+  // Removes QA probe accounts (@spacenexus.internal) older than a day that a
+  // crashed nightly run left behind (src/lib/qa-accounts.ts).
+  { schedule: '20 11 * * *',   path: '/api/cron/qa-sweep',                  label: 'qa-sweep',                   maxStaleMinutes: 1560 },
 
   // Space Tycoon economic snapshots — daily copy of every active profile's
   // economic columns (rollback prerequisite, SIMULATION_INTEGRITY_TOOLING §S3)

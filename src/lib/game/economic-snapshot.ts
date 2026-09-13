@@ -21,6 +21,7 @@
 // before any rollback executes, and that workflow (RollbackAction) is phase 2.
 
 import prisma from '@/lib/db';
+import { notQaProfile } from '@/lib/qa-accounts';
 import { logger } from '@/lib/logger';
 import {
   RESOURCE_BASELINE_KEY,
@@ -141,7 +142,7 @@ export async function runDailyEconomicSnapshots(now: Date = new Date(), db: Db =
 
   for (;;) {
     const rows = await db.gameProfile.findMany({
-      where: { lastSyncAt: { gte: since } },
+      where: { ...notQaProfile, lastSyncAt: { gte: since } },
       select: SNAPSHOT_SOURCE_SELECT,
       orderBy: { id: 'asc' },
       take: SNAPSHOT_BATCH_SIZE,

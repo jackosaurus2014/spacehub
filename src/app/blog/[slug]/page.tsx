@@ -408,7 +408,7 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* Content */}
         <div
-          className="prose prose-invert prose-slate max-w-none
+          className="prose prose-invert prose-slate max-w-none [&_table]:block [&_table]:overflow-x-auto [&_table]:max-w-full
             prose-headings:text-white prose-headings:font-bold
             prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
             prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3

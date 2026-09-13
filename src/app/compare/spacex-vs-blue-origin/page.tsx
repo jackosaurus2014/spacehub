@@ -71,7 +71,7 @@ export default async function SpaceXVsBlueOrigin() {
           <span className="text-zinc-300">SpaceX vs Blue Origin</span>
         </nav>
         <HeroArt src="/art/hero-rivalry-launch.webp" className="mb-6" />
-        <h1 className="text-display text-3xl md:text-4xl mb-3">SpaceX vs Blue Origin: the numbers side by side</h1>
+        <h1 className="text-display text-2xl sm:text-3xl md:text-4xl mb-3">SpaceX vs Blue Origin: the numbers side by side</h1>
         <p style={{ color: 'var(--text-secondary)' }} className="text-base max-w-2xl">
           Every key figure in one table — launches, reusability, payload, constellations, crew, NASA contracts, funding and valuation — with the money figures pulled live.
         </p>

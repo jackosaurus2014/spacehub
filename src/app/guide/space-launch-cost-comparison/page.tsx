@@ -175,13 +175,13 @@ export default async function SpaceLaunchCostComparisonPage() {
       <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guide/space-industry' }, { name: 'Space Launch Cost Comparison' }]} />
       <div className="min-h-screen">
         {/* ── Hero ── */}
-        <header className="relative overflow-hidden py-20 md:py-28">
+        <header className="relative overflow-hidden py-10 md:py-28">
           <div
             aria-hidden="true"
             className="absolute inset-0 bg-gradient-to-b from-slate-200/30 via-space-900/80 to-transparent pointer-events-none"
           />
           <div className="relative container mx-auto px-4 text-center max-w-4xl">
-            <nav className="flex items-center justify-center gap-2 text-star-300 text-sm mb-4" aria-label="Breadcrumb">
+            <nav className="hidden md:flex items-center justify-center gap-2 text-star-300 text-sm mb-4" aria-label="Breadcrumb">
               <Link href="/" className="hover:text-white transition-colors">
                 Home
               </Link>
@@ -213,6 +213,7 @@ export default async function SpaceLaunchCostComparisonPage() {
         {/* Answer block above the fold (SYNTHESIS.md item 26) — one guide first,
             two weeks of Search Console before the rest of the family. Figures
             come from src/lib/launch-cost-constants.ts so they match every page. */}
+        <div className="container mx-auto px-4">
         <section aria-labelledby="short-answer" className="max-w-4xl mx-auto mb-10 rounded-[var(--radius-console)] border border-[var(--line)] bg-[var(--surface)] p-5 md:p-6">
           <h2 id="short-answer" className="text-[11px] uppercase tracking-[0.14em] text-[var(--ink-3)] mb-2">Short answer</h2>
           <p className="text-[17px] text-[var(--ink)] leading-relaxed">
@@ -249,6 +250,7 @@ export default async function SpaceLaunchCostComparisonPage() {
           )}
           <p className="text-[12px] text-[var(--ink-3)] mt-3">Prices as of {LAUNCH_COST_AS_OF} · {LAUNCH_COST_SOURCE}. Flight counts from our launch tracker at the moment you loaded the page.</p>
         </section>
+        </div>
 
         {/* ── Main content area ── */}
         <div className="container mx-auto px-4 pb-20">

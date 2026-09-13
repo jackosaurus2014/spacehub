@@ -12,6 +12,7 @@
 
 import { createHmac, timingSafeEqual } from 'crypto';
 import prisma from '@/lib/db';
+import { notQaProfile } from '@/lib/qa-accounts';
 import { logger } from '@/lib/logger';
 import { isoWeekKey } from '@/lib/company-brief';
 import { sendVerificationEmail } from '@/lib/newsletter/email-service';
@@ -236,7 +237,7 @@ export async function runTycoonWeeklyReportDeliveries(now: Date = new Date(), se
   const send = sendImpl ?? (async (to, subject, html, plain) => (await sendVerificationEmail(to, html, plain, subject)).success);
   const periodKey = isoWeekKey(now);
   const profiles = await prisma.gameProfile.findMany({
-    where: { weeklyReportEmail: true, lastSyncAt: { gte: new Date(now.getTime() - STALE_PROFILE_MS) } },
+    where: { ...notQaProfile, weeklyReportEmail: true, lastSyncAt: { gte: new Date(now.getTime() - STALE_PROFILE_MS) } },
     select: { id: true, user: { select: { email: true } } },
     orderBy: { netWorth: 'desc' },
   });

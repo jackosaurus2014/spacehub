@@ -11,6 +11,7 @@
 // — those stay internal even though the row itself is public.
 
 import prisma from '@/lib/db';
+import { notQaProfile } from '@/lib/qa-accounts';
 import { CORPORATION_TIERS } from './corporation-tiers';
 
 export interface PublicLeaderboardEntry {
@@ -70,6 +71,7 @@ export function estimateTierFromEarnings(totalEarned: number): number {
 
 export async function getPublicLeaderboard(limit = 50): Promise<PublicLeaderboardEntry[]> {
   const profiles = await prisma.gameProfile.findMany({
+    where: notQaProfile,
     orderBy: { netWorth: 'desc' },
     take: limit,
     select: {

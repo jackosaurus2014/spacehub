@@ -107,14 +107,14 @@ export default async function SpaceIndustrySalariesGuide() {
     <div className="min-h-screen bg-black">
       <div className="container mx-auto px-4 pb-16">
         <div className="max-w-4xl mx-auto">
-          <nav className="flex items-center gap-2 text-sm text-slate-500 pt-8 mb-6 flex-wrap">
+          <nav className="hidden md:flex items-center gap-2 text-sm text-slate-500 pt-8 mb-6 flex-wrap">
             <Link href="/" className="hover:text-white/80">Home</Link><span>/</span>
             <Link href="/guide" className="hover:text-white/80">Guides</Link><span>/</span>
             <span className="text-slate-400">Space industry salaries</span>
           </nav>
           <ScrollReveal>
             <article>
-              <header className="mb-8">
+              <header className="mb-8 pt-6 md:pt-0">
                 <p className="text-xs uppercase tracking-wider text-cyan-400 mb-3">Careers · Compensation</p>
                 <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight mb-4">{title}</h1>
                 <p className="text-lg text-slate-300 leading-relaxed">{DESCRIPTION}</p>

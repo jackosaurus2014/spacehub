@@ -87,13 +87,13 @@ export default async function JobsHubPage() {
       {data && data.newest.length > 0 && <JsonLd data={buildJsonLd(data)} />}
 
       <div className="container mx-auto px-4 max-w-6xl">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-slate-500 pt-8 mb-6">
+        <nav aria-label="Breadcrumb" className="hidden md:flex items-center gap-2 text-sm text-slate-500 pt-8 mb-6">
           <Link href="/" className="hover:text-white/80 min-h-[44px] inline-flex items-center">Home</Link>
           <span aria-hidden="true">/</span>
           <span className="text-slate-400" aria-current="page">Jobs</span>
         </nav>
 
-        <header className="mb-8">
+        <header className="mb-8 pt-6 md:pt-0">
           <p className="text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-cyan-300/80 mb-2">Space industry jobs board</p>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
             {data && data.activeCount > 0
