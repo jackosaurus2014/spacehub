@@ -25,16 +25,18 @@
 //     the label so standing is never conveyed by color alone
 //   - science-mission presence: instrument glyph on program target bodies
 //
-// Performance: single instanced mesh for the belt, sprite labels (no DOM, no
-// font network fetch), frameloop paused when the tab/page is hidden, DPR
-// capped at 1.5. Text labels are canvas sprites with sizeAttenuation:false so
-// they stay readable at Pluto range without DOM overlays.
+// Performance: single instanced mesh for the belt, instanced hull
+// silhouettes for every ship and contact (map3d/hulls.tsx), frameloop
+// paused when the tab/page is hidden, DPR capped at 1.5. Labels are HUD-
+// facing SDF text (map3d/shared.tsx, graphics review item 6) laid out in
+// pixel units inside a distance-scaled frame, so they stay readable at Pluto
+// range without DOM overlays; a 250 ms screen-space declutter pushes
+// colliding labels aside with leader lines.
 
 import { useRef, useState, useEffect, useMemo, useCallback, useLayoutEffect, lazy, Suspense } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Stars, Billboard } from '@react-three/drei';
-import { useContext } from 'react';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import type { GameState } from '@/lib/game/types';
 import { LANES } from '@/lib/game/spatial-strategy';
@@ -72,24 +74,32 @@ import {
   contactLabel,
   contactDetail,
   corpRingColor,
+  hullClassOf,
   FACTION_CONTACT_TINT,
   ANON_CONTACT_COLOR,
   TRAFFIC_RENDER_CAP,
   type TrafficContact,
 } from '@/lib/game/ship-traffic';
+// Flight mode part (b): hull silhouettes (item 7) and the SDF label tokens.
+import { HullInstances, MarkerMesh, SlabMesh, RingMesh, instanceCapacity, paintInstances } from './map3d/hulls';
+import { batchHullInstances, contactRenderKind, HULL_SCALE, HULL_MODEL_IDS, type HullInstanceInput, type HullModelId } from '@/lib/game/map-hulls';
+import { MAP_LABEL_COLORS, MAP_TAG_PX, MAP_BADGE_PX } from '@/lib/game/map-labels';
 import { MAP_GLYPHS } from '@/lib/game/map-glyphs';
 // Flight mode part (a) — shared scene helpers (labels, textures, body
 // sphere, reticle, the raycast gate) and the local scene, both children of
 // this component's ONE Canvas.
 import {
   useSafeTexture,
-  labelFontFamily,
+  useMapRefresh,
   makeGlyphTexture,
   ZoomTierTracker,
   LabelRegistryContext,
   LabelDeclutter,
+  createLabelRegistry,
   labelPriority,
-  LabelSprite,
+  BodyLabel,
+  HudTag,
+  OrbitPath,
   SelectionMarker,
   BodySphere,
   SceneGateContext,
@@ -385,6 +395,8 @@ function IntroDolly({ controlsRef, posRef, onDone }: { controlsRef: ControlsRef;
 function MapProbe({ posRef, localRef, flightRef }: { posRef: PositionsRef; localRef: React.MutableRefObject<string | null>; flightRef: FlightRef }) {
   const camera = useThree(s => s.camera);
   const size = useThree(s => s.size);
+  const scene = useThree(s => s.scene);
+  const gl = useThree(s => s.gl);
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') return;
     const w = window as unknown as { __solarMapProbe?: () => unknown };
@@ -404,10 +416,28 @@ function MapProbe({ posRef, localRef, flightRef }: { posRef: PositionsRef; local
         // Flight mode (part a)
         localBody: localRef.current,
         flying: !!flightRef.current,
+        // Flight mode (part b): every textured material in the scene should
+        // be drawing its map (useMapRefresh) — the Sun regression probe.
+        texturesPending: (() => {
+          const props = gl.properties as { get: (o: unknown) => { __webglTexture?: unknown } };
+          let pending = 0;
+          let total = 0;
+          scene.traverse(o => {
+            const mat = (o as THREE.Mesh).material as (THREE.MeshBasicMaterial & { emissiveMap?: THREE.Texture | null }) | undefined;
+            if (!mat || Array.isArray(mat) || !o.visible) return;
+            for (const t of [mat.map, mat.emissiveMap]) {
+              if (!t || !t.image) continue;
+              total++;
+              if (!props.get(t).__webglTexture) pending++;
+            }
+          });
+          return { pending, total };
+        })(),
+        renderer: { toneMapping: gl.toneMapping, exposure: gl.toneMappingExposure },
       };
     };
     return () => { delete w.__solarMapProbe; };
-  }, [camera, size, posRef, localRef, flightRef]);
+  }, [camera, size, scene, gl, posRef, localRef, flightRef]);
   return null;
 }
 
@@ -426,6 +456,8 @@ function SceneClock({ posRef, timeRef, reduced }: { posRef: PositionsRef; timeRe
 function Sun({ reduced }: { reduced: boolean }) {
   const tex = useSafeTexture('/textures/sun.webp');
   const meshRef = useRef<THREE.Mesh>(null);
+  const matRef = useRef<THREE.MeshBasicMaterial>(null);
+  useMapRefresh(matRef, tex);
   const glowTex = useMemo(() => {
     const c = document.createElement('canvas');
     c.width = c.height = 256;
@@ -462,7 +494,7 @@ function Sun({ reduced }: { reduced: boolean }) {
     <group>
       <mesh ref={meshRef}>
         <sphereGeometry args={[SUN_VISUAL_RADIUS, 48, 48]} />
-        <meshBasicMaterial map={tex ?? undefined} color={tex ? '#ffffff' : '#fde047'} toneMapped={false} />
+        <meshBasicMaterial ref={matRef} map={tex ?? undefined} color={tex ? '#ffffff' : '#fde047'} toneMapped={false} />
       </mesh>
       <sprite ref={glowRef} scale={[SUN_VISUAL_RADIUS * 7, SUN_VISUAL_RADIUS * 7, 1]} renderOrder={-1}>
         <spriteMaterial map={glowTex} transparent depthWrite={false} blending={THREE.AdditiveBlending} />
@@ -481,23 +513,8 @@ function Sun({ reduced }: { reduced: boolean }) {
 
 // ── Orbit guide rings ────────────────────────────────────────────────────────
 
-function OrbitRing({ aAU, inclinationDeg }: { aAU: number; inclinationDeg: number }) {
-  const geo = useMemo(() => {
-    const R = sceneOrbitRadius(aAU);
-    const incl = (inclinationDeg * Math.PI) / 180;
-    const pts: THREE.Vector3[] = [];
-    for (let i = 0; i <= 128; i++) {
-      const th = (i / 128) * Math.PI * 2;
-      pts.push(new THREE.Vector3(R * Math.cos(th), R * Math.sin(th) * Math.sin(incl), R * Math.sin(th) * Math.cos(incl)));
-    }
-    return new THREE.BufferGeometry().setFromPoints(pts);
-  }, [aAU, inclinationDeg]);
-  const line = useMemo(
-    () => new THREE.Line(geo, new THREE.LineBasicMaterial({ color: '#64748b', transparent: true, opacity: 0.16 })),
-    [geo],
-  );
-  useEffect(() => () => { geo.dispose(); (line.material as THREE.Material).dispose(); }, [geo, line]);
-  return <primitive object={line} />;
+function OrbitRing({ aAU, inclinationDeg, highlighted }: { aAU: number; inclinationDeg: number; highlighted: boolean }) {
+  return <OrbitPath radius={sceneOrbitRadius(aAU)} inclinationDeg={inclinationDeg} highlighted={highlighted} />;
 }
 
 // ── Celestial body ───────────────────────────────────────────────────────────
@@ -555,7 +572,7 @@ function BodyMesh({ def, posRef, reduced, unlocked, badges, standing, mode, tier
         onPointerOver={setCursor(true)}
         onPointerOut={setCursor(false)}
       />
-      {def.locationId && <LabelSprite name={def.name} unlocked={unlocked} badges={badges} standing={standing} mode={mode} tierRef={tierRef} locationId={def.locationId} alwaysLabels={alwaysLabels} yOffset={-(r + 0.45)} priority={labelPriority(def.locationId, 'body', badges)} />}
+      {def.locationId && <BodyLabel name={def.name} unlocked={unlocked} badges={badges} standing={standing} mode={mode} tierRef={tierRef} locationId={def.locationId} alwaysLabels={alwaysLabels} yOffset={-(r + 0.45)} priority={labelPriority(def.locationId, 'body', badges)} />}
     </group>
   );
 }
@@ -599,7 +616,7 @@ function PipMesh({ pip, posRef, unlocked, badges, standing, mode, tierRef, alway
         <sphereGeometry args={[0.3, 8, 8]} />
         <meshBasicMaterial />
       </mesh>
-      <LabelSprite name={pip.label} unlocked={unlocked} badges={badges} standing={standing} mode={mode} tierRef={tierRef} locationId={pip.locationId} alwaysLabels={alwaysLabels} yOffset={-0.5} priority={labelPriority(pip.locationId, 'pip', badges)} />
+      <BodyLabel name={pip.label} unlocked={unlocked} badges={badges} standing={standing} mode={mode} tierRef={tierRef} locationId={pip.locationId} alwaysLabels={alwaysLabels} yOffset={-0.5} priority={labelPriority(pip.locationId, 'pip', badges)} />
     </group>
   );
 }
@@ -729,10 +746,21 @@ function LaneLines({ posRef, state, reduced, laneVolumes }: { posRef: PositionsR
 type ShipInstanceLike = NonNullable<GameState['ships']>[number];
 const NO_CONTACTS: TrafficContact[] = [];
 
-// Fixed ETA-label canvas geometry — one size for every transit ship so the
-// texture is allocated once per ship and only repainted (1 Hz), never resized.
-const ETA_CANVAS_W = 200;
-const ETA_CANVAS_H = 44;
+// ── Your ships: hull silhouettes + per-ship trail / ETA (2D parity) ────────
+// Each TransitShip / StationShip computes its pose from the REAL route
+// timestamps (functional motion, identical to the 2D map) and writes it to
+// a shared pose table; OwnHullsLayer draws every own ship from that table
+// as an instanced hull silhouette (item 7) — one draw call per hull class,
+// oriented along the lane. The cone and the orbiting dot are gone.
+
+export interface ShipPose { p: THREE.Vector3; q: THREE.Quaternion; visible: boolean }
+type PoseTable = Map<string, ShipPose>;
+
+function newPose(): ShipPose {
+  return { p: new THREE.Vector3(), q: new THREE.Quaternion(), visible: false };
+}
+
+const UP_AXIS = new THREE.Vector3(0, 1, 0);
 
 // Wave V7 — engine trail: fixed-count sprite ribbon trailing every in-transit
 // ship (EFFECT_ASSETS.engineTrail, previously unused in the scene — the
@@ -742,16 +770,17 @@ const ETA_CANVAS_H = 44;
 const ENGINE_TRAIL_COUNT = 6;
 const ENGINE_TRAIL_SPACING = 0.014;
 
-/** In-transit ship: curved arc + oriented marker, interpolated from the REAL
+/** In-transit ship: curved arc + pose along it, interpolated from the REAL
  *  departure/arrival timestamps — functional motion, identical to the 2D map.
- *  W9: an arrival-countdown sprite follows the marker (screen-constant size,
- *  repainted once per second outside the frame loop). V7: an engine-trail
- *  sprite ribbon (off under reduced motion — purely decorative). */
-function TransitShip({ ship, posRef, reduced }: { ship: ShipInstanceLike; posRef: PositionsRef; reduced: boolean }) {
-  const markerRef = useRef<THREE.Mesh>(null);
-  const etaSpriteRef = useRef<THREE.Sprite>(null);
+ *  W9: an arrival-countdown tag follows the hull (SDF text, screen-constant
+ *  size, re-laid out once per second outside the frame loop). V7: an
+ *  engine-trail sprite ribbon (off under reduced motion — purely decorative). */
+function TransitShip({ ship, posRef, reduced, poses }: { ship: ShipInstanceLike; posRef: PositionsRef; reduced: boolean; poses: PoseTable }) {
+  const etaRef = useRef<THREE.Group>(null);
   const trailRefs = useRef<(THREE.Sprite | null)[]>(Array(ENGINE_TRAIL_COUNT).fill(null));
   const engineTrailTex = useSafeTexture(EFFECT_ASSETS.engineTrail);
+  const trailMats = useRef<(THREE.SpriteMaterial | null)[]>(Array(ENGINE_TRAIL_COUNT).fill(null));
+  useEffect(() => { for (const m of trailMats.current) if (m) m.needsUpdate = true; }, [engineTrailTex]);
   const lineObj = useMemo(() => {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(33 * 3), 3));
@@ -761,19 +790,13 @@ function TransitShip({ ship, posRef, reduced }: { ship: ShipInstanceLike; posRef
   const def = SHIP_MAP.get(ship.definitionId);
   const color = def ? SHIP_COLOR[def.role] || '#22d3ee' : '#22d3ee';
 
-  // ETA countdown texture — persistent canvas repainted at 1 Hz (no per-frame
-  // allocation; the frame loop only moves the sprite).
-  const etaCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const etaTex = useMemo(() => {
-    const c = document.createElement('canvas');
-    c.width = ETA_CANVAS_W;
-    c.height = ETA_CANVAS_H;
-    etaCanvasRef.current = c;
-    const t = new THREE.CanvasTexture(c);
-    t.colorSpace = THREE.SRGBColorSpace;
-    return t;
-  }, []);
-  useEffect(() => () => etaTex.dispose(), [etaTex]);
+  const pose = useMemo(newPose, []);
+  useEffect(() => {
+    poses.set(ship.instanceId, pose);
+    return () => { poses.delete(ship.instanceId); };
+  }, [poses, ship.instanceId, pose]);
+
+  // ETA countdown — React state at 1 Hz; the frame loop only moves the tag.
   const [etaText, setEtaText] = useState('');
   const arrivalAtMs = ship.route?.arrivalAtMs;
   useEffect(() => {
@@ -783,39 +806,20 @@ function TransitShip({ ship, posRef, reduced }: { ship: ShipInstanceLike; posRef
     const iv = setInterval(compute, 1000);
     return () => clearInterval(iv);
   }, [arrivalAtMs]);
-  useEffect(() => {
-    const c = etaCanvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext('2d');
-    if (!ctx) return;
-    ctx.clearRect(0, 0, c.width, c.height);
-    if (etaText) {
-      ctx.font = `600 22px ${labelFontFamily()}`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.shadowColor = 'rgba(0,0,0,0.9)';
-      ctx.shadowBlur = 6;
-      ctx.fillStyle = '#67e8f9';
-      ctx.fillText(etaText, c.width / 2, c.height / 2);
-    }
-    etaTex.needsUpdate = true;
-  }, [etaText, etaTex]);
+  const etaVisible = useCallback(() => pose.visible && etaText !== '', [pose, etaText]);
 
   useFrame(() => {
     const route = ship.route;
-    if (!route) return;
+    if (!route) { pose.visible = false; return; }
     const anchors = posRef.current.anchors;
     const from = anchors[route.from];
     const to = anchors[route.to];
-    const marker = markerRef.current;
-    const etaLabel = etaSpriteRef.current;
-    if (!from || !to || !marker) {
-      if (marker) marker.visible = false;
-      if (etaLabel) etaLabel.visible = false;
+    if (!from || !to) {
+      pose.visible = false;
       lineObj.visible = false;
       return;
     }
-    marker.visible = true;
+    pose.visible = true;
     lineObj.visible = true;
     const f = new THREE.Vector3(...from.pos);
     const t3 = new THREE.Vector3(...to.pos);
@@ -840,7 +844,7 @@ function TransitShip({ ship, posRef, reduced }: { ship: ShipInstanceLike; posRef
     }
     attr.needsUpdate = true;
     lineObj.geometry.computeBoundingSphere();
-    // marker position + heading
+    // pose: position + heading along the arc
     const pos = new THREE.Vector3()
       .addScaledVector(f, (1 - prog) * (1 - prog))
       .addScaledVector(ctrl, 2 * (1 - prog) * prog)
@@ -849,13 +853,11 @@ function TransitShip({ ship, posRef, reduced }: { ship: ShipInstanceLike; posRef
       .addScaledVector(ctrl.clone().sub(f), 2 * (1 - prog))
       .addScaledVector(t3.clone().sub(ctrl), 2 * prog)
       .normalize();
-    marker.position.copy(pos);
-    marker.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tangent);
-    if (etaLabel) {
-      etaLabel.visible = true;
-      etaLabel.position.set(pos.x, pos.y + 0.55, pos.z);
-    }
-    // V7: engine trail — 6 sprites sampled behind the marker along the same
+    pose.p.copy(pos);
+    pose.q.setFromUnitVectors(UP_AXIS, tangent);
+    const etaLabel = etaRef.current;
+    if (etaLabel) etaLabel.position.set(pos.x, pos.y + 0.55, pos.z);
+    // V7: engine trail — 6 sprites sampled behind the hull along the same
     // bezier, fading in opacity/scale. Off under reduced motion.
     for (let k = 0; k < ENGINE_TRAIL_COUNT; k++) {
       const spr = trailRefs.current[k];
@@ -879,13 +881,7 @@ function TransitShip({ ship, posRef, reduced }: { ship: ShipInstanceLike; posRef
   return (
     <group>
       <primitive object={lineObj} />
-      <mesh ref={markerRef}>
-        <coneGeometry args={[0.12, 0.34, 8]} />
-        <meshBasicMaterial color={color} />
-      </mesh>
-      <sprite ref={etaSpriteRef} visible={false} scale={[0.05 * (ETA_CANVAS_W / ETA_CANVAS_H), 0.05, 1]} renderOrder={11}>
-        <spriteMaterial map={etaTex} sizeAttenuation={false} transparent depthTest={false} />
-      </sprite>
+      <HudTag ref={etaRef} text={etaText} px={MAP_TAG_PX} color={MAP_LABEL_COLORS.tag} resolve={etaVisible} />
       {Array.from({ length: ENGINE_TRAIL_COUNT }).map((_, k) => (
         <sprite
           key={k}
@@ -893,62 +889,110 @@ function TransitShip({ ship, posRef, reduced }: { ship: ShipInstanceLike; posRef
           visible={false}
           renderOrder={9}
         >
-          <spriteMaterial map={engineTrailTex ?? undefined} color={color} transparent depthTest={false} opacity={0} />
+          <spriteMaterial ref={el => { trailMats.current[k] = el; }} map={engineTrailTex ?? undefined} color={color} transparent depthTest={false} opacity={0} />
         </sprite>
       ))}
     </group>
   );
 }
 
-/** Stationary ship — small dot orbiting its current location (2D parity). */
-function StationShip({ ship, posRef, reduced }: { ship: ShipInstanceLike; posRef: PositionsRef; reduced: boolean }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const def = SHIP_MAP.get(ship.definitionId);
-  const color = def ? SHIP_COLOR[def.role] || '#22d3ee' : '#22d3ee';
+/** Stationary ship — parks in a slow orbit around its current location (2D
+ *  parity), hull nose along the orbit tangent. */
+function StationShip({ ship, posRef, reduced, poses }: { ship: ShipInstanceLike; posRef: PositionsRef; reduced: boolean; poses: PoseTable }) {
   const seed = ship.instanceId.charCodeAt(0) * 0.1 + (ship.instanceId.charCodeAt(1) || 0) * 0.05;
+  const pose = useMemo(newPose, []);
+  const tangent = useMemo(() => new THREE.Vector3(), []);
+  useEffect(() => {
+    poses.set(ship.instanceId, pose);
+    return () => { poses.delete(ship.instanceId); };
+  }, [poses, ship.instanceId, pose]);
   useFrame(({ clock }) => {
     const a = posRef.current.anchors[ship.currentLocation];
-    const mesh = meshRef.current;
-    if (!a || !mesh) { if (mesh) mesh.visible = false; return; }
-    mesh.visible = true;
+    if (!a) { pose.visible = false; return; }
+    pose.visible = true;
     const angle = reduced ? seed : clock.elapsedTime * 0.5 + seed;
     const orbitR = a.r + 0.32;
-    mesh.position.set(a.pos[0] + Math.cos(angle) * orbitR, a.pos[1] + 0.12, a.pos[2] + Math.sin(angle) * orbitR);
+    pose.p.set(a.pos[0] + Math.cos(angle) * orbitR, a.pos[1] + 0.12, a.pos[2] + Math.sin(angle) * orbitR);
+    tangent.set(-Math.sin(angle), 0, Math.cos(angle));
+    pose.q.setFromUnitVectors(UP_AXIS, tangent);
+  });
+  return null;
+}
+
+interface OwnHullItem extends HullInstanceInput { ship: ShipInstanceLike }
+
+function ownShipColor(ship: ShipInstanceLike): string {
+  const def = SHIP_MAP.get(ship.definitionId);
+  return def ? SHIP_COLOR[def.role] || '#22d3ee' : '#22d3ee';
+}
+
+/** Every own ship as an instanced hull, one instanced mesh per hull class,
+ *  tinted by role (cyan transport / amber mining / purple survey / blue
+ *  tanker — the 2D palette). Poses come from the TransitShip / StationShip
+ *  frame passes above. */
+function OwnHullsLayer({ ships, poses }: { ships: ShipInstanceLike[]; poses: PoseTable }) {
+  const items = useMemo<OwnHullItem[]>(() => ships.map(s => ({ id: s.instanceId, hullClass: hullClassOf(s.definitionId), kind: 'own' as const, ship: s })), [ships]);
+  const batches = useMemo(() => batchHullInstances(items), [items]);
+  const caps = useMemo(() => {
+    const out = {} as Record<HullModelId, number>;
+    for (const m of HULL_MODEL_IDS) out[m] = instanceCapacity(batches.hulls[m].length);
+    return out;
+  }, [batches]);
+  const refs = useRef<Partial<Record<HullModelId, THREE.InstancedMesh | null>>>({});
+  const register = useMemo(() => {
+    const out = {} as Record<HullModelId, (mesh: THREE.InstancedMesh | null) => void>;
+    for (const m of HULL_MODEL_IDS) {
+      out[m] = mesh => {
+        refs.current[m] = mesh;
+        if (mesh) paintInstances(mesh, batches.hulls[m], caps[m], (it, tmp) => tmp.set(ownShipColor(it.ship)));
+      };
+    }
+    return out;
+  }, [batches, caps]);
+  const m4 = useMemo(() => new THREE.Matrix4(), []);
+  const sc = useMemo(() => new THREE.Vector3(), []);
+  useFrame(() => {
+    for (const model of HULL_MODEL_IDS) {
+      const mesh = refs.current[model];
+      if (!mesh) continue;
+      let n = 0;
+      for (const it of batches.hulls[model]) {
+        const pose = poses.get(it.id);
+        if (!pose || !pose.visible) continue;
+        m4.compose(pose.p, pose.q, sc.setScalar(HULL_SCALE.ownSystem));
+        mesh.setMatrixAt(n++, m4);
+      }
+      mesh.count = n;
+      mesh.instanceMatrix.needsUpdate = true;
+    }
   });
   return (
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[0.07, 8, 8]} />
-      <meshBasicMaterial color={color} />
-    </mesh>
+    <group>
+      {HULL_MODEL_IDS.map(m => batches.hulls[m].length > 0 && (
+        <HullInstances key={`${m}-${caps[m]}`} model={m} capacity={caps[m]} markerRadius={0.3} register={register[m]} />
+      ))}
+    </group>
   );
 }
 
 // ── Ship traffic: other corporations' contacts (instanced) ──────────────────
-// Three instanced draws, never per-contact meshes: anonymised player hulls
-// (dim octahedra), NPC backdrop hulls (flattened faction-tinted slabs — a
-// different SHAPE, so NPC vs player never rests on colour alone) and a
-// corp-coloured ring under every REVEALED contact (again shape, not just
-// colour). Positions come from placeContacts() every frame — the same
-// function the 2D canvas calls — extrapolated from the feed's asOf. Capacity
-// is allocated in steps and `count` trimmed per frame so a feed that grows
-// by one contact does not rebuild the buffers.
+// Never per-contact meshes. REVEALED contacts (an active fleet reveal on
+// their owner) draw as hull silhouettes per class plus a corp-coloured ring
+// (shape, not just colour); anonymised player hulls stay the dim generic
+// marker — their class is intelligence the viewer has not earned; NPC
+// backdrop hulls are flattened faction-tinted slabs (a different SHAPE, so
+// NPC vs player never rests on colour alone). Positions come from
+// placeContacts() every frame — the same function the 2D canvas calls —
+// extrapolated from the feed's asOf. Capacity is allocated in steps and
+// `count` trimmed per frame so a feed that grows by one contact does not
+// rebuild the buffers.
 
 export interface ContactHover { contact: TrafficContact; x: number; y: number }
 
-const CONTACT_CAPACITY_STEP = 256;
 const CONTACT_ANON_COLOR = new THREE.Color(ANON_CONTACT_COLOR);
 const CONTACT_REVEALED_COLOR = new THREE.Color('#cbd5e1');
 
-function contactCapacity(n: number): number {
-  return Math.max(CONTACT_CAPACITY_STEP, Math.ceil(Math.min(n, TRAFFIC_RENDER_CAP) / CONTACT_CAPACITY_STEP) * CONTACT_CAPACITY_STEP);
-}
-
-function ensureInstanceColor(mesh: THREE.InstancedMesh, capacity: number): THREE.InstancedBufferAttribute {
-  if (!mesh.instanceColor || mesh.instanceColor.count < capacity) {
-    mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(capacity * 3), 3);
-  }
-  return mesh.instanceColor;
-}
+interface ContactItem extends HullInstanceInput { contact: TrafficContact }
 
 function ContactsLayer({ contacts, asOfMs, posRef, reduced, onHover }: {
   contacts: TrafficContact[];
@@ -957,40 +1001,45 @@ function ContactsLayer({ contacts, asOfMs, posRef, reduced, onHover }: {
   reduced: boolean;
   onHover: (h: ContactHover | null) => void;
 }) {
-  const playersRef = useRef<THREE.InstancedMesh>(null);
-  const npcRef = useRef<THREE.InstancedMesh>(null);
-  const ringsRef = useRef<THREE.InstancedMesh>(null);
-  const split = useMemo(() => {
-    const players: TrafficContact[] = [];
-    const npcs: TrafficContact[] = [];
-    for (const c of contacts) {
-      if (players.length + npcs.length >= TRAFFIC_RENDER_CAP) break;
-      if (c.npc) npcs.push(c); else players.push(c);
-    }
-    const revealed = players.filter(c => !!c.intel);
-    return { players, npcs, revealed };
-  }, [contacts]);
-  const capPlayers = contactCapacity(split.players.length);
-  const capNpc = contactCapacity(split.npcs.length);
-  const capRings = contactCapacity(split.revealed.length);
+  const items = useMemo<ContactItem[]>(() => contacts.map(c => ({ id: c.id, hullClass: c.hullClass, kind: contactRenderKind(c), contact: c })), [contacts]);
+  const batches = useMemo(() => batchHullInstances(items, TRAFFIC_RENDER_CAP), [items]);
+  const caps = useMemo(() => ({
+    hulls: Object.fromEntries(HULL_MODEL_IDS.map(m => [m, instanceCapacity(batches.hulls[m].length)])) as Record<HullModelId, number>,
+    anonymous: instanceCapacity(batches.anonymous.length),
+    npc: instanceCapacity(batches.npc.length),
+    rings: instanceCapacity(batches.rings.length),
+  }), [batches]);
+  const refs = useRef<{ hulls: Partial<Record<HullModelId, THREE.InstancedMesh | null>>; anonymous: THREE.InstancedMesh | null; npc: THREE.InstancedMesh | null; rings: THREE.InstancedMesh | null }>({ hulls: {}, anonymous: null, npc: null, rings: null });
 
-  // Colours change only when the contact set does — not per frame.
-  useLayoutEffect(() => {
-    const tmp = new THREE.Color();
-    const paint = (mesh: THREE.InstancedMesh | null, list: TrafficContact[], cap: number, pick: (c: TrafficContact) => THREE.Color) => {
-      if (!mesh) return;
-      const attr = ensureInstanceColor(mesh, cap);
-      list.forEach((c, i) => { const col = pick(c); attr.setXYZ(i, col.r, col.g, col.b); });
-      attr.needsUpdate = true;
+  // Colours change only when the contact set does — painted when a leaf
+  // registers (a hull file streaming in re-registers its leaf).
+  const register = useMemo(() => {
+    const hulls = {} as Record<HullModelId, (mesh: THREE.InstancedMesh | null) => void>;
+    for (const m of HULL_MODEL_IDS) {
+      hulls[m] = mesh => {
+        refs.current.hulls[m] = mesh;
+        if (mesh) paintInstances(mesh, batches.hulls[m], caps.hulls[m], (_, tmp) => tmp.copy(CONTACT_REVEALED_COLOR));
+      };
+    }
+    return {
+      hulls,
+      anonymous: (mesh: THREE.InstancedMesh | null) => {
+        refs.current.anonymous = mesh;
+        if (mesh) paintInstances(mesh, batches.anonymous, caps.anonymous, (_, tmp) => tmp.copy(CONTACT_ANON_COLOR));
+      },
+      npc: (mesh: THREE.InstancedMesh | null) => {
+        refs.current.npc = mesh;
+        if (mesh) paintInstances(mesh, batches.npc, caps.npc, (it, tmp) => tmp.set(it.contact.factionHint ? FACTION_CONTACT_TINT[it.contact.factionHint] : ANON_CONTACT_COLOR));
+      },
+      rings: (mesh: THREE.InstancedMesh | null) => {
+        refs.current.rings = mesh;
+        if (mesh) paintInstances(mesh, batches.rings, caps.rings, (it, tmp) => tmp.set(corpRingColor(it.contact.intel!.corpId)));
+      },
     };
-    paint(playersRef.current, split.players, capPlayers, c => c.intel ? CONTACT_REVEALED_COLOR : CONTACT_ANON_COLOR);
-    paint(npcRef.current, split.npcs, capNpc, c => tmp.set(c.factionHint ? FACTION_CONTACT_TINT[c.factionHint] : ANON_CONTACT_COLOR));
-    paint(ringsRef.current, split.revealed, capRings, c => tmp.set(corpRingColor(c.intel!.corpId)));
-  }, [split, capPlayers, capNpc, capRings]);
+  }, [batches, caps]);
 
   const m4 = useMemo(() => new THREE.Matrix4(), []);
   const q = useMemo(() => new THREE.Quaternion(), []);
-  const up = useMemo(() => new THREE.Vector3(0, 1, 0), []);
   const dir = useMemo(() => new THREE.Vector3(), []);
   const one = useMemo(() => new THREE.Vector3(1, 1, 1), []);
   const posV = useMemo(() => new THREE.Vector3(), []);
@@ -998,13 +1047,13 @@ function ContactsLayer({ contacts, asOfMs, posRef, reduced, onHover }: {
     const anchors = posRef.current.anchors;
     const now = Date.now();
     const opts = { asOfMs, plane: 'xz' as const, staticOrbit: reduced };
-    const fill = (mesh: THREE.InstancedMesh | null, list: TrafficContact[], scale: number, orient: boolean) => {
-      if (!mesh) return;
-      const placed = placeContacts(list, anchors, now, opts);
+    const fill = (mesh: THREE.InstancedMesh | null | undefined, list: ContactItem[], scale: number, orient: boolean) => {
+      if (!mesh || list.length === 0) { if (mesh) { mesh.count = 0; mesh.instanceMatrix.needsUpdate = true; } return; }
+      const placed = placeContacts(list.map(it => it.contact), anchors, now, opts);
       let n = 0;
       for (const p of placed) {
         posV.set(p.pos[0], p.pos[1], p.pos[2]);
-        if (orient && p.heading) { dir.set(p.heading[0], p.heading[1], p.heading[2]); q.setFromUnitVectors(up, dir); }
+        if (orient && p.heading) { dir.set(p.heading[0], p.heading[1], p.heading[2]); q.setFromUnitVectors(UP_AXIS, dir); }
         else q.identity();
         m4.compose(posV, q, one.set(scale, scale, scale));
         mesh.setMatrixAt(n++, m4);
@@ -1012,14 +1061,15 @@ function ContactsLayer({ contacts, asOfMs, posRef, reduced, onHover }: {
       mesh.count = n;
       mesh.instanceMatrix.needsUpdate = true;
     };
-    fill(playersRef.current, split.players, 1, true);
-    fill(npcRef.current, split.npcs, 1, true);
-    fill(ringsRef.current, split.revealed, 1, false);
+    for (const model of HULL_MODEL_IDS) fill(refs.current.hulls[model], batches.hulls[model], HULL_SCALE.revealedSystem, true);
+    fill(refs.current.anonymous, batches.anonymous, 1, true);
+    fill(refs.current.npc, batches.npc, 1, true);
+    fill(refs.current.rings, batches.rings, 1, false);
   });
 
-  const hoverFor = useCallback((list: TrafficContact[]) => (e: ThreeEvent<PointerEvent>) => {
+  const hoverFor = useCallback((list: ContactItem[]) => (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    const c = typeof e.instanceId === 'number' ? list[e.instanceId] : undefined;
+    const c = typeof e.instanceId === 'number' ? list[e.instanceId]?.contact : undefined;
     if (!c) return;
     document.body.style.cursor = 'help';
     onHover({ contact: c, x: e.clientX, y: e.clientY });
@@ -1029,46 +1079,33 @@ function ContactsLayer({ contacts, asOfMs, posRef, reduced, onHover }: {
     document.body.style.cursor = 'auto';
     onHover(null);
   }, [onHover]);
-  const tapFor = useCallback((list: TrafficContact[]) => (e: ThreeEvent<MouseEvent>) => {
+  const tapFor = useCallback((list: ContactItem[]) => (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     if (e.delta > 6) return;
-    const c = typeof e.instanceId === 'number' ? list[e.instanceId] : undefined;
+    const c = typeof e.instanceId === 'number' ? list[e.instanceId]?.contact : undefined;
     if (c) onHover({ contact: c, x: e.clientX, y: e.clientY });
   }, [onHover]);
   const raycast = useGatedRaycast(INSTANCED_RAYCAST);
 
   return (
     <group>
-      <instancedMesh
-        key={`players-${capPlayers}`}
-        ref={playersRef}
-        args={[undefined, undefined, capPlayers]}
-        frustumCulled={false}
-        raycast={raycast}
-        onPointerOver={hoverFor(split.players)}
-        onPointerOut={leave}
-        onClick={tapFor(split.players)}
-      >
-        <octahedronGeometry args={[0.085, 0]} />
-        <meshBasicMaterial transparent opacity={0.8} depthWrite={false} toneMapped={false} />
-      </instancedMesh>
-      <instancedMesh
-        key={`npc-${capNpc}`}
-        ref={npcRef}
-        args={[undefined, undefined, capNpc]}
-        frustumCulled={false}
-        raycast={raycast}
-        onPointerOver={hoverFor(split.npcs)}
-        onPointerOut={leave}
-        onClick={tapFor(split.npcs)}
-      >
-        <boxGeometry args={[0.07, 0.16, 0.07]} />
-        <meshBasicMaterial transparent opacity={0.55} depthWrite={false} toneMapped={false} />
-      </instancedMesh>
-      <instancedMesh key={`rings-${capRings}`} ref={ringsRef} args={[undefined, undefined, capRings]} frustumCulled={false} raycast={() => null}>
-        <torusGeometry args={[0.2, 0.022, 6, 24]} />
-        <meshBasicMaterial transparent opacity={0.95} depthWrite={false} toneMapped={false} />
-      </instancedMesh>
+      {HULL_MODEL_IDS.map(m => batches.hulls[m].length > 0 && (
+        <HullInstances
+          key={`${m}-${caps.hulls[m]}`}
+          model={m}
+          capacity={caps.hulls[m]}
+          markerRadius={0.28}
+          opacity={0.95}
+          register={register.hulls[m]}
+          raycast={raycast}
+          onPointerOver={hoverFor(batches.hulls[m])}
+          onPointerOut={leave}
+          onClick={tapFor(batches.hulls[m])}
+        />
+      ))}
+      <MarkerMesh key={`anon-${caps.anonymous}`} capacity={caps.anonymous} radius={0.085} opacity={0.8} register={register.anonymous} raycast={raycast} onPointerOver={hoverFor(batches.anonymous)} onPointerOut={leave} onClick={tapFor(batches.anonymous)} />
+      <SlabMesh key={`npc-${caps.npc}`} capacity={caps.npc} size={0.16} opacity={0.55} register={register.npc} raycast={raycast} onPointerOver={hoverFor(batches.npc)} onPointerOut={leave} onClick={tapFor(batches.npc)} />
+      <RingMesh key={`rings-${caps.rings}`} capacity={caps.rings} radius={0.2} register={register.rings} />
     </group>
   );
 }
@@ -1376,51 +1413,32 @@ function SlotRing({ ring, posRef, tierRef, alwaysLabels }: {
   ring: SlotRingModel; posRef: PositionsRef; tierRef: TierRef; alwaysLabels: boolean;
 }) {
   const groupRef = useRef<THREE.Group>(null);
-  const badgeRef = useRef<THREE.Sprite>(null);
-  const badge = useMemo(
-    () => makeGlyphTexture(ring.badge, ring.saturated ? '#fca5a5' : '#c4b5fd'),
-    [ring.badge, ring.saturated],
-  );
-  useEffect(() => () => badge.tex.dispose(), [badge]);
-
-  // The occupancy badge joins the label declutter (item 9) at the lowest
+  const badgeRef = useRef<THREE.Group>(null);
+  const anchorOkRef = useRef(false);
+  // The occupancy badge joins the label declutter (item 6) at the lowest
   // priority: three badges stacked over the LEO / GEO / Moon cluster used to
-  // paint on top of one another. The sprite IS the registered object (its
-  // position is set in world space each frame), so yOffset is 0.
-  const registry = useContext(LabelRegistryContext);
-  const registryId = `slot:${ring.locationId}`;
-  useEffect(() => {
-    const sprite = badgeRef.current;
-    if (!registry || !sprite) return;
-    const size = { w: 0.036 * badge.aspect, h: 0.036 };
-    registry.entries.set(registryId, { group: sprite, yOffset: 0, priority: 0, sizeByTier: { detail: size, location: size, system: size }, shown: false, tier: 'detail' });
-    return () => { registry.entries.delete(registryId); registry.suppressed.delete(registryId); };
-  }, [registry, registryId, badge.aspect]);
+  // paint on top of one another. It is an SDF tag positioned in world space
+  // each frame; the declutter may push it aside with a leader line.
+  const resolveBadge = useCallback((tier: MapZoomTier) => anchorOkRef.current && lensVisibleAt(tier, alwaysLabels), [alwaysLabels]);
 
   useFrame(() => {
     const a = posRef.current.anchors[ring.locationId];
     const g = groupRef.current;
     const b = badgeRef.current;
     const visible = lensVisibleAt(tierRef.current, alwaysLabels);
-    const entry = registry?.entries.get(registryId);
     if (!a || !g) {
       if (g) g.visible = false;
-      if (b) b.visible = false;
-      if (entry) entry.shown = false;
+      anchorOkRef.current = false;
       return;
     }
+    anchorOkRef.current = true;
     g.visible = visible;
     if (visible) {
       g.position.set(a.pos[0], a.pos[1], a.pos[2]);
       const s = a.r + 0.62;
       g.scale.set(s, s, s);
     }
-    if (b) {
-      if (visible) b.position.set(a.pos[0], a.pos[1] + a.r + 1.05, a.pos[2]);
-      if (entry) entry.shown = visible;
-      const suppressed = !alwaysLabels && !!registry?.suppressed.has(registryId);
-      b.visible = visible && !suppressed;
-    }
+    if (b && visible) b.position.set(a.pos[0], a.pos[1] + a.r + 1.05, a.pos[2]);
   });
 
   return (
@@ -1457,9 +1475,7 @@ function SlotRing({ ring, posRef, tierRef, alwaysLabels }: {
           )}
         </Billboard>
       </group>
-      <sprite ref={badgeRef} visible={false} scale={[0.036 * badge.aspect, 0.036, 1]} renderOrder={11}>
-        <spriteMaterial map={badge.tex} sizeAttenuation={false} transparent depthTest={false} />
-      </sprite>
+      <HudTag ref={badgeRef} id={`slot:${ring.locationId}`} priority={0} text={ring.badge} px={MAP_BADGE_PX} color={ring.saturated ? '#fca5a5' : '#c4b5fd'} resolve={resolveBadge} tierRef={tierRef} alwaysLabels={alwaysLabels} />
     </group>
   );
 }
@@ -1725,6 +1741,14 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
     if (loc) flyTo(loc, 'system');
   }, [flyTo]);
 
+  /** Frame the current selection (the G key; the Frame button in the zoom
+   *  column and the phone strip): a fly-to on the selection, or on the
+   *  local scene's body when nothing is selected inside it. */
+  const frameSelection = useCallback(() => {
+    const sel = selectedLoc ?? (localRef.current ? ORBITAL_BODY_MAP.get(localRef.current)?.locationId : undefined);
+    if (sel) flyTo(sel, 'auto');
+  }, [selectedLoc, flyTo]);
+
   // Any input skips a flight (the rig then hands OrbitControls back).
   useEffect(() => {
     const onKey = () => { if (flightRef.current) skipFlight(); };
@@ -1745,10 +1769,9 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
     } else if (cameraRequest.kind === 'system') {
       flyOut();
     } else if (cameraRequest.kind === 'frame') {
-      const sel = selectedLoc ?? (localRef.current ? ORBITAL_BODY_MAP.get(localRef.current)?.locationId : undefined);
-      if (sel) flyTo(sel, 'auto');
+      frameSelection();
     }
-  }, [cameraRequest, flyTo, flyOut, selectedLoc]);
+  }, [cameraRequest, flyTo, flyOut, frameSelection]);
 
   // The local scene model: built lazily from state (+ the traffic feed and
   // the world feed's corporation names) and cached per body — only the
@@ -1806,7 +1829,16 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [intro, skipIntro]);
-  const labelRegistry = useMemo<LabelRegistry>(() => ({ entries: new Map(), suppressed: new Set() }), []);
+  const labelRegistry = useMemo<LabelRegistry>(() => createLabelRegistry(), []);
+  // Item 7: pose table the TransitShip / StationShip passes write and the
+  // instanced hull layer reads.
+  const shipPoses = useMemo(() => new Map<string, ShipPose>(), []);
+  // Item 6: the selected body's orbit brightens (a moon or an orbital pip
+  // highlights the orbit of the planet it belongs to).
+  const highlightBodyId = useMemo(() => {
+    const b = localBodyForLocation(selectedLoc);
+    return b ? rootBodyId(b) : null;
+  }, [selectedLoc]);
   const resolveSystemAnchor = useCallback((locId: string) => posRef.current.anchors[locId] ?? null, []);
 
   /**
@@ -2081,7 +2113,7 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         <LabelRegistryContext.Provider value={labelRegistry}>
         <group visible={localBody === null}>
         {ORBITAL_BODIES.filter(b => !b.parent).map(b => (
-          <OrbitRing key={`orbit-${b.id}`} aAU={b.aAU!} inclinationDeg={b.inclinationDeg || 0} />
+          <OrbitRing key={`orbit-${b.id}`} aAU={b.aAU!} inclinationDeg={b.inclinationDeg || 0} highlighted={highlightBodyId === b.id} />
         ))}
         <BeltRocks reduced={reduced} />
         {tintedLocations.length > 0 && mapMode === 'standard' && <ZoneTints posRef={posRef} tinted={tintedLocations} />}
@@ -2118,8 +2150,9 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         <LabelDeclutter registry={labelRegistry} selectedLocationId={selectedLoc} alwaysLabels={alwaysLabels} enabled={localBody === null} />
         <SlotRings posRef={posRef} rings={slotRings} tierRef={tierRef} alwaysLabels={alwaysLabels} />
         {showLanes && <LaneLines posRef={posRef} state={state} reduced={reduced} laneVolumes={laneVolumes} />}
-        {showShips && transitShips.map(s => <TransitShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} />)}
-        {showShips && stationShips.map(s => <StationShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} />)}
+        {showShips && transitShips.map(s => <TransitShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} poses={shipPoses} />)}
+        {showShips && stationShips.map(s => <StationShip key={s.instanceId} ship={s} posRef={posRef} reduced={reduced} poses={shipPoses} />)}
+        {showShips && ships.length > 0 && <OwnHullsLayer ships={ships} poses={shipPoses} />}
         {showContacts && contacts.length > 0 && (
           <ContactsLayer contacts={contacts} asOfMs={contactsAsOfMs} posRef={posRef} reduced={reduced} onHover={handleContactHover} />
         )}
@@ -2184,6 +2217,18 @@ export default function SolarMap3D({ state, onSelectLocation, selectedLocationId
         <button onClick={() => zoomBy(0.8)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in" aria-keyshortcuts="+">+</button>
         <button onClick={() => zoomBy(1.25)} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out" aria-keyshortcuts="-">−</button>
         <button onClick={resetView} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="R Home">⟲</button>
+        {/* Flight mode (part b): a visible Frame control for the G key. */}
+        <button
+          type="button"
+          onClick={() => { playSound('click'); frameSelection(); }}
+          disabled={!selectedLoc && !localBody}
+          className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-cyan-200 hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed"
+          aria-label="Frame the selection"
+          aria-keyshortcuts="G"
+          title="Frame the selected body — fly the camera to it (G)"
+        >
+          <GameIcon name="frame" size={18} />
+        </button>
       </div>
 
       {/* Layer toggles — bottom-right, same as 2D embedded. When the shell

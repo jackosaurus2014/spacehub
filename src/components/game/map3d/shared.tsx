@@ -1,18 +1,32 @@
 'use client';
 
 // ─── SolarMap3D shared scene helpers ─────────────────────────────────────────
-// Flight mode part (a), 2026-09-13: the texture loader, canvas-sprite label
-// system (with the Phase 1 screen-space declutter), the zoom-tier tracker,
-// the selection reticle and the body sphere used to be private to
-// SolarMap3D.tsx. The local scene (SolarMapLocal.tsx) draws the same bodies,
-// labels and reticle inside the SAME Canvas, so they live here now — one
-// implementation, two scenes, never diverging. Nothing here creates a
-// WebGL context; every component is a child of SolarMap3D's single Canvas.
+// Flight mode part (a), 2026-09-13: the texture loader, the label system,
+// the zoom-tier tracker, the selection reticle and the body sphere used to
+// be private to SolarMap3D.tsx. The local scene (SolarMapLocal.tsx) draws
+// the same bodies, labels and reticle inside the SAME Canvas, so they live
+// here now — one implementation, two scenes, never diverging. Nothing here
+// creates a WebGL context; every component is a child of SolarMap3D's
+// single Canvas.
+//
+// Flight mode part (b), graphics review item 6 — the label rebuild. Labels
+// used to be canvas sprites (a texture per zoom tier, "Inter" falling back
+// to system-ui). They are now HUD-facing SDF text (drei <Text>, troika) in
+// the HUD's own DM Sans (public/fonts/dm-sans-600.woff), laid out in PIXEL
+// units inside a camera-aligned, distance-scaled frame (HudFrame) so they
+// read the same at Pluto range and inside Earth's local scene. A screen-
+// space declutter (lib/game/map-labels.ts, every 250 ms) keeps priority —
+// selected > holdings > major bodies > pips > moons — and, instead of only
+// hiding the loser, pushes it to a free spot and draws a short LEADER LINE
+// back to its anchor (Luna and the Galilean cluster are the known
+// collisions). Symbol glyphs the font lacks (crown, diamond, mode marks)
+// stay as small canvas planes beside the text so troika never reaches for
+// a CDN fallback face.
 
-import { useRef, useState, useEffect, useMemo, useContext, createContext } from 'react';
+import { useRef, useState, useEffect, useMemo, useContext, useCallback, createContext, forwardRef, Suspense } from 'react';
 import * as THREE from 'three';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
-import { Billboard } from '@react-three/drei';
+import { Billboard, Text } from '@react-three/drei';
 import {
   zoomTierFromCameraDistance,
   isMajorLocation,
@@ -26,6 +40,21 @@ import type { ModeVisual } from '@/lib/game/map-modes';
 import { getAtmosphere } from '@/lib/game/map-bodies';
 import { MAP_GLYPHS } from '@/lib/game/map-glyphs';
 import type { ScenePositions } from '@/lib/game/orbital-elements';
+import {
+  declutterLabels,
+  hudSafeText,
+  MAP_LABEL_FONT_URL,
+  MAP_LABEL_PX,
+  MAP_BADGE_PX,
+  MAP_MODE_BADGE_PX,
+  MAP_LABEL_CHARACTERS,
+  MAP_LABEL_COLORS,
+  DECLUTTER_INTERVAL_MS as LABEL_DECLUTTER_MS,
+  type LabelPlacement,
+  type LabelRectInput,
+} from '@/lib/game/map-labels';
+
+export { labelPriority } from '@/lib/game/map-labels';
 
 export type PositionsRef = React.MutableRefObject<ScenePositions>;
 
@@ -39,7 +68,7 @@ export type AnchorResolver = (locationId: string) => { pos: readonly number[]; r
 // decoded image instead of fetching and decoding twice.
 THREE.Cache.enabled = true;
 
-// ── Texture + label helpers ──────────────────────────────────────────────────
+// ── Texture + glyph helpers ──────────────────────────────────────────────────
 
 /** Non-suspending texture loader — resolves to null until loaded, and stays
  *  null on failure so a missing file degrades to the body's solid color
@@ -70,10 +99,26 @@ export function useSafeTexture(url?: string): THREE.Texture | null {
   return tex;
 }
 
-/** Label typeface. The review found labels asked for "Inter" — a face the
- *  site never loads — so they fell back to system-ui while the HUD is DM
- *  Sans / Orbitron. next/font exposes the body face under a hashed family
- *  name, so read the resolved family off <body> once and draw with it. */
+/**
+ * Recompile a material when a texture map arrives after its first draw.
+ * three compiles a material's program on first render and never re-reads
+ * `map` / `emissiveMap` afterwards unless `needsUpdate` is set — a material
+ * first drawn while its texture was still streaming keeps the map-less
+ * program forever and renders flat white (the Sun / Venus regression found
+ * in the part (b) review: the SDF labels moved the first drawn frame ahead
+ * of the texture loads, a race the old code won only by timing). Every
+ * material fed by useSafeTexture routes its late maps through this.
+ */
+export function useMapRefresh(ref: React.RefObject<THREE.Material | null>, ...maps: (THREE.Texture | null | undefined)[]) {
+  useEffect(() => {
+    if (ref.current) ref.current.needsUpdate = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ref, ...maps]);
+}
+
+/** Canvas typeface for the SYMBOL glyphs (crown, diamond, warning, mode
+ *  marks) that the SDF font does not cover. next/font exposes the body face
+ *  under a hashed family name, so read the resolved family off <body> once. */
 let labelFontCache: string | null = null;
 export function labelFontFamily(): string {
   if (labelFontCache) return labelFontCache;
@@ -89,296 +134,8 @@ export interface BadgeCounts { buildings: number; npc: number; world: number }
  *  glyph crown/diamond rides in the label; the tint sprite is reinforcement only). */
 export type ZoneStandingKind = 'governor' | 'stakeholder' | null;
 
-/** Wave V4 — mode-lens annotation baked into the label texture: a text glyph
- *  after the name plus an optional second text row (never color alone). */
-export interface ModeLabel { glyph: string; badge: string | null; color: string }
-
-/** Draw a name + badge row into a canvas and return a sprite texture. Labels
- *  are self-contained (no font fetch, no DOM) and match the 2D map's badge
- *  colors: cyan = your buildings, red = NPC presence, purple = other corps.
- *  W9: an optional standing glyph (crown governor gold / diamond stakeholder cyan)
- *  prefixes the name. V4: an optional mode glyph suffixes it, and a mode
- *  badge text row renders under the count badges. */
-export function makeLabelTexture(name: string, unlocked: boolean, badges: BadgeCounts, standing: ZoneStandingKind = null, mode: ModeLabel | null = null): { tex: THREE.CanvasTexture; aspect: number } {
-  const scale = 2; // supersample for crispness
-  const font = `600 ${13 * scale}px ${labelFontFamily()}`;
-  const badgeFont = `700 ${11 * scale}px ${labelFontFamily()}`;
-  const modeFont = `600 ${11 * scale}px ${labelFontFamily()}`;
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d')!;
-  ctx.font = font;
-  const glyph = standing === 'governor' ? `${MAP_GLYPHS.governor} ` : standing === 'stakeholder' ? `${MAP_GLYPHS.stakeholder} ` : '';
-  const glyphColor = standing === 'governor' ? '#fbbf24' : '#22d3ee';
-  const glyphW = glyph ? ctx.measureText(glyph).width : 0;
-  const nameW = ctx.measureText(name).width;
-  const modeGlyph = mode?.glyph ? ` ${mode.glyph}` : '';
-  const modeGlyphW = modeGlyph ? ctx.measureText(modeGlyph).width : 0;
-  const textRowW = glyphW + nameW + modeGlyphW;
-  const badgeEntries: { n: number; color: string }[] = [];
-  if (badges.buildings > 0) badgeEntries.push({ n: badges.buildings, color: '#06b6d4' });
-  if (badges.npc > 0) badgeEntries.push({ n: badges.npc, color: '#ef4444' });
-  if (badges.world > 0) badgeEntries.push({ n: badges.world, color: '#a855f7' });
-  const badgeR = 9 * scale;
-  const badgeRowW = badgeEntries.length * (badgeR * 2 + 6 * scale);
-  ctx.font = modeFont;
-  const modeBadgeW = mode?.badge ? ctx.measureText(mode.badge).width : 0;
-  const baseH = badgeEntries.length > 0 ? 42 : 22;
-  const modeRowH = mode?.badge ? 18 : 0;
-  const w = Math.ceil(Math.max(textRowW, badgeRowW, modeBadgeW) + 16 * scale);
-  const h = Math.ceil((baseH + modeRowH) * scale);
-  canvas.width = w;
-  canvas.height = h;
-  // text — composed left-to-right so the standing glyph keeps its own color
-  ctx.font = font;
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.shadowColor = 'rgba(0,0,0,0.9)';
-  ctx.shadowBlur = 4 * scale;
-  let tx = w / 2 - textRowW / 2;
-  if (glyph) {
-    ctx.fillStyle = glyphColor;
-    ctx.fillText(glyph, tx, 11 * scale);
-    tx += glyphW;
-  }
-  ctx.fillStyle = unlocked ? '#e2e8f0' : '#64748b';
-  ctx.fillText(name, tx, 11 * scale);
-  tx += nameW;
-  if (modeGlyph) {
-    ctx.fillStyle = mode!.color;
-    ctx.fillText(modeGlyph, tx, 11 * scale);
-  }
-  ctx.textAlign = 'center';
-  // badges
-  if (badgeEntries.length > 0) {
-    ctx.shadowBlur = 0;
-    let x = w / 2 - badgeRowW / 2 + badgeR;
-    for (const b of badgeEntries) {
-      ctx.fillStyle = b.color;
-      ctx.beginPath();
-      ctx.arc(x, 30 * scale, badgeR, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.font = badgeFont;
-      ctx.fillText(String(Math.min(99, b.n)), x, 30 * scale + scale);
-      x += badgeR * 2 + 6 * scale;
-    }
-  }
-  // mode badge text row (V4) — bottom of the canvas
-  if (mode?.badge) {
-    ctx.shadowColor = 'rgba(0,0,0,0.9)';
-    ctx.shadowBlur = 4 * scale;
-    ctx.font = modeFont;
-    ctx.fillStyle = mode.color;
-    ctx.fillText(mode.badge, w / 2, (baseH + 8) * scale);
-  }
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return { tex, aspect: w / h };
-}
-
-// ── Zoom-level information layering (V4 LOD bands → Wave A2 zoom tiers) ─────
-// The V4 wave introduced three camera-distance bands here; Wave A2 promotes
-// the thresholds and the visibility rules into map-zoom.ts so the 2D canvas
-// answers identically, and adds the accessibility override (`alwaysLabels`).
-// The tier lives in a shared ref written once per frame (ZoomTierTracker) and
-// read by each LabelSprite's own useFrame — no React state churn at 60Hz.
-// A throttled callback mirrors it to the shell HUD (state, but ≤1 set/tier
-// change, not per frame).
-
-export type TierRef = React.MutableRefObject<MapZoomTier>;
-
-export function ZoomTierTracker({ tierRef, onChange }: { tierRef: TierRef; onChange?: (t: MapZoomTier) => void }) {
-  useFrame(({ camera }) => {
-    const next = zoomTierFromCameraDistance(camera.position.length());
-    if (next !== tierRef.current) {
-      tierRef.current = next;
-      onChange?.(next);
-    }
-  });
-  return null;
-}
-
-/** Screen-constant label sprite under a body/pip.
- *
- *  Three textures, one per zoom tier — regenerated only on DATA change, never
- *  on camera motion, and de-duplicated when two tiers would render the same
- *  pixels (the common case: a location with no badges and no lens badge uses
- *  one texture for all three tiers):
- *    detail   — name + standing + mode glyph + count badges + mode badge
- *    location — name + standing + mode glyph + mode badge  (no counts)
- *    system   — name + standing + mode glyph               (no badge rows)
- *  Visibility is chosen per frame by the allocation-free predicates in
- *  map-zoom.ts. `alwaysLabels` pins everything to the detail texture. */
-// ── Graphics review 2026-09-12 item 9 — screen-space label declutter ────────
-// Labels are screen-constant sprites, so two bodies that sit a few pixels
-// apart on screen (Lunar Orbit / Moon, the Galilean moons) paint on top of
-// each other. Every LabelSprite registers its group + per-tier sprite size
-// here; LabelDeclutter (rendered inside the Canvas) projects each visible
-// label every 250 ms, keeps the higher-priority label of any overlapping
-// pair and lists the losers in `suppressed`, which the sprites consult in
-// their own per-frame visibility pass — so the result never depends on
-// useFrame ordering. Priority: selected body > holdings > major body >
-// pip > moon (see labelPriority). The 'alwaysLabels' accessibility override
-// bypasses the declutter entirely (it promises every label), and the
-// Location List stays the canonical, always-complete list.
-export interface LabelRegistryEntry {
-  group: THREE.Object3D;
-  yOffset: number;
-  priority: number;
-  /** Sprite scale (x = width, y = height) per zoom tier, in the
-   *  sizeAttenuation:false units the sprites use. */
-  sizeByTier: Record<MapZoomTier, { w: number; h: number }>;
-  /** Written each frame by the sprite's own visibility pass. */
-  shown: boolean;
-  tier: MapZoomTier;
-}
-export interface LabelRegistry {
-  entries: Map<string, LabelRegistryEntry>;
-  suppressed: Set<string>;
-}
-export const LabelRegistryContext = createContext<LabelRegistry | null>(null);
-
-export const DECLUTTER_INTERVAL_MS = 250;
-
-export function LabelDeclutter({ registry, selectedLocationId, alwaysLabels, enabled = true }: { registry: LabelRegistry; selectedLocationId: string | null; alwaysLabels: boolean; enabled?: boolean }) {
-  const lastRef = useRef(0);
-  const tmp = useMemo(() => new THREE.Vector3(), []);
-  useFrame(({ camera, size }) => {
-    if (!enabled) return; // the scene is hidden — nothing to declutter
-    if (alwaysLabels) { if (registry.suppressed.size) registry.suppressed.clear(); return; }
-    const now = performance.now();
-    if (now - lastRef.current < DECLUTTER_INTERVAL_MS) return;
-    lastRef.current = now;
-    // Sprite pixel extent for sizeAttenuation:false = scale × P[1][1] × H/2.
-    const p11 = (camera as THREE.PerspectiveCamera).projectionMatrix.elements[5];
-    const pxPerUnit = p11 * size.height / 2;
-    const rects: { id: string; x: number; y: number; w: number; h: number; priority: number }[] = [];
-    registry.entries.forEach((entry, id) => {
-      if (!entry.shown) return;
-      entry.group.getWorldPosition(tmp);
-      tmp.y += entry.yOffset;
-      tmp.project(camera);
-      if (tmp.z > 1 || tmp.z < -1) return; // behind the camera / beyond far plane
-      const s = entry.sizeByTier[entry.tier];
-      const w = s.w * pxPerUnit;
-      const h = s.h * pxPerUnit;
-      const cx = (tmp.x + 1) / 2 * size.width;
-      const cy = (1 - tmp.y) / 2 * size.height;
-      rects.push({ id, x: cx - w / 2, y: cy - h / 2, w, h, priority: id === selectedLocationId ? Number.POSITIVE_INFINITY : entry.priority });
-    });
-    rects.sort((a, b) => b.priority - a.priority);
-    const kept: typeof rects = [];
-    const next = new Set<string>();
-    for (const r of rects) {
-      const collides = kept.some(k => r.x < k.x + k.w && r.x + r.w > k.x && r.y < k.y + k.h && r.y + r.h > k.y);
-      if (collides) next.add(r.id); else kept.push(r);
-    }
-    registry.suppressed.clear();
-    next.forEach(id => registry.suppressed.add(id));
-  });
-  return null;
-}
-
-/** Declutter priority for a location label (higher wins a collision). */
-export function labelPriority(locationId: string | undefined, kind: 'body' | 'pip', badges: BadgeCounts): number {
-  let p = kind === 'pip' ? 1 : (locationId && isMajorLocation(locationId)) ? 3 : 2;
-  if (badges.buildings > 0) p += 3;
-  return p;
-}
-
-export function LabelSprite({ name, unlocked, badges, yOffset, standing = null, mode = null, tierRef, locationId, alwaysLabels = false, priority = 2 }: {
-  name: string; unlocked: boolean; badges: BadgeCounts; yOffset: number; standing?: ZoneStandingKind;
-  mode?: ModeVisual | null; tierRef?: TierRef; locationId?: string; alwaysLabels?: boolean; priority?: number;
-}) {
-  const modeLabel: ModeLabel | null = mode ? { glyph: mode.glyph, badge: mode.badge, color: mode.tint } : null;
-  const isMajor = locationId ? isMajorLocation(locationId) : true;
-  const hasHoldings = badges.buildings > 0;
-  const registry = useContext(LabelRegistryContext);
-  const groupRef = useRef<THREE.Group>(null);
-  const registryId = locationId ?? name;
-
-  const variants = useMemo(() => {
-    const NO_BADGE_COUNTS: BadgeCounts = { buildings: 0, npc: 0, world: 0 };
-    const specs: { tier: MapZoomTier; badges: BadgeCounts; mode: ModeLabel | null }[] = [
-      { tier: 'detail', badges, mode: modeLabel },
-      { tier: 'location', badges: NO_BADGE_COUNTS, mode: modeLabel },
-      { tier: 'system', badges: NO_BADGE_COUNTS, mode: modeLabel ? { ...modeLabel, badge: null } : null },
-    ];
-    const bySig = new Map<string, { tex: THREE.CanvasTexture; aspect: number; scale: number }>();
-    const byTier: Record<MapZoomTier, { tex: THREE.CanvasTexture; aspect: number; scale: number }> = {} as never;
-    for (const spec of specs) {
-      const sig = `${spec.badges.buildings}|${spec.badges.npc}|${spec.badges.world}|${spec.mode?.badge ?? ''}`;
-      let entry = bySig.get(sig);
-      if (!entry) {
-        const made = makeLabelTexture(name, unlocked, spec.badges, standing, spec.mode);
-        const anyBadges = spec.badges.buildings > 0 || spec.badges.npc > 0 || spec.badges.world > 0;
-        entry = { ...made, scale: (anyBadges ? 0.085 : 0.05) + (spec.mode?.badge ? 0.028 : 0) };
-        bySig.set(sig, entry);
-      }
-      byTier[spec.tier] = entry;
-    }
-    return { byTier, unique: Array.from(bySig.values()) };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, unlocked, badges.buildings, badges.npc, badges.world, standing, mode?.glyph, mode?.badge, mode?.tint]);
-
-  useEffect(() => () => { variants.unique.forEach(v => v.tex.dispose()); }, [variants]);
-
-  // Register with the declutter (item 9). Sizes are per tier so the check
-  // uses the sprite that is actually showing.
-  useEffect(() => {
-    const group = groupRef.current;
-    if (!registry || !group) return;
-    const sizeByTier = {} as Record<MapZoomTier, { w: number; h: number }>;
-    (['detail', 'location', 'system'] as MapZoomTier[]).forEach(tier => {
-      const v = variants.byTier[tier];
-      sizeByTier[tier] = { w: v.scale * v.aspect, h: v.scale };
-    });
-    registry.entries.set(registryId, { group, yOffset, priority, sizeByTier, shown: false, tier: 'detail' });
-    return () => { registry.entries.delete(registryId); registry.suppressed.delete(registryId); };
-  }, [registry, registryId, variants, yOffset, priority]);
-
-  const refs = useRef<Partial<Record<MapZoomTier, THREE.Sprite | null>>>({});
-  useFrame(() => {
-    const tier = tierRef?.current ?? 'detail';
-    const showName = nameVisibleAt(tier, isMajor, hasHoldings, alwaysLabels);
-    const showDetail = detailVisibleAt(tier, alwaysLabels);
-    const showLens = lensVisibleAt(tier, alwaysLabels);
-    const pick: MapZoomTier = showDetail ? 'detail' : showLens ? 'location' : 'system';
-    const entry = registry?.entries.get(registryId);
-    if (entry) { entry.shown = showName; entry.tier = pick; }
-    const suppressed = !alwaysLabels && !!registry?.suppressed.has(registryId);
-    const d = refs.current.detail;
-    const l = refs.current.location;
-    const s = refs.current.system;
-    if (d) d.visible = showName && !suppressed && pick === 'detail';
-    if (l) l.visible = showName && !suppressed && pick === 'location';
-    if (s) s.visible = showName && !suppressed && pick === 'system';
-  });
-
-  const tiers: MapZoomTier[] = ['detail', 'location', 'system'];
-  return (
-    <group ref={groupRef}>
-      {tiers.map(tier => {
-        const v = variants.byTier[tier];
-        return (
-          <sprite
-            key={tier}
-            ref={el => { refs.current[tier] = el; }}
-            visible={tier === 'detail'}
-            position={[0, yOffset, 0]}
-            scale={[v.scale * v.aspect, v.scale, 1]}
-            renderOrder={10}
-          >
-            <spriteMaterial map={v.tex} sizeAttenuation={false} transparent depthTest={false} />
-          </sprite>
-        );
-      })}
-    </group>
-  );
-}
-
-/** Small self-contained glyph sprite texture (forecast warning, science). Same
- *  no-DOM/no-font-fetch approach as makeLabelTexture. */
+/** Small self-contained glyph texture (forecast warning, science, the
+ *  standing and mode marks beside a label). No DOM, no font fetch. */
 export function makeGlyphTexture(text: string, color: string): { tex: THREE.CanvasTexture; aspect: number } {
   const scale = 2;
   const font = `700 ${14 * scale}px ${labelFontFamily()}`;
@@ -401,6 +158,425 @@ export function makeGlyphTexture(text: string, color: string): { tex: THREE.Canv
   return { tex, aspect: w / h };
 }
 
+// ── Zoom-level information layering (V4 LOD bands → Wave A2 zoom tiers) ─────
+// The tier lives in a shared ref written once per frame (ZoomTierTracker) and
+// read by each label's own useFrame — no React state churn at 60Hz. A
+// throttled callback mirrors it to the shell HUD.
+
+export type TierRef = React.MutableRefObject<MapZoomTier>;
+
+export function ZoomTierTracker({ tierRef, onChange }: { tierRef: TierRef; onChange?: (t: MapZoomTier) => void }) {
+  useFrame(({ camera }) => {
+    const next = zoomTierFromCameraDistance(camera.position.length());
+    if (next !== tierRef.current) {
+      tierRef.current = next;
+      onChange?.(next);
+    }
+  });
+  return null;
+}
+
+// ── Label registry + declutter (item 6) ─────────────────────────────────────
+// Every HudFrame with an id registers its anchor object and per-tier pixel
+// size. LabelDeclutter (rendered inside the Canvas) projects each shown
+// label every 250 ms and runs the pure declutterLabels(); frames read their
+// placement (offset + leader, or suppressed) in their own per-frame pass, so
+// the result never depends on useFrame ordering. The 'alwaysLabels'
+// accessibility override bypasses the declutter entirely (it promises every
+// label), and the Location List stays the canonical, always-complete list.
+
+export interface LabelTierSize {
+  /** Label extent, px. */
+  w: number;
+  h: number;
+  /** Rect centre relative to the anchor, HUD-local px (y up). */
+  cy: number;
+}
+export type LabelSizeByTier = Record<MapZoomTier, LabelTierSize>;
+
+export interface LabelRegistryEntry {
+  /** The anchor object; its world position is the label's natural anchor. */
+  group: THREE.Object3D;
+  priority: number;
+  /** Live sizes — the frame's owner updates this object in place as text
+   *  measurements arrive. */
+  size: LabelSizeByTier;
+  /** Written each frame by the frame's own visibility pass. */
+  shown: boolean;
+  tier: MapZoomTier;
+}
+export interface LabelRegistry {
+  entries: Map<string, LabelRegistryEntry>;
+  placements: Map<string, LabelPlacement>;
+}
+export function createLabelRegistry(): LabelRegistry {
+  return { entries: new Map(), placements: new Map() };
+}
+export const LabelRegistryContext = createContext<LabelRegistry | null>(null);
+
+export const DECLUTTER_INTERVAL_MS = LABEL_DECLUTTER_MS;
+
+export function LabelDeclutter({ registry, selectedLocationId, alwaysLabels, enabled = true }: { registry: LabelRegistry; selectedLocationId: string | null; alwaysLabels: boolean; enabled?: boolean }) {
+  const lastRef = useRef(0);
+  const tmp = useMemo(() => new THREE.Vector3(), []);
+  useFrame(({ camera, size }) => {
+    if (!enabled) return; // the scene is hidden — nothing to declutter
+    if (alwaysLabels) { if (registry.placements.size) registry.placements = new Map(); return; }
+    const now = performance.now();
+    if (now - lastRef.current < DECLUTTER_INTERVAL_MS) return;
+    lastRef.current = now;
+    const items: LabelRectInput[] = [];
+    registry.entries.forEach((entry, id) => {
+      if (!entry.shown) return;
+      entry.group.getWorldPosition(tmp);
+      tmp.project(camera);
+      if (tmp.z > 1 || tmp.z < -1) return; // behind the camera / beyond far plane
+      const s = entry.size[entry.tier];
+      if (!(s.w > 0)) return; // not measured yet
+      const sx = (tmp.x + 1) / 2 * size.width;
+      const sy = (1 - tmp.y) / 2 * size.height;
+      items.push({ id, x: sx, y: sy - s.cy, w: s.w, h: s.h, priority: entry.priority });
+    });
+    registry.placements = declutterLabels(items, { selectedId: selectedLocationId, previous: registry.placements });
+  });
+  return null;
+}
+
+// ── HudFrame — camera-aligned, pixel-scaled anchor for SDF text ─────────────
+
+const HUD_TMP = new THREE.Vector3();
+
+export interface HudFrameProps {
+  /** Declutter registry id; omitted = never decluttered (tags). */
+  id?: string;
+  priority?: number;
+  /** Live per-tier size, owned by the caller (updated in place). */
+  size?: LabelSizeByTier;
+  /** Per-frame visibility + which tier's layout to show. */
+  resolve: (tier: MapZoomTier) => { visible: boolean; pick: MapZoomTier };
+  /** Fires when the picked tier changes (callers toggle their rows). */
+  onPick?: (pick: MapZoomTier) => void;
+  tierRef?: TierRef;
+  alwaysLabels?: boolean;
+  /** Local position of the frame inside its parent (world units). */
+  position?: [number, number, number];
+  children: React.ReactNode;
+}
+
+const NO_SIZE: LabelSizeByTier = { detail: { w: 0, h: 0, cy: 0 }, location: { w: 0, h: 0, cy: 0 }, system: { w: 0, h: 0, cy: 0 } };
+
+/**
+ * Root group (the ref) sits at the anchor in world space. Its child "hud"
+ * group is re-oriented to the camera and scaled so ONE local unit is ONE
+ * screen pixel, whatever the distance; children lay themselves out in px.
+ * A declutter placement offsets the content and draws the leader line.
+ */
+export const HudFrame = forwardRef<THREE.Group, HudFrameProps>(function HudFrame({ id, priority = 2, size = NO_SIZE, resolve, onPick, tierRef, alwaysLabels = false, position, children }, ref) {
+  const registry = useContext(LabelRegistryContext);
+  const rootRef = useRef<THREE.Group | null>(null);
+  const hudRef = useRef<THREE.Group>(null);
+  const offsetRef = useRef<THREE.Group>(null);
+  const lastPickRef = useRef<MapZoomTier | null>(null);
+  const leader = useMemo(() => {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+    const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: MAP_LABEL_COLORS.leader, transparent: true, opacity: 0.75, depthTest: false, depthWrite: false, toneMapped: false }));
+    line.renderOrder = 10;
+    line.visible = false;
+    line.frustumCulled = false;
+    return line;
+  }, []);
+  useEffect(() => () => { leader.geometry.dispose(); (leader.material as THREE.Material).dispose(); }, [leader]);
+  const setRoot = useCallback((g: THREE.Group | null) => {
+    rootRef.current = g;
+    if (typeof ref === 'function') ref(g);
+    else if (ref) ref.current = g;
+  }, [ref]);
+
+  useEffect(() => {
+    const group = rootRef.current;
+    if (!registry || !id || !group) return;
+    registry.entries.set(id, { group, priority, size, shown: false, tier: 'detail' });
+    return () => { registry.entries.delete(id); registry.placements.delete(id); };
+  }, [registry, id, priority, size]);
+
+  useFrame(({ camera, size: viewport }) => {
+    const root = rootRef.current;
+    const hud = hudRef.current;
+    if (!root || !hud) return;
+    const tier = tierRef?.current ?? 'detail';
+    const { visible, pick } = resolve(tier);
+    if (pick !== lastPickRef.current) { lastPickRef.current = pick; onPick?.(pick); }
+    const entry = id ? registry?.entries.get(id) : undefined;
+    if (entry) { entry.shown = visible; entry.tier = pick; }
+    const placement = id && !alwaysLabels ? registry?.placements.get(id) : undefined;
+    const show = visible && !placement?.suppressed;
+    hud.visible = show;
+    if (!show) return;
+    root.getWorldPosition(HUD_TMP);
+    const d = HUD_TMP.distanceTo(camera.position);
+    const p11 = (camera as THREE.PerspectiveCamera).projectionMatrix.elements[5];
+    // World units per pixel at this depth: 2·d·tan(fov/2) / H.
+    const s = Math.max(1e-6, (2 * d) / (p11 * viewport.height));
+    hud.quaternion.copy(camera.quaternion);
+    hud.scale.setScalar(s);
+    const dx = placement?.dx ?? 0;
+    const dy = placement?.dy ?? 0;
+    offsetRef.current?.position.set(dx, -dy, 0);
+    if (placement?.leader) {
+      const sz = size[pick];
+      const attr = leader.geometry.attributes.position as THREE.BufferAttribute;
+      // From the natural label's top edge (just under the body) to the
+      // displaced label's top-centre — a short tick, not a spider leg.
+      const top = sz.cy + sz.h / 2;
+      attr.setXYZ(0, 0, top, 0);
+      attr.setXYZ(1, dx, top - dy, 0);
+      attr.needsUpdate = true;
+      leader.visible = true;
+    } else {
+      leader.visible = false;
+    }
+  });
+
+  return (
+    <group ref={setRoot} position={position}>
+      <group ref={hudRef} visible={false}>
+        <group ref={offsetRef}>
+          <Suspense fallback={null}>{children}</Suspense>
+        </group>
+        <primitive object={leader} />
+      </group>
+    </group>
+  );
+});
+
+// ── HudText — one line of SDF text in px units ──────────────────────────────
+
+const OUTLINE_COLOR = '#000000';
+
+export interface HudTextProps {
+  text: string;
+  px: number;
+  color: string;
+  x?: number;
+  y?: number;
+  opacity?: number;
+  anchorX?: 'left' | 'center' | 'right';
+  /** Measured width (px) once troika has laid the text out. */
+  onWidth?: (w: number) => void;
+  renderOrder?: number;
+}
+
+export function HudText({ text, px, color, x = 0, y = 0, opacity = 1, anchorX = 'center', onWidth, renderOrder = 11 }: HudTextProps) {
+  const safe = hudSafeText(text);
+  const handleSync = useCallback((t: { textRenderInfo?: { blockBounds?: number[] } | null }) => {
+    const b = t.textRenderInfo?.blockBounds;
+    if (b && onWidth) onWidth(Math.max(0, b[2] - b[0]));
+  }, [onWidth]);
+  return (
+    <Text
+      position={[x, y, 0]}
+      font={MAP_LABEL_FONT_URL}
+      characters={MAP_LABEL_CHARACTERS}
+      fontSize={px}
+      color={color}
+      fillOpacity={opacity}
+      anchorX={anchorX}
+      anchorY="middle"
+      outlineWidth={px * 0.09}
+      outlineColor={OUTLINE_COLOR}
+      outlineOpacity={0.9 * opacity}
+      renderOrder={renderOrder}
+      onSync={handleSync}
+    >
+      {safe}
+      <meshBasicMaterial transparent depthTest={false} depthWrite={false} toneMapped={false} />
+    </Text>
+  );
+}
+
+/** A symbol glyph the SDF font lacks, as a small canvas plane in px units. */
+function GlyphPlane({ text, color, x, y = 0, h = 14 }: { text: string; color: string; x: number; y?: number; h?: number }) {
+  const glyph = useMemo(() => makeGlyphTexture(text, color), [text, color]);
+  useEffect(() => () => glyph.tex.dispose(), [glyph]);
+  const w = h * glyph.aspect;
+  return (
+    <mesh position={[x, y, 0]} renderOrder={11}>
+      <planeGeometry args={[w, h]} />
+      <meshBasicMaterial map={glyph.tex} transparent depthTest={false} depthWrite={false} toneMapped={false} />
+    </mesh>
+  );
+}
+
+/** Width (px) of a glyph plane of height h. */
+function glyphPlaneWidth(text: string, h = 14): number {
+  // Mirrors makeGlyphTexture's canvas geometry (text width + 10·scale over
+  // 22·scale tall) without allocating a canvas per frame.
+  let ctx: CanvasRenderingContext2D | null = null;
+  try { ctx = document.createElement('canvas').getContext('2d'); } catch { /* no DOM */ }
+  if (!ctx) return h;
+  ctx.font = `700 28px ${labelFontFamily()}`;
+  const w = ctx.measureText(text).width + 20;
+  return h * (w / 44);
+}
+
+// ── BodyLabel — name + standing/mode glyphs + count badges + mode badge ────
+
+const ROW_NAME_H = 18;
+const ROW_BADGE_H = 22;
+const ROW_MODE_H = 16;
+const BADGE_R = 9;
+const BADGE_GAP = 6;
+const GLYPH_H = 14;
+const GLYPH_GAP = 3;
+
+export interface BodyLabelProps {
+  name: string;
+  unlocked: boolean;
+  badges: BadgeCounts;
+  /** World-space offset from the parent (labels hang under their body). */
+  yOffset: number;
+  standing?: ZoneStandingKind;
+  mode?: ModeVisual | null;
+  tierRef?: TierRef;
+  locationId?: string;
+  alwaysLabels?: boolean;
+  priority?: number;
+}
+
+/**
+ * The location label. Rows (HUD px, y up): the name row at 0 with the
+ * standing glyph before and the mode glyph after it; the count badges
+ * (cyan = your buildings, red = NPC presence, purple = other corps) under
+ * it at the detail tier; the mode badge text under those at the detail and
+ * location tiers. Visibility per tier comes from the allocation-free
+ * predicates in map-zoom.ts; `alwaysLabels` pins the detail layout.
+ */
+export function BodyLabel({ name, unlocked, badges, yOffset, standing = null, mode = null, tierRef, locationId, alwaysLabels = false, priority = 2 }: BodyLabelProps) {
+  const isMajor = locationId ? isMajorLocation(locationId) : true;
+  const hasHoldings = badges.buildings > 0;
+  const registryId = locationId ?? name;
+  const badgeEntries = useMemo(() => {
+    const out: { n: number; color: string }[] = [];
+    if (badges.buildings > 0) out.push({ n: badges.buildings, color: MAP_LABEL_COLORS.badgeBuildings });
+    if (badges.npc > 0) out.push({ n: badges.npc, color: MAP_LABEL_COLORS.badgeNpc });
+    if (badges.world > 0) out.push({ n: badges.world, color: MAP_LABEL_COLORS.badgeWorld });
+    return out;
+  }, [badges.buildings, badges.npc, badges.world]);
+  const standingGlyph = standing === 'governor' ? MAP_GLYPHS.governor : standing === 'stakeholder' ? MAP_GLYPHS.stakeholder : '';
+  const standingColor = standing === 'governor' ? MAP_LABEL_COLORS.governor : MAP_LABEL_COLORS.stakeholder;
+  const modeGlyph = mode?.glyph ?? '';
+  const modeBadge = mode?.badge ?? null;
+  const modeColor = mode?.tint ?? MAP_LABEL_COLORS.name;
+
+  // Measured widths (px) → per-tier size object, mutated in place so the
+  // registry entry sees updates without re-registering.
+  const size = useMemo<LabelSizeByTier>(() => ({ detail: { w: 0, h: 0, cy: 0 }, location: { w: 0, h: 0, cy: 0 }, system: { w: 0, h: 0, cy: 0 } }), []);
+  const widths = useRef({ name: 0, modeBadge: 0 });
+  const glyphLW = standingGlyph ? glyphPlaneWidth(standingGlyph, GLYPH_H) : 0;
+  const glyphRW = modeGlyph ? glyphPlaneWidth(modeGlyph, GLYPH_H) : 0;
+  const badgeRowW = badgeEntries.length * (BADGE_R * 2 + BADGE_GAP);
+  const recompute = useCallback(() => {
+    const nameRowW = widths.current.name + (glyphLW ? glyphLW + GLYPH_GAP : 0) + (glyphRW ? glyphRW + GLYPH_GAP : 0);
+    const fill = (tier: MapZoomTier, withBadges: boolean, withMode: boolean) => {
+      const rows = [ROW_NAME_H];
+      if (withBadges && badgeEntries.length) rows.push(ROW_BADGE_H);
+      if (withMode && modeBadge) rows.push(ROW_MODE_H);
+      const h = rows.reduce((a, b) => a + b, 0);
+      const top = ROW_NAME_H / 2;
+      const w = Math.max(nameRowW, withBadges ? badgeRowW : 0, withMode && modeBadge ? widths.current.modeBadge : 0) + 4;
+      const s = size[tier];
+      s.w = w; s.h = h; s.cy = top - h / 2;
+    };
+    fill('detail', true, true);
+    fill('location', false, true);
+    fill('system', false, false);
+  }, [size, glyphLW, glyphRW, badgeRowW, badgeEntries.length, modeBadge]);
+  useEffect(() => { recompute(); }, [recompute]);
+  const onNameWidth = useCallback((w: number) => { if (Math.abs(w - widths.current.name) > 0.5) { widths.current.name = w; recompute(); } }, [recompute]);
+  const onModeWidth = useCallback((w: number) => { if (Math.abs(w - widths.current.modeBadge) > 0.5) { widths.current.modeBadge = w; recompute(); } }, [recompute]);
+
+  const badgesRef = useRef<THREE.Group>(null);
+  const modeRef = useRef<THREE.Group>(null);
+  const resolve = useCallback((tier: MapZoomTier) => {
+    const showName = nameVisibleAt(tier, isMajor, hasHoldings, alwaysLabels);
+    const showDetail = detailVisibleAt(tier, alwaysLabels);
+    const showLens = lensVisibleAt(tier, alwaysLabels);
+    const pick: MapZoomTier = showDetail ? 'detail' : showLens ? 'location' : 'system';
+    return { visible: showName, pick };
+  }, [isMajor, hasHoldings, alwaysLabels]);
+  const onPick = useCallback((pick: MapZoomTier) => {
+    if (badgesRef.current) badgesRef.current.visible = pick === 'detail';
+    if (modeRef.current) modeRef.current.visible = pick !== 'system';
+  }, []);
+
+  const nameColor = unlocked ? MAP_LABEL_COLORS.name : MAP_LABEL_COLORS.locked;
+  const badgeY = -(ROW_NAME_H / 2 + ROW_BADGE_H / 2);
+  const modeY = badgeEntries.length ? badgeY - ROW_BADGE_H / 2 - ROW_MODE_H / 2 : -(ROW_NAME_H / 2 + ROW_MODE_H / 2);
+  // Glyph planes hang off the measured name; re-render on width change is
+  // avoided by reading the width lazily through a state tick.
+  const [nameW, setNameW] = useState(0);
+  const onNameWidthState = useCallback((w: number) => { onNameWidth(w); setNameW(prev => (Math.abs(prev - w) > 0.5 ? w : prev)); }, [onNameWidth]);
+
+  return (
+    <HudFrame id={registryId} priority={priority} size={size} resolve={resolve} onPick={onPick} tierRef={tierRef} alwaysLabels={alwaysLabels} position={[0, yOffset, 0]}>
+      {standingGlyph && <GlyphPlane text={standingGlyph} color={standingColor} x={-(nameW / 2 + GLYPH_GAP + glyphLW / 2)} h={GLYPH_H} />}
+      <HudText text={name} px={MAP_LABEL_PX} color={nameColor} onWidth={onNameWidthState} />
+      {modeGlyph && <GlyphPlane text={modeGlyph} color={modeColor} x={nameW / 2 + GLYPH_GAP + glyphRW / 2} h={GLYPH_H} />}
+      {badgeEntries.length > 0 && (
+        <group ref={badgesRef} position={[0, badgeY, 0]}>
+          {badgeEntries.map((b, i) => {
+            const x = -badgeRowW / 2 + BADGE_R + i * (BADGE_R * 2 + BADGE_GAP);
+            return (
+              <group key={`${b.color}-${i}`} position={[x, 0, 0]}>
+                <mesh renderOrder={10}>
+                  <circleGeometry args={[BADGE_R, 20]} />
+                  <meshBasicMaterial color={b.color} depthTest={false} depthWrite={false} toneMapped={false} />
+                </mesh>
+                <HudText text={String(Math.min(99, b.n))} px={MAP_BADGE_PX} color={MAP_LABEL_COLORS.badgeText} y={0.5} renderOrder={12} />
+              </group>
+            );
+          })}
+        </group>
+      )}
+      {modeBadge && (
+        <group ref={modeRef} position={[0, modeY, 0]}>
+          <HudText text={modeBadge} px={MAP_MODE_BADGE_PX} color={modeColor} onWidth={onModeWidth} />
+        </group>
+      )}
+    </HudFrame>
+  );
+}
+
+// ── HudTag — a single-line tag (ETA, ship name, slot badge) ─────────────────
+
+export interface HudTagProps {
+  text: string;
+  px?: number;
+  color: string;
+  /** Registry id + priority to take part in the declutter (slot badges). */
+  id?: string;
+  priority?: number;
+  /** Visibility per frame (defaults to always). */
+  resolve?: (tier: MapZoomTier) => boolean;
+  tierRef?: TierRef;
+  alwaysLabels?: boolean;
+}
+
+/** A one-row SDF tag whose root group the parent positions per frame. */
+export const HudTag = forwardRef<THREE.Group, HudTagProps>(function HudTag({ text, px = MAP_BADGE_PX, color, id, priority = 0, resolve, tierRef, alwaysLabels }, ref) {
+  const size = useMemo<LabelSizeByTier>(() => ({ detail: { w: 0, h: 0, cy: 0 }, location: { w: 0, h: 0, cy: 0 }, system: { w: 0, h: 0, cy: 0 } }), []);
+  const onWidth = useCallback((w: number) => {
+    const h = px + 5;
+    (['detail', 'location', 'system'] as MapZoomTier[]).forEach(t => { size[t].w = w + 4; size[t].h = h; size[t].cy = 0; });
+  }, [size, px]);
+  const frameResolve = useCallback((tier: MapZoomTier) => ({ visible: resolve ? resolve(tier) : true, pick: 'detail' as MapZoomTier }), [resolve]);
+  return (
+    <HudFrame ref={ref} id={id} priority={priority} size={size} resolve={frameResolve} tierRef={tierRef} alwaysLabels={alwaysLabels}>
+      <HudText text={text} px={px} color={color} onWidth={onWidth} />
+    </HudFrame>
+  );
+});
 
 // ── Scene gate — raycast only into the scene that is showing ────────────────
 // The system view and a local scene are sibling groups of one Canvas; the
@@ -446,9 +622,12 @@ export function PlanetRing({ texUrl, innerScale, outerScale, bodyR }: { texUrl: 
     return g;
   }, [bodyR, innerScale, outerScale]);
   useEffect(() => () => geo.dispose(), [geo]);
+  const matRef = useRef<THREE.MeshBasicMaterial>(null);
+  useMapRefresh(matRef, tex);
   return (
     <mesh geometry={geo} rotation-x={-Math.PI / 2 + 0.18} renderOrder={2}>
       <meshBasicMaterial
+        ref={matRef}
         map={tex ?? undefined}
         color={tex ? '#ffffff' : '#eab308'}
         transparent
@@ -458,6 +637,37 @@ export function PlanetRing({ texUrl, innerScale, outerScale, bodyR }: { texUrl: 
       />
     </mesh>
   );
+}
+
+// ── Orbit path ring (system view: heliocentric; local scene: a moon) ────────
+// Item 6: the selected body's orbit brightens (an orbit highlight ring) so
+// "which path is this on" reads at a glance. Colour + opacity change only;
+// the selection itself is the reticle shape and the Location List state.
+
+export function OrbitPath({ radius, inclinationDeg = 0, highlighted = false, baseOpacity = 0.16, segments = 128 }: { radius: number; inclinationDeg?: number; highlighted?: boolean; baseOpacity?: number; segments?: number }) {
+  const geo = useMemo(() => {
+    const incl = (inclinationDeg * Math.PI) / 180;
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= segments; i++) {
+      const th = (i / segments) * Math.PI * 2;
+      pts.push(new THREE.Vector3(radius * Math.cos(th), radius * Math.sin(th) * Math.sin(incl), radius * Math.sin(th) * Math.cos(incl)));
+    }
+    return new THREE.BufferGeometry().setFromPoints(pts);
+  }, [radius, inclinationDeg, segments]);
+  const line = useMemo(
+    () => new THREE.Line(geo, new THREE.LineBasicMaterial({ color: MAP_LABEL_COLORS.locked, transparent: true, opacity: baseOpacity })),
+    [geo, baseOpacity],
+  );
+  useEffect(() => () => { geo.dispose(); (line.material as THREE.Material).dispose(); }, [geo, line]);
+  useEffect(() => {
+    const m = line.material as THREE.LineBasicMaterial;
+    m.color.set(highlighted ? MAP_LABEL_COLORS.orbitHighlight : MAP_LABEL_COLORS.locked);
+    m.opacity = highlighted ? Math.max(0.55, baseOpacity * 3) : baseOpacity;
+    m.toneMapped = !highlighted;
+    m.needsUpdate = true;
+    line.renderOrder = highlighted ? 3 : 0;
+  }, [line, highlighted, baseOpacity]);
+  return <primitive object={line} />;
 }
 
 // ── Body sphere — the textured, lit, atmosphere-shelled planet/moon ─────────
@@ -488,6 +698,8 @@ export function BodySphere({ r, texture, cloudsTexture, nightTexture, color, loc
   const night = useSafeTexture(nightTexture);
   const seg = r > 0.8 ? 48 : 28;
   const raycast = useGatedRaycast(MESH_RAYCAST);
+  const surfaceMat = useRef<THREE.MeshStandardMaterial>(null);
+  useMapRefresh(surfaceMat, tex, night);
   useFrame((_, delta) => {
     if (reduced) return;
     if (meshRef.current) meshRef.current.rotation.y += delta * 0.06;
@@ -502,6 +714,7 @@ export function BodySphere({ r, texture, cloudsTexture, nightTexture, color, loc
       <mesh ref={meshRef} onClick={onClick} onPointerOver={onPointerOver} onPointerOut={onPointerOut} raycast={raycast}>
         <sphereGeometry args={[r, seg, seg]} />
         <meshStandardMaterial
+          ref={surfaceMat}
           map={tex ?? undefined}
           color={tex ? (unlocked ? '#ffffff' : '#8a8f98') : (unlocked ? color : '#334155')}
           roughness={0.92}
@@ -608,4 +821,3 @@ export function SelectionMarker({ resolve, selectedLocationId, reduced, pad = 0.
     </group>
   );
 }
-

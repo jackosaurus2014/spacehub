@@ -1,0 +1,62 @@
+{
+  "hulls": {
+    "freighter": {
+      "tris": 242,
+      "verts": 153,
+      "region": [
+        0,
+        0.75,
+        0.5,
+        0.25
+      ],
+      "glb_bytes": 11084
+    },
+    "miner": {
+      "tris": 172,
+      "verts": 104,
+      "region": [
+        0.5,
+        0.75,
+        0.5,
+        0.25
+      ],
+      "glb_bytes": 7620
+    },
+    "survey": {
+      "tris": 134,
+      "verts": 83,
+      "region": [
+        0,
+        0.5,
+        0.5,
+        0.25
+      ],
+      "glb_bytes": 6032
+    },
+    "flagship": {
+      "tris": 196,
+      "verts": 118,
+      "region": [
+        0.5,
+        0.5,
+        0.5,
+        0.25
+      ],
+      "glb_bytes": 8420
+    }
+  },
+  "atlas": {
+    "px": 512,
+    "albedo_v": [
+      0.5,
+      1
+    ],
+    "emissive_v": [
+      0,
+      0.5
+    ],
+    "bytes": 35045,
+    "webp_bytes": 12066,
+    "file": "ship-atlas.webp"
+  }
+}

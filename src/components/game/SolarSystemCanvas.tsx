@@ -52,7 +52,12 @@ import { ConsolePanel, DataChip } from './chrome';
 import { DEFAULT_MAP_LAYERS, toggleMapLayer, type MapLayerVisibility, type MapLayerKey } from '@/lib/game/map-layers';
 // Ship traffic layer (2026-09-13): other corporations' ships as anonymised
 // contacts (+ NPC backdrop); same placement maths as the 3D renderer.
+// Flight mode part (b) — 2D parity for the hull silhouettes (item 7): the
+// canvas keeps dots and chevrons, but the chevron varies by hull class so
+// freighter / miner / survey / flagship are distinguishable here too.
+import { hullGlyphFor, hullGlyphPoints, type HullGlyph } from '@/lib/game/map-hulls';
 import {
+  hullClassOf,
   placeContacts,
   contactLabel,
   contactDetail,
@@ -1110,7 +1115,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           const sy = px.y + Math.sin(angle) * orbitR;
           const spriteUrl = def ? SHIP_SPRITE[def.role] : undefined;
           const shipSprite = spriteUrl ? imgs.cache.get(spriteUrlFor(spriteUrl)) : undefined;
-          drawShip(ctx, sx, sy, angle + Math.PI / 2, color, 3.5 * zoom, shipSprite);
+          drawShip(ctx, sx, sy, angle + Math.PI / 2, color, 3.5 * zoom, shipSprite, hullGlyphFor(hullClassOf(ship.definitionId)));
           continue;
         }
         // Interpolate position from departure → arrival
@@ -1184,7 +1189,7 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
         const color = def ? SHIP_COLOR[def.role] || '#22d3ee' : '#22d3ee';
         const spriteUrl = def ? SHIP_SPRITE[def.role] : undefined;
         const shipSprite = spriteUrl ? imgs.cache.get(spriteUrlFor(spriteUrl)) : undefined;
-        drawShip(ctx, bx, by, heading, color, 4 * zoom, shipSprite);
+        drawShip(ctx, bx, by, heading, color, 4 * zoom, shipSprite, hullGlyphFor(hullClassOf(ship.definitionId)));
 
         // W9: arrival-countdown label above the transit marker (2D parity
         // with the 3D map's ETA sprites — cheap text draw, no allocation).
@@ -1231,20 +1236,26 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           ctx.closePath();
           ctx.fill();
           ctx.globalAlpha = 1;
+        } else if (c.intel) {
+          // Revealed: the hull-class glyph (item 7 parity — classes are
+          // distinguishable by SHAPE) heading along the lane, plus the ring.
+          const heading = p.heading ? Math.atan2(p.heading[1], p.heading[0]) : -Math.PI / 2;
+          ctx.globalAlpha = 0.95;
+          drawShipMarker(ctx, x, y, heading, '#cbd5e1', dotR * 1.15, hullGlyphFor(c.hullClass));
+          ctx.globalAlpha = 1;
+          ctx.strokeStyle = corpRingColor(c.intel.corpId);
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(x, y, dotR + 3, 0, Math.PI * 2);
+          ctx.stroke();
         } else {
-          ctx.fillStyle = c.intel ? '#cbd5e1' : ANON_CONTACT_COLOR;
-          ctx.globalAlpha = c.intel ? 0.95 : 0.7;
+          // Anonymised: the dim generic dot (class is intelligence not held).
+          ctx.fillStyle = ANON_CONTACT_COLOR;
+          ctx.globalAlpha = 0.7;
           ctx.beginPath();
           ctx.arc(x, y, dotR, 0, Math.PI * 2);
           ctx.fill();
           ctx.globalAlpha = 1;
-          if (c.intel) {
-            ctx.strokeStyle = corpRingColor(c.intel.corpId);
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(x, y, dotR + 3, 0, Math.PI * 2);
-            ctx.stroke();
-          }
         }
       }
     }
@@ -1845,6 +1856,18 @@ export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation, e
           <button onClick={() => { if (localBody) { setLocalZoomBoth(localZoomRef.current * BUTTON_ZOOM_FACTOR); return; } const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom * BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom in" aria-keyshortcuts="+">+</button>
           <button onClick={() => { if (localBody) { const z = localZoomRef.current / BUTTON_ZOOM_FACTOR; if (z < LOCAL_ZOOM_MIN * 0.92) exitLocal(); else setLocalZoomBoth(z); return; } const c = camRef.current; applyCamera(zoomAboutPoint(c, c.zoom / BUTTON_ZOOM_FACTOR, viewCentre())); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-xs hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Zoom out" aria-keyshortcuts="-">−</button>
           <button onClick={() => { if (localBody) { setLocalZoomBoth(1); return; } applyCamera(DEFAULT_MAP_CAMERA); }} className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-white text-[10px] hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Reset view" aria-keyshortcuts="R Home">⟲</button>
+          {/* Flight mode (part b): a visible Frame control for the G key (2D parity). */}
+          <button
+            type="button"
+            onClick={() => { if (localBody) setLocalZoomBoth(1); else if (selectedLoc) centreOn(selectedLoc); }}
+            disabled={!selectedLoc && !localBody}
+            className="w-11 h-11 flex items-center justify-center rounded bg-black/60 text-cyan-200 hover:bg-white/10 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed"
+            aria-label="Frame the selection"
+            aria-keyshortcuts="G"
+            title="Frame the selected body — centre the map on it (G)"
+          >
+            <GameIcon name="frame" size={18} />
+          </button>
         </div>
 
         {/* Layer toggles — moved to bottom-right in map-command mode so the
@@ -2328,7 +2351,7 @@ function drawLocalDiagram(ctx: CanvasRenderingContext2D, w: number, h: number, m
     const eta = arrival ? `ETA ${formatCountdown(Math.max(0, (arrival - now) / 1000))}` : '';
     if (ship.own) {
       const heading = p.heading ? Math.atan2(p.heading[1], p.heading[0]) : t * 0.18;
-      drawShipMarker(ctx, x, y, heading, ship.color, Math.max(2.6, 0.06 * R));
+      drawShipMarker(ctx, x, y, heading, ship.color, Math.max(2.6, 0.06 * R), hullGlyphFor(ship.contact.hullClass));
       if (transit) {
         ctx.save();
         ctx.font = `600 ${Math.max(9, 0.17 * R)}px Inter, sans-serif`;
@@ -2340,8 +2363,18 @@ function drawLocalDiagram(ctx: CanvasRenderingContext2D, w: number, h: number, m
         ctx.restore();
       }
       o.shipPx.push({ x, y, title: ship.name, detail: `${ship.status}${eta ? ` · ${eta}` : ''}` });
+    } else if (ship.contact.intel) {
+      // Revealed contact: hull-class glyph + corp ring (item 7 parity).
+      const heading = p.heading ? Math.atan2(p.heading[1], p.heading[0]) : t * 0.18;
+      const gr = Math.max(2.2, 0.05 * R);
+      drawShipMarker(ctx, x, y, heading, '#cbd5e1', gr, hullGlyphFor(ship.contact.hullClass));
+      ctx.strokeStyle = corpRingColor(ship.contact.intel.corpId);
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(x, y, gr + 3, 0, Math.PI * 2);
+      ctx.stroke();
     } else {
-      ctx.fillStyle = ship.contact.npc && ship.contact.factionHint ? FACTION_CONTACT_TINT[ship.contact.factionHint] : (ship.contact.intel ? '#cbd5e1' : ANON_CONTACT_COLOR);
+      ctx.fillStyle = ship.contact.npc && ship.contact.factionHint ? FACTION_CONTACT_TINT[ship.contact.factionHint] : ANON_CONTACT_COLOR;
       ctx.globalAlpha = 0.6;
       ctx.beginPath();
       ctx.arc(x, y, Math.max(1.6, 0.04 * R), 0, Math.PI * 2);
@@ -2405,8 +2438,9 @@ function drawLocalDiagram(ctx: CanvasRenderingContext2D, w: number, h: number, m
 
 // ─── Drawing helpers ──────────────────────────────────────────────────────────
 
-/** Render a ship — sprite (rotated to heading) when loaded, chevron fallback otherwise.
- *  Size is the chevron "unit" radius; sprite is drawn at ~6×size so it reads clearly. */
+/** Render a ship — sprite (rotated to heading) when loaded, hull-class glyph
+ *  fallback otherwise. Size is the glyph "unit" radius; sprite is drawn at
+ *  ~6×size so it reads clearly. */
 function drawShip(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -2415,6 +2449,7 @@ function drawShip(
   color: string,
   size: number,
   sprite: HTMLImageElement | undefined,
+  glyph: HullGlyph = 'chevron',
 ) {
   if (sprite && sprite.complete && sprite.naturalWidth > 0) {
     const spriteSize = Math.max(18, size * 5.5);
@@ -2429,31 +2464,32 @@ function drawShip(
     ctx.restore();
     return;
   }
-  drawShipMarker(ctx, x, y, heading, color, size);
+  drawShipMarker(ctx, x, y, heading, color, size, glyph);
 }
 
-function drawShipMarker(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, color: string, size: number) {
+/** Hull-class glyph (map-hulls.ts hullGlyphPoints): chevron = freighter /
+ *  hauler, barge = miner, dart = survey / servicer, delta = flagship. Nose
+ *  along the heading. */
+function drawShipMarker(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, color: string, size: number, glyph: HullGlyph = 'chevron') {
+  const pts = hullGlyphPoints(glyph);
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(heading);
-  // Chevron shape
+  const trace = () => {
+    ctx.beginPath();
+    for (let i = 0; i < pts.length; i++) {
+      const [px, py] = pts[i];
+      if (i === 0) ctx.moveTo(px * size, py * size); else ctx.lineTo(px * size, py * size);
+    }
+    ctx.closePath();
+  };
   ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(size * 1.4, 0);
-  ctx.lineTo(-size * 0.8, -size * 0.8);
-  ctx.lineTo(-size * 0.3, 0);
-  ctx.lineTo(-size * 0.8, size * 0.8);
-  ctx.closePath();
+  trace();
   ctx.fill();
   // Glow
   ctx.shadowColor = color;
   ctx.shadowBlur = 8;
-  ctx.beginPath();
-  ctx.moveTo(size * 1.4, 0);
-  ctx.lineTo(-size * 0.8, -size * 0.8);
-  ctx.lineTo(-size * 0.3, 0);
-  ctx.lineTo(-size * 0.8, size * 0.8);
-  ctx.closePath();
+  trace();
   ctx.fill();
   ctx.restore();
 }

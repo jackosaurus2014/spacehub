@@ -796,6 +796,7 @@ export default function MapCommandCenter({
                 onClick={() => setMode(cycleMapMode(mapMode, 1))}
               />
               <StripButton icon="label" label={labelsAlways ? 'Labels: all, at every zoom' : 'Labels: by zoom level'} pressed={labelsAlways} onClick={toggleLabelsAlways} />
+              <StripButton icon="frame" label="Frame the selection — fly the camera to the selected body (G)" pressed={false} disabled={!selection && !localBody} onClick={() => { playSound('click'); requestCamera('frame'); }} />
               <StripButton icon="cargo-truck" label="Lane volume layer (last 7 days)" pressed={showVolume} onClick={() => { playSound('click'); setShowVolume(v => !v); }} />
               <StripButton icon="route" label="Shipping lanes" pressed={layers.lanes} onClick={() => toggleLayer('lanes')} />
               <StripButton icon="fleet" label="Your ships" pressed={layers.ships} onClick={() => toggleLayer('ships')} />
@@ -973,6 +974,19 @@ export default function MapCommandCenter({
               }`}
             >
               {labelsAlways ? '● Labels: All' : '○ Labels: Zoom'}
+            </button>
+            {/* Flight mode (part b): a visible Frame control for the G key. */}
+            <button
+              type="button"
+              onClick={() => { playSound('click'); requestCamera('frame'); }}
+              disabled={!selection && !localBody}
+              aria-label="Frame the selection"
+              aria-keyshortcuts="G"
+              title="Frame the selected body — fly the camera to it (G)"
+              className="min-h-[44px] px-2.5 text-[10px] font-semibold whitespace-nowrap border-l border-white/[0.08] transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 text-slate-400 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+            >
+              <GameIcon name="frame" size={13} />
+              <span>Frame</span>
             </button>
             <button
               type="button"

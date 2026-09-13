@@ -123,3 +123,22 @@ without opening the image.
 Future HQ stages (LEO deck, Lunar, Mars, ...) should follow the same file
 layout: one procedural script per stage, the same variant/layer/actor model,
 and one manifest per stage under `public/game/hq/<stage>/`.
+
+## Ship hulls (solar map, graphics review item 7)
+
+`art/blender/ships.py` builds the four low-poly map hulls (freighter, miner,
+survey, flagship; <= 400 tris each, nose along glTF +Y, 1.0 unit long) from
+primitives, packs their UVs into one 512 px atlas (albedo in the top half,
+emissive in the bottom half — same UVs shifted by -0.5 in v), bakes it with
+Cycles and exports one indexed `.glb` per hull (positions + TEXCOORD_0 only;
+the renderer flat-shades and owns the material). Then
+`npx tsx art/blender/encode-ships.ts` turns the baked PNG into
+`public/game/models/ship-atlas.webp` (lossless) and prints the byte table.
+
+```bash
+blender -b --python art/blender/ships.py -- --out public/game/models
+npx tsx art/blender/encode-ships.ts
+```
+
+Consumers: `src/lib/game/map-hulls.ts` (model mapping, batching, 2D glyphs)
+and `src/components/game/map3d/hulls.tsx` (instanced rendering).

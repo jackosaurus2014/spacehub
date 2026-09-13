@@ -90,7 +90,7 @@ export type IconName =
   //    first; paired states (bridge/bridge-exit, lock/unlock, play/pause)
   //    differ in silhouette, never colour alone. ──────────────────────────
   | 'bridge' | 'bridge-exit' | 'sun' | 'unlock' | 'keyboard' | 'crown'
-  | 'diamond' | 'label' | 'route' | 'flag' | 'star' | 'gift' | 'chat'
+  | 'diamond' | 'label' | 'route' | 'frame' | 'flag' | 'star' | 'gift' | 'chat'
   | 'moon' | 'pin' | 'exchange' | 'search' | 'dice' | 'ban' | 'bank'
   | 'home' | 'square' | 'magnet' | 'pause' | 'play' | 'trophy';
 
@@ -307,6 +307,8 @@ export const ICONS: Record<IconName, IconDef> = {
   diamond: { meaning: 'Zone stakeholder', els: [pg('12,3 21,12 12,21 3,12', 'none')] },
   label: { meaning: 'Labels — show every map label at every zoom', els: [p('M3 12V4h8l10 10-8 8z'), c(7, 8, 1.2, 'currentColor')] },
   route: { meaning: 'Shipping lanes', els: [c(5, 6, 2.5, 'none'), c(19, 18, 2.5, 'none'), p('M7 8c4 0 4 8 8 8h2')] },
+  // Flight mode (part b): Frame — fly the camera to the selection (the G key).
+  frame: { meaning: 'Frame — fly the camera to the selected body', els: [pl('3,8 3,3 8,3'), pl('16,3 21,3 21,8'), pl('21,16 21,21 16,21'), pl('8,21 3,21 3,16'), c(12, 12, 2.4, 'none'), c(12, 12, 0.8, 'currentColor')] },
   flag: { meaning: 'Flag / milestone / claim', els: [l(5, 3, 5, 21), p('M5 4h14l-3 4 3 4H5')] },
   star: { meaning: 'Star rating / highlight', els: [p('M12 3l2.4 5 5.6.6-4.2 3.8 1.2 5.5L12 15l-5 2.9 1.2-5.5-4.2-3.8 5.6-.6z')] },
   gift: { meaning: 'Bonus / reward', els: [r(3, 10, 18, 11, 1), r(3, 6, 18, 4, 1), l(12, 6, 12, 21), p('M12 6c-2-4-6-4-6-1s4 1 6 1z'), p('M12 6c2-4 6-4 6-1s-4 1-6 1z')] },
