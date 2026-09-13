@@ -109,7 +109,10 @@ export default function Countdown({ to, size = 'lg', className = '' }: Countdown
       style={{ color: parts.live ? 'var(--go)' : 'var(--ink)' }}
       data-live={parts.live ? 'true' : 'false'}
     >
-      <span aria-hidden="true">
+      {/* React checks suppressHydrationWarning on a text node's DIRECT parent only,
+          so the attribute on <time> never covered the digits below (2026-09-12,
+          React #418 on /mission-control whenever the target was < 24 h away). */}
+      <span aria-hidden="true" suppressHydrationWarning>
         {parts.live || !parts.valid ? (
           parts.text
         ) : dayMatch ? (
