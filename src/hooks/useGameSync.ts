@@ -1,6 +1,6 @@
 'use client';
 
-import { registerSyncNow } from '@/lib/game/sync-bridge';
+import { registerSyncNow, type SyncOutcome } from '@/lib/game/sync-bridge';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { TYCOON_EVENTS, trackTycoon, fireOnce } from '@/lib/game/funnel-events';
 import type { GameState } from '@/lib/game/types';
@@ -121,17 +121,17 @@ export function useGameSync(
   const onServerDataRef = useRef(onServerData);
   onServerDataRef.current = onServerData;
 
-  const doSync = useCallback(async (opts?: { force?: boolean }) => {
+  const doSync = useCallback(async (opts?: { force?: boolean }): Promise<SyncOutcome> => {
     const state = stateRef.current;
     const onServerData = onServerDataRef.current;
-    if (!state) return;
+    if (!state) return { outcome: 'skipped' };
 
     // Rate limit: don't sync more than once per 30 seconds. A forced sync
     // (the funds-refusal retry in asset-client, 2026-09-12) skips it: the
     // whole point of that path is to push the balance the server is missing,
     // and the live probe showed the retry firing with NO sync whenever the
     // routine sync had run in the last 30 s.
-    if (!opts?.force && Date.now() - lastSyncRef.current < 30_000) return;
+    if (!opts?.force && Date.now() - lastSyncRef.current < 30_000) return { outcome: 'skipped' };
     // Cloud save (2026-09-09): ride the full client state along with the
     // sync every CLOUD_SAVE_INTERVAL_MS (and on the first sync of a session)
     // so a signed-in player can continue on another device.
@@ -453,10 +453,15 @@ export function useGameSync(
       } else if (res.status === 401) {
         // Not logged in — silently skip, don't retry
         setStatus(prev => ({ ...prev, syncing: false, error: null }));
+        return { outcome: 'skipped' };
       } else if (res.status === 429) {
         // Server-enforced sync cadence (C-2b, 10 s per profile) — another
         // tab just synced. Not an error; the next interval will succeed.
+        // A forced push (funds retry) reads retryAfterMs and waits it out.
         setStatus(prev => ({ ...prev, syncing: false, error: null }));
+        let retryAfterMs = 10_000;
+        try { const j = await res.json(); if (typeof j?.retryAfterMs === 'number') retryAfterMs = j.retryAfterMs; } catch { /* keep default */ }
+        return { outcome: 'throttled', retryAfterMs };
       } else {
         throw new Error(`Sync failed: ${res.status}`);
       }
@@ -467,7 +472,9 @@ export function useGameSync(
         syncing: false,
         error: retryCount.current > 3 ? 'Sync unavailable' : null,
       }));
+      return { outcome: 'error' };
     }
+    return { outcome: 'ok' };
   // Intentionally empty: state and onServerData are read from refs above so
   // this callback stays stable and the sync timers are never reset.
   // eslint-disable-next-line react-hooks/exhaustive-deps

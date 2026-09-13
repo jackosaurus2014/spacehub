@@ -19,7 +19,7 @@ describe('requestAssetOp funds retry', () => {
   it('syncs then retries once when the registry refuses on funds, and succeeds', async () => {
     const calls: string[] = [];
     let synced = false;
-    registerSyncNow(async () => { synced = true; calls.push('sync'); });
+    registerSyncNow(async () => { synced = true; calls.push('sync'); return { outcome: 'ok' as const }; });
     global.fetch = jest.fn(async () => {
       calls.push('build');
       return synced ? json(200, { instanceId: 'b1' }) : json(400, { error: 'Insufficient funds: GEO Telecom Satellite costs $150.0M (you have $125.0M).', code: 'insufficient_funds' });
@@ -30,11 +30,28 @@ describe('requestAssetOp funds retry', () => {
   });
 
   it('surfaces the refusal when the retry still fails, and retries only once', async () => {
-    registerSyncNow(async () => {});
+    registerSyncNow(async () => ({ outcome: 'ok' as const }));
     global.fetch = jest.fn(async () => json(400, { error: 'Insufficient funds', code: 'insufficient_funds' })) as typeof fetch;
     const r = await requestAssetOp('build', {}, 'order');
     expect(r.kind).toBe('fail');
     expect((global.fetch as jest.Mock).mock.calls).toHaveLength(2);
+  });
+
+  it('waits out a server-throttled sync (429 sync_too_frequent) and pushes again before retrying', async () => {
+    const calls: string[] = [];
+    let pushes = 0;
+    registerSyncNow(async () => { pushes++; calls.push('sync' + pushes); return pushes === 1 ? { outcome: 'throttled' as const, retryAfterMs: 20 } : { outcome: 'ok' as const }; });
+    global.fetch = jest.fn(async () => { calls.push('build'); return pushes >= 2 ? json(200, { instanceId: 'b2' }) : json(400, { error: 'Insufficient funds', code: 'insufficient_funds' }); }) as typeof fetch;
+    const r = await requestAssetOp('build', {}, 'order');
+    expect(r.kind).toBe('ok');
+    expect(calls).toEqual(['build', 'sync1', 'sync2', 'build']);
+  });
+
+  it('does not retry when the forced sync was skipped or failed', async () => {
+    registerSyncNow(async () => ({ outcome: 'error' as const }));
+    global.fetch = jest.fn(async () => json(400, { error: 'Insufficient funds', code: 'insufficient_funds' })) as typeof fetch;
+    expect((await requestAssetOp('build', {}, 'order')).kind).toBe('fail');
+    expect((global.fetch as jest.Mock).mock.calls).toHaveLength(1);
   });
 
   it('does not retry without a registered sync (local play) or for other failures', async () => {

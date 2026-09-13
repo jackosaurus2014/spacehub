@@ -36,13 +36,14 @@ export async function requestAssetOp<T = Record<string, unknown>>(
   // moves on sync; the dashboard shows the client's live figure. On a funds
   // refusal, push the current state and retry once (2026-09-12).
   if (first.kind === 'fail' && first.code === 'insufficient_funds') {
+    toast.info('Your balance on the server is behind — syncing and retrying…');
     const pushed = await pushSyncNow();
     if (pushed) return requestAssetOpOnce<T>(path, body, label);
   }
   return first;
 }
 
-export type AssetOpPath = 'build' | 'refit' | 'sell' | 'mothball' | 'reactivate' | 'repair' | 'research' | 'ship' | 'scrap' | 'unlock';
+export type AssetOpPath = 'build' | 'refit' | 'sell' | 'mothball' | 'reactivate' | 'repair' | 'research' | 'ship' | 'scrap' | 'unlock' | 'mining';
 
 async function requestAssetOpOnce<T = Record<string, unknown>>(
   path: AssetOpPath,

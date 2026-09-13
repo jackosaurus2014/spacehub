@@ -14,7 +14,10 @@ describe('useGameSync forced sync for the funds retry', () => {
   it('registers a forced sync with the sync bridge', () => {
     expect(src).toMatch(/registerSyncNow\(\(\) => doSync\(\{ force: true \}\)\)/);
   });
+  it('reports a throttled sync with the server retryAfterMs so the bridge can wait it out', () => {
+    expect(src).toMatch(/return { outcome: 'throttled', retryAfterMs };/);
+  });
   it('lets a forced sync bypass the 30 s rate limit', () => {
-    expect(src).toMatch(/if \(!opts\?\.force && Date\.now\(\) - lastSyncRef\.current < 30_000\) return;/);
+    expect(src).toMatch(/if \(!opts\?\.force && Date\.now\(\) - lastSyncRef\.current < 30_000\) return \{ outcome: 'skipped' \};/);
   });
 });
