@@ -507,8 +507,9 @@ from the server starting money by > 1 % writes MarketAuditLog
 
 Trade-off: a player who played anonymously for hours and then registers
 starts server-side at the kit; the money figure catches up at the
-time-proportional ceiling ($120M per 60 s sync), resources through the
-phase-1 growth allowance. That is the intended trust model.
+time-proportional ceiling (2 x its own verified monthly gross per elapsed
+game-month), resources through the phase-1 growth allowance. That is the
+intended trust model.
 
 ### C-2 — $10M-per-request money ratchet (fixed)
 
@@ -519,11 +520,15 @@ request the same way.
 
 **Now** (`ledger-reconcile.ts`, `resource-plausibility.ts`, `sync/route.ts`):
 
-- `plausibleIncomeHeadroom(elapsedMs)` = 0 below
-  `MIN_PLAUSIBILITY_ELAPSED_MS` (5 s), linear `elapsedMs × $2M/s` up to the
-  30-day cap. No floor: money may only stay <= prevMoney + ledger deltas on
-  a rapid re-sync. `MIN_PLAUSIBILITY_ELAPSED_MS` is kept as the threshold
-  (it also windows the craft-attestation caps).
+- `plausibleIncomeHeadroom(elapsedMs, gross)` = 0 below
+  `MIN_PLAUSIBILITY_ELAPSED_MS` (5 s), then time-proportional in the
+  profile's own server-derived monthly gross up to the 30-day cap (the flat
+  `$2M/s` of the original C-2 write-up was replaced by the state-derived
+  term at the 2026-09-02 clock unification, and its outer rail was made to
+  scale on 2026-09-13 — see "C-2 follow-up 3" below). No floor: money may
+  only stay <= prevMoney + ledger deltas on a rapid re-sync.
+  `MIN_PLAUSIBILITY_ELAPSED_MS` is kept as the threshold (it also windows
+  the craft-attestation caps).
 - `elapsedGameMonths` returns 0 below the threshold; the flat floor is
   time-proportional: `flatFloor(prev, months) = max(100, 0.25 × prev) ×
   min(1, months)` (`flatFloorScale`), so one full allowance per game month
@@ -555,8 +560,8 @@ cap) x (1 + world-event cap), derived from the same constants
 `applyContractReward` uses) to `clampPlausibleMoney`'s `extraHeadroom` for
 that sync, then is persisted — once per profile, ever, at most
 `MAX_NEW_CONTRACT_CREDITS_PER_SYNC` (20) per sync (`contract_credit_cap_exceeded`
-audit beyond); unknown ids are ignored; `MONEY_HEADROOM_MULT` and the
-backstop are untouched and ledger deltas are still added after the clamp.
+audit beyond); unknown ids are ignored; `MONEY_HEADROOM_MULT` and the outer
+rail are untouched and ledger deltas are still added after the clamp.
 The client adopts the figure: `reconciledMoney − moneySent − ledgerDelta`
 is queued (`queueMoneyCorrection`) and applied as a delta on the next tick,
 with a toast for a removal >= $1M — a remaining clamp is visible, never a
@@ -617,6 +622,93 @@ carries the gate figures so it can be restored by ledger.
 Tests: `income-credit.test.ts`, `sync-validation-contracts.test.ts`,
 `ledger-reconcile.test.ts`, `game-sync-money-correction.test.ts`,
 `sync-contract-credit.test.ts`.
+
+### C-2 follow-up 3 — the money ceiling did not scale with the corporation (2026-09-13)
+
+**Was.** `plausibleIncomeHeadroom` was
+`min(gross x MONEY_HEADROOM_MULT x elapsedMonths, elapsedMs x $500)`. The
+second term — a flat `MAX_ABSOLUTE_INCOME_PER_MS = 500`, i.e. **$30M per real
+minute for every profile regardless of size** — was the BINDING term in
+production: `client_money_implausible_rejected` rows show
+`headroom = 29,968,500` for a 60 s gap on a profile whose own
+`serverMonthlyGross` was **$192.7B**. Any corporation grossing more than
+~$10.8B per 6 h game-month (`$500/ms x 21,600,000 ms x MONEY_HEADROOM_MULT`)
+therefore had routine, entirely legitimate tick income rejected on *every*
+sync, and because each window re-clamps from the already-clamped row the
+money never came back — the same "money disappears on screen" failure the
+founder hit twice this week, latent until a corporation got large enough.
+Nobody was near it (the founder nets ~$13.7M/game-month), but the 50-year
+balance sims end with integrator corporations far past it. The same flat rail
+also broke long absences: a week away granted a large corporation
+`7d x $500/ms = $302B`, less than one game-month of its own income, against
+away-operations income of up to `0.85 x 28` game-months.
+
+**Now** (`ledger-reconcile.ts`, `sync/route.ts`). The rail is derived from the
+same thing the primary term is — what the server can vouch for:
+
+```
+months        = plausibleElapsedMs(elapsedMs) / REAL_MS_PER_GAME_MONTH
+stateDerived  = serverMonthlyGross x MONEY_HEADROOM_MULT x months
+allowanceRate = max( MONEY_ALLOWANCE_FLOOR_PER_MS,                  ($/ms)
+                     serverMonthlyGross x MONEY_ALLOWANCE_GROSS_MULT
+                       / REAL_MS_PER_GAME_MONTH )
+headroom      = min(stateDerived, allowanceRate x elapsedMs)
+                  + verified one-shot credits (contract-credit.ts)
+```
+
+`MONEY_HEADROOM_MULT` stays 2.0; `MONEY_ALLOWANCE_FLOOR_PER_MS` is the old
+`500` in its new role as the rail's FLOOR (`MAX_ABSOLUTE_INCOME_PER_MS` is
+kept as a deprecated alias); `MONEY_ALLOWANCE_GROSS_MULT = 2 x
+MONEY_HEADROOM_MULT = 4.0`. Read `allowanceRate` as one auditable number per
+profile — "the most dollars per millisecond of tick income this corporation
+may ever gain" — now logged on every clamp (`allowanceRatePerMs` in the
+`client_money_implausible_rejected` row).
+
+**Attacker analysis.** A forged money figure buys *zero* extra allowance,
+this sync or any later one: `serverMonthlyGross` is recomputed every sync by
+`computeServerMonthlyGrossDetailed` from the persisted, sync-validated
+buildings / services / research / workforce row and never reads the claimed
+money, so there is no ratchet from money back into the ceiling. The only way
+to raise the allowance is to build real services and buildings, which spend
+money that itself passed this clamp, are ledgered server-side
+(`building_build`, `ship_build`, …) and whose resource legs pass the
+independent phase-1/2 ceilings — the bootstrap "claim money → bigger
+allowance → claim more" has no first step. A single sync is bounded by
+`MAX_PLAUSIBILITY_ELAPSED_MS` (30 days = 120 game-months). A zero, negative,
+NaN or failed gross still yields ZERO tick headroom (only ledger-mediated and
+verified one-shot income passes); a gross large enough to overflow the state
+term degrades to the rail and then to the $500/ms floor, never to an
+unbounded ceiling. The first sync of a profile is untouched (C-1's
+server-derived kit). **Never set `MONEY_ALLOWANCE_GROSS_MULT` below
+`MONEY_HEADROOM_MULT`** — that re-creates exactly this bug.
+
+**Known trade-off (follow-up).** The flat rail was also, by accident, the
+only thing tightening `computeServerMonthlyGrossDetailed`, which is a
+*theoretical maximum* — it takes every client-only multiplier at its
+documented cap (`MAX_SERVICE_REVENUE_CLIENT_MULT` ≈ **1,821x** nameplate).
+A 14-service row nameplated at $28M/game-month therefore reports a verified
+gross of ~$76.7B and is now allowed ~$461M per 65 s sync where the flat rail
+allowed $32.5M — about 3.4x looser for mid-size profiles. That is the price
+of not clamping large corporations, and it is the right side of the trade
+(the clamp's contract is "never clip an honest client"); the way to tighten
+it is to make the gross itself less theoretical — several terms in that stack
+(tier, era, legacy, commander roster) are partially server-known and could be
+read from the persisted row instead of taken at cap. That work belongs in
+`resource-plausibility.ts`, not in the rail. Not scheduled; tracked here.
+
+**Elapsed-time limits, re-checked.** The 5 s minimum is unchanged and still
+below the 10 s `SYNC_MIN_INTERVAL_MS` cadence gate, so it never clips an
+honest client. The 30-day cap is now the *only* limit that can clamp a
+returning player: away-operations is uncapped in duration but capped in rate
+at `AWAY_EFFICIENCY_INVESTMENT_CAP = 0.85`, so an absence is safe up to
+`MONEY_HEADROOM_MULT / 0.85 x 30d ≈ 70 real days`; beyond that the cap bites
+and the correction is visible + explained (Mail record). Left as is — a
+>70-day absence is rare, the failure is visible rather than silent, and
+raising the cap would widen the single-sync bound.
+Tests: `ledger-reconcile.test.ts` ("money ceiling scales with the
+corporation" — $10M / $1B / $50B per game-month banked across a realistic
+60 s/30 s/5 min cadence, unclamped; 100x claims rejected at every size),
+`clock-unification.test.ts`.
 
 ### C-3 — Orbital-slot lease transfer debited a non-consenting buyer (fixed)
 

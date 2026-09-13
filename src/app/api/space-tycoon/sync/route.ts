@@ -26,6 +26,7 @@ import {
   reconcileBalance,
   applyResourceDeltas,
   clampPlausibleMoney,
+  plausibleAllowanceRatePerMs,
   PENDING_EXCLUDED_LEDGER_REASONS,
   SERVER_RESOURCE_CORRECTION_REASON,
   SYNC_MIN_INTERVAL_MS,
@@ -339,8 +340,12 @@ export async function POST(request: Request) {
         // THIS profile's persisted state can gross per 6 h game-month
         // (resource-plausibility.ts computeServerMonthlyGross — same partial
         // GameState builder the resource ceilings use), x2 headroom, bounded
-        // by a $500K/s backstop. A malformed row degrades to gross 0 (only
-        // ledger-mediated income passes), never to an unbounded ceiling.
+        // by an allowance rail that SCALES with that same verified gross
+        // (2026-09-13 scaling fix, ledger-reconcile.ts header: the rail used
+        // to be a flat $500/ms = $30M/min and was the binding term for any
+        // corporation grossing over ~$10.8B per game-month). A malformed row
+        // degrades to gross 0 (only ledger-mediated and verified one-shot
+        // income passes), never to an unbounded ceiling.
         let serverMonthlyGross = 0;
         // CC-2: settle a due relocation first, then read the seat the
         // ceiling should price (a LEO deck's +12% launch revenue).
@@ -477,6 +482,7 @@ export async function POST(request: Request) {
           logger.warn('Client money claim exceeded plausibility ceiling — clamped', {
             userId: session.user.id, profileId: existingProfile.id,
             clientMoney, prevMoney: existingProfile.money, elapsedMs, serverMonthlyGross,
+            allowanceRatePerMs: plausibleAllowanceRatePerMs(serverMonthlyGross),
             headroom: clamp.headroom, ceiling: clamp.ceiling, rejectedExcess: clamp.rejectedExcess,
             contractCredit: contractCredit.headroomCredit, contractsCredited: contractCredit.creditedNow,
             timedEventCredit: timedEventCredit.headroomCredit, timedEventsCredited: timedEventCredit.creditedNow,
@@ -489,6 +495,7 @@ export async function POST(request: Request) {
                 profileId: existingProfile.id,
                 details: {
                   clientMoney, prevMoney: existingProfile.money, elapsedMs, serverMonthlyGross,
+                  allowanceRatePerMs: plausibleAllowanceRatePerMs(serverMonthlyGross),
                   headroom: clamp.headroom, ceiling: clamp.ceiling, rejectedExcess: clamp.rejectedExcess,
                   contractCredit: contractCredit.headroomCredit, contractsCredited: contractCredit.creditedNow,
                   timedEventCredit: timedEventCredit.headroomCredit, timedEventsCredited: timedEventCredit.creditedNow,

@@ -181,22 +181,91 @@ export function reconcileBalance(
 //
 // Clock unification (2026-09-02, docs/GAME_DESIGN_REVIEW_2026-09.md D1): the
 // old ceiling was a flat $2M/s, derived from a real-calendar month while the
-// engine ran a 60 s month — 33,000x looser than its own comment. It is now
+// engine ran a 60 s month — 33,000x looser than its own comment. It became
 // STATE-DERIVED:
 //
 //   headroom = min( serverMonthlyGross x MONEY_HEADROOM_MULT x elapsedMonths,
-//                   MAX_ABSOLUTE_INCOME_PER_MS x elapsedMs )
+//                   500 x elapsedMs )
 //   elapsedMonths = elapsedMs / REAL_MS_PER_GAME_MONTH   (6 real hours)
 //
 // where `serverMonthlyGross` is the profile's theoretical-max monthly gross
 // revenue from the engine's own formula evaluated over the PERSISTED row
 // (resource-plausibility.ts computeServerMonthlyGross — every server-known
-// term real, every client-only multiplier at its documented cap), and the
-// absolute term is a $500K/s backstop that no legitimate corporation
-// approaches. There is NO per-request floor (exploit batch C-2). Ledger-
-// mediated income (contracts, mega-projects, bounties...) is NOT subject to
-// this ceiling — it is added on top via `moneyDelta`, which is independently
-// server-verified.
+// term real, every client-only multiplier at its documented cap). There is NO
+// per-request floor (exploit batch C-2). Ledger-mediated income (contracts,
+// mega-projects, bounties...) is NOT subject to this ceiling — it is added on
+// top via `moneyDelta`, which is independently server-verified.
+//
+// ─── Scaling fix (2026-09-13): the allowance rail ────────────────────────────
+// That second term — a FLAT $500/ms, i.e. $30M per real minute — did not
+// scale with the corporation. It was the BINDING term in production: clamp
+// records show `headroom = 29,968,500` for a 60 s gap on a profile whose own
+// `serverMonthlyGross` was $192.7B. Any corporation grossing more than
+// ~$10.8B per 6 h game-month (= $500/ms x 21.6M ms) therefore had routine,
+// entirely legitimate tick income rejected on EVERY sync, and because each
+// window re-clamps from the already-clamped row the money never came back.
+// Nobody had reached that size yet (the founder nets ~$13.7M/game-month), but
+// the 50-year balance sims end with integrator corporations far past it.
+//
+// Raising the magic number would only move the wall. The rail is now derived
+// from the same thing the primary term is — what the server can VOUCH for:
+//
+//   months        = plausibleElapsedMs(elapsedMs) / REAL_MS_PER_GAME_MONTH
+//   stateDerived  = gross x MONEY_HEADROOM_MULT x months
+//   allowanceRate = max( MONEY_ALLOWANCE_FLOOR_PER_MS,                  ($/ms)
+//                        gross x MONEY_ALLOWANCE_GROSS_MULT / MONTH_MS )
+//   rail          = allowanceRate x elapsedMs
+//   headroom      = min( stateDerived, rail ) + verified one-shot credits
+//
+// with MONEY_ALLOWANCE_GROSS_MULT = 2 x MONEY_HEADROOM_MULT. Read the rail as
+// the single auditable sentence "this profile may never gain more than
+// `allowanceRate` dollars per millisecond of tick income", where that rate is
+// a pure function of server-persisted, sync-validated state plus a $500/ms
+// floor for a profile whose gross the server cannot vouch for (a brand-new
+// row, a failed gross computation, a corrupted clock constant).
+//
+// WHAT AN ATTACKER CAN DO under this rule:
+//   * Claim at most `stateDerived + credits` per sync. To claim more they
+//     must first make `gross` larger, and `gross` is recomputed every sync by
+//     computeServerMonthlyGrossDetailed from the PERSISTED buildings /
+//     services / research / workforce row — never from the claimed money. A
+//     forged money figure therefore buys exactly zero extra allowance, this
+//     sync or any later one: there is no ratchet from money back into gross.
+//   * Grow `gross` the only way the server accepts: build real services and
+//     buildings. Those spend money that itself passed this clamp and are
+//     ledgered server-side (`building_build`, `ship_build`, …), and their
+//     resource legs pass the independent resource ceilings. So the allowance
+//     can at best track expansion that was actually paid for — the bootstrap
+//     "claim money -> bigger allowance -> claim more" has no first step.
+//   * Sit idle to accumulate elapsed time. Bounded by
+//     MAX_PLAUSIBILITY_ELAPSED_MS (30 days = 120 game-months), which is the
+//     absolute ceiling on a single sync's allowance.
+// WHAT AN ATTACKER CANNOT DO:
+//   * Exceed 2x their own verified earning power over any window. The rail is
+//     deliberately looser than `stateDerived` (mult 4 vs 2) so that it can
+//     never clamp a corporation for the crime of being large — the primary,
+//     tighter, state-derived term is what binds for every well-formed
+//     profile. NEVER set MONEY_ALLOWANCE_GROSS_MULT below
+//     MONEY_HEADROOM_MULT: that re-creates exactly the bug fixed here.
+//   * Escape through a broken gross. A zero / negative / NaN gross yields
+//     stateDerived = 0 and therefore ZERO headroom (the conservative bound —
+//     only ledger-mediated and verified one-shot income passes). A gross so
+//     large that `stateDerived` overflows to Infinity falls back to the rail,
+//     and if the rail is not finite either, to the $500/ms floor. Those are
+//     the paths the floor exists for.
+//
+// KNOWN TRADE-OFF: the flat rail was also, by accident, the only thing
+// tightening computeServerMonthlyGrossDetailed, which is a THEORETICAL
+// maximum (every client-only multiplier at its documented cap —
+// MAX_SERVICE_REVENUE_CLIENT_MULT is ~1,821x nameplate). A 14-service row
+// nameplated at $28M/game-month reports a verified gross of ~$76.7B, so it
+// is now allowed ~$461M per 65 s sync where the flat rail allowed $32.5M —
+// ~3.4x looser for mid-size profiles. That is the price of never clipping an
+// honest large corporation, which is this clamp's contract. Tightening it
+// means making the gross itself less theoretical (tier / era / legacy /
+// commander terms are partially server-known and could be read from the
+// persisted row instead of taken at cap) — that work belongs in
+// resource-plausibility.ts, never in this rail.
 //
 // Money desync fix (2026-09-12): one-off client-side credits were NOT
 // absorbed over later syncs — each window clamps from the already-clamped
@@ -215,8 +284,28 @@ export function reconcileBalance(
 /** Multiplier on the state-derived monthly gross — headroom for the
  *  multipliers the server cannot see and for tick bursts after a tab wakes. */
 export const MONEY_HEADROOM_MULT = 2.0;
-/** Absolute backstop: $500 per ms = $500K/s ≈ $10.8B per 6 h game-month. */
-export const MAX_ABSOLUTE_INCOME_PER_MS = 500;
+
+/** FLOOR of the allowance rail, in $/ms ($500/ms = $500K/s ≈ $10.8B per 6 h
+ *  game-month). Before 2026-09-13 this was a flat CEILING on every profile,
+ *  which is the scaling bug the header describes. It is now the rail's lower
+ *  bound: the allowance a profile gets when the server cannot vouch for a
+ *  larger gross (brand-new row, failed gross computation, corrupted clock).
+ *  Small profiles are unaffected either way — their `stateDerived` term is
+ *  far below this and is what binds. */
+export const MONEY_ALLOWANCE_FLOOR_PER_MS = 500;
+
+/** How many times the profile's own verified gross rate the rail allows.
+ *  MUST stay strictly above MONEY_HEADROOM_MULT — the rail is a defensive
+ *  outer bound, not the operative one; setting it below MONEY_HEADROOM_MULT
+ *  would clamp legitimate income from large corporations (the 2026-09-13
+ *  bug). See the header for the attacker analysis. */
+export const MONEY_ALLOWANCE_GROSS_MULT = 2 * MONEY_HEADROOM_MULT; // 4.0
+
+/** @deprecated Historical name from the 2026-09-02 clock unification, when
+ *  this was the flat absolute backstop. Same value, new role — it is the
+ *  rail's FLOOR now (MONEY_ALLOWANCE_FLOOR_PER_MS). Kept so the exploit
+ *  regression tests that pin the constant keep compiling. */
+export const MAX_ABSOLUTE_INCOME_PER_MS = MONEY_ALLOWANCE_FLOOR_PER_MS;
 /** Below this much wall-clock since the last persisted sync the client gets
  *  ZERO growth headroom (money may only stay <= prevMoney + ledger deltas).
  *  Game exploit batch 2026-09-02 (C-2): this used to be a FLOOR — every
@@ -240,21 +329,57 @@ export function plausibleElapsedMs(elapsedMs: number): number {
   return safe < MIN_PLAUSIBILITY_ELAPSED_MS ? 0 : safe;
 }
 
-/** Growth headroom the plausibility ceiling grants for `elapsedMs` of wall
- *  clock given the profile's server-derived monthly gross (formula in the
- *  header). Time-proportional, never floored, always bounded by the
- *  absolute backstop. A profile with no revenue-producing state gets zero. */
-export function plausibleIncomeHeadroom(elapsedMs: number, serverMonthlyGross: number): number {
+/**
+ * The dollars-per-millisecond of TICK income this profile is allowed to gain:
+ * its own verified earning power x MONEY_ALLOWANCE_GROSS_MULT, never below
+ * the $500/ms floor. This is the rail described in the header — one auditable
+ * number per profile, a pure function of server-persisted state. Exported so
+ * the sync route's audit rows and the tests can assert on it directly.
+ */
+export function plausibleAllowanceRatePerMs(serverMonthlyGross: number): number {
+  const gross = Number.isFinite(serverMonthlyGross) && serverMonthlyGross > 0 ? serverMonthlyGross : 0;
+  const grossRate = (gross * MONEY_ALLOWANCE_GROSS_MULT) / REAL_MS_PER_GAME_MONTH;
+  if (!Number.isFinite(grossRate)) return MONEY_ALLOWANCE_FLOOR_PER_MS;
+  return Math.max(MONEY_ALLOWANCE_FLOOR_PER_MS, grossRate);
+}
+
+/**
+ * Growth headroom the plausibility ceiling grants for `elapsedMs` of wall
+ * clock, given the profile's server-derived monthly gross and the verified
+ * one-shot credits this sync earned (contract-credit.ts). Formula and the
+ * attacker analysis are in the header:
+ *
+ *   min( gross x MONEY_HEADROOM_MULT x elapsedMonths,
+ *        plausibleAllowanceRatePerMs(gross) x elapsedMs ) + oneShotCredit
+ *
+ * Time-proportional, never floored (a re-sync inside
+ * MIN_PLAUSIBILITY_ELAPSED_MS gets no tick headroom at all), capped in
+ * elapsed time at MAX_PLAUSIBILITY_ELAPSED_MS. A profile with no
+ * revenue-producing state, or one whose gross could not be computed, gets
+ * zero tick headroom — only its verified one-shot credits.
+ */
+export function plausibleIncomeHeadroom(
+  elapsedMs: number,
+  serverMonthlyGross: number,
+  oneShotCredit: number = 0,
+): number {
+  const credit = Number.isFinite(oneShotCredit) && oneShotCredit > 0 ? Math.round(oneShotCredit) : 0;
   const safe = plausibleElapsedMs(elapsedMs);
-  if (safe <= 0) return 0;
+  // A one-shot credit is not tick income: it is granted even inside the
+  // no-growth window (see clampPlausibleMoney).
+  if (safe <= 0) return credit;
   const gross = Number.isFinite(serverMonthlyGross) && serverMonthlyGross > 0 ? serverMonthlyGross : 0;
   const elapsedMonths = safe / REAL_MS_PER_GAME_MONTH;
   const stateDerived = gross * MONEY_HEADROOM_MULT * elapsedMonths;
-  const backstop = safe * MAX_ABSOLUTE_INCOME_PER_MS;
-  // Defensive: a non-finite state term (only reachable with a broken clock
-  // constant) must degrade to the backstop, never to an unbounded ceiling.
-  const headroom = Number.isFinite(stateDerived) ? Math.min(stateDerived, backstop) : backstop;
-  return Math.round(headroom);
+  const rail = safe * plausibleAllowanceRatePerMs(gross);
+  // Defensive ordering: the state-derived term is the operative bound; it
+  // degrades to the rail if it overflowed to Infinity, and the rail degrades
+  // to the $500/ms floor if it did too. Never to an unbounded ceiling.
+  let headroom: number;
+  if (Number.isFinite(stateDerived)) headroom = Math.min(stateDerived, rail);
+  else if (Number.isFinite(rail)) headroom = rail;
+  else headroom = safe * MONEY_ALLOWANCE_FLOOR_PER_MS;
+  return Math.round(headroom) + credit;
 }
 
 export interface PlausibilityClampResult {
@@ -282,8 +407,8 @@ export interface PlausibilityClampResult {
  * (contract-credit.ts: Σ maximum payout of newly completed CONTRACT_POOL
  * ids, each credited once per profile). It is added on top of the
  * time-proportional term — it does not loosen MONEY_HEADROOM_MULT or the
- * backstop, and it is granted even inside the no-growth window because a
- * contract completion is not tick income.
+ * allowance rail, and it is granted even inside the no-growth window because
+ * a contract completion is not tick income.
  */
 export function clampPlausibleMoney(
   clientMoney: number,
@@ -294,8 +419,7 @@ export function clampPlausibleMoney(
 ): PlausibilityClampResult {
   const safeClient = Number.isFinite(clientMoney) ? clientMoney : 0;
   const safePrev = Number.isFinite(prevMoney) ? prevMoney : 0;
-  const extra = Number.isFinite(extraHeadroom) && extraHeadroom > 0 ? Math.round(extraHeadroom) : 0;
-  const headroom = plausibleIncomeHeadroom(elapsedMs, serverMonthlyGross) + extra;
+  const headroom = plausibleIncomeHeadroom(elapsedMs, serverMonthlyGross, extraHeadroom);
   const ceiling = safePrev + headroom;
 
   if (safeClient > ceiling) {

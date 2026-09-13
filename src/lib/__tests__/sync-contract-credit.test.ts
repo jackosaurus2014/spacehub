@@ -303,9 +303,23 @@ describe('POST /api/space-tycoon/sync — timed-event credit', () => {
     setup(existingRow({ activeServicesData: FOURTEEN_SERVICES, money: claim, creditedContractIds: [pmb.id, reh.id] }));
     const again = await postSync({ money: claim + PMB_REWARD, completedTimedEvents: [pmb, reh] });
     expect(again.json.timedEventCredit.creditedNow).toEqual([]);
-    expect(persisted().money as number).toBeLessThan(claim + PMB_REWARD);
+    expect(again.json.timedEventCredit.headroomCredit).toBe(0);
     expect(persisted().creditedContractIds).toEqual([pmb.id, reh.id]);
-    expect(again.json.moneyClamp.wasClamped).toBe(true);
+
+    // 2026-09-13 scaling fix: what stops a replay is the CREDIT SET, asserted
+    // above — not the ceiling. This 14-service row's server-derived gross is
+    // ~$76.7B/game-month (the theoretical-max multiplier stack), so a second
+    // $280M inside 65 s is now inside its own time-proportional headroom; the
+    // flat $500/ms rail that used to reject it is exactly what broke large
+    // corporations (ledger-reconcile.ts header). A claim beyond what the
+    // persisted state can gross is still clamped:
+    jest.clearAllMocks();
+    __resetRouteThrottle();
+    setup(existingRow({ activeServicesData: FOURTEEN_SERVICES, money: claim, creditedContractIds: [pmb.id, reh.id] }));
+    const forged = await postSync({ money: claim + 1e14, completedTimedEvents: [pmb, reh] });
+    expect(forged.json.moneyClamp.wasClamped).toBe(true);
+    expect(persisted().money as number).toBeLessThan(claim + 1e14);
+    expect(auditEvents()).toContain('client_money_implausible_rejected');
   });
 
   it('the bound is the server-recomputed reward: a forged $5B reward on an empty row is credited at the bound', async () => {

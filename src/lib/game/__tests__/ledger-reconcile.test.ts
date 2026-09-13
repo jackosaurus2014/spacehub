@@ -10,8 +10,11 @@ import {
   __clearReconciliationQueue,
   clampPlausibleMoney,
   plausibleIncomeHeadroom,
+  plausibleAllowanceRatePerMs,
   MONEY_HEADROOM_MULT,
   MAX_ABSOLUTE_INCOME_PER_MS,
+  MONEY_ALLOWANCE_FLOOR_PER_MS,
+  MONEY_ALLOWANCE_GROSS_MULT,
   MIN_PLAUSIBILITY_ELAPSED_MS,
   MAX_PLAUSIBILITY_ELAPSED_MS,
   type LedgerEntryLite,
@@ -21,9 +24,14 @@ import type { GameState } from '../types';
 
 /** A mid-game corporation's server-derived monthly gross for the clamp tests. */
 const GROSS = 273_000_000;
-/** State-derived headroom for `ms` of wall clock at GROSS (below the backstop). */
-const headroomFor = (ms: number, gross: number = GROSS) =>
-  Math.round(Math.min(gross * MONEY_HEADROOM_MULT * (ms / REAL_MS_PER_GAME_MONTH), ms * MAX_ABSOLUTE_INCOME_PER_MS));
+/** Independent oracle for the headroom formula (ledger-reconcile.ts header):
+ *  the state-derived term, bounded by an allowance rail that SCALES with the
+ *  same verified gross and never drops below the $500/ms floor. */
+const headroomFor = (ms: number, gross: number = GROSS) => {
+  const stateDerived = gross * MONEY_HEADROOM_MULT * (ms / REAL_MS_PER_GAME_MONTH);
+  const railRate = Math.max(MONEY_ALLOWANCE_FLOOR_PER_MS, (gross * MONEY_ALLOWANCE_GROSS_MULT) / REAL_MS_PER_GAME_MONTH);
+  return Math.round(Math.min(stateDerived, ms * railRate));
+};
 
 function entry(seq: number, moneyDelta: number, resourceSlug?: string, resourceDelta?: number): LedgerEntryLite {
   return { seq, moneyDelta, resourceSlug: resourceSlug ?? null, resourceDelta: resourceDelta ?? 0 };
@@ -264,10 +272,28 @@ describe('clampPlausibleMoney — E1 exploit #5 regression (state-derived ceilin
     expect(plausibleIncomeHeadroom(-1, GROSS)).toBe(0);
   });
 
-  it('absolute backstop: $500/ms bounds any gross, however large', () => {
-    const r = clampPlausibleMoney(1e18, 0, 60_000, 1e15);
-    expect(r.headroom).toBe(60_000 * MAX_ABSOLUTE_INCOME_PER_MS);
-    expect(r.clampedMoney).toBe(60_000 * MAX_ABSOLUTE_INCOME_PER_MS);
+  it('2026-09-13 scaling fix: the rail scales with the verified gross of the profile', () => {
+    // REGRESSION. The rail used to be a FLAT $500/ms ($30M per real minute)
+    // and was the binding term in production: a profile whose own
+    // serverMonthlyGross was $192.7B was granted headroom = 29,968,500 for a
+    // 60 s gap and had the rest of its legitimate tick income rejected on
+    // every single sync. The rail is now derived from that same gross.
+    const whale = 192_700_000_000; // the production clamp record
+    const r = clampPlausibleMoney(1e18, 0, 60_000, whale);
+    const flatOldRail = 60_000 * MONEY_ALLOWANCE_FLOOR_PER_MS; // 30,000,000
+    expect(r.headroom).toBe(headroomFor(60_000, whale));
+    expect(r.headroom).toBe(Math.round(whale * MONEY_HEADROOM_MULT * (60_000 / REAL_MS_PER_GAME_MONTH)));
+    expect(r.headroom).toBeGreaterThan(flatOldRail * 30); // was the binding term; no longer is
+    // The rail is still a real outer bound, strictly looser than the
+    // state-derived term so it can never clamp a corporation for being large.
+    expect(MONEY_ALLOWANCE_GROSS_MULT).toBeGreaterThan(MONEY_HEADROOM_MULT);
+    expect(60_000 * plausibleAllowanceRatePerMs(whale)).toBeGreaterThan(r.headroom);
+    // …and it is the $500/ms floor for a profile the server cannot vouch for.
+    expect(plausibleAllowanceRatePerMs(0)).toBe(MONEY_ALLOWANCE_FLOOR_PER_MS);
+    expect(MAX_ABSOLUTE_INCOME_PER_MS).toBe(MONEY_ALLOWANCE_FLOOR_PER_MS);
+    // A gross so large the state term overflows degrades to the floor, not
+    // to an unbounded ceiling.
+    expect(Number.isFinite(plausibleIncomeHeadroom(60_000, Number.MAX_VALUE))).toBe(true);
   });
 
   it('caps elapsed time so a long-dormant lastSyncAt cannot produce an unbounded ceiling', () => {
@@ -281,6 +307,113 @@ describe('clampPlausibleMoney — E1 exploit #5 regression (state-derived ceilin
     const result = clampPlausibleMoney(Number.NaN, Number.NaN, Number.NaN, Number.NaN);
     expect(Number.isFinite(result.clampedMoney)).toBe(true);
     expect(Number.isFinite(result.ceiling)).toBe(true);
+  });
+});
+
+// ─── Scaling property (2026-09-13): the ceiling must follow the corporation ──
+// The clamp's job is to reject income the profile's persisted state cannot
+// produce — never to cap how large a corporation may become. Before the
+// scaling fix the second term of the headroom was a flat $500/ms, so every
+// corporation grossing more than ~$10.8B per 6 h game-month lost money on
+// screen on every sync. This suite encodes the property directly at three
+// sizes spanning four orders of magnitude.
+
+describe('money ceiling scales with the corporation (2026-09-13)', () => {
+  /** A realistic session cadence: the client syncs every 60 s, with a 30 s
+   *  floor, and stretches to ~5 min when the tab is backgrounded. */
+  const CADENCE_MS = [60_000, 60_000, 30_000, 60_000, 300_000, 60_000];
+
+  /** Bank one full game-month of `gross` across that cadence, claiming the
+   *  profile's exact legitimate tick income each sync. Returns the run. */
+  function bankAGameMonth(gross: number, startMoney: number, claimFraction = 1.0) {
+    let money = startMoney;
+    let elapsedTotal = 0;
+    let clamps = 0;
+    let i = 0;
+    while (elapsedTotal < REAL_MS_PER_GAME_MONTH) {
+      const dt = Math.min(CADENCE_MS[i++ % CADENCE_MS.length], REAL_MS_PER_GAME_MONTH - elapsedTotal);
+      const earned = gross * (dt / REAL_MS_PER_GAME_MONTH) * claimFraction;
+      const r = clampPlausibleMoney(money + earned, money, dt, gross);
+      if (r.wasClamped) clamps++;
+      money = r.clampedMoney;
+      elapsedTotal += dt;
+    }
+    return { money, clamps, gained: money - startMoney, syncs: i };
+  }
+
+  const SIZES: { label: string; gross: number; startMoney: number }[] = [
+    { label: '$10M/game-month (early corporation)', gross: 10_000_000, startMoney: 5_000_000 },
+    { label: '$1B/game-month (mid-game)', gross: 1_000_000_000, startMoney: 500_000_000 },
+    { label: '$50B/game-month (integrator, the 50-year sim end state)', gross: 50_000_000_000, startMoney: 10_000_000_000 },
+  ];
+
+  for (const { label, gross, startMoney } of SIZES) {
+    it(`banks a full game-month of its own verified income unclamped — ${label}`, () => {
+      const run = bankAGameMonth(gross, startMoney);
+      expect(run.clamps).toBe(0);
+      // A whole game-month of gross arrives intact (rounding only).
+      expect(run.gained).toBeGreaterThan(gross * 0.999);
+      expect(run.gained).toBeLessThanOrEqual(gross * 1.001);
+      // …and MONEY_HEADROOM_MULT still leaves real slack for burst ticks:
+      // claiming 1.9x the nominal rate every sync is also accepted.
+      expect(bankAGameMonth(gross, startMoney, 1.9).clamps).toBe(0);
+    });
+
+    it(`still rejects a claim far beyond the verified gross — ${label}`, () => {
+      // 100x the legitimate rate, every sync, is refused every sync and the
+      // profile is held to exactly prev + headroom.
+      const dt = 60_000;
+      const legit = gross * (dt / REAL_MS_PER_GAME_MONTH);
+      const r = clampPlausibleMoney(startMoney + legit * 100, startMoney, dt, gross);
+      expect(r.wasClamped).toBe(true);
+      expect(r.clampedMoney).toBe(startMoney + headroomFor(dt, gross));
+      expect(r.headroom).toBeLessThanOrEqual(legit * MONEY_HEADROOM_MULT + 1);
+      // Running the forged cadence for a month never ratchets: the gain is
+      // still bounded by 2x a month of verified gross.
+      const forged = bankAGameMonth(gross, startMoney, 100);
+      expect(forged.clamps).toBe(forged.syncs);
+      expect(forged.gained).toBeLessThanOrEqual(gross * MONEY_HEADROOM_MULT + forged.syncs);
+      // A flat forged figure (the E1 exploit) is rejected at every size.
+      expect(clampPlausibleMoney(9e14, startMoney, dt, gross).clampedMoney)
+        .toBe(startMoney + headroomFor(dt, gross));
+    });
+  }
+
+  it('the old flat $500/ms rail was the binding term above ~$10.8B/game-month', () => {
+    const flatRailPerMinute = 60_000 * MONEY_ALLOWANCE_FLOOR_PER_MS; // $30M
+    const breakEvenGross = MONEY_ALLOWANCE_FLOOR_PER_MS * REAL_MS_PER_GAME_MONTH / MONEY_HEADROOM_MULT;
+    expect(breakEvenGross).toBeCloseTo(5_400_000_000, -6); // $5.4B x MULT 2 = $10.8B of income
+    // Under the old rule the $50B integrator lost income on every sync…
+    const perMinute50B = 50_000_000_000 * (60_000 / REAL_MS_PER_GAME_MONTH);
+    expect(perMinute50B).toBeGreaterThan(flatRailPerMinute);
+    // …and under the new rule it is inside its own ceiling.
+    expect(headroomFor(60_000, 50_000_000_000)).toBeGreaterThan(perMinute50B);
+    // The early and mid-game corporations are unaffected by the change:
+    // their state-derived term was, and remains, the binding one.
+    expect(headroomFor(60_000, 10_000_000)).toBe(
+      Math.round(10_000_000 * MONEY_HEADROOM_MULT * (60_000 / REAL_MS_PER_GAME_MONTH)));
+    expect(headroomFor(60_000, 1_000_000_000)).toBeLessThan(flatRailPerMinute);
+  });
+
+  it('a week away: the 30-day elapsed cap still covers away-operations income', () => {
+    // away-operations.ts is uncapped in DURATION but capped in RATE at
+    // AWAY_EFFICIENCY_INVESTMENT_CAP = 0.85, so a week away (28 game-months)
+    // can legitimately bank at most 0.85 x 28 months of gross against a
+    // headroom of 2 x 28. Under the OLD flat rail the same week granted a
+    // $50B integrator only 7d x $500/ms = $302B — less than one month of its
+    // own income — and clamped the rest.
+    const gross = 50_000_000_000;
+    const weekMs = 7 * 24 * 3600_000;
+    const awayIncome = gross * (weekMs / REAL_MS_PER_GAME_MONTH) * 0.85;
+    expect(plausibleIncomeHeadroom(weekMs, gross)).toBeGreaterThan(awayIncome);
+    expect(weekMs * MONEY_ALLOWANCE_FLOOR_PER_MS).toBeLessThan(awayIncome); // the old rail failed here
+    // The 30-day cap is the real limit: it covers absences up to
+    // MONEY_HEADROOM_MULT / 0.85 x 30d ≈ 70 real days.
+    const sixtyDays = 60 * 24 * 3600_000;
+    expect(plausibleIncomeHeadroom(sixtyDays, gross)).toBe(plausibleIncomeHeadroom(MAX_PLAUSIBILITY_ELAPSED_MS, gross));
+    expect(plausibleIncomeHeadroom(sixtyDays, gross)).toBeGreaterThan(gross * (sixtyDays / REAL_MS_PER_GAME_MONTH) * 0.85);
+    const hundredDays = 100 * 24 * 3600_000;
+    expect(plausibleIncomeHeadroom(hundredDays, gross)).toBeLessThan(gross * (hundredDays / REAL_MS_PER_GAME_MONTH) * 0.85);
   });
 });
 

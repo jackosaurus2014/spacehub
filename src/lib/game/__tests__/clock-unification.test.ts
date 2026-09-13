@@ -24,6 +24,7 @@ import {
 import {
   clampPlausibleMoney,
   plausibleIncomeHeadroom,
+  plausibleAllowanceRatePerMs,
   MONEY_HEADROOM_MULT,
   MAX_ABSOLUTE_INCOME_PER_MS,
 } from '../ledger-reconcile';
@@ -141,20 +142,30 @@ describe('state-derived money ceiling', () => {
     expect(computeServerMonthlyGross(state, { totalEarned: 0 })).toBe(poor.gross);
   });
 
-  it('headroom = min(gross x 2 x elapsedMonths, $500/ms x elapsed) — the 60 s window of a $273M corp', () => {
+  it('headroom = min(gross x 2 x elapsedMonths, allowance rail) — the 60 s window of a $273M corp', () => {
     const gross = 273_000_000;
     const oneMinute = 60_000;
     const stateDerived = gross * MONEY_HEADROOM_MULT * (oneMinute / REAL_MS_PER_GAME_MONTH);
-    const backstop = oneMinute * MAX_ABSOLUTE_INCOME_PER_MS;
-    expect(plausibleIncomeHeadroom(oneMinute, gross)).toBe(Math.round(Math.min(stateDerived, backstop)));
+    const rail = oneMinute * plausibleAllowanceRatePerMs(gross);
+    expect(plausibleIncomeHeadroom(oneMinute, gross)).toBe(Math.round(Math.min(stateDerived, rail)));
     // ≈ $1.5M per minute for that corp — the old flat ceiling granted $120M.
     expect(plausibleIncomeHeadroom(oneMinute, gross)).toBeLessThan(2_000_000);
     expect(plausibleIncomeHeadroom(oneMinute, gross)).toBeGreaterThan(1_000_000);
     // Twelve hours away at 100% efficiency is two months of gross — inside the ceiling.
     const twelveHours = 12 * 3_600_000;
     expect(plausibleIncomeHeadroom(twelveHours, gross)).toBeGreaterThanOrEqual(2 * gross);
-    // A whale is bounded by the absolute backstop, whatever its gross.
-    expect(plausibleIncomeHeadroom(oneMinute, 1e15)).toBe(backstop);
+    // Scaling fix (2026-09-13): a whale is bounded by ITS OWN verified gross,
+    // not by a flat $500/ms rail. The old rule handed this profile
+    // $30M/minute — 185,000x less than a minute of its own legitimate income
+    // — and rejected the rest on every sync.
+    expect(MAX_ABSOLUTE_INCOME_PER_MS).toBe(500); // now the rail's FLOOR
+    const whale = 1e15;
+    expect(plausibleIncomeHeadroom(oneMinute, whale))
+      .toBe(Math.round(whale * MONEY_HEADROOM_MULT * (oneMinute / REAL_MS_PER_GAME_MONTH)));
+    expect(plausibleIncomeHeadroom(oneMinute, whale)).toBeGreaterThan(oneMinute * MAX_ABSOLUTE_INCOME_PER_MS);
+    // The floor still governs a profile the server cannot vouch for.
+    expect(plausibleAllowanceRatePerMs(0)).toBe(MAX_ABSOLUTE_INCOME_PER_MS);
+    expect(plausibleAllowanceRatePerMs(Number.NaN)).toBe(MAX_ABSOLUTE_INCOME_PER_MS);
     // No revenue state, no headroom.
     expect(plausibleIncomeHeadroom(oneMinute, 0)).toBe(0);
     expect(clampPlausibleMoney(101, 100, oneMinute, 0).clampedMoney).toBe(100);

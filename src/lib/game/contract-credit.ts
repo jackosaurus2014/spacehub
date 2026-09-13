@@ -9,6 +9,12 @@
 // dashboard showed $185.5M while every purchase route refused with "you
 // have $125M".
 //
+// (2026-09-13 scaling fix: that headroom's outer rail is no longer a flat
+// $500/ms — it now scales with the same verified monthly gross, and the
+// credits below are added on top of it exactly as before. See
+// ledger-reconcile.ts's header. Nothing in this module changed; the credits
+// remain the ONLY way one-shot income widens the ceiling.)
+//
 // The client now sends `completedContracts` (definition ids) with the sync.
 // For every id the server has NOT credited before, this module adds the
 // contract's MAXIMUM plausible cash payout to the headroom for that sync,

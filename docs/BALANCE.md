@@ -2356,6 +2356,54 @@ Balance interactions to keep in mind:
   under-counted server-side (not just clipped once), so model it or attest
   it before shipping it.
 
+## Money plausibility ceiling — not a lever, but it must scale (2026-09-13)
+
+Sibling of the resource ceiling above, and the same rule applies: the money
+clamp in `src/lib/game/ledger-reconcile.ts` is an anti-forgery bound, never a
+balance lever. **No revenue, cost or price number changed.** It is recorded
+here because until 2026-09-13 it silently *was* a lever at the top of the
+curve.
+
+`plausibleIncomeHeadroom` bounded a sync's income growth by
+`min(serverMonthlyGross x 2 x elapsedMonths, elapsedMs x $500)`. The second
+term was flat — **$30M per real minute for every corporation, whatever its
+size** — so it became the binding term above a gross of
+`$500/ms x 21,600,000 ms / 2 = $5.4B` per 6 h game-month (≈$10.8B of income
+per game-month, ≈$1.8B per real hour). A corporation past that point had
+legitimate tick income rejected on every sync and watched money vanish from
+the dashboard. Nobody had reached it (the founder nets ~$13.7M/game-month),
+but **Pass 5's 50-year playtest ends with integrator corporations far past
+it**, so every long-horizon balance projection in this document was running
+against an invisible income wall.
+
+The rail now scales with the profile's own server-verified monthly gross:
+`allowanceRate = max($500/ms, gross x MONEY_ALLOWANCE_GROSS_MULT / month)`
+with `MONEY_ALLOWANCE_GROSS_MULT = 2 x MONEY_HEADROOM_MULT = 4.0`, so the
+binding term is always the corporation's own earning power and the ceiling
+follows the balance curve instead of capping it. `MONEY_HEADROOM_MULT` stays
+2.0 and the $500/ms constant keeps its value in its new role as the rail's
+floor. Full rule + attacker analysis: docs/SECURITY_AUDIT_2026-09.md "C-2
+follow-up 3".
+
+Balance interactions to keep in mind:
+
+- **Any new recurring revenue term the server cannot see** must be modelled
+  in `computeServerMonthlyGrossDetailed` (with its client-only multipliers at
+  their documented caps) or it will be clamped away. That function — not the
+  rail — is now the only thing that decides how much a corporation may earn
+  per sync.
+- **Any new one-shot cash payout** paid client-side (a contract, an event, a
+  delivery, a mini-activity) needs a verifiable credit in
+  `contract-credit.ts`, or it surfaces as a visible money correction.
+- **Long absences**: away-operations income is rate-capped at
+  `AWAY_EFFICIENCY_INVESTMENT_CAP = 0.85`, and the clamp's elapsed term is
+  capped at 30 days, so absences up to ≈70 real days are covered with
+  headroom to spare. Lengthening away efficiency toward 1.0 would shrink that
+  margin proportionally.
+- Never tune `MONEY_HEADROOM_MULT` or `MONEY_ALLOWANCE_GROSS_MULT` to shape
+  the economy, and never set the latter below the former — that is the bug
+  above.
+
 ## D6 population gates (2026-09-02, founder-approved)
 
 **Source:** docs/GAME_DESIGN_REVIEW_2026-09.md D6 — *"Lower the PvP
