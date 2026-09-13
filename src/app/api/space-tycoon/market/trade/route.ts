@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger';
 import { calculatePriceAfterTrade, getSupplyPriceMultiplier, MINIMUM_MARKET_SUPPLY, MARKET_BROKER_FEE_RATE, getEffectiveBrokerFeeRate } from '@/lib/game/market-engine';
 import { getGlobalMarketEventMultiplier } from '@/lib/game/market-events';
 import { MINED_ONLY_RESOURCE_IDS, MANUFACTURED_RESOURCE_IDS } from '@/lib/game/economic-sinks';
-import { RESOURCE_MAP } from '@/lib/game/resources';
+import { RESOURCE_MAP, getPricingBaseline } from '@/lib/game/resources';
 // Wave E7 (docs/ECONOMY_PVP_2026-08.md §E7 / §5 item 7 "Realignment postures
 // bite"): getGoverningFactionForResource resolves which faction's economy a
 // resource belongs to (delivery-contracts.ts's FACTION_FLAVOR reverse-
@@ -225,7 +225,9 @@ export async function POST(request: NextRequest) {
     }
 
     const resDef = RESOURCE_MAP.get(resourceSlug as never);
-    const baselineSupply = resDef?.startingSupply || 1000;
+    // Balance Pass 14: `baselineSupply` (what a functioning market holds),
+    // not `startingSupply` (the world's opening stock).
+    const baselineSupply = getPricingBaseline(resourceSlug);
     const isBuy = type === 'buy';
 
     // Audit Wave E (C5 "resource-gated T6+ construction —

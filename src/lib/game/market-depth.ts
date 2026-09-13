@@ -40,6 +40,13 @@ export function computeBidAsk(params: {
   currentPrice: number;
   basePrice: number;
   totalSupply: number;
+  /**
+   * Balance Pass 14: this is `ResourceDefinition.baselineSupply` — what a
+   * FUNCTIONING market holds — and never `startingSupply`, which is only the
+   * stock a world OPENS with. Use resources.ts `getPricingBaseline(slug)`.
+   * Passing the opening stock would quote a freshly-opened scarce market as
+   * if it were fully supplied, which is exactly the bug this pass fixed.
+   */
   baselineSupply: number;
   volatility: number;
 }): BidAskQuote & { resourceSlug: string; _tag?: never } {

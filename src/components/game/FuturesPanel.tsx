@@ -131,11 +131,12 @@ export default function FuturesPanel({ state, setState }: Props) {
     const currentPrice = priceEntry?.currentPrice ?? resourceDef.baseMarketPrice;
     const basePrice = priceEntry?.basePrice ?? resourceDef.baseMarketPrice;
     const totalSupply = priceEntry?.supply ?? resourceDef.startingSupply;
+    // Balance Pass 14: price against the market's baseline, not its opening stock.
     return computeBidAsk({
       currentPrice,
       basePrice,
       totalSupply,
-      baselineSupply: resourceDef.startingSupply,
+      baselineSupply: resourceDef.baselineSupply,
       volatility: resourceDef.volatility,
     });
   }, [resourceDef, priceEntry]);

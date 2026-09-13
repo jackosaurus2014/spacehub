@@ -4325,3 +4325,267 @@ in-window auction left alone, and "the winner never holds two seats".
   to clear far above reserve. That is the intended shape of a contested
   chokepoint, but it makes the tier-6 rung the one to watch for
   concentration in the quarterly balance report.
+
+---
+
+## Pass 14 — opening scarcity (2026-09-14)
+
+### Founder rationale
+
+Verbatim, 2026-09-13:
+
+> "We should start the games with non-abundant resources of things like
+> Martian water and Lunar water ice which haven't been harvested yet. Let's
+> start those with very scarce levels at the start of the game until players
+> and NPCs can start mining those resources. Getting places early and mining
+> should be very rewarding. We should probably start all resources at scarce
+> levels to support mining."
+
+### The bug that made the ask impossible
+
+`ResourceDefinition.startingSupply` was **two numbers wearing one name**: the
+stock a world opens with AND the yardstick `getSupplyPriceMultiplier(supply,
+baseline)` measures live supply against. Every consumer read it as the
+baseline (`market/route.ts`, `market/trade/route.ts`, `market/restock`,
+`npc-industry.ts`, `market-depth.ts` callers). Lowering it therefore moved the
+yardstick down with the stock and produced **no scarcity at all** — a world
+seeded at 30 units of Martian water against a 30-unit baseline prices at
+exactly 1.0×.
+
+Two further findings from the same read, both load-bearing:
+
+1. **The scarcity multiplier was a buyer-side tax nobody could earn.**
+   `market/trade` charged buyers `currentPrice × supplyMultiplier` but paid
+   sellers a flat `currentPrice`, and the hourly mean-revert cron healed
+   `currentPrice` toward a supply-blind `basePrice`. So an empty market
+   charged a premium that no producer ever received, and a glutted one never
+   sagged. The first corporation to land on Mars had no reason to hurry.
+2. **Manufactured goods showed a phantom 10× premium.** Their
+   `startingSupply` is 0, every consumer fell back to `|| 1000`, and
+   `getSupplyPriceMultiplier(0, 1000)` clamps at 10. `/api/space-tycoon/market`
+   has been publishing refined rocket fuel at 10 × spot on a market the NPC
+   curve refuses to trade in either direction.
+
+### The model
+
+**Two fields.** `baselineSupply` is the pricing yardstick — what a
+*functioning* market holds, unchanged from the pre-Pass-14 `startingSupply`
+figures so a mature market prices exactly as it did before (the four ores are
+the one exception, below). `startingSupply` is now only the **opening stock**.
+`getPricingBaseline(slug)` is the single accessor; reading `startingSupply` in
+a pricing context is what a test now fails on.
+
+`baselineSupply: 0` means "no NPC curve at all" — manufactured hardware and
+interstellar goods — and the multiplier is a flat 1.0 for them, which fixes
+finding 2.
+
+**Origin tiers** (`resources.ts RESOURCE_ORIGINS`). Every resource is
+classified by where it physically comes from; the origin sets the opening
+fraction of baseline and the NPC-arrival window.
+
+| origin | opening fraction | opening multiplier | NPC restock ramp | example |
+| --- | --- | --- | --- | --- |
+| terrestrial | 0.75 | ×1.15 | full rate from day 0 | iron, aluminium, titanium, rare earth, **methane** |
+| cislunar | 0.25 | ×2.0 | day 0 → 14 | *(none today; where orbital-ISRU outputs will land)* |
+| lunar | 0.03 | ×5.8 | day 21 → 120 | lunar water ice, helium-3 |
+| inner | 0.015 | ×8.1 | day 60 → 300 | solar concentrate (Mercury arrays) |
+| martian | 0.015 | ×8.2 | day 45 → 240 | **Martian water** |
+| belt | 0.02 | ×7.1 | day 60 → 300 | platinum group, gold, ammonia, C/S/M ore |
+| outer | 0.01 | ×10 (the clamp) | day 120 → 540 | ethane, sulfur, exotics, deuterium, X-ore |
+| interstellar | 0 | — | never | exotic fuel, xenogenic biomatter |
+| fabricated | 0 | — | never | all 14 manufactured goods |
+
+**Terrestrial goods open tight but NOT scarce, and that is a constraint, not
+a preference.** Balance Pass 10 put the starter launch pad on
+`supplyPolicy: 'market'` for its 10 rocket fuel a month. The cheapest fuel
+route in `production-chains.ts` (`synthesize_rp1`, no research, terrestrial
+fabrication works) runs on market-bought **methane**. Methane is classified
+terrestrial on purpose; classifying it off-world would have regressed the
+on-ramp (numbers below).
+
+**Spot follows the fundamental.** `getFundamentalPrice(basePrice, supply,
+baseline, min, max)` = `basePrice × supplyMultiplier`, band-clamped to
+`[base × 0.3, base × 3.0]` ∩ `[minPrice, maxPrice]`. The hourly mean-revert
+cron now targets it instead of the raw base price, so spot — and therefore
+mining revenue (`mining-pricing.ts`), contract valuation, NPC settlement and
+curve sells, all of which already read spot — carries the scarcity premium
+without inventing a second pricing path. That fixes finding 1. The band cap
+means the seller-side windfall is **3× base at most**, however empty the
+market; the buyer-side premium keeps the steeper 10× clamp it always had.
+
+`/market/init` now seeds a new world at its opening stock with
+`currentPrice` at the fundamental, so a fresh world opens hungry from unit one
+rather than waiting for the cron to discover it.
+
+**NPC arrival, not pre-emption.** The authored `npcRestockPerHour` is now the
+**mature** rate. `effectiveNpcRestockPerHour(def, now)` multiplies it by the
+origin's ramp factor (0 before `rampStartDays`, linear to 1 at
+`rampFullDays`) and by `populationScale(activeProfiles)` — so the NPC floor
+recedes as the player base grows, which is NPC_BACKDROP.md's "a floor, not a
+ceiling", finally applied to restock. The ramp clock is
+`max(epochStart, OPENING_SCARCITY_LIVE_AT)`: a world that opened before this
+model shipped gets the full head start rather than weeks of ramp it never ran.
+
+**NPC industry became cost-rational.** `npc-industry.ts` ran a product's
+recipes in authored order and stopped when the inventory target was met, so
+the first recipe always won regardless of feedstock price. Under opening
+scarcity that would have had Helios Energy crack scarce lunar ice into fuel —
+pricing NPC rocket fuel at the top of its band *and* stripping the Moon before
+a player got there. `chooseRecipes()` now picks the cheapest route per output
+at live supply-adjusted prices (one market read per tick, shared across the
+five corps).
+
+**Ore baselines ×4** (`ore_carbonaceous` 800→3200, `ore_silicate`
+1500→6000, `ore_metallic` 400→1600, `ore_exotic` 60→240). The Phase-A figures
+described a market that had never traded ore; a functioning ore market holds
+several Hauler loads (800 units each), not a fraction of one. Without this a
+single 200-unit barge cargo erased the belt windfall in one trip.
+
+### Opening levels
+
+| resource | origin | baseline | opening | mult | base | opening spot (band) | buy at open |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| lunar_water | lunar | 3000 | 90 | 5.77x | $50K | $150K (3.00x) | $500K |
+| mars_water | martian | 2000 | 30 | 8.16x | $80K | $240K (3.00x) | $800K |
+| iron | terrestrial | 10000 | 7500 | 1.15x | $5K | $6K (1.15x) | $7K |
+| aluminum | terrestrial | 5000 | 3750 | 1.15x | $8K | $9K (1.15x) | $11K |
+| titanium | terrestrial | 2000 | 1500 | 1.15x | $25K | $29K (1.15x) | $33K |
+| platinum_group | belt | 200 | 4 | 7.07x | $500K | $1.50M (3.00x) | $5.00M |
+| gold | belt | 300 | 6 | 7.07x | $300K | $900K (3.00x) | $3.00M |
+| rare_earth | terrestrial | 500 | 375 | 1.15x | $200K | $231K (1.15x) | $267K |
+| methane | terrestrial | 1000 | 750 | 1.15x | $15K | $17K (1.15x) | $20K |
+| ethane | outer | 800 | 8 | 10.00x | $20K | $60K (3.00x) | $200K |
+| exotic_materials | outer | 50 | 1 | 7.07x | $2.00M | $6.00M (3.00x) | $20.00M |
+| helium3 | lunar | 20 | 1 | 4.47x | $5.00M | $15.00M (3.00x) | $50.00M |
+| exotic_fuel | interstellar | 0 | 0 | 1.00x | $5.00M | $5.00M (1.00x) | $5.00M |
+| xenogenic_biomatter | interstellar | 0 | 0 | 1.00x | $8.00M | $8.00M (1.00x) | $8.00M |
+| steel_ingots | fabricated | 0 | 0 | 1.00x | $50K | $50K (1.00x) | $50K |
+| aluminum_alloy | fabricated | 0 | 0 | 1.00x | $80K | $80K (1.00x) | $80K |
+| rocket_fuel | fabricated | 0 | 0 | 1.00x | $120K | $120K (1.00x) | $120K |
+| refined_rare_earth | fabricated | 0 | 0 | 1.00x | $500K | $500K (1.00x) | $500K |
+| structural_beams | fabricated | 0 | 0 | 1.00x | $800K | $800K (1.00x) | $800K |
+| electronics_package | fabricated | 0 | 0 | 1.00x | $1.50M | $1.50M (1.00x) | $1.50M |
+| solar_panel_array | fabricated | 0 | 0 | 1.00x | $1.20M | $1.20M (1.00x) | $1.20M |
+| propulsion_unit | fabricated | 0 | 0 | 1.00x | $3.00M | $3.00M (1.00x) | $3.00M |
+| life_support_pack | fabricated | 0 | 0 | 1.00x | $400K | $400K (1.00x) | $400K |
+| station_module | fabricated | 0 | 0 | 1.00x | $15.00M | $15.00M (1.00x) | $15.00M |
+| satellite_bus | fabricated | 0 | 0 | 1.00x | $12.00M | $12.00M (1.00x) | $12.00M |
+| ai_compute_cluster | fabricated | 0 | 0 | 1.00x | $20.00M | $20.00M (1.00x) | $20.00M |
+| fusion_core | fabricated | 0 | 0 | 1.00x | $80.00M | $80.00M (1.00x) | $80.00M |
+| habitat_pod | fabricated | 0 | 0 | 1.00x | $50.00M | $50.00M (1.00x) | $50.00M |
+| sulfur | outer | 4000 | 40 | 10.00x | $12K | $36K (3.00x) | $50K |
+| ammonia | belt | 3000 | 60 | 7.07x | $18K | $54K (3.00x) | $70K |
+| solar_concentrate | inner | 1500 | 23 | 8.08x | $25K | $75K (3.00x) | $100K |
+| organic_compounds | belt | 250 | 5 | 7.07x | $800K | $2.40M (3.00x) | $4.00M |
+| deuterium | outer | 15 | 0 | 3.87x | $8.00M | $24.00M (3.00x) | $30.00M |
+| bio_samples | outer | 8 | 0 | 2.83x | $15.00M | $42.43M (2.83x) | $50.00M |
+| antimatter_precursors | outer | 3 | 0 | 1.73x | $50.00M | $86.60M (1.73x) | $150.00M |
+| ore_carbonaceous | belt | 3200 | 64 | 7.07x | $14K | $42K (3.00x) | $70K |
+| ore_silicate | belt | 6000 | 120 | 7.07x | $7K | $21K (3.00x) | $35K |
+| ore_metallic | belt | 1600 | 32 | 7.07x | $10K | $30K (3.00x) | $50K |
+| ore_exotic | outer | 240 | 2 | 10.00x | $70K | $210K (3.00x) | $350K |
+
+### The starter launch pad's fuel bill
+
+Refined rocket fuel never touches the NPC curve; the pad's `supplyPolicy:
+'market'` shortfall becomes a standing bid at `spot × 1.10`, band-limited,
+filled by NPC industry asks that are cost-plus on whatever route the corp ran.
+So the pad's bill is set by the fuel *recipe's feedstock*, not by the fuel
+row's own supply.
+
+| scenario | cheapest route | NPC ask | pad bill (10 units/mo) |
+| --- | --- | --- | --- |
+| mature market (today) | Sabatier methane | $90K (the 0.75 × base floor) | **$900K/mo** |
+| opening scarcity, cost-rational NPC (**shipped**) | Sabatier methane | $90K | **$900K/mo** |
+| opening scarcity, authored-order NPC (**rejected**) | crack lunar water | $360K (3 × base cap) | $3.60M/mo |
+
+Against a $5M/month small-pad gross that is 18% either way — unchanged from
+today, and the reason `chooseRecipes` is part of this pass rather than a
+follow-up. (The pad is also fully consumption-exempt inside the Protected
+Frontier, so a new corporation sees no fuel bill for its first 30 days.)
+
+### How fast the windfall decays
+
+Every unit sold on the curve or mined raises `MarketResource.totalSupply`
+(`market/trade`, `market/mining-pressure`, the sync mined-flow path), so the
+premium is eroded by production itself.
+
+| resource | opens | 3.0× (leaves the band cap) | 2.0× | 1.0× (par) |
+| --- | --- | --- | --- | --- |
+| Martian water, one `svc_mining_mars` rig (80/mo) | 8.16× @ 30 units | 2.4 game-months (0.6 real days) | 5.9 months (1.5 days) | 24.6 months (6.2 days) |
+| Lunar water ice, one `svc_mining_lunar` rig (100/mo) | 5.77× @ 90 units | 2.4 months (0.6 days) | 6.6 months (1.6 days) | 29.1 months (7.3 days) |
+| Carbonaceous ore, one Prospector Barge (200/mo) | 7.07× @ 64 units | 1.5 months | 3.7 months | 15.7 months (3.9 real days) |
+
+Nothing sits pinned at the 10× clamp: every off-world tier except `outer`
+opens *below* it, so the curve is live from the first cargo. `outer`
+resources do open at the clamp, which is intended — nobody has been to Triton
+— and they leave it on the first few hundred units.
+
+### Sim gates (`scripts/sim-mining.ts`)
+
+Scenarios 1–5 (Phase A/B) are re-run unchanged and still pass at the Pass 12
+numbers: solo surveyed barge month-3 net **$859K** (cash-positive ✓), blind
+barge negative, three-ship cycle does not beat two returning miners, best ship
+gross ÷ capex **0.65×** the Basic Lunar Extractor (limit 1.5×), a claim costs
+$4.0M/6mo uncontested and is worth +$929K against one rival, one escort cutter
+does not pay for a single miner.
+
+New scenario 6 — the same Near-Earth C rock, priced at opening scarcity, with
+the barge's own landed cargo pushing supply back up:
+
+| month | trips | units | mature $/unit | mature net | opening $/unit | opening net | opening cum |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 1 | 200 | $14K | −$5.1M | $42K | $291K | $291K |
+| 2 | 1 | 200 | $14K | $859K | $42K | $6.3M | $6.6M |
+| 3 | 1 | 200 | $14K | $859K | $37K | $5.3M | $11.9M |
+| 4 | 1 | 200 | $14K | $859K | $31K | $4.1M | $16.0M |
+| 5 | 2 | 400 | $14K | $2.1M | $26K | $6.6M | $22.6M |
+| 6 | 1 | 200 | $14K | $859K | $22K | $2.5M | $25.0M |
+
+First-mover premium: **$25.0M** over six months against **$410K** in a mature
+market. The realised ore price falls **$42K → $22K** (53% of the opening
+price) on this one barge's own output — the windfall decays without any other
+corporation showing up, which is the gate. Month-3 net at opening prices is
+**+$5.3M** (cash-positive ✓).
+
+Capital-efficiency gate re-run at opening prices: best ship gross ÷ capex is
+**1.41×** the base-priced Basic Lunar Extractor and **0.47×** the same
+benchmark priced at opening scarcity (its lunar water and helium-3 open scarce
+too). Under the 1.5× limit on both readings.
+
+### The live world
+
+Epoch 2 opened 2026-08-24 and the hourly restock cron has been adding supply
+to rows nobody has been near. `scripts/tycoon-opening-scarcity.ts` (dry-run by
+default, `--apply` to commit, idempotent) resets `totalSupply` to the opening
+level and `currentPrice` to the fundamental — but **only** for rows that are
+above the opening level, have a curve baseline, and show no trading at all
+(no `MarketFill`, no non-NPC `MarketLimitOrder`, no accumulated
+`totalDemand`). Real price discovery is never overruled; `--force-traded`
+exists for the case where the model says otherwise. It writes one
+`MarketAuditLog` row and posts one public world-feed entry (`market_reprice`,
+"Sol Commodities Exchange") so players read a survey revision rather than
+prices that moved overnight.
+
+### Risks / watch
+
+- **Mean reversion now targets a moving number.** A market permanently above
+  baseline will sit permanently below base price (floor 0.3× at ~11×
+  baseline). That is the intended "mass extraction depresses prices", but it
+  is the first time spot has sagged on a glut, and it is the change in this
+  pass most likely to surprise an existing player. Watch raw-metal spot on
+  the next two weekly reports.
+- **The √ curve is weak at tiny baselines.** `antimatter_precursors`
+  (baseline 3) opens at only 1.73× and `bio_samples` (8) at 2.83×, because
+  `sqrt(baseline/1)` cannot exceed those. The absolute prices are still
+  enormous ($86.6M and $42.4M a unit), so the first-mover reward is real in
+  dollars, but if outer-system exotics ever need a sharper opening the fix is
+  to raise those baselines to a month of NPC flow rather than to touch the
+  curve.
+- **`MINIMUM_MARKET_SUPPLY` still lets a buyer purchase 100 units of
+  something with 4 units in stock**, at the 10× premium. It is not an
+  arbitrage (curve sells pay spot, which is band-capped at 3× base, so the
+  round trip loses money) but it does mean "sold out" never quite happens.
+  Pre-existing; unchanged here.
+- **Ore baselines moved.** Ore is one day old and barely traded, so the ×4
+  regrade is cheap now and would not be in a month.

@@ -3,7 +3,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { getSupplyPriceMultiplier, MINIMUM_MARKET_SUPPLY } from '@/lib/game/market-engine';
 import { getGlobalActiveMarketEvents, getMarketEventMultiplier, getGlobalMarketEventForecast } from '@/lib/game/market-events';
-import { RESOURCE_MAP } from '@/lib/game/resources';
+import { getPricingBaseline } from '@/lib/game/resources';
 
 /**
  * GET /api/space-tycoon/market
@@ -52,8 +52,14 @@ export async function GET() {
     }> = {};
 
     for (const r of resources) {
-      const def = RESOURCE_MAP.get(r.slug as any);
-      const baselineSupply = def?.startingSupply || 1000;
+      // Balance Pass 14: the pricing yardstick is `baselineSupply` (what a
+      // functioning market holds), NEVER `startingSupply` (what the world
+      // opened with). Reading the opening stock here would have priced a
+      // freshly-seeded scarce market as if it were fully supplied.
+      // getPricingBaseline returns 0 for manufactured/interstellar goods,
+      // which makes the multiplier a flat 1.0 — those are order-book priced
+      // and previously showed a bogus 10× premium off a `|| 1000` fallback.
+      const baselineSupply = getPricingBaseline(r.slug);
       const supplyMult = getSupplyPriceMultiplier(r.totalSupply, baselineSupply);
       const eventMult = getMarketEventMultiplier(r.slug, activeEvents, nowMs);
       const effectivePrice = Math.round(r.currentPrice * supplyMult * eventMult);

@@ -46,6 +46,7 @@ import {
   type CorpMeta,
 } from './npc-industry';
 import { PRODUCTION_CHAINS, facilityTierFor } from './production-chains';
+import { chooseRecipes, loadCurvePrices } from './npc-industry';
 import { MANUFACTURED_RESOURCE_IDS } from './economic-sinks';
 import { RESOURCE_MAP } from './resources';
 import {
@@ -134,6 +135,15 @@ export interface CorpSimInput {
   openAskBySlug: Record<string, number>;
   scale: number;
   ticks: number;
+  /**
+   * Balance Pass 14: live supply-adjusted curve price per slug, the same map
+   * runNpcIndustryTick builds with loadCurvePrices(). The tick picks the
+   * CHEAPEST recipe per output at these prices (npc-industry.chooseRecipes),
+   * so the forecast must price its choice off the same snapshot or the
+   * parity guard breaks. Omitted ⇒ authored base prices, which is what both
+   * sides fall back to when the market read fails.
+   */
+  curvePrices?: Record<string, number>;
 }
 
 export interface CorpSimResult {
@@ -159,9 +169,12 @@ export function simulateNpcCorp(seed: NpcIndustrySeed, input: CorpSimInput): Cor
   const wanted: Record<string, number> = { ...input.wanted };
   const rawBuys: Record<string, number> = {};
   const builtTotal: Record<string, number> = {};
-  const recipes = PRODUCTION_CHAINS
-    .filter((r) => seed.focus.includes(r.outputId) && facilityTierFor(r) <= seed.capacityTier)
-    .sort((a, b) => a.tier - b.tier);
+  const priceOf = (slug: string) =>
+    input.curvePrices?.[slug] ?? RESOURCE_MAP.get(slug as never)?.baseMarketPrice ?? 0;
+  const recipes = chooseRecipes(
+    PRODUCTION_CHAINS.filter((r) => seed.focus.includes(r.outputId) && facilityTierFor(r) <= seed.capacityTier),
+    priceOf,
+  );
 
   // produce() counts the corp's resting asks as stock on hand; relist() rests
   // min(stock, list cap) each tick without deducting inventory, so from the
@@ -320,7 +333,7 @@ function clampHorizon(h: number): number {
   return Math.max(NPC_FORECAST_MIN_HORIZON_HOURS, Math.min(NPC_FORECAST_MAX_HORIZON_HOURS, Math.round(h)));
 }
 
-async function industryItems(seed: NpcIndustrySeed, scale: number, horizonHours: number, now: Date): Promise<NpcForecastItem[]> {
+async function industryItems(seed: NpcIndustrySeed, scale: number, horizonHours: number, now: Date, curvePrices?: Record<string, number>): Promise<NpcForecastItem[]> {
   const row = await prisma.npcIndustrialCorp.findUnique({ where: { id: seed.id } });
   const rawInv = ((row?.inventory as Record<string, number> & { __meta?: unknown }) || {});
   const meta: CorpMeta = readMeta(rawInv);
@@ -335,7 +348,7 @@ async function industryItems(seed: NpcIndustrySeed, scale: number, horizonHours:
   }
 
   const ticks = Math.max(1, Math.round(horizonHours / NPC_TICK_HOURS));
-  const sim = simulateNpcCorp(seed, { inv, wanted: meta.wanted, demandBySlug, openAskBySlug, scale, ticks });
+  const sim = simulateNpcCorp(seed, { inv, wanted: meta.wanted, demandBySlug, openAskBySlug, scale, ticks, curvePrices });
   const start = now.toISOString();
   const end = new Date(now.getTime() + horizonHours * 3600_000).toISOString();
   const items: NpcForecastItem[] = [];
@@ -394,6 +407,14 @@ export async function buildNpcForecast(now: Date = new Date(), horizonHours: num
   const scale = populationScale(activeProfiles);
   const governor = buildNpcGovernorSnapshot(active30d, now.getTime());
 
+  // Balance Pass 14: the same feedstock snapshot the tick uses to choose the
+  // cheapest recipe per output. Failing the read leaves both sides on
+  // authored base prices, which keeps the parity guard honest either way.
+  const curvePrices: Record<string, number> = {};
+  try {
+    for (const [slug, price] of await loadCurvePrices()) curvePrices[slug] = price;
+  } catch { /* base prices */ }
+
   const items: NpcForecastItem[] = [];
 
   const driveRows = await prisma.biddingContract.findMany({
@@ -407,7 +428,7 @@ export async function buildNpcForecast(now: Date = new Date(), horizonHours: num
   for (const [seedIndex, seed] of NPC_INDUSTRY_SEEDS.entries()) {
     if (seedIndex >= governor.activeIndustryCorps) continue; // dormant under the governor
     try {
-      items.push(...await industryItems(seed, scale, horizon, now));
+      items.push(...await industryItems(seed, scale, horizon, now, curvePrices));
     } catch {
       // A single corp's read failing must not blank the whole forecast.
     }

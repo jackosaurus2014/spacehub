@@ -27,7 +27,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { PRODUCTION_CHAINS, facilityTierFor, type ProductDefinition } from './production-chains';
 import { MANUFACTURED_RESOURCE_IDS } from './economic-sinks';
-import { RESOURCE_MAP } from './resources';
+import { RESOURCE_MAP, getPricingBaseline } from './resources';
 import { calculatePriceAfterTrade, getSupplyPriceMultiplier, MINIMUM_MARKET_SUPPLY } from './market-engine';
 import { matchOrders, NPC_CORP_PREFIX } from './market-orderbook';
 import { activeNpcIndustryCount } from './npc-companies';
@@ -208,7 +208,8 @@ export async function curveBuy(resourceSlug: string, quantity: number): Promise<
   if (!resource) return null;
   const available = Math.max(MINIMUM_MARKET_SUPPLY, resource.totalSupply);
   if (quantity > available) return null;
-  const baseline = def.startingSupply || 1000;
+  // Balance Pass 14: the PRICING baseline, never the opening stock.
+  const baseline = getPricingBaseline(resourceSlug);
   const effectiveNow = resource.currentPrice * getSupplyPriceMultiplier(resource.totalSupply, baseline);
   const cost = Math.round(effectiveNow * quantity);
   const newBasePrice = calculatePriceAfterTrade(resource.currentPrice, resource.basePrice, quantity, true, resource.volatility, resource.minPrice, resource.maxPrice);
@@ -265,6 +266,75 @@ export function clampToBand(slug: string, price: number): number {
   return Math.min(hi, Math.max(lo, Math.round(price)));
 }
 
+// ─── Cost-rational recipe choice (Balance Pass 14) ──────────────────────────
+// A product can have several recipes (rocket fuel alone has three: cracking
+// lunar water, the Sabatier methane route, and terrestrial RP-1 synthesis).
+// `produce` used to run them in authored order and stop once the inventory
+// target was met, so the FIRST recipe in production-chains.ts always won —
+// regardless of what its feedstock cost that hour.
+//
+// Under opening scarcity that is actively harmful. Lunar water opens at 3% of
+// baseline, so `crack_water_fuel` costs ~6× what it does in a mature world;
+// running it first would (a) price NPC rocket fuel at the top of its band,
+// which regresses the Pass-10 starter launch pad that buys its fuel on the
+// market, and (b) have the NPC backdrop strip the unharvested lunar water
+// before a single player got to the Moon — exactly the pre-emption the
+// opening-scarcity model exists to prevent.
+//
+// The corp now picks the CHEAPEST route per output at LIVE feedstock prices.
+// That is both better economics (an industrial buyer shops) and the thing
+// that keeps the on-ramp honest: while Earth methane is cheap, NPC fuel
+// tracks methane and lunar ice is left in the ground for whoever gets there.
+
+/** Live curve price per unit (supply-adjusted) for every market row — one
+ *  read per tick, shared by every corp's recipe choice. */
+export async function loadCurvePrices(): Promise<Map<string, number>> {
+  const rows = await prisma.marketResource.findMany({
+    select: { slug: true, currentPrice: true, totalSupply: true },
+  });
+  const out = new Map<string, number>();
+  for (const r of rows) {
+    out.set(r.slug, r.currentPrice * getSupplyPriceMultiplier(r.totalSupply, getPricingBaseline(r.slug)));
+  }
+  return out;
+}
+
+/** Estimated $ per unit of output for a recipe at the given feedstock prices.
+ *  Manufactured inputs are valued at the corp's own carried unit cost (the
+ *  same figure runRecipe charges itself), raw inputs at the live curve. */
+export function estimateRecipeUnitCost(
+  r: ProductDefinition,
+  curvePrice: (slug: string) => number,
+  carriedUnitCost: Record<string, number> = {},
+): number {
+  if (!(r.outputQuantity > 0)) return Number.POSITIVE_INFINITY;
+  let cost = 0;
+  for (const [id, qty] of Object.entries(r.inputs)) {
+    const unit = MANUFACTURED_RESOURCE_IDS.includes(id)
+      ? (carriedUnitCost[id] ?? RESOURCE_MAP.get(id as never)?.baseMarketPrice ?? 0)
+      : curvePrice(id);
+    cost += unit * qty;
+  }
+  return cost / r.outputQuantity;
+}
+
+/** One recipe per output — the cheapest at current feedstock prices — still
+ *  ordered by tier so lower tiers feed higher ones within a tick. Ties break
+ *  on authored order, so a world with flat prices behaves as before. */
+export function chooseRecipes(
+  recipes: ProductDefinition[],
+  curvePrice: (slug: string) => number,
+  carriedUnitCost: Record<string, number> = {},
+): ProductDefinition[] {
+  const best = new Map<string, { r: ProductDefinition; cost: number }>();
+  for (const r of recipes) {
+    const cost = estimateRecipeUnitCost(r, curvePrice, carriedUnitCost);
+    const cur = best.get(r.outputId);
+    if (!cur || cost < cur.cost) best.set(r.outputId, { r, cost });
+  }
+  return Array.from(best.values()).map((v) => v.r).sort((a, b) => a.tier - b.tier);
+}
+
 export interface CorpTickResult {
   corpId: string;
   built: Record<string, number>;
@@ -288,11 +358,14 @@ async function ensureCorp(seed: NpcIndustrySeed) {
  * feeds higher-tier recipes in the same tick. Mutates `inv`/`meta`; returns
  * what was built and the treasury after purchases.
  */
-async function produce(seed: NpcIndustrySeed, inv: Inv, meta: CorpMeta, treasury: number, scale: number, skipped: string[]): Promise<{ built: Record<string, number>; treasury: number }> {
+async function produce(seed: NpcIndustrySeed, inv: Inv, meta: CorpMeta, treasury: number, scale: number, skipped: string[], curvePrices: Map<string, number>): Promise<{ built: Record<string, number>; treasury: number }> {
   const built: Record<string, number> = {};
-  const recipes = PRODUCTION_CHAINS
-    .filter((r) => seed.focus.includes(r.outputId) && facilityTierFor(r) <= seed.capacityTier)
-    .sort((a, b) => a.tier - b.tier);
+  const priceOf = (slug: string) => curvePrices.get(slug) ?? RESOURCE_MAP.get(slug as never)?.baseMarketPrice ?? 0;
+  const recipes = chooseRecipes(
+    PRODUCTION_CHAINS.filter((r) => seed.focus.includes(r.outputId) && facilityTierFor(r) <= seed.capacityTier),
+    priceOf,
+    meta.unitCost,
+  );
   for (const r of recipes) {
     const out = r.outputId;
     const demand = await demandSignal(out);
@@ -444,6 +517,9 @@ export async function runNpcIndustryTick(now: Date = new Date()): Promise<{ scal
   // GAME_DESIGN_REVIEW_2026-09 row 11 — density governor: the TAIL of the
   // seed order goes dormant as the 30-day-active population grows (floor 2).
   const activeIndustryCorps = activeNpcIndustryCount(active30d);
+  // One market read for the whole tick — every corp's cost-rational recipe
+  // choice prices its feedstock off the same snapshot.
+  const curvePrices = await loadCurvePrices().catch(() => new Map<string, number>());
   const results: CorpTickResult[] = [];
   for (const [seedIndex, seed] of NPC_INDUSTRY_SEEDS.entries()) {
     const skipped: string[] = [];
@@ -466,7 +542,7 @@ export async function runNpcIndustryTick(now: Date = new Date()): Promise<{ scal
       delete (inv as Record<string, unknown>).__meta;
       let treasury = Math.min(TREASURY_CAP, (fresh ?? row).treasury + STIPEND_PER_TICK * scale);
 
-      const { built, treasury: afterBuild } = await produce(seed, inv, meta, treasury, scale, skipped);
+      const { built, treasury: afterBuild } = await produce(seed, inv, meta, treasury, scale, skipped, curvePrices);
       treasury = afterBuild;
       const listed = await relist(seed, inv, meta, scale);
       const { bought, consumed } = await procure(seed, inv, meta, treasury, scale);

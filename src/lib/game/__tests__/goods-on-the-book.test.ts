@@ -74,11 +74,17 @@ describe('Wave E2 — adopted colony-era orphan slugs', () => {
     }
   });
 
-  it('orphan slugs have positive startingSupply/npcRestockPerHour (buyable, unlike crafted goods)', () => {
+  // Balance Pass 14 split baselineSupply (the pricing yardstick / "this has an
+  // NPC curve") from startingSupply (the opening stock). The orphan slugs are
+  // outer-system and belt goods, so several now OPEN at zero units — that is
+  // the scarcity, not a loss of buyability. What must stay true is that they
+  // have a curve at all and that NPC production eventually arrives.
+  it('orphan slugs have a positive pricing baseline and mature NPC restock (buyable, unlike crafted goods)', () => {
     for (const id of COLONY_ORPHAN_IDS) {
       const def = RESOURCE_MAP.get(id as never)!;
-      expect(def.startingSupply).toBeGreaterThan(0);
+      expect(def.baselineSupply).toBeGreaterThan(0);
       expect(def.npcRestockPerHour).toBeGreaterThan(0);
+      expect(def.startingSupply).toBeLessThan(def.baselineSupply);
     }
   });
 });

@@ -167,8 +167,10 @@ export default function EconomyPanel({ state }: Props) {
   const scarcityList = useMemo(() => {
     return RESOURCES.map(r => {
       const entry = prices[r.id];
+      // Balance Pass 14: the deficit is measured against what a FUNCTIONING
+      // market holds (baselineSupply), not against the world's opening stock.
       const supply = entry?.supply ?? r.startingSupply;
-      const deficit = Math.max(0, r.startingSupply - supply);
+      const deficit = Math.max(0, r.baselineSupply - supply);
       return {
         resource: r,
         supply,
@@ -507,7 +509,7 @@ export default function EconomyPanel({ state }: Props) {
                     </div>
                   </div>
                   <span className="text-slate-500 text-[10px] shrink-0 hidden sm:inline">
-                    {item.supply.toLocaleString()} / {item.resource.startingSupply.toLocaleString()} units
+                    {item.supply.toLocaleString()} / {item.resource.baselineSupply.toLocaleString()} units
                   </span>
                 </div>
               );

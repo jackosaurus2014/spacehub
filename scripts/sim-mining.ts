@@ -24,7 +24,8 @@ import { claimStakeFee, claimUpkeepPerMonth, CLAIM_CAP_BY_TIER } from '../src/li
 import { rockPressureShare } from '../src/lib/game/rock-pressure';
 import { shakedownOdds, SHAKEDOWN_TAKE_SHARE, type EscortCover } from '../src/lib/game/npc-shakedown';
 import { SHIP_MAP } from '../src/lib/game/ships';
-import { RESOURCE_MAP, MINING_PRODUCTION } from '../src/lib/game/resources';
+import { RESOURCE_MAP, MINING_PRODUCTION, RESOURCE_ORIGINS } from '../src/lib/game/resources';
+import { getFundamentalPrice, getSupplyPriceMultiplier } from '../src/lib/game/market-engine';
 import { BUILDING_MAP } from '../src/lib/game/buildings';
 import { getRouteDeltaV, FREIGHT_HULL_FUEL_RATE, FREIGHT_CARGO_FUEL_RATE, FREIGHT_MIN_FUEL_COST } from '../src/lib/game/cargo-logistics';
 import { ORE_LOAD_WEIGHT } from '../src/lib/game/asteroids';
@@ -44,9 +45,14 @@ interface MinerSim {
   sharedMiners?: number;
   claimed?: boolean;
   escortCover?: EscortCover;
+  /** Balance Pass 14. 'base' = the pre-Pass-14 gate (ore always at
+   *  baseMarketPrice). 'opening' = the ore market opens at its Pass-14
+   *  scarcity level and this miner's own landed units push it back down —
+   *  the first-mover windfall AND its decay in one run. */
+  priceMode?: 'base' | 'opening';
 }
 
-interface MonthLine { month: number; trips: number; units: number; revenue: number; fuel: number; maintenance: number; probes: number; claim: number; net: number; cumulative: number }
+interface MonthLine { month: number; trips: number; units: number; revenue: number; fuel: number; maintenance: number; probes: number; claim: number; net: number; cumulative: number; price: number }
 
 /** Run one miner for MONTHS months: back-to-back orders, each quoted by the
  *  real planner. Cash-positive = monthly net (revenue − fuel − maintenance −
@@ -54,10 +60,19 @@ interface MonthLine { month: number; trips: number; units: number; revenue: numb
 function simulateMiner(m: MinerSim, months: number = MONTHS): { lines: MonthLine[]; capex: number } {
   const def = SHIP_MAP.get(m.defId)!;
   const intel = m.surveyed ? rollAsteroidIntel(m.rock, LOCAL_INTEL_SALT) : null;
-  const price = RESOURCE_MAP.get(oreForRock(m.rock))?.baseMarketPrice ?? 0;
+  const oreDef = RESOURCE_MAP.get(oreForRock(m.rock))!;
+  const basePrice = oreDef.baseMarketPrice;
+  // Pass 14: the market's live supply for this ore. In 'opening' mode it
+  // starts at the world's opening stock and every landed unit adds to it,
+  // so the price this miner receives falls trip by trip — the windfall
+  // decaying on its own output, which is the gate this scenario exists for.
+  let marketSupply = m.priceMode === 'opening' ? oreDef.startingSupply : oreDef.baselineSupply;
+  const priceNow = () => m.priceMode === 'opening'
+    ? getFundamentalPrice(basePrice, marketSupply, oreDef.baselineSupply, oreDef.minPrice, oreDef.maxPrice)
+    : basePrice;
   // Back-to-back orders on a continuous clock; each trip is booked in the
   // month it COMPLETES (fuel is paid at departure, booked with the trip).
-  const trips: { completesAt: number; units: number; fuel: number; revenue: number }[] = [];
+  const trips: { completesAt: number; units: number; fuel: number; revenue: number; price: number }[] = [];
   let clock = 0;
   let reserve = intel?.reserve ?? Number.MAX_SAFE_INTEGER;
   let origin = m.originId;
@@ -74,8 +89,10 @@ function simulateMiner(m: MinerSim, months: number = MONTHS): { lines: MonthLine
     // Phase B: the EXPECTED units landed (pressure share, then the expected
     // shakedown toll) price the trip; the rock loses what was extracted.
     const extracted = Math.max(1, Math.round(o.fillUnits * plan.pressureShare));
+    const price = priceNow();
     const revenue = Math.round(plan.expectedUnits * price * (m.thenAction === 'return_sell' ? (1 - MINING_SALE_BROKER_FEE) : OUTPUT_SELL_MULT));
-    trips.push({ completesAt: o.completesAtMs, units: plan.expectedUnits, fuel: o.fuelCost, revenue });
+    trips.push({ completesAt: o.completesAtMs, units: plan.expectedUnits, fuel: o.fuelCost, revenue, price });
+    marketSupply += plan.expectedUnits;
     reserve -= extracted;
     clock = o.completesAtMs;
     origin = o.destinationId; // hold: stays at the field (no outbound next time)
@@ -92,7 +109,8 @@ function simulateMiner(m: MinerSim, months: number = MONTHS): { lines: MonthLine
     const maintenance = def.maintenancePerMonth;
     const net = revenue - fuel - maintenance - probes - claim;
     cumulative += net;
-    lines.push({ month, trips: inMonth.length, units, revenue, fuel, maintenance, probes, claim, net, cumulative });
+    const price = inMonth.length > 0 ? Math.round(inMonth.reduce((s, t) => s + t.price, 0) / inMonth.length) : 0;
+    lines.push({ month, trips: inMonth.length, units, revenue, fuel, maintenance, probes, claim, net, cumulative, price });
   }
   return { lines, capex: def.baseCost };
 }
@@ -219,6 +237,50 @@ function main() {
   const tollPerTrip = SHIP_MAP.get('asteroid_miner')!.cargoCapacity * shakedownOdds('asteroid_belt', 'none', false) * SHAKEDOWN_TAKE_SHARE * orePrice;
   console.log(`\nExpected toll per unescorted belt trip: ${fm(tollPerTrip)} (${(shakedownOdds('asteroid_belt', 'none', false) * 100).toFixed(0)}% × ${SHAKEDOWN_TAKE_SHARE * 100}% of a 200-unit hold). Cutter capex ${fm(cutter.baseCost)}, upkeep ${fm(cutter.maintenancePerMonth)}/mo.`);
   console.log(`GATE: with ONE miner an assigned cutter ${nets5[2] > nets5[0] ? 'BEATS' : 'does NOT beat'} no cover on 6-month net before capex (${fm(nets5[2] - nets5[0])}); it pays for its hull only across a fleet or a longer horizon → ${nets5[2] - nets5[0] < cutter.baseCost ? 'a fleet-scale decision, not a solo auto-buy ✓' : 'CHECK ✗'}\n`);
+
+  // ── Scenario 6 (Pass 14): the first-mover windfall and how fast it decays ──
+  console.log('## 6. Pass 14 — opening scarcity: first-mover return and its decay\n');
+  console.log(mdTable(['Ore', 'Origin', 'Baseline', 'Opening stock', 'Opening mult', 'Base', 'Opening spot (band-capped)'],
+    (['ore_carbonaceous', 'ore_silicate', 'ore_metallic', 'ore_exotic'] as const).map((id) => {
+      const d = RESOURCE_MAP.get(id)!;
+      const spot = getFundamentalPrice(d.baseMarketPrice, d.startingSupply, d.baselineSupply, d.minPrice, d.maxPrice);
+      return [d.name, RESOURCE_ORIGINS[d.origin].label, d.baselineSupply, d.startingSupply,
+        `${getSupplyPriceMultiplier(d.startingSupply, d.baselineSupply).toFixed(2)}x`, fm(d.baseMarketPrice),
+        `${fm(spot)} (${(spot / d.baseMarketPrice).toFixed(2)}x)`];
+    })));
+  const mature6 = simulateMiner({ name: 'b', defId: 'prospector_barge', fieldId: 'field_near_earth', rock: rockC, surveyed: true, thenAction: 'return_sell', originId: 'leo', priceMode: 'base' });
+  const opening6 = simulateMiner({ name: 'b', defId: 'prospector_barge', fieldId: 'field_near_earth', rock: rockC, surveyed: true, thenAction: 'return_sell', originId: 'leo', priceMode: 'opening' });
+  console.log(mdTable(['Month', 'Trips', 'Units', 'Mature $/unit', 'Mature net', 'Opening $/unit', 'Opening net', 'Opening cum'],
+    mature6.lines.map((l, i) => [l.month, l.trips, l.units, fm(l.price), fm(l.net), fm(opening6.lines[i].price), fm(opening6.lines[i].net), fm(opening6.lines[i].cumulative)])));
+  const openCum = opening6.lines[5].cumulative, matureCum = mature6.lines[5].cumulative;
+  const firstPrice = opening6.lines[0].price, lastPrice = opening6.lines[5].price;
+  console.log(`\nFirst-mover premium: 6-month cumulative ${fm(openCum)} vs ${fm(matureCum)} in a mature market (+${fm(openCum - matureCum)}).`);
+  console.log(`Realised ore price falls ${fm(firstPrice)} -> ${fm(lastPrice)} per unit (${(lastPrice / firstPrice * 100).toFixed(0)}% of the opening price) on this ONE barge's own landed cargo -> ${lastPrice < firstPrice ? 'the windfall decays OK' : 'CHECK'}`);
+  console.log(`GATE month 3 net at opening prices ${fm(opening6.lines[2].net)} -> ${opening6.lines[2].net > 0 ? 'CASH-POSITIVE ok' : 'NEGATIVE fail'}\n`);
+
+  // The building benchmark priced the SAME way (its lunar water and helium-3
+  // open scarce too) — otherwise the gate would flatter ship mining by
+  // comparing opening-price ships against base-price buildings.
+  const openingBenchmark = (defId: string, svcId: string) => {
+    const b = BUILDING_MAP.get(defId)!;
+    const gross = (MINING_PRODUCTION[svcId] || []).reduce((sum, pr) => {
+      const d = RESOURCE_MAP.get(pr.resource)!;
+      return sum + pr.amountPerMonth * getFundamentalPrice(d.baseMarketPrice, d.startingSupply, d.baselineSupply, d.minPrice, d.maxPrice);
+    }, 0);
+    return gross / b.baseCost;
+  };
+  const bestBldOpen = Math.max(openingBenchmark('mining_lunar_basic', 'svc_mining_lunar_basic'), openingBenchmark('mining_asteroid', 'svc_mining_asteroid'));
+
+  // Capital-efficiency gate re-run at OPENING prices — the windfall must not
+  // hand ship-mining a permanent edge over building-based mining.
+  const openAvg = (r: { lines: MonthLine[] }) => r.lines.slice(1).reduce((s, l) => s + l.revenue, 0) / (r.lines.length - 1);
+  const openBest = Math.max(
+    openAvg(opening6) / opening6.capex,
+    openAvg(simulateMiner({ name: 'b', defId: 'prospector_barge', fieldId: 'field_inner_belt', rock: rockM, surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface', priceMode: 'opening' })) / SHIP_MAP.get('prospector_barge')!.baseCost,
+    openAvg(simulateMiner({ name: 'a', defId: 'asteroid_miner', fieldId: 'field_inner_belt', rock: rockM, surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface', priceMode: 'opening' })) / SHIP_MAP.get('asteroid_miner')!.baseCost,
+  );
+  console.log(`GATE (opening prices, avg months 2-6): best ship gross/capex is ${(openBest / bestBld).toFixed(2)}x the BASE-priced building benchmark and ${(openBest / bestBldOpen).toFixed(2)}x the same benchmark priced at opening scarcity (limit ~1.5x) -> ${openBest / bestBld <= 1.5 && openBest / bestBldOpen <= 1.5 ? 'OK' : 'OVER'}\n`);
+
 }
 
 main();

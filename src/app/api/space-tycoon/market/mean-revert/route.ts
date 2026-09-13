@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { requireCronSecret } from '@/lib/errors';
-import { calculateIdleDecay } from '@/lib/game/market-engine';
+import { calculateIdleDecay, getFundamentalPrice } from '@/lib/game/market-engine';
+import { getPricingBaseline } from '@/lib/game/resources';
 import { getCurrentSeasonNumber } from '@/lib/game/seasonal-events';
 import { getSeasonalMeanRevertTarget } from '@/lib/game/economic-seasons';
 
@@ -28,6 +29,18 @@ import { getSeasonalMeanRevertTarget } from '@/lib/game/economic-seasons';
  * economic reality, not last season's. This is the "existing
  * demand/mean-reversion machinery" hook the spec calls for: no new pricing
  * path, just a season-aware target for the one that already existed.
+ *
+ * Balance Pass 14 (opening scarcity): the target is the SUPPLY-IMPLIED
+ * fundamental, not the raw basePrice — `getFundamentalPrice(basePrice,
+ * totalSupply, baselineSupply, …)`, band-clamped to [base × 0.3, base × 3.0].
+ * This is what makes the mining windfall real AND self-limiting: a market
+ * nobody has supplied heals UP to 3× base (the first Martian-water cargo is
+ * worth three), and a market flooded by mining heals DOWN toward 0.71× at
+ * twice baseline. Before this pass the cron pulled every price back to a
+ * supply-blind constant, so scarcity was a buyer-side tax no producer could
+ * ever earn and a glut never showed in spot at all. The seasonal super-cycle
+ * bias is applied on top of the fundamental, exactly as it was applied on
+ * top of basePrice before.
  *
  * Recent-trade protection: rows updated in the last 5 minutes (trades touch
  * updatedAt) are skipped by calculateIdleDecay's own guard, so active price
@@ -69,8 +82,15 @@ export async function POST(request: Request) {
 
     for (const resource of resources) {
       if (campaignSlugs.has(resource.slug)) continue;
-      const seasonalTarget = getSeasonalMeanRevertTarget(
+      const fundamental = getFundamentalPrice(
         resource.basePrice,
+        resource.totalSupply,
+        getPricingBaseline(resource.slug),
+        resource.minPrice,
+        resource.maxPrice,
+      );
+      const seasonalTarget = getSeasonalMeanRevertTarget(
+        fundamental,
         resource.slug,
         resource.category,
         seasonNumber,

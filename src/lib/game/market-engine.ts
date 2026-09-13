@@ -5,6 +5,7 @@
 
 import { RESOURCES, RESOURCE_MAP } from './resources';
 import type { ResourceId } from './resources';
+import { clampSpotToBand } from './spot-price';
 
 // ─── Price Impact Calculations ───────────────────────────────────────────────
 
@@ -290,6 +291,43 @@ export function getSupplyAdjustedPrice(
   const supplyMult = getSupplyPriceMultiplier(currentSupply, baselineSupply);
   const adjusted = Math.round(basePrice * supplyMult);
   return Math.max(minPrice, Math.min(maxPrice, adjusted));
+}
+
+/**
+ * The FUNDAMENTAL price of a resource: what its base price is worth at the
+ * market's CURRENT supply, band-clamped to the anti-cornering band
+ * ([base × 0.3, base × 3.0] ∩ [minPrice, maxPrice], price-band.ts).
+ *
+ * Balance Pass 14 (opening scarcity). Before this pass the supply multiplier
+ * was a BUYER-SIDE TAX only: `market/trade` charged buyers
+ * `currentPrice × supplyMultiplier` while sellers received a flat
+ * `currentPrice`, and the hourly mean-revert cron healed `currentPrice` back
+ * toward a supply-blind `basePrice`. A genuinely empty market therefore
+ * charged buyers a scarcity premium that no producer could ever earn, and a
+ * glutted one never sagged. That breaks CLAUDE.md's first economic rule —
+ * "supply and demand drive all resource prices" — in the direction that
+ * matters most for mining: the first corporation to bring Martian water to
+ * market had no reason to hurry.
+ *
+ * This function is the fundamental the mean-revert cron now targets. Spot
+ * (`MarketResource.currentPrice`) therefore walks toward the supply-implied
+ * price instead of a static constant, and every surface that already reads
+ * spot — mining revenue (mining-pricing.ts), contract valuation, NPC
+ * settlement, curve sells — earns the scarcity premium without a second
+ * pricing path being invented for them.
+ *
+ * Pure; the band clamp means no amount of scarcity can print more than 3×
+ * base on the seller side.
+ */
+export function getFundamentalPrice(
+  basePrice: number,
+  currentSupply: number,
+  baselineSupply: number,
+  minPrice: number,
+  maxPrice: number,
+): number {
+  const mult = getSupplyPriceMultiplier(currentSupply, baselineSupply);
+  return clampSpotToBand(basePrice * mult, basePrice, minPrice, maxPrice);
 }
 
 /**
