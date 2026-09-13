@@ -1,0 +1,673 @@
+{
+  "stage": "earth",
+  "title": "Earth Operations Center",
+  "version": 1,
+  "generatedAt": "2026-09-13T05:11:52.274Z",
+  "source": "art/blender/hq-earth-ops.py",
+  "aspect": [
+    21,
+    9
+  ],
+  "native": {
+    "width": 2560,
+    "height": 1097
+  },
+  "widths": [
+    2560,
+    1280,
+    640
+  ],
+  "files": "game/hq/earth/{variant}-{layer}-{width}.webp",
+  "composition": {
+    "horizonY": 0.33,
+    "padDeck": [
+      0.568,
+      0.382
+    ],
+    "vehicleBase": [
+      0.568,
+      0.364
+    ],
+    "vehicleTip": [
+      0.568,
+      0.089
+    ],
+    "hangar": [
+      0.111,
+      0.373
+    ],
+    "consoleClearBottom": 0.12,
+    "overscan": 0.03,
+    "camera": {
+      "heightM": 16,
+      "pitchDeg": -4.2,
+      "lensMm": 35,
+      "padDistanceM": 460,
+      "padFrameX": 0.568
+    },
+    "variantOrder": [
+      "day",
+      "sunrise",
+      "dusk",
+      "night"
+    ],
+    "defaultVariant": "sunrise",
+    "note": "Layers share one camera; scale each by (1 + overscan) so parallax never reveals an edge. Consoles dock in the bottom 12%. Coordinates are normalized [x, y] from the top-left."
+  },
+  "depthThresholds": {
+    "nearMaxM": 60,
+    "midMaxM": 2500
+  },
+  "layers": [
+    {
+      "name": "far",
+      "order": 0,
+      "parallax": 0.12,
+      "alpha": false,
+      "note": "sky (graded), sea, dunes, distant pad/cranes (opaque backplate)"
+    },
+    {
+      "name": "mid",
+      "order": 1,
+      "parallax": 0.42,
+      "alpha": true,
+      "note": "scrub field, roads, fence, hangar, pad complex without the vehicle"
+    },
+    {
+      "name": "near",
+      "order": 5,
+      "parallax": 1,
+      "alpha": true,
+      "note": "window mullions, header, sill with cyan/amber strips"
+    }
+  ],
+  "variants": {
+    "day": {
+      "sunElevationDeg": 14,
+      "sunRotationDeg": 38,
+      "exposure": -5.6,
+      "hazeRgb": [
+        0.6258823782205583,
+        0.5729412031173706,
+        0.500392186641693
+      ],
+      "hazeDistanceM": 4500,
+      "lights": 0,
+      "look": "None",
+      "horizonRow": 366,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "day-far-640.webp",
+              "bytes": 4060,
+              "height": 274
+            },
+            "1280": {
+              "file": "day-far-1280.webp",
+              "bytes": 11222,
+              "height": 549
+            },
+            "2560": {
+              "file": "day-far-2560.webp",
+              "bytes": 33924,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "day-mid-640.webp",
+              "bytes": 40656,
+              "height": 274
+            },
+            "1280": {
+              "file": "day-mid-1280.webp",
+              "bytes": 102856,
+              "height": 549
+            },
+            "2560": {
+              "file": "day-mid-2560.webp",
+              "bytes": 237582,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "day-near-640.webp",
+              "bytes": 7078,
+              "height": 274
+            },
+            "1280": {
+              "file": "day-near-1280.webp",
+              "bytes": 15554,
+              "height": 549
+            },
+            "2560": {
+              "file": "day-near-2560.webp",
+              "bytes": 39668,
+              "height": 1097
+            }
+          }
+        }
+      }
+    },
+    "sunrise": {
+      "sunElevationDeg": 7,
+      "sunRotationDeg": 20,
+      "exposure": -4.8,
+      "hazeRgb": [
+        0.868235366344452,
+        0.7337255072593689,
+        0.6041568863391876
+      ],
+      "hazeDistanceM": 3800,
+      "lights": 0.35,
+      "look": "None",
+      "horizonRow": 366,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "sunrise-far-640.webp",
+              "bytes": 4392,
+              "height": 274
+            },
+            "1280": {
+              "file": "sunrise-far-1280.webp",
+              "bytes": 11974,
+              "height": 549
+            },
+            "2560": {
+              "file": "sunrise-far-2560.webp",
+              "bytes": 36578,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "sunrise-mid-640.webp",
+              "bytes": 36964,
+              "height": 274
+            },
+            "1280": {
+              "file": "sunrise-mid-1280.webp",
+              "bytes": 94612,
+              "height": 549
+            },
+            "2560": {
+              "file": "sunrise-mid-2560.webp",
+              "bytes": 223140,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "sunrise-near-640.webp",
+              "bytes": 8136,
+              "height": 274
+            },
+            "1280": {
+              "file": "sunrise-near-1280.webp",
+              "bytes": 17806,
+              "height": 549
+            },
+            "2560": {
+              "file": "sunrise-near-2560.webp",
+              "bytes": 44586,
+              "height": 1097
+            }
+          }
+        }
+      }
+    },
+    "dusk": {
+      "sunElevationDeg": 3,
+      "sunRotationDeg": 238,
+      "exposure": -3.3,
+      "hazeRgb": [
+        0.2461960956454277,
+        0.22784315466880797,
+        0.2813333469629288
+      ],
+      "hazeDistanceM": 4500,
+      "lights": 1,
+      "look": "AgX - Punchy",
+      "horizonRow": 366,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "dusk-far-640.webp",
+              "bytes": 4410,
+              "height": 274
+            },
+            "1280": {
+              "file": "dusk-far-1280.webp",
+              "bytes": 11884,
+              "height": 549
+            },
+            "2560": {
+              "file": "dusk-far-2560.webp",
+              "bytes": 33480,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "dusk-mid-640.webp",
+              "bytes": 38724,
+              "height": 274
+            },
+            "1280": {
+              "file": "dusk-mid-1280.webp",
+              "bytes": 96708,
+              "height": 549
+            },
+            "2560": {
+              "file": "dusk-mid-2560.webp",
+              "bytes": 227216,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "dusk-near-640.webp",
+              "bytes": 5006,
+              "height": 274
+            },
+            "1280": {
+              "file": "dusk-near-1280.webp",
+              "bytes": 11650,
+              "height": 549
+            },
+            "2560": {
+              "file": "dusk-near-2560.webp",
+              "bytes": 30788,
+              "height": 1097
+            }
+          }
+        }
+      }
+    },
+    "night": {
+      "sunElevationDeg": -14,
+      "sunRotationDeg": 250,
+      "exposure": 1,
+      "hazeRgb": [
+        0.02,
+        0.027843137718737126,
+        0.046901962831616406
+      ],
+      "hazeDistanceM": 5000,
+      "lights": 1.4,
+      "look": "AgX - Punchy",
+      "horizonRow": 365,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "night-far-640.webp",
+              "bytes": 5176,
+              "height": 274
+            },
+            "1280": {
+              "file": "night-far-1280.webp",
+              "bytes": 15700,
+              "height": 549
+            },
+            "2560": {
+              "file": "night-far-2560.webp",
+              "bytes": 39054,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "night-mid-640.webp",
+              "bytes": 36102,
+              "height": 274
+            },
+            "1280": {
+              "file": "night-mid-1280.webp",
+              "bytes": 85834,
+              "height": 549
+            },
+            "2560": {
+              "file": "night-mid-2560.webp",
+              "bytes": 188410,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "night-near-640.webp",
+              "bytes": 4744,
+              "height": 274
+            },
+            "1280": {
+              "file": "night-near-1280.webp",
+              "bytes": 12296,
+              "height": 549
+            },
+            "2560": {
+              "file": "night-near-2560.webp",
+              "bytes": 32776,
+              "height": 1097
+            }
+          }
+        }
+      }
+    }
+  },
+  "actors": {
+    "vehicle": {
+      "blend": "normal",
+      "order": 3,
+      "perVariant": true,
+      "idle": true,
+      "trigger": "launch",
+      "below": "near",
+      "above": "plume",
+      "anchor": {
+        "x": 0.546875,
+        "y": 0.06563354603463993,
+        "w": 0.041015625,
+        "h": 0.3281677301731996
+      },
+      "note": "Always drawn at its anchor (the vehicle on the pad). On launch translate it upward; plume stays pad-anchored.",
+      "widths": [
+        2560,
+        1280,
+        640
+      ],
+      "files": {
+        "day": {
+          "640": {
+            "file": "day-vehicle-640.webp",
+            "bytes": 1438,
+            "width": 26,
+            "height": 89
+          },
+          "1280": {
+            "file": "day-vehicle-1280.webp",
+            "bytes": 2892,
+            "width": 53,
+            "height": 182
+          },
+          "2560": {
+            "file": "day-vehicle-2560.webp",
+            "bytes": 5042,
+            "width": 105,
+            "height": 360
+          }
+        },
+        "sunrise": {
+          "640": {
+            "file": "sunrise-vehicle-640.webp",
+            "bytes": 1414,
+            "width": 26,
+            "height": 89
+          },
+          "1280": {
+            "file": "sunrise-vehicle-1280.webp",
+            "bytes": 2898,
+            "width": 53,
+            "height": 182
+          },
+          "2560": {
+            "file": "sunrise-vehicle-2560.webp",
+            "bytes": 5220,
+            "width": 105,
+            "height": 360
+          }
+        },
+        "dusk": {
+          "640": {
+            "file": "dusk-vehicle-640.webp",
+            "bytes": 1600,
+            "width": 26,
+            "height": 89
+          },
+          "1280": {
+            "file": "dusk-vehicle-1280.webp",
+            "bytes": 2944,
+            "width": 53,
+            "height": 182
+          },
+          "2560": {
+            "file": "dusk-vehicle-2560.webp",
+            "bytes": 5584,
+            "width": 105,
+            "height": 360
+          }
+        },
+        "night": {
+          "640": {
+            "file": "night-vehicle-640.webp",
+            "bytes": 1620,
+            "width": 26,
+            "height": 89
+          },
+          "1280": {
+            "file": "night-vehicle-1280.webp",
+            "bytes": 3074,
+            "width": 53,
+            "height": 182
+          },
+          "2560": {
+            "file": "night-vehicle-2560.webp",
+            "bytes": 5834,
+            "width": 105,
+            "height": 360
+          }
+        }
+      },
+      "quality": 88
+    },
+    "plume": {
+      "blend": "normal",
+      "order": 2,
+      "trigger": "launch",
+      "below": "vehicle",
+      "anchor": {
+        "x": 0.2125,
+        "y": 0.105742935278031,
+        "w": 0.65625,
+        "h": 0.3518687329079307
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "widths": [
+        2560,
+        1280,
+        640
+      ],
+      "files": {
+        "640": {
+          "file": "actor-plume-640.webp",
+          "bytes": 10106,
+          "width": 420,
+          "height": 97
+        },
+        "1280": {
+          "file": "actor-plume-1280.webp",
+          "bytes": 26688,
+          "width": 840,
+          "height": 193
+        },
+        "2560": {
+          "file": "actor-plume-2560.webp",
+          "bytes": 81514,
+          "width": 1680,
+          "height": 386
+        }
+      },
+      "quality": 88
+    },
+    "padlights": {
+      "blend": "screen",
+      "order": 2,
+      "trigger": "build_complete",
+      "below": "near",
+      "anchor": {
+        "x": 0,
+        "y": 0,
+        "w": 0.946875,
+        "h": 0.8313582497721057
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "widths": [
+        2560,
+        1280,
+        640
+      ],
+      "files": {
+        "640": {
+          "file": "actor-padlights-640.webp",
+          "bytes": 34704,
+          "width": 606,
+          "height": 228
+        },
+        "1280": {
+          "file": "actor-padlights-1280.webp",
+          "bytes": 95246,
+          "width": 1212,
+          "height": 456
+        },
+        "2560": {
+          "file": "actor-padlights-2560.webp",
+          "bytes": 194470,
+          "width": 2424,
+          "height": 912
+        }
+      },
+      "quality": 86
+    },
+    "weather": {
+      "blend": "normal",
+      "order": 4,
+      "trigger": "weather",
+      "below": "near",
+      "anchor": {
+        "x": 0,
+        "y": 0,
+        "w": 1,
+        "h": 1
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "widths": [
+        1280,
+        640
+      ],
+      "files": {
+        "640": {
+          "file": "actor-weather-640.webp",
+          "bytes": 28782,
+          "width": 640,
+          "height": 274
+        },
+        "1280": {
+          "file": "actor-weather-1280.webp",
+          "bytes": 71276,
+          "width": 1280,
+          "height": 549
+        }
+      },
+      "quality": 72
+    }
+  },
+  "depth": {
+    "file": "depth-1280.webp",
+    "bytes": 5422,
+    "width": 1280,
+    "height": 549,
+    "metersAtWhite": 8000,
+    "encoding": "linear: metres = value / 255 * metersAtWhite; 0 = sky"
+  },
+  "bytes": {
+    "byVariant": {
+      "day": 492600,
+      "sunrise": 478188,
+      "dusk": 459866,
+      "night": 420092
+    },
+    "actors": 582346,
+    "depth": 5422,
+    "total": 2438514
+  },
+  "render": {
+    "engine": "CYCLES",
+    "samples": 160,
+    "timings": {
+      "day": {
+        "sky": 0.7,
+        "far": 1.3,
+        "mid": 2.4,
+        "vehicle": 0.5,
+        "near": 1,
+        "post": 9.3,
+        "total": 15.3
+      },
+      "sunrise": {
+        "sky": 0.7,
+        "far": 1.9,
+        "mid": 3.2,
+        "vehicle": 0.6,
+        "near": 0.9,
+        "post": 9.2,
+        "total": 16.5
+      },
+      "dusk": {
+        "sky": 0.9,
+        "far": 1.9,
+        "mid": 3.2,
+        "vehicle": 0.6,
+        "near": 1,
+        "post": 9,
+        "total": 16.6
+      },
+      "night": {
+        "sky": 0.8,
+        "far": 1.4,
+        "mid": 2.3,
+        "vehicle": 0.6,
+        "near": 1,
+        "post": 8.9,
+        "total": 15
+      },
+      "actors": {
+        "padlights": 2.7,
+        "plume": 38.3,
+        "weather": 0.8,
+        "total": 46.2
+      }
+    }
+  }
+}
