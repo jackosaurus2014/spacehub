@@ -4,7 +4,10 @@ import { logger } from '@/lib/logger';
 import { notQaProfile } from '@/lib/qa-accounts';
 import { tierFromProfileScalars } from '@/lib/game/corporation-tiers';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
-import { ASSET_KIND_BUILDING, ensureAssetAdoption, ensureAssetAdoption2, loadServerRegistry, rowsOfKind } from '@/lib/game/server-assets';
+import {
+  ASSET_KIND_BUILDING, ASSET_KIND_RESEARCH, ASSET_KIND_SHIP, LIVE_SHIP_STATUSES,
+  ensureAssetAdoption, ensureAssetAdoption2, loadServerRegistry, rowsOfKind,
+} from '@/lib/game/server-assets';
 import {
   InsufficientFundsError,
   badRequest,
@@ -13,7 +16,7 @@ import {
   fundsError,
   loadAssetProfile,
 } from '@/lib/game/asset-route-shared';
-import { HQ_SEAT_COUNTS, getHqStage, hqStageForLocationId, isHqStageId, type HqStageId } from '@/lib/game/headquarters';
+import { HQ_SEAT_COUNTS, getHqStage, hqSeatIsAuctioned, hqStageForLocationId, isHqStageId, type HqStageId } from '@/lib/game/headquarters';
 import { checkHqRelocationRequest, type HqRequirementView } from '@/lib/game/hq-relocation';
 import {
   HqSeatUnavailableError,
@@ -82,19 +85,31 @@ export async function POST(request: NextRequest) {
         locationsUnlocked: profile.locationsUnlocked, serviceCount: profile.serviceCount,
       }),
       buildings: rowsOfKind(registry.rows, ASSET_KIND_BUILDING).map(r => ({ definitionId: r.definitionId, locationId: r.locationId || '', isComplete: r.status === 'complete' })),
+      // CC-3: the outer rungs gate on research and hulls too — both read
+      // from the registry, never from the client's claim.
+      research: rowsOfKind(registry.rows, ASSET_KIND_RESEARCH).filter(r => r.status === 'complete').map(r => r.definitionId),
+      ships: rowsOfKind(registry.rows, ASSET_KIND_SHIP).filter(r => LIVE_SHIP_STATUSES.includes(r.status)).map(r => r.definitionId),
     };
-    const check = checkHqRelocationRequest({ stage: fromStage.id, locationId: fromStage.locationId, movedAtMs: 0 }, view, toStage);
+    // CC-3: Mars and outward are AUCTION stages — the seat must already be
+    // won (or still held from a previous stay) before the charter is filed.
+    const seatNeeded = HQ_SEAT_COUNTS[toStage] > 0;
+    const heldSeat = seatNeeded ? await findHeldHqSeat(profile.id, toStage) : null;
+    const check = checkHqRelocationRequest(
+      { stage: fromStage.id, locationId: fromStage.locationId, movedAtMs: 0 },
+      view,
+      toStage,
+      { heldSeatAtTarget: !!heldSeat },
+    );
     if (!check.ok) {
-      const status = check.error === 'in_progress' ? 409 : 400;
+      const status = check.error === 'in_progress' ? 409 : check.error === 'seat_auction' ? 409 : 400;
       return NextResponse.json({ error: check.message, code: check.error, check: check.check ?? null }, { status });
     }
     const quote = check.quote;
 
-    // Seat: held already (a corporation that moved away and is coming back
-    // within its lease) or claimed now at the posted price.
-    const seatNeeded = HQ_SEAT_COUNTS[toStage] > 0;
-    const heldSeat = seatNeeded ? await findHeldHqSeat(profile.id, toStage) : null;
-    const pool = seatNeeded && !heldSeat ? await loadHqSeatPoolSummary(toStage) : null;
+    // Seat: held already (an auction win, or a corporation that moved away
+    // and is coming back within its lease) or — at a first-come stage only —
+    // claimed now at the posted price.
+    const pool = seatNeeded && !heldSeat && !hqSeatIsAuctioned(toStage) ? await loadHqSeatPoolSummary(toStage) : null;
     if (pool && pool.free <= 0) {
       return NextResponse.json({ error: `Every ${getHqStage(toStage).shortLabel} seat is taken — wait for a corporation to move or the lease to lapse.`, code: 'no_seat', pool }, { status: 409 });
     }
@@ -114,7 +129,7 @@ export async function POST(request: NextRequest) {
         let seatId: string | null = heldSeat?.id ?? null;
         let seatIndex: number | null = heldSeat?.index ?? null;
         let seatPrice = 0;
-        if (seatNeeded && !heldSeat) {
+        if (seatNeeded && !heldSeat && !hqSeatIsAuctioned(toStage)) {
           const claimed = await claimHqSeat(tx, profile.id, toStage, now);
           seatId = claimed.seat.id;
           seatIndex = claimed.seat.index;

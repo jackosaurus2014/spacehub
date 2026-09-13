@@ -64,11 +64,13 @@ function launchState(hqStage: 'earth_ops' | 'orbital_deck' | 'lunar_hq', extra: 
 }
 
 describe('seat pool (headquarters.ts / hq-relocation.ts)', () => {
-  it('Epoch 2 counts: 24 LEO, 12 Lunar, Earth unlimited; CC-2 reaches Earth, LEO and Luna only', () => {
+  it('Epoch 2 counts shrink with distance, Earth unlimited; CC-3 reaches every rung', () => {
     expect(HQ_SEAT_COUNTS.orbital_deck).toBe(24);
     expect(HQ_SEAT_COUNTS.lunar_hq).toBe(12);
     expect(HQ_SEAT_COUNTS.earth_ops).toBe(0);
-    expect(hqReachableStages().map(s => s.id)).toEqual(['earth_ops', 'orbital_deck', 'lunar_hq']);
+    expect(hqReachableStages().map(s => s.id)).toEqual([
+      'earth_ops', 'orbital_deck', 'lunar_hq', 'mars_hq', 'jovian_hq', 'saturnian_hq', 'deep_space_hq', 'interstellar_hq',
+    ]);
   });
 
   it('posted price starts at base, rises monotonically with occupancy to ~3x at the last seat, rounds to $0.1M', () => {
@@ -121,6 +123,7 @@ describe('relocation cost / time constants', () => {
     expect(HQ_UPKEEP_MONTHLY.earth_ops).toBe(0);
     expect(HQ_UPKEEP_MONTHLY.orbital_deck).toBeGreaterThan(0);
     expect(HQ_UPKEEP_MONTHLY.lunar_hq).toBeGreaterThan(HQ_UPKEEP_MONTHLY.orbital_deck);
+    expect(HQ_UPKEEP_MONTHLY.mars_hq).toBeGreaterThan(HQ_UPKEEP_MONTHLY.lunar_hq);
     expect(hqUpkeepMonthly(launchState('earth_ops'))).toBe(0);
     expect(hqUpkeepMonthly(launchState('orbital_deck'))).toBe(HQ_UPKEEP_MONTHLY.orbital_deck);
   });
@@ -143,16 +146,19 @@ describe('requirements (design §3 table)', () => {
     expect(evaluateHqRequirementsFrom({ tier: 3, buildings: [{ definitionId: 'space_station_small', locationId: 'leo', isComplete: true }] }, 'lunar_hq').building?.met).toBe(false);
     expect(evaluateHqRequirementsFrom({ tier: 3, buildings: [{ definitionId: 'habitat_lunar', locationId: 'lunar_surface', isComplete: true }] }, 'lunar_hq').met).toBe(true);
     expect(evaluateHqRequirementsFrom({ tier: 3, buildings: [{ definitionId: 'space_station_lunar', locationId: 'lunar_orbit', isComplete: true }] }, 'lunar_hq').met).toBe(true);
-    // Earth needs nothing; Mars is not reachable yet.
+    // Earth needs nothing; CC-3 made Mars reachable (tier 4 + a Mars station).
     expect(evaluateHqRequirementsFrom(noBuildings, 'earth_ops').met).toBe(true);
-    expect(evaluateHqRequirementsFrom({ tier: 7, buildings: [{ definitionId: 'habitat_mars', locationId: 'mars_surface', isComplete: true }] }, 'mars_hq').reachable).toBe(false);
+    const mars = evaluateHqRequirementsFrom({ tier: 7, buildings: [{ definitionId: 'habitat_mars', locationId: 'mars_surface', isComplete: true }] }, 'mars_hq');
+    expect(mars.reachable).toBe(true);
+    expect(mars.met).toBe(true);
   });
 
   it('checkHqRelocationRequest: one HQ, one project at a time, tier and station gates, no coming-soon seats', () => {
     const view = { tier: 2, buildings: [{ definitionId: 'space_station_small', locationId: 'leo', isComplete: true }] };
     expect(checkHqRelocationRequest(earth(), view, 'nowhere')).toMatchObject({ ok: false, error: 'unknown_stage' });
     expect(checkHqRelocationRequest(earth(), view, 'earth_ops')).toMatchObject({ ok: false, error: 'same_stage' });
-    expect(checkHqRelocationRequest(earth(), view, 'mars_hq')).toMatchObject({ ok: false, error: 'coming_soon' });
+    // CC-3: Mars is open but tier-gated, and its seat must be won at auction.
+    expect(checkHqRelocationRequest(earth(), view, 'mars_hq')).toMatchObject({ ok: false, error: 'tier' });
     expect(checkHqRelocationRequest(earth(), { ...view, tier: 1 }, 'orbital_deck')).toMatchObject({ ok: false, error: 'tier' });
     expect(checkHqRelocationRequest(earth(), { tier: 2, buildings: [] }, 'orbital_deck')).toMatchObject({ ok: false, error: 'building' });
     const inFlight = startHqProject(earth(), 'orbital_deck', 1_800_000_000_000);

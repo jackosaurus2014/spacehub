@@ -4013,3 +4013,267 @@ auto-buy.
   whether any solo player ever files one.
 - Respawn is in place (same catalogue id) — Phase C/D can spawn NEW ids once
   the map affordance exists.
+
+## Pass 13 — outer headquarters (2026-09-13)
+
+### What shipped (CC-3 of `docs/COMMAND_CENTER_DESIGN_2026-09-13.md`)
+
+The headquarters ladder now runs the whole way: **Mars Orbital HQ (tier 4),
+Jovian *or* Saturnian HQ (tier 5), the Heliopause deep-space station (tier 6)
+and the Interstellar HQ (tier 7)** are reachable. From Mars outward a vacant
+seat is sold at a **sealed-bid auction** rather than leased first-come, seat
+**rent moved server-side** (an unpayable month now costs the corporation its
+anchorage), and the Bridge picks up a stage's window plates the moment the
+art pipeline publishes them.
+
+Files: `headquarters.ts` (the ladder's numbers, the ±10-15% profiles, the ONE
+service-term helper), `hq-relocation.ts` (research/hull gates, the auction
+gate, the upkeep cursor math), **`hq-seat-auctions.ts`** (new — the pure
+auction half), `hq-relocation-server.ts` (`chargeHqSeatUpkeep`,
+`resolveDueHqSeatAuctions`, `awardHqSeat`, `lapseHqSeat`, `loadHqUpkeepView`),
+**`/api/space-tycoon/hq/seat-auction`** (new), `/api/space-tycoon/hq` (+
+auctions, gates, upkeep), `/api/space-tycoon/hq/relocate` (auction gate),
+`/api/cron/assets-complete` (two new passes), `HqRelocationConsole.tsx`,
+`BridgeStage.tsx` + `hq-manifest.ts` (runtime plate discovery),
+`game-engine.ts` / `economy-report.ts` / `resource-plausibility.ts` /
+`scripts/sim-harness.ts` (all four now call one helper),
+`expeditions.ts` (the survey-data term), `server-ledger.ts` +
+`ledger-reconcile.ts` (three reasons), `prisma/schema.prisma`
+(`HqSeatAuction`, `HqSeatBid`, two additive `HqSeat` columns).
+
+### The ladder as implemented
+
+| Stage | Tier | Requirements beyond the tier | Seats | Seat price | Project | Upkeep | Seat bonus |
+|---|---|---|---|---|---|---|---|
+| Earth Operations Center | 1 | — | ∞ | — | — (return: 25% of the departing fee, 1 mo) | — | hiring −10%, contract payout +10% |
+| Orbital Command Deck | 2 | Orbital Outpost in LEO | 24 | **$25M** posted, first-come | $45M · 2 mo | $1.0M/mo | launch revenue +12%, satellite ops −10% |
+| Lunar Gateway HQ | 3 | Lunar Gateway or Habitat | 12 | **$150M** posted, first-come | $220M · 4 mo | $3.5M/mo | mining fuel −12%, belt Δv −10% |
+| **Mars Orbital HQ** | 4 | Mars orbital station or habitat | **8** | **$250M reserve**, auction | **$380M · 6 mo** | **$5M/mo** | colony-surface revenue +12%, Mars-orbit revenue +10% |
+| **Jovian Station HQ** | 5 | Jovian station | **4** | **$420M reserve**, auction | **$650M · 8 mo** | **$8M/mo** | outer extraction +12%, science +10% |
+| **Saturnian Ring HQ** | 5 | Kronos station at Saturn | **4** | **$420M reserve**, auction | **$650M · 8 mo** | **$8M/mo** | outer extraction +10%, science +12% |
+| **Heliopause Station HQ** | 6 | Deep Space Outpost **+ an interstellar-capable hull** | **2** | **$2.8B reserve**, auction | **$4.4B · 12 mo** | **$50M/mo** | outer extraction +15%, expedition survey data +15% |
+| **Interstellar HQ** | 7 | Deep Space Outpost + **Interstellar Colonization** charted + **a Colony Ark** | **2** | **$1.5B reserve**, auction | **$2.4B · 18 mo** | **$20M/mo** | colony-surface revenue +15%, expedition survey data +15% |
+
+Posted/reserve prices still ride the CC-2 occupancy curve
+(`base × (1 + 2·(occupied/total)^1.5)`), so the last Mars seat *opens* at
+3× the first. The two tier-5 seats are a **real choice** and never both:
+Jupiter leans extraction, Saturn leans science.
+
+**Where the outer numbers come from.** Each rung's total outlay (project +
+reserve) is ≈ **24 game-months** of the monthly gain a *matching*
+corporation measures in `scripts/sim-hq-relocation.ts`, and each rung's rent
+is ≈ **15%** of that gain — the same shape LEO's $70M / $1.0M has against
+its +12% launch line. Nothing is priced off the tier ladder's
+`totalEarned` gate: an auctioned seat's real price is whatever the bidders
+take it to, and the reserve is only the floor below which the seat is not
+worth selling.
+
+**Two gates stand in for systems that have no server-side completion
+signal yet**, and both are named in `HQ_STAGE_REQUIREMENTS`:
+
+- Deep space, design text *"Mothership-class flagship docked"*: there is no
+  mothership hull in `ships.ts`. The gate is an **interstellar-capable hull**
+  (Starfarer-Class Explorer $25B or Colony Ark $80B) — the only two ships
+  that can leave the heliosphere, and a `ServerAsset` `ship` row proves it.
+- Interstellar, *"completed interstellar expedition + colony charter"*:
+  expeditions and interstellar colonies live only in the CLIENT save
+  (`types.ts ExpeditionState` / `InterstellarColonyState` — no table, no
+  column), so an expedition-completion gate would be the client's word for
+  it. The gate is the **charter half** of the same sentence, which *is*
+  server-verifiable: `interstellar_colonization` complete (which itself
+  requires `jump_drive`, $500B) plus a **Colony Ark** built. **CC-4 should
+  swap this for the expedition record once one exists.**
+
+### Seat auctions (Mars and outward)
+
+| Rule | Value |
+|---|---|
+| Which stages | `HQ_AUCTION_STAGES` — Mars, Jovian, Saturnian, deep space, interstellar. LEO and Luna keep CC-2's first-come lease: their pools are 24 and 12 seats, and an auction round-trip on the tier-2/3 on-ramp would be pure friction |
+| How one opens | **On demand.** The first qualifying corporation posts an opening bid (`POST /hq/seat-auction {action:'open', stage, amount}`); the auction and the bid are created in one transaction, so an open auction always has a bidder. Scheduled auctions would cycle empty forever on a four-seat pool |
+| Reserve | the pool's posted price at the current occupancy (`hqAuctionReserve` → `postedSeatPrice`) |
+| Minimum bid | reserve, or the standing high bid **+2%**, rounded up to $0.1M. The high bid itself is never published — bids are sealed; only the floor a new bid must clear is |
+| Window | **48 h**, with the orbital-slot auctions' **10-minute soft close** (a late bid buys everyone 10 more, capped at +1 h). The slot pools use 7 days; an HQ seat blocks the corporation's whole campaign-loop move, so it resolves faster |
+| Escrow | debited at bid time (`hq_seat_bid_escrow`); revising a bid settles only the difference |
+| Resolution | the assets-complete cron (`resolveDueHqSeatAuctions`, every 5 min) — and lazily by the seat-auction route, so a GET never shows a closed auction as live |
+| Who wins | highest bid ≥ reserve; ties to the **earliest** bid; no RNG. `resolveAuction` is imported from `orbital-slot-auctions.ts`, not re-implemented, so the two systems can never drift on "who won" |
+| Winner pays | the escrow is simply never returned — **that absence is the burn** (BALANCE.md money sink). Published on the seat's price tape (`event: 'auction'`), on the public timeline (`hq_seat_auction`) and in a `MarketAuditLog` `hq_seat_auction_cleared` row |
+| Losers | refunded **in full** (`hq_seat_bid_refund`), including every bid on an auction that expired below its reserve |
+| One seat, ever | `awardHqSeat` releases everything the winner holds elsewhere **in the same transaction**; the relocate route refuses an auction stage outright (`seat_auction`, 409) until the seat is actually held |
+
+**Why not the OrbitalSlotAuction tables.** `OrbitalSlotAuction` is keyed by
+`locationId` against a per-location occupancy bucket, its leases carry
+building-tied idle fees, and a corporation may hold several. An HQ seat is
+one indivisible anchorage, at most one per corporation, held by the
+headquarters itself with no building to idle against, and its pool is the
+`HqSeat` table CC-2 already built. Sharing the table would have meant a
+nullable `seatId` plus an "is this an HQ row?" branch in every orbital-slot
+reader — more coupling than the ~60 lines of I/O it saved. The *behaviour* is
+the same auction: the resolution math and the soft-close constants are
+imported.
+
+### Upkeep is server-side now
+
+| Rule | Value |
+|---|---|
+| Reason | **`hq_seat_upkeep`** — BURNED, no matching credit anywhere |
+| Cadence | one game-month per cron pass (`chargeHqSeatUpkeep`, assets-complete, every 5 min), advancing `HqSeat.upkeepPaidThrough`. One month per pass (the `AsteroidClaim` precedent) means a server that was asleep catches up instead of presenting a lump bill |
+| Non-payment | the month is marked missed; the wallet is never overdrawn |
+| **Grace period** | **2 game-months** (`HQ_SEAT_UPKEEP_GRACE_MONTHS` — 12 real hours). Long enough that one bad trading day never costs a corporation its anchorage, short enough that an abandoned seat returns to a contested pool inside a day |
+| Lapse | the seat returns to the pool at its posted price and `GameProfile.hqLocationId` goes back to `earth_surface` — a corporation cannot sit at a station it is not paying for. Public on the timeline (`hq_seat_lapsed`) |
+| Visible | the Headquarters console carries a rent line (amount, paid-through, months unpaid, grace remaining) from `GET /hq`'s `upkeep` block; the P&L keeps the flat overhead line |
+
+**The one double-charge trap, and how it is closed.** The client tick has
+charged this figure since CC-2 (`game-engine.ts` §1b) and still does, so the
+wallet math stays smooth between syncs and the sim harness keeps modelling
+the same corporation. The server charge is therefore listed in
+`ledger-reconcile.ts` **`CLIENT_APPLIED_LEDGER_REASONS`**: it debits the
+persisted wallet and drives the lapse, but it never comes back to the client
+as a pending delta. Exactly the contract CC-2's relocation charter uses. A
+row missing from that list would bill every corporation twice a month.
+
+### Bonus wiring — one helper, four callers
+
+CC-2's regression (a server ceiling below the client tick rejects income the
+player earned — it cost the founder real money twice that week) is now
+structurally impossible for service revenue: **every** HQ service term is
+computed by `headquarters.ts hqServiceRevenueMult`, and the tick
+(`game-engine.ts` §1), the P&L (`economy-report.ts`), the **server ceiling**
+(`resource-plausibility.ts computeServerMonthlyGrossDetailed`) and the
+balance harness (`scripts/sim-harness.ts`) all call it with the same
+arguments. The Frontier stacking cap (×2.3) is applied inside the helper, so
+no caller can forget it. `hqServiceCostMult` does the same for the one
+cost term.
+
+| Term | Fires on | Wired at |
+|---|---|---|
+| `launchRevenueMult` | `launch_payload` services | `hqServiceRevenueMult` |
+| `colonyThroughputMult` | any service at a settled colony SURFACE (`HQ_COLONY_LOCATIONS` — every `colonies.ts` body + Luna + Mars surface) | same |
+| `marsOpsMult` | any service in **Mars orbit** — deliberately disjoint from the colony set, so the Mars seat's two terms can never multiply | same |
+| `outerExtractionMult` | `mining_output` at `jupiter_system` / `saturn_system` / `outer_system` and the bodies hanging off them | same |
+| `scienceMult` | `sensor_service` ("science and sensing"), wherever it operates | same |
+| `satelliteOpsCostMult` | operating cost of any service a `satellite`-category building enables | `hqServiceCostMult` |
+| `hiringCostMult`, `contractPayoutMult` | unchanged from Pass 11 | `labor-market.ts`, `contracts.ts` / `delivery-contracts.ts` |
+| `miningFuelMult`, `beltDeltaVMult` | unchanged from Pass 11 | `mining-orders.ts quoteLeg` |
+| `expeditionReturnMult` | survey-data payout when an interstellar expedition returns | `expeditions.ts`, ONE site, beside `surveyPayoutMult` |
+
+A test walks **every service definition × every location × every stage** and
+asserts the product never exceeds 1.15 — the founder's band holds by
+construction, not by inspection.
+
+`expeditionReturnMult` is the one term with no server mirror, because the
+server has no expedition record at all (see the interstellar gate above). It
+is not tick income, so it does not enter the monthly-gross ceiling; it rides
+the same one-shot path `science-missions.ts`'s existing +30%
+`surveyPayoutMult` already rides. **Watch item** — see below.
+
+### Sim delta (`scripts/sim-hq-relocation.ts`, 24 game-months, Frontier off)
+
+Matched pairs, fleet pre-built (no capex in the window), power generation at
+every location (an unpowered location runs its services at a fraction of
+nameplate and would have made the comparison vacuous). The seat is charged at
+the **reserve**, so every delta below is the mover's best case.
+
+| corp | move at | seated | stage | Δ cash @ 24 mo | net/mo stay → move | outlay | payback |
+|---|---|---|---|---|---|---|---|
+| launch-heavy (4 pads, 3 LEO sats, outpost) | 1 | 3 | LEO deck | **+$33.4M (+6.1%)** | $2.0M → $6.9M | $70M | 14 mo |
+| same | 6 / 12 | 8 / 14 | LEO deck | +$8.9M / −$20.6M | | | |
+| lunar mining (6 rigs, habitat) | 1 | 5 | Lunar | −$434M (−69.7%) | $2.5M → −$0.9M | $370M | never *(its terms are on the Mining-Order loop — measured below)* |
+| Mars operator (surface industry + orbital relays) | 1 | 7 | Mars | −$194M (−3.8%) | $82.9M → **$108.3M** | $630M | **25 mo** |
+| same | 6 / 12 | 12 / 18 | Mars | −$322M / −$474M | | | |
+| Jovian extractor (6 Europa rigs + relays + labs) | 1 | 9 | Jovian | −$270M (−2.8%) | −$528.7M → **−$479.4M** | $1.07B | **22 mo** |
+| Saturnian science house (4 Titan rigs + 6 sensor labs) | 1 | 9 | Saturnian | −$429M (−5.0%) | −$483.9M → **−$442.0M** | $1.07B | **26 mo** |
+| Kuiper operator (4 Kuiper rigs + 2 relays + outer rigs) | 1 | 13 | Deep space | −$3.52B (−20.1%) | −$778.1M → **−$472.7M** | $7.20B | **24 mo** |
+| outer-colony conglomerate (7 settled surfaces) | 1 | 19 | Interstellar | −$3.34B (−8.1%) | $408.7M → **$506.0M** | $3.90B | **40 mo** |
+
+Reads as intended and matches Pass 11's shape exactly: **every rung is cash-
+negative inside the 24-month window and cash-positive shortly after it**, so
+the move is a real bet with a clock on it, never a free win and never a trap.
+A later move is strictly worse (the project's months come out of the
+window), and a corporation *larger* than the matching fleet pays back
+proportionally faster — the seat rewards scale, which is what a corporate
+end-game asset should do. The interstellar rung's 40 months is the slowest
+on the service ledger by design: its economic term is the narrowest
+(colony surfaces only), and the rest of its value is the expedition term and
+the campaign milestone. Its real barrier is its gate, not its rent.
+
+Off the service ledger, measured directly:
+
+- **Lunar HQ, Mining-Order loop:** a Prospector Barge's Inner Belt round trip
+  bills $4.4M on Earth terms vs $3.8M seated on Luna (**−12.4%**); the
+  $3.5M/mo rent pays back at ≈ 6.4 belt round trips a month. (Unchanged from
+  Pass 11.)
+- **Deep-space / interstellar, expedition loop:** a mid-band Proxima
+  Centauri survey pays $8.48B; the seat adds **$1.27B (+15%)** — 25 months of
+  the deep-space rent per expedition returned.
+
+**Harness caveat, stated plainly:** the building harness models no workforce
+stack, thin demand pools and no research multipliers, so the *absolute*
+monthly figures for tier-5-and-up fleets are pessimistic (several scenarios
+run net-negative on cash while a live corporation of that tier would not).
+The **delta** between the pair is the number this pass is anchored on, and
+that is unaffected: both runs carry the identical compression.
+
+### Invariants checked
+
+- Meaningful decision: money + a multi-week project + a contested seat +
+  rent, against a ±10-15% profile that favours ONE line of business. The
+  two tier-5 seats are a genuine fork.
+- Supply/demand: reserves ride occupancy, contested seats clear at auction,
+  vacated seats re-list, and every dollar — project, clearing price, rent —
+  is burned.
+- Time loop: relocation = campaign (6-18 game-months); auction = 48 h, the
+  weekly loop's short end; lease = 6 game-months; rent = daily-ish.
+- No PvP combat: a rival can out-bid you for a seat and can watch you lose
+  one to unpaid rent. Nothing a rival does can take a seat you are paying for.
+- No pay-to-win: nothing here is purchasable with real money.
+- Intelligence: the seated stage, the seat number, the clearing price and a
+  lapse are all public; a pending relocation and a rival's standing bid are
+  not.
+- Accessibility: every auction control is a real `<button>`; the rent line is
+  a `role="status"` with a `StatusPip` glyph + word, never colour alone.
+
+### Tests
+
+`src/lib/game/__tests__/hq-cc3.test.ts` (39): the ladder's tiers,
+requirements (including the hull and research gates and the refusals),
+seat counts, reserves and durations; auction reserve / minimum-bid /
+soft-close-and-cap / resolution / tie-break / no-qualifying-bid; upkeep
+cursor, grace and lapse; the one-seat invariant and the `seat_auction`
+refusal; manifest selection (bundled → runtime → labelled Earth fallback);
+the ±10-15% band across every stage; the "no two terms on one service" proof
+over every service × location; and **live tick vs P&L vs server-ceiling
+parity for each new stage** (the real `processTick`, the real
+`computeEconomyReport`, the real `computeServerMonthlyGrossDetailed`).
+
+`src/lib/game/__tests__/hq-seat-server.test.ts` (10): the cron passes
+against an in-memory prisma — the monthly charge and its ledger row, one
+month per pass, the unpayable month, the lapse (seat released, HQ home,
+public feed row), a free seat that can never lapse; and the auction's
+seating + burn + full refunds, idempotency, expiry below reserve, an
+in-window auction left alone, and "the winner never holds two seats".
+
+`hq-relocation.test.ts` updated where CC-3 opened what CC-2 had closed.
+
+### Risks / watch
+
+- **`expeditionReturnMult` has no server mirror.** The +15% lands on a
+  one-shot payout that the plausibility ceiling does not model (neither does
+  `science-missions.ts`'s existing +30%). For a tier-6/7 corporation the
+  ceiling is wide enough to absorb it, but if expedition payouts start
+  showing up in clamp telemetry, the fix is a `contract-credit.ts`-style
+  one-shot credit for a server-side expedition record — the same thing CC-4
+  needs for the interstellar gate. Do both at once.
+- **Auction liquidity.** A four-seat pool with two qualifying corporations is
+  a duopoly, not a market: the reserve becomes the price. That is acceptable
+  at low population (the reserve is a real sink) but worth watching — if
+  Mars seats routinely clear at exactly the reserve, the 48-hour window is
+  doing nothing and the pool should shrink or the reserve should rise.
+- **Rent versus idle corporations.** The cron charges a seat whether or not
+  its owner logs in. Two missed months is deliberately short; if returning
+  players find themselves evicted, raise `HQ_SEAT_UPKEEP_GRACE_MONTHS` rather
+  than lowering the rent — the rent is the sink.
+- **The deep-space seat is the most valuable in the game** (+15% on Kuiper
+  extraction, the biggest revenue line there is) and its pool is 2. Expect it
+  to clear far above reserve. That is the intended shape of a contested
+  chokepoint, but it makes the tier-6 rung the one to watch for
+  concentration in the quarterly balance report.

@@ -45,6 +45,10 @@ import { MAX_EVENT_LOG, STARTING_YEAR } from './constants';
 // exoplanet census, Heliopause Probe, GW array) buff expedition survey
 // payouts and trim transit hazard damage — knowledge de-risks the frontier.
 import { getExpeditionScienceBonuses } from './science-missions';
+// CC-3 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md): the deep-space and
+// interstellar headquarters pay +15% on survey data brought home. THE one
+// site this term is applied.
+import { getHqBonusesForState } from './headquarters';
 // Construction Purposes wave: deep-space support buildings trim transit
 // hazard damage (expeditionSupport — see processExpeditionTick).
 import { getGlobalCapabilityBonus } from './building-capabilities';
@@ -837,6 +841,10 @@ export function processExpeditionTick(state: GameState, now: number = Date.now()
   const currentMonth = getTotalGameMonths(state.gameDate);
   const events: GameEvent[] = [];
   const reports: GameReport[] = [];
+  // CC-3: the seated headquarters' expedition-return term (1.0 anywhere but
+  // the deep-space / interstellar seats). Not a tick-income term, so it does
+  // not enter the server's monthly-gross ceiling — see BALANCE.md Pass 13.
+  const hqExpeditionMult = getHqBonusesForState(state).expeditionReturnMult;
 
   let money = state.money;
   let totalEarned = state.totalEarned;
@@ -971,7 +979,7 @@ export function processExpeditionTick(state: GameState, now: number = Date.now()
         // way ship-cargo arrivals do in game-engine step 6. W6: survey data
         // sells higher when science programs have charted the frontier
         // (Meridian census / heliopause chart — capped +30% in science-missions).
-        const payout = Math.round((e.outcome?.surveyDataPayout || 0) * scienceBonuses.surveyPayoutMult);
+        const payout = Math.round((e.outcome?.surveyDataPayout || 0) * scienceBonuses.surveyPayoutMult * hqExpeditionMult);
         if (payout > 0) {
           money += payout;
           totalEarned += payout;

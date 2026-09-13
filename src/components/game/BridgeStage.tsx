@@ -13,15 +13,24 @@
 // CC-2: the chip's HoloTip is the live ladder — per stage the tier and
 // station requirement met / unmet from client state, the relocation cost
 // and time, the seat count, and the project in flight. A reachable stage
-// whose window plates have not landed (LEO, Luna) draws the Earth plate
-// with an "Orbital Command Deck — window plates coming" overlay
-// (hq-manifest.ts resolveHqManifest) rather than a blank band.
+// whose window plates have not landed draws the Earth plate with an
+// "Mars Orbital HQ — window plates coming" overlay (hq-manifest.ts
+// resolveHqManifest) rather than a blank band.
+//
+// CC-3: a stage whose plates are published AFTER this build (the outer
+// rungs, still rendering) is picked up at runtime — the effect below asks
+// once for /game/hq/<stage>/manifest.json and redraws if it is there. So
+// the fallback label is only ever shown for a stage that genuinely has no
+// art yet, and it clears itself the moment the art deploys.
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { getHeadquarters, getHqStage, HQ_SEAT_COUNTS, hqSeatLabel, type HqStageId } from '@/lib/game/headquarters';
-import { resolveHqManifest } from '@/lib/game/hq-manifest';
-import { buildHqLadder, hqProjectProgress } from '@/lib/game/hq-relocation';
+import {
+  getRuntimeHqManifest, hasTriedRuntimeHqManifest, loadHqManifestAtRuntime, resolveHqManifest,
+  type HqManifest,
+} from '@/lib/game/hq-manifest';
+import { buildHqLadder, hqProjectProgress, hqRequirementLines } from '@/lib/game/hq-relocation';
 import { useBridgeEvents } from '@/lib/game/bridge-events';
 import { usePrefersReducedMotion } from '@/hooks/useWorldState';
 import { checkCorporationTier, getTierDef } from '@/lib/game/corporation-tiers';
@@ -37,7 +46,17 @@ const VARIANT_WORDS: Record<string, string> = {
 export default function BridgeStage({ state }: { state: GameState }) {
   const hq = getHeadquarters(state);
   const stage = getHqStage(hq.stage as HqStageId);
-  const resolved = resolveHqManifest(stage.id);
+  // CC-3: plates published after this build are fetched once per stage.
+  const [runtimeManifest, setRuntimeManifest] = useState<HqManifest | null>(() => getRuntimeHqManifest(stage.id));
+  useEffect(() => {
+    let alive = true;
+    const known = getRuntimeHqManifest(stage.id);
+    setRuntimeManifest(known);
+    if (known || hasTriedRuntimeHqManifest(stage.id)) return;
+    void loadHqManifestAtRuntime(stage.id).then(m => { if (alive && m) setRuntimeManifest(m); });
+    return () => { alive = false; };
+  }, [stage.id]);
+  const resolved = resolveHqManifest(stage.id, runtimeManifest);
   const events = useBridgeEvents(state);
   const reducedMotion = usePrefersReducedMotion();
   const tier = checkCorporationTier(state);
@@ -68,10 +87,13 @@ export default function BridgeStage({ state }: { state: GameState }) {
         else if (row.inbound) value = `relocating · ${projectEta} to go`;
         else if (s.comingSoon) value = `Tier ${s.tier} ${t.name} · coming soon`;
         else {
-          const needs: string[] = [];
-          needs.push(row.check.tier.met ? `tier ${s.tier} ✓` : `tier ${s.tier} ✗ (you are ${row.check.tier.have})`);
-          if (row.check.building) needs.push(row.check.building.met ? `${row.check.building.label} ✓` : `${row.check.building.label} ✗`);
-          if (seats > 0) needs.push(`${seats} seats`);
+          // CC-3: every named gate on the row, not just the station — the
+          // outer rungs add a research and a hull gate.
+          const needs: string[] = hqRequirementLines(row.check).map(line =>
+            line.label.startsWith('tier ') && !line.met
+              ? `${line.label} ✗ (you are ${row.check.tier.have})`
+              : `${line.label} ${line.met ? '✓' : '✗'}`);
+          if (seats > 0) needs.push(row.check.seatAuctioned ? `${seats} seats, at auction` : `${seats} seats`);
           if (row.quote) needs.push(`${formatMoney(row.quote.cost)} · ${row.quote.months} mo${row.quote.isReturn ? ' (return)' : ''}`);
           value = needs.join(' · ');
         }

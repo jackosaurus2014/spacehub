@@ -47,7 +47,7 @@ import { checkCorporationTier, getTierBonuses } from './corporation-tiers';
 // seated headquarters' ±10-15% bonus profile — LEO launch revenue +12% and
 // satellite ops −10% at §1, HQ upkeep at §1b, and the tick's own project
 // completion at the top of processFullTick.
-import { getHqBonusesForState, hqRevenueMultUnderFrontier, isHqSatelliteOpsService } from './headquarters';
+import { getHqBonusesForState, hqServiceCostMult, hqServiceRevenueMult } from './headquarters';
 import { applyDueHqProject, hqUpkeepMonthly } from './hq-relocation';
 import { getMegastructureBonuses, checkMegastructureCompletion } from './personal-megastructures';
 import { getReputationBonuses, addReputation } from './reputation';
@@ -500,12 +500,16 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
   // away-operations.ts, economy-report.ts, ResourceBar.tsx and the server's
   // resource-plausibility.ts ceiling.
   const frontierRevenueMult = getFrontierRevenueMultiplier(state);
-  // CC-2 (Pass 11): the seated HQ's bonus profile. The launch-revenue term
-  // is capped against the Frontier ×2 (hqRevenueMultUnderFrontier — no
-  // stacking beyond ×2.3 on the same term); the server ceiling
-  // (resource-plausibility.ts) applies the identical pair.
+  // CC-2 (Pass 11) / CC-3 (Pass 13): the seated HQ's bonus profile. Every
+  // service-revenue term — launch, colony throughput, Mars orbit, outer
+  // extraction, science — is computed by headquarters.ts
+  // hqServiceRevenueMult, which also applies the Frontier stacking cap
+  // (no HQ × Frontier beyond ×2.3 on the same term). The P&L
+  // (economy-report.ts), the SERVER's monthly-gross ceiling
+  // (resource-plausibility.ts) and the balance harness call the same
+  // function with the same arguments, so the ceiling can never disagree
+  // with what this tick paid.
   const hqBonuses = getHqBonusesForState(state);
-  const hqLaunchRevenueMult = hqRevenueMultUnderFrontier(hqBonuses.launchRevenueMult, frontierRevenueMult);
 
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
@@ -661,7 +665,7 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
       * returningCommanderRevMult // LS2: decaying re-entry boost, 1.3x -> 1.0x over 14 days
       * staffingEfficiency        // Row 6: crew shortfall, 0.5-1.0 (0.7 floor in Frontier)
       * frontierRevenueMult      // Pass 10: Frontier x2.0, gliding to 1.0 after graduation
-      * (def.type === 'launch_payload' ? hqLaunchRevenueMult : 1) // CC-2: LEO deck +12% on launch services
+      * hqServiceRevenueMult(hqBonuses, { definitionId: svc.definitionId, locationId: svc.locationId, type: def.type }, frontierRevenueMult) // CC-2/CC-3 seat terms
       * DEV_REVENUE_MULTIPLIER
     );
     // Specialization maintenance_reduction (§1b) applies to operating costs.
@@ -669,7 +673,7 @@ export function processTick(state: GameState, opts?: ProcessTickOptions): GameSt
     // mining_output services on depleted deposits (1.0 for everything else).
     // CC-2: the LEO deck runs satellite operations 10% cheaper (services a
     // satellite-category building enables — headquarters.ts derives the set).
-    const hqOpsCostMult = isHqSatelliteOpsService(svc.definitionId) ? hqBonuses.satelliteOpsCostMult : 1;
+    const hqOpsCostMult = hqServiceCostMult(hqBonuses, svc.definitionId);
     const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * eraModifiers.costMultiplier * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier * (1 - specBonuses.maintenanceReduction) * miningOpexMult * hqOpsCostMult);
     money += revenue - cost;
     totalEarned += revenue;

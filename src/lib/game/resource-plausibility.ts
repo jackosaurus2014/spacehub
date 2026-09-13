@@ -54,7 +54,7 @@ import { frontierRevenueMultiplierUpperBound } from './frontier';
 // CC-2 (Pass 11): the seated HQ's launch-revenue term must be in the
 // ceiling too, or a LEO deck's +12% would read as implausible on sync (the
 // 2026-09-12 Frontier lesson). Same helper, same Frontier cap as the client.
-import { getHqBonuses, hqRevenueMultUnderFrontier, maxHqBonus, DEFAULT_HQ_STAGE, type HqStageId } from './headquarters';
+import { getHqBonuses, hqServiceRevenueMult, maxHqBonusesForCeiling, DEFAULT_HQ_STAGE, type HqBonuses, type HqStageId } from './headquarters';
 
 // ─── Tunables ────────────────────────────────────────────────────────────────
 
@@ -337,7 +337,9 @@ export interface ServerMonthlyGrossReport {
   /** Pass 10: the Frontier multiplier bound applied to `services`. */
   frontierRevenueMult: number;
   /** CC-2: the HQ launch-revenue term applied to launch_payload services
-   *  (after the Frontier stacking cap). */
+   *  (after the Frontier stacking cap). Kept as the headline number the
+   *  ceiling tests assert on; CC-3's colony / Mars / outer / science terms
+   *  ride the same helper, per service. */
   hqLaunchRevenueMult: number;
 }
 
@@ -385,10 +387,14 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
   // frontier.ts). Without this term every new corporation's doubled income
   // would be rejected as implausible on sync.
   const frontierRevenueMult = frontierRevenueMultiplierUpperBound(inputs.createdAtMs, inputs.nowMs ?? Date.now());
-  // CC-2: the seated HQ's launch term under the same Frontier cap the
-  // client applies (headquarters.ts hqRevenueMultUnderFrontier).
-  const hqLaunchRaw = inputs.hqStage === 'unknown' ? maxHqBonus('launchRevenueMult') : getHqBonuses(inputs.hqStage ?? DEFAULT_HQ_STAGE).launchRevenueMult;
-  const hqLaunchRevenueMult = hqRevenueMultUnderFrontier(hqLaunchRaw, frontierRevenueMult);
+  // CC-2/CC-3: the seated HQ's service terms, from the SAME helper the tick
+  // and the P&L call (headquarters.ts hqServiceRevenueMult — it applies the
+  // Frontier stacking cap itself). `hqStage: 'unknown'` takes the ladder's
+  // best value per term, so an unknown seat can only ever widen the ceiling.
+  const hqBonuses: HqBonuses = inputs.hqStage === 'unknown'
+    ? maxHqBonusesForCeiling()
+    : getHqBonuses(inputs.hqStage ?? DEFAULT_HQ_STAGE);
+  const hqLaunchRevenueMult = hqServiceRevenueMult(hqBonuses, { definitionId: '', locationId: '', type: 'launch_payload' }, frontierRevenueMult);
 
   let services = 0;
   for (const svc of state.activeServices || []) {
@@ -426,7 +432,8 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
     }
     services += base * instMult * upgradeBoost * researchMult * workforceMult
       * (1 + stationBonusAt(state, svc.locationId)) * MAX_SERVICE_REVENUE_CLIENT_MULT
-      * (def.type === 'launch_payload' ? hqLaunchRevenueMult : 1); // CC-2: LEO deck +12% on launch services
+      // CC-2/CC-3: the identical per-service HQ term the tick applied.
+      * hqServiceRevenueMult(hqBonuses, { definitionId: svc.definitionId, locationId: svc.locationId, type: def.type }, frontierRevenueMult);
   }
   services *= frontierRevenueMult;
 

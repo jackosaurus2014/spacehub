@@ -213,6 +213,16 @@ export type LedgerReason =
   // and the burned seat-lease price (hq-relocation-server.ts).
   | 'hq_relocation'
   | 'hq_seat_lease'
+  // CC-3: the monthly seat rent (BURNED — no matching credit; two unpayable
+  // months lapse the seat and send the headquarters home), and the sealed-bid
+  // seat auction for Mars and outward. The escrow/refund pair mirrors
+  // slot_auction_bid_escrow/refund exactly. There is no `burn` row: the
+  // WINNER's escrow is never credited back, so the burn IS the absence of a
+  // refund — the clearing price is published on the seat's price tape, on
+  // the public timeline and in a MarketAuditLog row instead.
+  | 'hq_seat_upkeep'
+  | 'hq_seat_bid_escrow'
+  | 'hq_seat_bid_refund'
   | 'ship_build'
   | 'ship_build_resources'
   | 'ship_scrap_recovery'

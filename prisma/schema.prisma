@@ -7739,8 +7739,18 @@ model HqSeat {
   // The last clearing price this seat changed hands at — what the pool
   // re-lists it at when vacated (design §2 "sells it at market").
   lastPrice       Float     @default(0)
-  // [{ at: ISO, price, event: 'claimed' | 'released' | 'renewed' }]
+  // [{ at: ISO, price, event: 'claimed' | 'released' | 'renewed' | 'auction' }]
   priceHistory    Json      @default("[]")
+
+  // CC-3 (2026-09-13): seat upkeep moved server-side. `upkeepPaidThrough` is
+  // the instant this seat's rent is paid up to (stamped one game-month ahead
+  // on every successful charge); `upkeepMissedMonths` counts consecutive
+  // unpayable months and lapses the seat at
+  // headquarters.ts HQ_SEAT_UPKEEP_GRACE_MONTHS. Null paid-through = never
+  // charged (the charger seeds it from the lease start).
+  upkeepPaidThrough  DateTime?
+  upkeepMissedMonths Int       @default(0)
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -7775,6 +7785,72 @@ model HqRelocation {
 
   @@index([profileId, status])
   @@index([status, completesAt])
+}
+
+// ─── Space Tycoon CC-3: Headquarters seat auctions (Mars and outward) ────────
+// docs/COMMAND_CENTER_DESIGN_2026-09-13.md §2 "seats are scarce ... sold
+// through the existing orbital-slot auctions and lease mechanics". CC-2's
+// first-come posted-price lease stays for LEO and Luna; from Mars outward a
+// vacant seat changes hands only at a SEALED-BID auction whose clearing
+// price is published on the public ladder (headquarters.ts
+// HQ_AUCTION_STAGES). The pure resolution math is reused verbatim from the
+// orbital-slot auctions (orbital-slot-auctions.ts resolveAuction /
+// applySoftClose); only the tables differ, because an HQ seat is one
+// indivisible anchorage per corporation rather than a per-location
+// occupancy bucket with building-tied idle fees.
+//
+// Opened on demand by the first eligible corporation (which must post an
+// opening bid at or above the reserve), resolved by the assets-complete
+// cron: highest bid wins and is BURNED ('hq_seat_auction_burn'), every
+// other bid is refunded in full ('hq_seat_bid_refund'). Plain profileId
+// strings, no GameProfile relations — purely additive, same posture as
+// HqSeat / HqRelocation.
+model HqSeatAuction {
+  id     String @id @default(cuid())
+  epoch  Int
+  stage  String
+  seatId String
+  // Reserve = the pool's posted price at the occupancy the auction opened
+  // at (hq-relocation.ts postedSeatPrice). A bid below it never wins.
+  reserve Float
+  status  String @default("open") // open, resolved, expired (no qualifying bid)
+
+  openedAt   DateTime  @default(now())
+  closesAt   DateTime
+  resolvedAt DateTime?
+
+  winnerProfileId String?
+  // The price the seat actually cleared at — published on the ladder.
+  clearingPrice   Float?
+
+  bids HqSeatBid[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([epoch, stage, status])
+  @@index([status, closesAt])
+  @@index([seatId])
+}
+
+// One sealed bid. Money is escrowed at bid time ('hq_seat_bid_escrow') and
+// either burned (winner) or refunded (everyone else) at resolution. One bid
+// per corporation per auction — revising replaces the amount and settles the
+// difference, exactly like an OrbitalSlotBid.
+model HqSeatBid {
+  id        String        @id @default(cuid())
+  auctionId String
+  auction   HqSeatAuction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  profileId String
+  amount    Float
+  // open, won, refunded
+  status    String        @default("open")
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([auctionId, profileId])
+  @@index([auctionId, status])
+  @@index([profileId])
 }
 
 // ─── Space Tycoon Wave M6: Share Registry & Hostile Takeovers ───────────────

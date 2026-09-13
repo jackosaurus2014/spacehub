@@ -9,6 +9,8 @@
 // than thrown — a bad manifest degrades to fewer layers, never a crash.
 
 import earthManifestRaw from '../../../public/game/hq/earth/manifest.json';
+import orbitalManifestRaw from '../../../public/game/hq/orbital_deck/manifest.json';
+import lunarManifestRaw from '../../../public/game/hq/lunar_hq/manifest.json';
 import type { HqStageId } from './headquarters';
 
 export interface HqLayerFile { file: string; bytes?: number; height?: number; width?: number }
@@ -235,18 +237,97 @@ export function pickFile(files: Record<string, HqLayerFile>, preferWidth: number
 
 const REGISTRY: Partial<Record<HqStageId, HqManifest | null>> = {
   earth_ops: parseHqManifest(earthManifestRaw, '/game/hq/earth/'),
+  orbital_deck: parseHqManifest(orbitalManifestRaw, '/game/hq/orbital_deck/'),
+  lunar_hq: parseHqManifest(lunarManifestRaw, '/game/hq/lunar_hq/'),
 };
 
 export function getHqManifest(stage: HqStageId): HqManifest | null {
   return REGISTRY[stage] ?? null;
 }
 
-/** CC-2: the manifest to DRAW for a stage. A reachable stage whose plates
- *  have not landed yet (LEO, Luna) renders the Earth plate with
- *  `fallback: true` so BridgeStage can overlay a "window plates coming"
- *  label instead of a blank band. null only if not even Earth parsed. */
-export function resolveHqManifest(stage: HqStageId): { manifest: HqManifest; fallback: boolean } | null {
-  const own = REGISTRY[stage];
+// ─── CC-3: stages whose plates land after this build ────────────────────────
+// The registry above is a static import list, so a stage only draws its own
+// plates once someone adds a line to it. That is fine for a stage whose art
+// shipped with the code — and wrong for one whose art lands afterwards, which
+// is exactly what the outer rungs are: Mars, Jovian, Saturnian, deep-space
+// and interstellar plates are still rendering.
+//
+// So the resolver takes a second source: a RUNTIME manifest fetched from
+// `/game/hq/<stage>/manifest.json`, the same file and the same schema the
+// build-time imports use. The moment the art pipeline deploys a stage's
+// directory, that stage stops falling back to the Earth plate — with no code
+// change, no redeploy of this module, and no risk of a build error for a
+// file that does not exist yet. A stage with a bundled manifest never
+// fetches (the import is faster and cannot 404), and a 404 is cached so the
+// Bridge asks once per session, not once per render.
+
+/** Where a stage's plates are published. Earth's directory predates the
+ *  stage ids; every other stage uses its own id, which is what
+ *  art/blender/ writes. */
+const PLATE_DIR: Partial<Record<HqStageId, string>> = { earth_ops: '/game/hq/earth/' };
+
+export function hqPlateBaseUrl(stage: HqStageId): string {
+  return PLATE_DIR[stage] ?? `/game/hq/${stage}/`;
+}
+
+/** Runtime-loaded manifests, keyed by stage. `null` = looked and found
+ *  nothing (negative cache — do not ask again this session). */
+const RUNTIME: Map<HqStageId, HqManifest | null> = new Map();
+
+/** Test seam / SSR guard: the runtime manifest already in hand, if any. */
+export function getRuntimeHqManifest(stage: HqStageId): HqManifest | null {
+  return RUNTIME.get(stage) ?? null;
+}
+
+/** Whether a runtime lookup for this stage has already been made (either
+ *  way) — the caller uses it to avoid a second fetch. */
+export function hasTriedRuntimeHqManifest(stage: HqStageId): boolean {
+  return RUNTIME.has(stage);
+}
+
+/** Seed the runtime cache directly (tests; also the fetch's own writer). */
+export function setRuntimeHqManifest(stage: HqStageId, manifest: HqManifest | null): void {
+  RUNTIME.set(stage, manifest);
+}
+
+/**
+ * Fetch and parse `/game/hq/<stage>/manifest.json`. Resolves to null on a
+ * 404, a parse failure, or anywhere there is no `fetch` (SSR / tests).
+ * Never throws — a missing manifest is the normal case for a stage whose
+ * plates have not been rendered yet, and the Bridge simply keeps the
+ * labelled Earth fallback.
+ */
+export async function loadHqManifestAtRuntime(stage: HqStageId): Promise<HqManifest | null> {
+  if (RUNTIME.has(stage)) return RUNTIME.get(stage) ?? null;
+  if (REGISTRY[stage]) return REGISTRY[stage] ?? null;
+  const baseUrl = hqPlateBaseUrl(stage);
+  if (typeof fetch !== 'function') { RUNTIME.set(stage, null); return null; }
+  try {
+    const res = await fetch(`${baseUrl}manifest.json`, { headers: { Accept: 'application/json' } });
+    if (!res.ok) { RUNTIME.set(stage, null); return null; }
+    const parsed = parseHqManifest(await res.json(), baseUrl);
+    RUNTIME.set(stage, parsed);
+    return parsed;
+  } catch {
+    RUNTIME.set(stage, null);
+    return null;
+  }
+}
+
+/** CC-2/CC-3: the manifest to DRAW for a stage, and whether it is the
+ *  stage's own art or a stand-in. Selection order:
+ *    1. the stage's BUNDLED manifest (a static import in REGISTRY);
+ *    2. a RUNTIME manifest fetched from public/game/hq/<stage>/ — plates
+ *       that landed after this build;
+ *    3. the Earth plate, flagged `fallback: true` so BridgeStage overlays
+ *       "<stage> — window plates coming" instead of showing a blank band.
+ *  null only if not even Earth parsed. `runtime` is injectable so the rule
+ *  itself is pure and testable. */
+export function resolveHqManifest(
+  stage: HqStageId,
+  runtime: HqManifest | null = getRuntimeHqManifest(stage),
+): { manifest: HqManifest; fallback: boolean } | null {
+  const own = REGISTRY[stage] ?? runtime;
   if (own) return { manifest: own, fallback: false };
   const earth = REGISTRY.earth_ops;
   return earth ? { manifest: earth, fallback: true } : null;

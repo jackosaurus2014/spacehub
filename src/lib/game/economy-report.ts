@@ -28,7 +28,7 @@ import { getActiveEraModifiers } from './corporate-eras';
 import { getTierBonuses } from './corporation-tiers';
 // CC-2 (Pass 11): the seated HQ's bonus terms — mirrored from game-engine.ts
 // §1/§1b so the P&L never disagrees with the tick.
-import { getHqBonusesForState, hqRevenueMultUnderFrontier, isHqSatelliteOpsService } from './headquarters';
+import { getHqBonusesForState, hqServiceCostMult, hqServiceRevenueMult } from './headquarters';
 import { hqUpkeepMonthly } from './hq-relocation';
 import { getMegastructureBonuses } from './personal-megastructures';
 import { getReputationBonuses } from './reputation';
@@ -243,8 +243,9 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
     combined: 1,
   };
   // CC-2 (Pass 11): HQ seat terms, exactly as game-engine.ts §1 applies them.
+  // CC-2/CC-3: the seated HQ's terms come from ONE helper shared with the
+  // tick and the server ceiling (headquarters.ts hqServiceRevenueMult).
   const hqBonuses = getHqBonusesForState(state);
-  const hqLaunchRevenueMult = hqRevenueMultUnderFrontier(hqBonuses.launchRevenueMult, revMult.frontier);
   revMult.combined =
     revMult.workforce * revMult.research * revMult.legacy * revMult.era *
     revMult.corporationTier * revMult.megastructure * revMult.reputation *
@@ -300,7 +301,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
       * supplyMult
       * powerRatio
       * (1 + stationBonus)
-      * (def.type === 'launch_payload' ? hqLaunchRevenueMult : 1), // CC-2: LEO deck +12% on launch services
+      * hqServiceRevenueMult(hqBonuses, { definitionId: svc.definitionId, locationId: svc.locationId, type: def.type }, revMult.frontier), // CC-2/CC-3 seat terms
     );
     const realized = Math.round(baseRevenue * saturationMult);
     // Balance Pass 6 (H4): duty-cycle opex scaling for mining_output —
@@ -322,7 +323,7 @@ export function computeEconomyReport(state: GameState, now: number = Date.now())
       * (megaBonuses.maintenanceMultiplier || 1)
       * repBonuses.maintenanceMultiplier
       * miningOpexMult
-      * (isHqSatelliteOpsService(svc.definitionId) ? hqBonuses.satelliteOpsCostMult : 1), // CC-2: LEO deck −10% satellite ops
+      * hqServiceCostMult(hqBonuses, svc.definitionId), // CC-2 seat ops-cost term (LEO deck −10% satellite ops)
     );
     totalOperatingCost += operatingCost;
 

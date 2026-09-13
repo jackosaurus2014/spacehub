@@ -31,13 +31,12 @@ describe('HQ_STAGES registry', () => {
     }
   });
 
-  it('only Earth has plates today; CC-2 opens LEO and Luna, the rest stay comingSoon', () => {
-    expect(hqStagesWithPlates().map(s => s.id)).toEqual(['earth_ops']);
-    for (const s of HQ_STAGES) {
-      if (s.id === 'earth_ops' || s.id === 'orbital_deck' || s.id === 'lunar_hq') expect(!!s.comingSoon).toBe(false);
-      else expect(s.comingSoon).toBe(true);
-    }
+  it('Earth, the LEO deck and Luna have rendered plates; CC-3 leaves nothing comingSoon', () => {
+    expect(hqStagesWithPlates().map(s => s.id)).toEqual(['earth_ops', 'orbital_deck', 'lunar_hq']);
+    for (const s of HQ_STAGES) expect(!!s.comingSoon).toBe(false);
     expect(HQ_STAGE_MAP.get('earth_ops')?.plates?.dir).toBe('/game/hq/earth/');
+    expect(HQ_STAGE_MAP.get('orbital_deck')?.plates?.dir).toBe('/game/hq/orbital_deck/');
+    expect(HQ_STAGE_MAP.get('lunar_hq')?.plates?.dir).toBe('/game/hq/lunar_hq/');
   });
 
   it('ids are unique and the default is registered', () => {

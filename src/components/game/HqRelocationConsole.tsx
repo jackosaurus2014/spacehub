@@ -8,9 +8,17 @@
 // "Move back to Earth". Reachable from the Command hub's "Headquarters"
 // entry (hubs.ts → sub-view 'dashboard:hq' scrolls here and focuses it).
 //
+// CC-3: the ladder now runs to the interstellar rung. Mars and outward sell
+// their seats at a sealed-bid AUCTION, so those rows show the reserve, the
+// minimum qualifying bid, a countdown and a Bid control instead of a
+// Relocate button — a corporation must WIN a seat before it can file the
+// charter. The seated stage's rent is charged server-side now, so the
+// console carries its real state (paid through, months missed, grace left).
+//
 // Data: GET /api/space-tycoon/hq (server facts — persisted tier + station
-// registry, live seat pools); the client ladder (hq-relocation.ts
-// buildHqLadder) stands in while signed out or offline. POST
+// registry, research and hull gates, live seat pools, open auctions, upkeep);
+// the client ladder (hq-relocation.ts buildHqLadder) stands in while signed
+// out or offline. POST
 // /api/space-tycoon/hq/relocate starts the project; on a 2xx the client
 // debits the cost locally (ledger-reconcile.ts CLIENT_APPLIED contract) and
 // adopts the returned headquarters block. Anonymous play starts a LOCAL
@@ -25,13 +33,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { GameState } from '@/lib/game/types';
 import {
-  HQ_SEAT_COUNTS, HQ_UPKEEP_MONTHLY, getHeadquarters, getHqBonuses, getHqStage, hqSeatLabel, isHqStageId,
-  type HqBonuses, type HqStageId,
+  HQ_SEAT_COUNTS, HQ_UPKEEP_MONTHLY, getHeadquarters, getHqBonuses, getHqStage, hqSeatIsAuctioned,
+  hqSeatLabel, isHqStageId, type HqBonuses, type HqStageId,
 } from '@/lib/game/headquarters';
 import {
-  buildHqLadder, checkHqRelocationRequest, hqProjectProgress, hqRequirementViewFromState, postedSeatPrice,
-  startHqProject, type HqRelocationQuote, type HqRequirementCheck, type ServerHeadquartersBlock,
+  buildHqLadder, checkHqRelocationRequest, hqProjectProgress, hqRequirementLines, hqRequirementViewFromState,
+  postedSeatPrice, startHqProject, type HqRelocationQuote, type HqRequirementCheck, type ServerHeadquartersBlock,
 } from '@/lib/game/hq-relocation';
+import { hqMinimumBid } from '@/lib/game/hq-seat-auctions';
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { formatMoney, formatCountdown } from '@/lib/game/formulas';
 import { consumeSubViewRequest, onSubViewRequest, subViewName, subViewTab } from '@/lib/game/sub-view';
@@ -44,12 +53,28 @@ import GameIcon from '@/components/game/GameIcon';
 
 interface SeatPool { total: number; occupied: number; free: number; postedPrice: number; lastClearingPrice: number }
 
-interface LadderApiRow {
-  id: HqStageId; label: string; shortLabel: string; tier: number; comingSoon: boolean; current: boolean;
-  check: HqRequirementCheck; quote: HqRelocationQuote | null; seats: SeatPool; upkeepMonthly: number; bonuses: HqBonuses;
+/** One open sealed-bid seat auction (CC-3). Rivals' bids are sealed — only
+ *  `myBid` and the `minimumBid` a new bid must clear are ever published. */
+interface AuctionRow {
+  id: string; stage: HqStageId; seatIndex: number | null; reserve: number;
+  bidCount: number; minimumBid: number; closesAtMs: number; myBid: number | null;
 }
 
-interface HqApiResponse { success?: boolean; headquarters?: ServerHeadquartersBlock | null; ladder?: LadderApiRow[]; money?: number }
+interface UpkeepView {
+  stage: HqStageId; seatIndex: number | null; monthly: number; monthsDue: number; amountDue: number;
+  paidThroughMs: number; missedMonths: number; graceMonths: number; graceRemaining: number; lapsed: boolean;
+}
+
+interface LadderApiRow {
+  id: HqStageId; label: string; shortLabel: string; tier: number; comingSoon: boolean; current: boolean;
+  check: HqRequirementCheck; quote: HqRelocationQuote | null; seats: SeatPool; auctioned: boolean;
+  auctions: AuctionRow[]; upkeepMonthly: number; bonuses: HqBonuses;
+}
+
+interface HqApiResponse {
+  success?: boolean; headquarters?: ServerHeadquartersBlock | null; ladder?: LadderApiRow[];
+  upkeep?: UpkeepView | null; money?: number;
+}
 
 /** The non-neutral terms of a bonus profile, as short chips. */
 export function describeHqBonuses(b: HqBonuses): string[] {
@@ -61,11 +86,11 @@ export function describeHqBonuses(b: HqBonuses): string[] {
   if (b.satelliteOpsCostMult !== 1) out.push(`Satellite ops cost ${pct(b.satelliteOpsCostMult)}`);
   if (b.miningFuelMult !== 1) out.push(`Mining fuel per leg ${pct(b.miningFuelMult)}`);
   if (b.beltDeltaVMult !== 1) out.push(`Belt Δv surcharge ${pct(b.beltDeltaVMult)}`);
-  if (b.colonyThroughputMult !== 1) out.push(`Colony throughput ${pct(b.colonyThroughputMult)}`);
-  if (b.marsContractMult !== 1) out.push(`Martian contracts ${pct(b.marsContractMult)}`);
+  if (b.colonyThroughputMult !== 1) out.push(`Colony-surface revenue ${pct(b.colonyThroughputMult)}`);
+  if (b.marsOpsMult !== 1) out.push(`Mars-orbit revenue ${pct(b.marsOpsMult)}`);
   if (b.outerExtractionMult !== 1) out.push(`Outer-system extraction ${pct(b.outerExtractionMult)}`);
-  if (b.scienceMult !== 1) out.push(`Science ${pct(b.scienceMult)}`);
-  if (b.expeditionReturnMult !== 1) out.push(`Expedition returns ${pct(b.expeditionReturnMult)}`);
+  if (b.scienceMult !== 1) out.push(`Science & sensing revenue ${pct(b.scienceMult)}`);
+  if (b.expeditionReturnMult !== 1) out.push(`Expedition survey data ${pct(b.expeditionReturnMult)}`);
   return out;
 }
 
@@ -79,6 +104,8 @@ interface Row {
   check: HqRequirementCheck;
   quote: HqRelocationQuote | null;
   seats: SeatPool | null;
+  auctioned: boolean;
+  auctions: AuctionRow[];
   upkeep: number;
   bonuses: string[];
   /** Sort keys for the numeric columns. */
@@ -160,6 +187,7 @@ export default function HqRelocationConsole({ state, onHeadquartersUpdate, onLoc
       const seats = server?.seats ?? (HQ_SEAT_COUNTS[row.stage.id] > 0
         ? { total: HQ_SEAT_COUNTS[row.stage.id], occupied: 0, free: HQ_SEAT_COUNTS[row.stage.id], postedPrice: postedSeatPrice(row.stage.id, 0), lastClearingPrice: 0 }
         : null);
+      const auctioned = server?.auctioned ?? hqSeatIsAuctioned(row.stage.id);
       return {
         id: row.stage.id,
         stage: row.stage.label,
@@ -170,10 +198,15 @@ export default function HqRelocationConsole({ state, onHeadquartersUpdate, onLoc
         check,
         quote,
         seats,
+        auctioned,
+        auctions: server?.auctions ?? [],
         upkeep: HQ_UPKEEP_MONTHLY[row.stage.id],
         bonuses: describeHqBonuses(getHqBonuses(row.stage.id)),
         seatFree: seats ? seats.free : Number.POSITIVE_INFINITY,
-        cost: quote ? quote.cost + (seats && !server?.current ? seats.postedPrice : 0) : 0,
+        // An auctioned seat is never bought at the posted price — the row's
+        // "Move" figure is the project alone, with the reserve shown beside
+        // the seat count instead.
+        cost: quote ? quote.cost + (seats && !auctioned && !server?.current ? seats.postedPrice : 0) : 0,
       };
     });
   }, [state, api]);
@@ -181,6 +214,49 @@ export default function HqRelocationConsole({ state, onHeadquartersUpdate, onLoc
   const pendingRow = pendingStage ? rows.find(r => r.id === pendingStage) ?? null : null;
   const pendingSeatPrice = pendingRow?.seats && !heldSeatAt(state, pendingRow.id) ? pendingRow.seats.postedPrice : 0;
   const pendingTotal = pendingRow?.quote ? pendingRow.quote.cost + pendingSeatPrice : 0;
+
+  /**
+   * Open an auction (when none is running at that stage) or raise a bid on
+   * the one that is. Money is escrowed server-side and refunded in full if
+   * the bid loses; the client applies the escrow locally on the 2xx, the
+   * CLIENT_APPLIED contract the relocation charter already uses.
+   */
+  const placeBid = async (row: Row) => {
+    if (busy) return;
+    const live = row.auctions[0] ?? null;
+    const floor = live ? live.minimumBid : hqMinimumBid(row.seats?.postedPrice ?? 0, 0);
+    const raw = typeof window !== 'undefined'
+      ? window.prompt(`Sealed bid for a ${row.stage} seat — minimum ${formatMoney(floor)}.`, String(floor))
+      : null;
+    if (raw === null) return;
+    const amount = Math.round(Number(raw.replace(/[^0-9.]/g, '')));
+    if (!Number.isFinite(amount) || amount < floor) {
+      toast.warning(`Bids must clear ${formatMoney(floor)}.`, 'Seat auction');
+      return;
+    }
+    setBusy(true);
+    try {
+      const res = await fetch('/api/space-tycoon/hq/seat-auction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(live ? { action: 'bid', auctionId: live.id, amount } : { action: 'open', stage: row.id, amount }),
+      });
+      const data = await res.json().catch(() => null) as (Record<string, unknown> & { error?: string; escrowed?: number }) | null;
+      if (!res.ok || !data) {
+        toast.warning(typeof data?.error === 'string' ? data.error : `The registry refused the bid (HTTP ${res.status}).`, 'Seat auction');
+        return;
+      }
+      if (typeof data.escrowed === 'number' && data.escrowed > 0) onLocalRelocation?.(undefined, data.escrowed);
+      toast.success(live
+        ? `Bid raised to ${formatMoney(amount)} — escrowed until the auction resolves.`
+        : `Auction opened for a ${row.stage} seat at ${formatMoney(amount)}.`, 'Seat auction');
+      void refresh();
+    } catch {
+      toast.warning('The seat registry is unreachable.', 'Seat auction');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const beginRelocate = (stageId: HqStageId) => {
     const check = checkHqRelocationRequest(hq, hqRequirementViewFromState(state), stageId);
@@ -246,15 +322,43 @@ export default function HqRelocationConsole({ state, onHeadquartersUpdate, onLoc
       key: 'req', header: 'Requirements', sortable: false,
       render: r => r.comingSoon ? <span className="text-[var(--ink-3)]">Later update</span> : (
         <span className="inline-flex flex-col gap-0.5 text-[11px]">
-          <span className="inline-flex items-center gap-1"><StatusPip state={r.check.tier.met ? 'go' : 'hold'} label={r.check.tier.met ? 'MET' : 'UNMET'} /> tier {r.check.tier.need}</span>
-          {r.check.building && <span className="inline-flex items-center gap-1"><StatusPip state={r.check.building.met ? 'go' : 'hold'} label={r.check.building.met ? 'MET' : 'UNMET'} /> {r.check.building.label}</span>}
-          {r.check.seatNeeded && <span className="inline-flex items-center gap-1"><StatusPip state={r.seats && r.seats.free > 0 ? 'go' : 'scrub'} label={r.seats && r.seats.free > 0 ? 'OPEN' : 'FULL'} /> a seat</span>}
+          {hqRequirementLines(r.check).map(line => (
+            <span key={line.label} className="inline-flex items-center gap-1">
+              <StatusPip state={line.met ? 'go' : 'hold'} label={line.met ? 'MET' : 'UNMET'} /> {line.label}
+            </span>
+          ))}
+          {r.check.seatNeeded && (
+            <span className="inline-flex items-center gap-1">
+              <StatusPip state={r.seats && r.seats.free > 0 ? 'go' : 'scrub'} label={r.seats && r.seats.free > 0 ? 'OPEN' : 'FULL'} />
+              {r.auctioned ? 'a seat (at auction)' : 'a seat'}
+            </span>
+          )}
         </span>
       ),
     },
     {
       key: 'seatFree', header: 'Seats', numeric: true,
-      render: r => r.seats ? <span>{r.seats.free}/{r.seats.total} free · {formatMoney(r.seats.postedPrice)}</span> : <span className="text-[var(--ink-3)]">unlimited</span>,
+      render: r => {
+        if (!r.seats) return <span className="text-[var(--ink-3)]">unlimited</span>;
+        const live = r.auctions[0] ?? null;
+        return (
+          <span className="inline-flex flex-col items-end gap-0.5">
+            <span>{r.seats.free}/{r.seats.total} free</span>
+            <span className="text-[10px] text-[var(--ink-3)]">
+              {r.auctioned ? `reserve ${formatMoney(r.seats.postedPrice)}` : formatMoney(r.seats.postedPrice)}
+            </span>
+            {live && (
+              <span className="text-[10px] text-amber-200">
+                auction · min {formatMoney(live.minimumBid)} · {formatCountdown(Math.max(0, (live.closesAtMs - nowMs) / 1000))}
+                {live.myBid !== null ? ` · yours ${formatMoney(live.myBid)}` : ''}
+              </span>
+            )}
+            {!live && r.seats.lastClearingPrice > 0 && (
+              <span className="text-[10px] text-[var(--ink-3)]">last cleared {formatMoney(r.seats.lastClearingPrice)}</span>
+            )}
+          </span>
+        );
+      },
     },
     {
       key: 'cost', header: 'Move', numeric: true,
@@ -275,6 +379,24 @@ export default function HqRelocationConsole({ state, onHeadquartersUpdate, onLoc
         if (r.current) return <span className="text-[var(--ink-3)]">Seated</span>;
         if (r.inbound) return <span className="text-amber-200">{formatCountdown(hqProjectProgress(hq.project!, nowMs).etaSeconds)}</span>;
         if (r.comingSoon) return <span className="text-[var(--ink-3)]">—</span>;
+        // CC-3: at an auction stage the seat must be WON first. Until this
+        // corporation holds one, the row's action is Bid, not Relocate.
+        if (r.auctioned && !heldSeatAt(state, r.id)) {
+          const live = r.auctions[0] ?? null;
+          const canBid = r.check.met && (live !== null || (!!r.seats && r.seats.free > 0));
+          return (
+            <button
+              type="button"
+              onClick={() => void placeBid(r)}
+              disabled={!canBid || busy}
+              title={!r.check.met ? 'Requirements unmet' : live ? 'Raise your sealed bid' : 'Open an auction for the next vacant seat'}
+              aria-label={live ? `Raise your sealed bid for a ${r.stage} seat` : `Open an auction for a ${r.stage} seat`}
+              className="rounded border border-amber-400/30 bg-amber-500/10 px-2 py-1 font-hud text-[11px] uppercase tracking-wide text-amber-200 hover:bg-amber-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {live ? (live.myBid !== null ? 'Raise bid' : 'Bid') : 'Open auction'}
+            </button>
+          );
+        }
         const blocked = !!hq.project || !r.check.met || (r.check.seatNeeded && !!r.seats && r.seats.free <= 0 && !heldSeatAt(state, r.id));
         const why = hq.project ? 'A relocation is already under way' : !r.check.met ? 'Requirements unmet' : 'No seat free';
         return (
@@ -293,6 +415,7 @@ export default function HqRelocationConsole({ state, onHeadquartersUpdate, onLoc
     },
   ];
 
+  const upkeep = api?.upkeep ?? null;
   const project = hq.project;
   const projectStage = project && isHqStageId(project.targetStage) ? getHqStage(project.targetStage) : null;
   const progress = project ? hqProjectProgress(project, nowMs) : null;
@@ -323,9 +446,26 @@ export default function HqRelocationConsole({ state, onHeadquartersUpdate, onLoc
           </div>
         )}
 
+        {upkeep && upkeep.monthly > 0 && (
+          <div className="border-b border-[var(--line)] px-4 py-2 text-[11px]" role="status">
+            <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="inline-flex items-center gap-1.5">
+                <StatusPip state={upkeep.missedMonths > 0 ? 'hold' : 'go'} label={upkeep.missedMonths > 0 ? 'ARREARS' : 'PAID'} />
+                <span className="text-[var(--ink-2)]">Seat rent {formatMoney(upkeep.monthly)}/game-month</span>
+              </span>
+              <span className="text-[var(--ink-3)]">paid through {new Date(upkeep.paidThroughMs).toLocaleString()}</span>
+              {upkeep.missedMonths > 0 && (
+                <span className="text-amber-200">
+                  {upkeep.missedMonths} month{upkeep.missedMonths === 1 ? '' : 's'} unpaid · {upkeep.graceRemaining} of {upkeep.graceMonths} grace left before the seat lapses
+                </span>
+              )}
+            </span>
+          </div>
+        )}
+
         <div className="px-4 pt-3 text-[11px] text-[var(--ink-3)]">
-          One headquarters per corporation. A move costs money and a campaign-loop project (2 game-months to LEO, 4 to Luna, 1 back to Earth); off-Earth seats are finite, lease at a posted price that rises with occupancy, and carry monthly upkeep. Seat bonuses are ±10–15% — "where is my business", never a free win.
-          {' '}<HoloTip content={{ title: 'Seat leases', icon: 'dashboard', body: 'A seat is a 6-game-month lease that renews automatically while the headquarters stays and returns to the pool at the market-clearing price when the corporation moves. The lease price is burned (a money sink), like a slot-auction win.', source: 'headquarters.ts · hq-relocation.ts postedSeatPrice' }}>How seats work</HoloTip>
+          One headquarters per corporation. A move costs money and a campaign-loop project (2 game-months to LEO, 4 to Luna, 6 to Mars, 8 to the outer system, 12 to deep space, 18 to another star — 1 back to Earth); off-Earth seats are finite and carry monthly rent, charged by the corporate registry. Seat bonuses are ±10–15% — "where is my business", never a free win.
+          {' '}<HoloTip content={{ title: 'Seat leases and auctions', icon: 'dashboard', body: 'LEO and Luna seats lease first-come at a posted price that rises with occupancy. From Mars outward the pools are eight seats or fewer, so a vacant seat is sold at a sealed-bid auction instead: bids are escrowed, the highest at or above the reserve wins and is burned, every other bid is refunded in full, and a bid in the last ten minutes extends the close. Rent is charged monthly against the corporate wallet; two unpayable months return the seat to the pool and the headquarters to Earth.', source: 'hq-seat-auctions.ts · hq-relocation-server.ts chargeHqSeatUpkeep' }}>How seats work</HoloTip>
         </div>
 
         <DataTable<Row>

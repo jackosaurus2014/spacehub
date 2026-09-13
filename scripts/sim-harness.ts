@@ -55,7 +55,7 @@ import {
 import { BOOK_VALUE_DEPRECIATION_FACTOR, applyGraduationGlide, GRADUATION_GLIDE_MS, FRONTIER_DURATION_MS, FRONTIER_REVENUE_MULTIPLIER, frontierRevenueMultiplierFor } from '../src/lib/game/frontier';
 // CC-2 / Balance Pass 11 (2026-09-13): the seated HQ's bonus terms and
 // upkeep, applied exactly where game-engine.ts §1/§1b apply them.
-import { HQ_UPKEEP_MONTHLY, getHqBonuses, hqRevenueMultUnderFrontier, isHqSatelliteOpsService, type HqStageId } from '../src/lib/game/headquarters';
+import { HQ_UPKEEP_MONTHLY, getHqBonuses, hqServiceCostMult, hqServiceRevenueMult, type HqStageId } from '../src/lib/game/headquarters';
 import {
   computePoolAggregates,
   getServiceCategory,
@@ -801,7 +801,8 @@ export function stepMonth(world: SimWorld, month: number): void {
     const frontierMult = frontierRevenueMultAtMonth(p, month);
     // Pass 11: the seated HQ's terms (neutral on Earth / when absent).
     const hqB = getHqBonuses(p.hqStage ?? 'earth_ops');
-    const hqLaunchMult = hqRevenueMultUnderFrontier(hqB.launchRevenueMult, frontierMult);
+    const hqSvcRev = (svcId: string, locationId: string, type: string) =>
+      hqServiceRevenueMult(hqB, { definitionId: svcId, locationId, type }, frontierMult);
     let revenue = 0, operating = 0, maintenance = 0;
     const effVals: number[] = [];
     // D4: per-building lines (opt-in) — mirrors build-preview.ts's
@@ -833,7 +834,7 @@ export function stepMonth(world: SimWorld, month: number): void {
         const pos = saturationCounts.get(bucketKey) || 0;
         saturationCounts.set(bucketKey, pos + 1);
         // Pass 11: LEO deck runs satellite ops 10% cheaper (engine §1 hqOpsCostMult).
-        const svcOperating = sDef.operatingCostPerMonth * (isHqSatelliteOpsService(svcId) ? hqB.satelliteOpsCostMult : 1);
+        const svcOperating = sDef.operatingCostPerMonth * hqServiceCostMult(hqB, svcId);
         operating += svcOperating;
         if (lines) lineOf(b.instanceId).operating += svcOperating;
         if (sDef.type === 'mining_output') continue; // priced in §5 below (fabrication_output byproduct producers stay on this flat/pool path)
@@ -848,7 +849,7 @@ export function stepMonth(world: SimWorld, month: number): void {
         const svcRevenue = sDef.revenuePerMonth
           * rMult
           * frontierMult // Pass 10
-          * (sDef.type === 'launch_payload' ? hqLaunchMult : 1) // Pass 11: LEO deck +12% on launch services
+          * hqSvcRev(svcId, b.locationId, sDef.type) // Pass 11/13: the seated HQ's service terms
           * serviceSaturationMultiplier(pos)
           * poolMult
           * powerRatio
@@ -934,7 +935,8 @@ export function stepMonth(world: SimWorld, month: number): void {
             }
             snapshotForPlayer = { ...snapshotForPlayer, prices: floored };
           }
-          const miningRevenue = priceLinkedMiningRevenue(svcId, unitsPerResource, snapshotForPlayer) * rMult * saturationMult * frontierMult /* Pass 10 */;
+          const miningRevenue = priceLinkedMiningRevenue(svcId, unitsPerResource, snapshotForPlayer) * rMult * saturationMult * frontierMult /* Pass 10 */
+            * hqSvcRev(svcId, b.locationId, 'mining_output') /* Pass 13: outer-system extraction */;
           revenue += miningRevenue;
           if (lines) lineOf(b.instanceId).revenue += miningRevenue;
         }

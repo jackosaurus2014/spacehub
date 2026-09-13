@@ -8,7 +8,9 @@ import { completeDueAssets } from '@/lib/game/server-assets';
 import { completeDueMiningOrders, chargeClaimUpkeep, expireDueClaims, respawnExhaustedRocks } from '@/lib/game/server-mining';
 // CC-2 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md): the same pass completes
 // due headquarters relocations and renews / releases seat leases.
-import { completeDueHqRelocations, renewHqSeatLeases } from '@/lib/game/hq-relocation-server';
+import {
+  chargeHqSeatUpkeep, completeDueHqRelocations, renewHqSeatLeases, resolveDueHqSeatAuctions,
+} from '@/lib/game/hq-relocation-server';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,9 +38,14 @@ export async function POST(request: NextRequest) {
     const rocksRespawned = await respawnExhaustedRocks(prisma);
     const hqRelocated = await completeDueHqRelocations(prisma);
     const hqSeats = await renewHqSeatLeases(prisma);
+    // CC-3: seat rent (unpaid past the grace period lapses the seat and
+    // sends the headquarters home) and sealed-bid seat auctions for Mars and
+    // outward (winner burned, losers refunded in full).
+    const hqUpkeep = await chargeHqSeatUpkeep(prisma);
+    const hqAuctions = await resolveDueHqSeatAuctions(prisma);
     const durationMs = Date.now() - startedAt;
-    logger.info('assets-complete cron completed', { completed, miningSettled, claimsExpired, claimUpkeep, rocksRespawned, hqRelocated, hqSeats, durationMs });
-    return NextResponse.json({ success: true, completed, miningSettled, claimsExpired, claimUpkeep, rocksRespawned, hqRelocated, hqSeats, durationMs });
+    logger.info('assets-complete cron completed', { completed, miningSettled, claimsExpired, claimUpkeep, rocksRespawned, hqRelocated, hqSeats, hqUpkeep, hqAuctions, durationMs });
+    return NextResponse.json({ success: true, completed, miningSettled, claimsExpired, claimUpkeep, rocksRespawned, hqRelocated, hqSeats, hqUpkeep, hqAuctions, durationMs });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     logger.error('assets-complete cron failed', { error: msg });

@@ -99,6 +99,18 @@ export const CLIENT_APPLIED_LEDGER_REASONS = [
   // locally on the 2xx (HqRelocationConsole.tsx), same contract.
   'hq_relocation',
   'hq_seat_lease',
+  // CC-3: the monthly seat rent. The SERVER is the payer of record — it
+  // debits the persisted wallet, and a charge it cannot cover is what lapses
+  // the seat (hq-relocation-server.ts chargeHqSeatUpkeep) — but the client
+  // tick applies the identical figure on its own monthly beat
+  // (game-engine.ts §1b, headquarters.ts HQ_UPKEEP_MONTHLY), so the row must
+  // NEVER come back as a pending delta or the rent would be paid twice.
+  'hq_seat_upkeep',
+  // CC-3 seat auctions: the console debits the escrow locally on the 2xx,
+  // exactly like the relocation charter above. The refund and the winner's
+  // burn are NOT listed — the client cannot know when the cron resolved, so
+  // those two arrive as ordinary pending deltas the client adopts.
+  'hq_seat_bid_escrow',
 ] as const;
 /** Every reason the client's pending-delta query must exclude. */
 export const PENDING_EXCLUDED_LEDGER_REASONS = [
