@@ -15,6 +15,7 @@
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { sendFreshnessAlert, resolveFreshnessAlertsByPrefix } from '@/lib/freshness-alerts';
+import { QA_EMAIL_DOMAIN } from '@/lib/qa-accounts';
 import { STARTUP_HUB_ASOF } from '@/lib/startup-hub-data';
 import { REPORT_CARDS_QUARTER_ASSESSED } from '@/lib/report-cards-data';
 import { getArtemisNewsArticles } from '@/lib/artemis-news';
@@ -572,6 +573,16 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     label: 'No module has an active content key older than 4x its freshness-policy TTL',
     run: () => checkStaleModuleContent(),
   },
+  // Space Tycoon money: the sync ceiling rejecting a real player's income is
+  // invisible to us unless something watches for it. It ran for weeks in
+  // September 2026 (timed-event and delivery payouts the server could not
+  // verify, ~$3.3B rejected across two players) and only surfaced because
+  // the founder noticed his balance snapping back. Now it pages us.
+  {
+    id: 'money-clamp-quiet',
+    label: 'No real player had income rejected by the sync ceiling in the last 24h',
+    run: () => checkMoneyClampQuiet(),
+  },
   // Nightly QA probes (scripts/qa/, .github/workflows/nightly-qa.yml) post to
   // /api/qa/report, which writes a DataRefreshLog row per run. A run that
   // FAILS emails on its own; these checks catch the probe not running at all
@@ -587,6 +598,58 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     run: () => checkQaProbeRan('qa-tycoon'),
   },
 ];
+
+/** A rejection this large means a player watched money vanish. */
+export const MONEY_CLAMP_ALERT_THRESHOLD = 10_000_000;
+
+/**
+ * Space Tycoon: did the sync plausibility ceiling reject income for a real
+ * (non-QA) player in the last 24 hours? Every rejection is audited as
+ * `client_money_implausible_rejected` in MarketAuditLog with the amount in
+ * `details.rejectedExcess`. Small rejections are ordinary (a forged or
+ * unverifiable client claim); anything past the threshold is a player losing
+ * visible money and needs a look, and usually a ledger restore
+ * (scripts/tycoon-ledger-credit.ts).
+ */
+async function checkMoneyClampQuiet(): Promise<AccuracyCheckOutcome> {
+  const since = new Date(Date.now() - 24 * 3600_000);
+  const rows = await prisma.marketAuditLog.findMany({
+    where: { eventType: 'client_money_implausible_rejected', createdAt: { gte: since } },
+    orderBy: { createdAt: 'desc' },
+    take: 500,
+    select: { profileId: true, details: true, createdAt: true },
+  });
+  if (rows.length === 0) return { ok: true, detail: 'No income was rejected in the last 24h' };
+
+  const byProfile = new Map<string, number>();
+  for (const r of rows) {
+    if (!r.profileId) continue;
+    const d = (r.details || {}) as Record<string, unknown>;
+    const excess = Number(d.rejectedExcess || 0);
+    if (!Number.isFinite(excess) || excess <= 0) continue;
+    byProfile.set(r.profileId, (byProfile.get(r.profileId) || 0) + excess);
+  }
+  if (byProfile.size === 0) return { ok: true, detail: `${rows.length} audit row(s), none with a rejected amount` };
+
+  // QA probe corporations clamp all the time and are not players.
+  const real = await prisma.gameProfile.findMany({
+    where: { id: { in: [...byProfile.keys()] }, user: { email: { not: { endsWith: QA_EMAIL_DOMAIN } } } },
+    select: { id: true, companyName: true },
+  });
+  const offenders = real
+    .map((p) => ({ company: p.companyName, id: p.id, total: byProfile.get(p.id) || 0 }))
+    .filter((p) => p.total >= MONEY_CLAMP_ALERT_THRESHOLD)
+    .sort((a, b) => b.total - a.total);
+
+  if (offenders.length === 0) {
+    return { ok: true, detail: `${byProfile.size} profile(s) clamped, none above $${(MONEY_CLAMP_ALERT_THRESHOLD / 1e6).toFixed(0)}M or all QA` };
+  }
+  const list = offenders.slice(0, 5).map((o) => `${o.company} (${o.id}) $${(o.total / 1e6).toFixed(1)}M`).join('; ');
+  return {
+    ok: false,
+    detail: `Sync ceiling rejected income for ${offenders.length} player(s) in 24h: ${list}. Diagnose with scripts/tycoon-money-diag.ts and restore with scripts/tycoon-ledger-credit.ts.`,
+  };
+}
 
 async function checkQaProbeRan(module: 'qa-smoke' | 'qa-tycoon'): Promise<AccuracyCheckOutcome> {
   const last = await prisma.dataRefreshLog.findFirst({
