@@ -1989,7 +1989,7 @@ export interface ScienceMissionState {
 // Legacy save tab ids for the six removed values are mapped forward by
 // resolveLegacyTab() in space-tycoon/page.tsx so old saves/links never dead-end.
 // 'science' added in 4X Wave W6 (flagship scientific missions — science-missions.ts).
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'predictions' | 'leaderboard' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'modules' | 'discoveries' | 'science' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory' | 'governance';
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'predictions' | 'leaderboard' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'modules' | 'discoveries' | 'science' | 'interstellar' | 'subsidiaries' | 'specialization' | 'victory' | 'governance' | 'sourcing';
 
 // ─── Live-Service Wave LS1 "Night Shift" — command queues, standing
 // directives, away operations. docs/LIVE_SERVICE_2026-08.md §LS1. Types live

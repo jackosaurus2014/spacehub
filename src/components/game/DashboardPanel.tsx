@@ -13,6 +13,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import type { GameState } from '@/lib/game/types';
+import { countBuildingsShortOnInputs } from '@/lib/game/sourcing';
 import { formatMoney, formatGameDate, formatCountdown } from '@/lib/game/formulas';
 import { BUILDING_MAP, getPowerByLocation } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
@@ -495,7 +496,7 @@ function QuickNavGrid({
     { id: 'research', label: 'Research', icon: 'research', stat: `${researchDone}/${visibleResearchCount} complete` },
   ];
 
-  const alerts: { icon: IconName; label: string; pip: PipState }[] = [];
+  const alerts: { icon: IconName; label: string; pip: PipState; tab?: string }[] = [];
   if (hasPowerDeficit) alerts.push({ icon: 'power', label: 'Power deficit active', pip: 'scrub' });
   const unreadReports = (state.reports || []).filter(r => !r.read).length;
   if (unreadReports > 0) alerts.push({ icon: 'reports', label: `${unreadReports} unread report${unreadReports !== 1 ? 's' : ''}`, pip: 'live' });
@@ -510,6 +511,17 @@ function QuickNavGrid({
       icon: 'warning',
       label: `${hazardWarningCount} hazard warning${hazardWarningCount !== 1 ? 's' : ''} forecast next month`,
       pip: severeHazardWarning ? 'scrub' : 'hold',
+    });
+  }
+  // Sourcing (2026-09-12): operational buildings on the local policy with
+  // under a month of an input on hand — one line, navigates to Markets ▸ Sourcing.
+  const shortOnInputs = countBuildingsShortOnInputs(state);
+  if (shortOnInputs > 0) {
+    alerts.push({
+      icon: 'sourcing',
+      label: `${shortOnInputs} building${shortOnInputs !== 1 ? 's' : ''} short on inputs — open Sourcing`,
+      pip: 'scrub',
+      tab: 'markets:sourcing',
     });
   }
 
@@ -535,10 +547,22 @@ function QuickNavGrid({
         {alerts.length > 0 && (
           <div className="flex flex-wrap gap-x-3 gap-y-1.5" role="status" aria-live="polite">
             {alerts.map((a, i) => (
-              <span key={i} className="inline-flex items-center gap-1.5 text-[11px] text-[var(--ink-2)]">
-                <GameIcon name={a.icon} size={12} />
-                <StatusPip state={a.pip} label={a.label} />
-              </span>
+              a.tab && onNavigate ? (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => onNavigate(a.tab!)}
+                  className="inline-flex items-center gap-1.5 min-h-[36px] text-[11px] text-[var(--ink-2)] hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ember)]"
+                >
+                  <GameIcon name={a.icon} size={12} />
+                  <StatusPip state={a.pip} label={a.label} />
+                </button>
+              ) : (
+                <span key={i} className="inline-flex items-center gap-1.5 text-[11px] text-[var(--ink-2)]">
+                  <GameIcon name={a.icon} size={12} />
+                  <StatusPip state={a.pip} label={a.label} />
+                </span>
+              )
             ))}
           </div>
         )}

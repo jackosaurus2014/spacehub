@@ -29,13 +29,13 @@
 // gracefully to the raw emoji (never a blank icon).
 
 export type IconName =
-  // ── Tabs (31 — TAB_CATALOG, page.tsx) ──────────────────────────────────
+  // ── Tabs (32 — TAB_CATALOG, page.tsx) ──────────────────────────────────
   | 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet'
   | 'reports' | 'contracts' | 'crafting' | 'market' | 'workforce' | 'alliance'
   | 'bounties' | 'predictions' | 'megaproject' | 'megastructures' | 'espionage'
   | 'territory' | 'speedruns' | 'seasons' | 'leaderboard' | 'commanders'
   | 'factions' | 'modules' | 'discoveries' | 'science' | 'interstellar'
-  | 'subsidiaries' | 'specialization' | 'victory' | 'governance'
+  | 'subsidiaries' | 'specialization' | 'victory' | 'governance' | 'sourcing'
   // ── Resource categories (resources.ts ResourceDefinition.category) ─────
   | 'resource-water' | 'resource-metal' | 'resource-precious'
   | 'resource-rare-earth' | 'resource-hydrocarbon' | 'resource-exotic'
@@ -118,6 +118,9 @@ export const ICONS: Record<IconName, IconDef> = {
   contracts: { meaning: 'Contracts — clipboard with checklines', els: [r(5, 4, 14, 17, 2), r(9, 2, 6, 4, 1), l(8, 10, 16, 10), l(8, 13, 16, 13), l(8, 16, 13, 16)] },
   crafting: { meaning: 'Crafting — hammer', els: [p('M14.5 6.5l3 3-8 8-3-3z'), p('M13 8l4-4 3 3-4 4'), p('M6 15l3 3-2.5 2.5a1.8 1.8 0 0 1-2.5 -2.5z')] },
   market: { meaning: 'Markets — rising line chart', els: [pl('4,17 9,11 13,14 20,5'), pl('15,5 20,5 20,10'), l(4, 20, 20, 20)] },
+  // Sourcing (2026-09-12): a supply crate with an inbound arrow — inputs
+  // arriving at a building, distinct from Markets' chart and Manufacture's hammer.
+  sourcing: { meaning: 'Sourcing — supply crate with inbound arrow', els: [r(3, 11, 10, 9, 1), l(3, 15, 13, 15), l(8, 11, 8, 20), pl('14,7 21,7'), pl('18,4 21,7 18,10')] },
   workforce: { meaning: 'Crew — hard-hat operator', els: [c(12, 7, 3, 'none'), p('M8 7a4 4 0 0 1 8 0'), p('M5 21v-3a7 7 0 0 1 14 0v3')] },
   alliance: { meaning: 'Corporation — office tower', els: [r(6, 3, 12, 18, 1), l(9, 7, 9, 7), l(12, 7, 12, 7), l(15, 7, 15, 7), l(9, 11, 9, 11), l(12, 11, 12, 11), l(15, 11, 15, 11), l(9, 15, 9, 15), l(12, 15, 12, 15), l(15, 15, 15, 15), r(10, 17, 4, 4)] },
   bounties: { meaning: 'Bounties — target crosshair', els: [c(12, 12, 8, 'none'), c(12, 12, 4, 'none'), c(12, 12, 0.8, 'currentColor'), l(12, 2, 12, 5), l(12, 19, 12, 22), l(2, 12, 5, 12), l(19, 12, 22, 12)] },

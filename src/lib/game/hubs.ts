@@ -90,6 +90,10 @@ export const HUB_CATALOG: readonly HubDef[] = [
     id: 'markets', label: 'Markets', shortLabel: 'Markets', icon: 'market',
     subViews: [
       { id: 'spot', label: 'Spot & Orders', icon: 'market', tab: 'market', subView: 'market:spot' },
+      // Sourcing (2026-09-12, founder request): the per-building input
+      // sourcing policy ('local' vs standing market order) promoted out of
+      // the Build panel's owned-building card into its own Markets view.
+      { id: 'sourcing', label: 'Sourcing', icon: 'sourcing', tab: 'sourcing' },
       { id: 'analytics', label: 'Analytics', icon: 'activity', tab: 'market', subView: 'market:analytics', feature: 'intelligence' },
       { id: 'economy', label: 'Economy', icon: 'globe', tab: 'market', subView: 'market:economy', feature: 'economy' },
       { id: 'futures', label: 'Futures', icon: 'predictions', tab: 'market', subView: 'market:futures', feature: 'futures' },

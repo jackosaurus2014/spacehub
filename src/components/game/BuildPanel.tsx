@@ -280,6 +280,10 @@ interface BuildPanelProps {
    *  vertical integration, run degraded when short; 'market' = standing buy
    *  orders on the shared book). Toggle only renders when provided. */
   onSetSupplyPolicy?: (instanceId: string, policy: 'local' | 'market') => void;
+  /** Opens Markets ▸ Sourcing — the console that lists every consuming
+   *  building's policy in one place. The "Manage all sourcing" link on the
+   *  owned-building card only renders when provided. */
+  onOpenSourcing?: () => void;
   /** Wave M2: pause a completed, fully-active building (zero revenue, zero
    *  consumption, 25% maintenance). Mothball toggle only renders when
    *  provided. */
@@ -297,7 +301,7 @@ interface BuildPanelProps {
   onDispatchShip?: (shipInstanceId: string, toLocation: string, cargo?: Record<string, number>) => void;
 }
 
-export default function BuildPanel({ state, onBuild, onSellBuilding, initialLocationId, lockLocation, onRushRepairBuilding, onSetSupplyPolicy, onMothballBuilding, onReactivateBuilding, onMarkUpgradeBuilding, onDispatchShip }: BuildPanelProps) {
+export default function BuildPanel({ state, onBuild, onSellBuilding, initialLocationId, lockLocation, onRushRepairBuilding, onSetSupplyPolicy, onOpenSourcing, onMothballBuilding, onReactivateBuilding, onMarkUpgradeBuilding, onDispatchShip }: BuildPanelProps) {
   const [selectedLocation, setSelectedLocation] = useState(initialLocationId || state.unlockedLocations[0] || 'earth_surface');
   const totalSlots = getConstructionSlots(state);
   const activeBuilds = getActiveConstructions(state);
@@ -973,6 +977,15 @@ export default function BuildPanel({ state, onBuild, onSellBuilding, initialLoca
                             Standing market order
                           </button>
                         </div>
+                        {onOpenSourcing && (
+                          <button
+                            type="button"
+                            onClick={onOpenSourcing}
+                            className="min-h-[36px] px-1 text-[10px] text-[var(--signal)] hover:text-[var(--ink)] underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ember)]"
+                          >
+                            Manage all sourcing →
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>

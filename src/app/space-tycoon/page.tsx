@@ -209,6 +209,7 @@ import VictoryPanel from '@/components/game/VictoryPanel';
 import { checkVictories } from '@/lib/game/victory-conditions';
 import { shouldGenerateQuarterlyReport, recordQuarterlyReport, getTotalGameMonthsElapsed } from '@/lib/game/quarterly-reports';
 import BuildPanel from '@/components/game/BuildPanel';
+import SourcingPanel from '@/components/game/SourcingPanel';
 import MapCommandCenter from '@/components/game/MapCommandCenter';
 // Wave V3 (docs/VISUAL_DEPTH_2026-08.md §V3) — persistent right-rail
 // Outliner + the Situation Log it deep-links into (absorbed by
@@ -2509,6 +2510,7 @@ export default function SpaceTycoonPage() {
     { id: 'contracts', label: 'Contracts', icon: 'contracts' },
     { id: 'crafting', label: 'Manufacture', icon: 'crafting' },
     { id: 'market', label: 'Markets', icon: 'market' },
+    { id: 'sourcing', label: 'Sourcing', icon: 'sourcing' },
     { id: 'workforce', label: 'Crew', icon: 'workforce' },
     { id: 'alliance', label: 'Corporation', icon: 'alliance' },
     { id: 'bounties', label: 'Bounties', icon: 'bounties' },
@@ -2788,7 +2790,8 @@ export default function SpaceTycoonPage() {
             setState(prev => prev ? resolveChapterEpilogue(prev, participationCount, Date.now()) : prev);
           }}
         />}
-        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onMothballBuilding={handleMothballBuilding} onReactivateBuilding={handleReactivateBuilding} onRushRepairBuilding={handleRushRepairBuilding} onMarkUpgradeBuilding={handleMarkUpgradeBuilding} onDispatchShip={handleDispatchShip} />}
+        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onOpenSourcing={() => { playSound('click'); navigateToTab('markets:sourcing'); }} onMothballBuilding={handleMothballBuilding} onReactivateBuilding={handleReactivateBuilding} onRushRepairBuilding={handleRushRepairBuilding} onMarkUpgradeBuilding={handleMarkUpgradeBuilding} onDispatchShip={handleDispatchShip} />}
+        {tab === 'sourcing' && <SourcingPanel state={state} onSetSupplyPolicy={handleSetSupplyPolicy} onNavigate={(navTab) => { playSound('click'); navigateToTab(navTab); }} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'fleet' && <FleetPanel

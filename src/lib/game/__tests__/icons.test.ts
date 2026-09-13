@@ -14,7 +14,7 @@ const ALL_TAB_IDS: GameTab[] = [
   'leaderboard', 'seasons', 'territory', 'speedruns', 'espionage',
   'megaproject', 'megastructures', 'reports', 'commanders', 'factions',
   'modules', 'discoveries', 'science', 'interstellar', 'subsidiaries',
-  'specialization', 'victory', 'governance',
+  'specialization', 'victory', 'governance', 'sourcing',
 ];
 
 const ALL_CALENDAR_CATEGORIES: CalendarCategory[] = [
