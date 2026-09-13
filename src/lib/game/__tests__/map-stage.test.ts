@@ -5,6 +5,8 @@
  * machine: desktop panels-as-overlays over a frozen map, phones unchanged.
  * 2026-09-12: the 768-1279px band keeps the map mounted but hidden so a hub
  * switch never creates a new WebGL context (browser-crash investigation).
+ * CC-1 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md): the dashboard tab is the
+ * Bridge — a second stage kind, never an overlay over the map.
  */
 import {
   computeStageLayout,
@@ -20,38 +22,62 @@ describe('computeStageLayout', () => {
     for (const desktop of [true, false]) {
       for (const wide of [true, false]) {
         expect(computeStageLayout('map', desktop, wide)).toEqual({
-          mapMounted: true, mapCovered: false, overlayOpen: false, mapHidden: false,
+          kind: 'map', mapMounted: true, mapCovered: false, overlayOpen: false, mapHidden: false,
         });
       }
     }
   });
 
-  it('desktop non-map tab: map stays mounted but covered, panel overlays', () => {
-    expect(computeStageLayout('dashboard', true, true)).toEqual({
-      mapMounted: true, mapCovered: true, overlayOpen: true, mapHidden: false,
+  it('desktop panel tab: map stays mounted but covered, panel overlays', () => {
+    expect(computeStageLayout('build', true, true)).toEqual({
+      kind: 'panel', mapMounted: true, mapCovered: true, overlayOpen: true, mapHidden: false,
     });
     expect(computeStageLayout('market', true, true)).toEqual({
-      mapMounted: true, mapCovered: true, overlayOpen: true, mapHidden: false,
+      kind: 'panel', mapMounted: true, mapCovered: true, overlayOpen: true, mapHidden: false,
     });
   });
 
-  it('768-1279px non-map tab: map stays mounted but hidden, panel is full-width (no overlay)', () => {
+  it('dashboard tab is the Bridge stage: no overlay, map kept alive but hidden on wide viewports', () => {
+    // desktop: the window takes the stage; the map is mounted-but-hidden
+    // (WebGL context preserved, nothing drawn) rather than dimmed behind an
+    // overlay sheet.
+    expect(computeStageLayout('dashboard', true, true)).toEqual({
+      kind: 'bridge', mapMounted: true, mapCovered: true, overlayOpen: false, mapHidden: true,
+    });
+    // 768-1279px: same
     expect(computeStageLayout('dashboard', false, true)).toEqual({
-      mapMounted: true, mapCovered: true, overlayOpen: false, mapHidden: true,
+      kind: 'bridge', mapMounted: true, mapCovered: true, overlayOpen: false, mapHidden: true,
+    });
+    // phone: map unmounts exactly as for any other tab
+    expect(computeStageLayout('dashboard', false, false)).toEqual({
+      kind: 'bridge', mapMounted: false, mapCovered: false, overlayOpen: false, mapHidden: false,
+    });
+    // the Bridge is never an overlay on any viewport
+    for (const desktop of [true, false]) {
+      for (const wide of [true, false]) {
+        expect(computeStageLayout('dashboard', desktop, wide).overlayOpen).toBe(false);
+      }
+    }
+  });
+
+  it('768-1279px panel tab: map stays mounted but hidden, panel is full-width (no overlay)', () => {
+    expect(computeStageLayout('research', false, true)).toEqual({
+      kind: 'panel', mapMounted: true, mapCovered: true, overlayOpen: false, mapHidden: true,
     });
     expect(computeStageLayout('build', false, true)).toEqual({
-      mapMounted: true, mapCovered: true, overlayOpen: false, mapHidden: true,
+      kind: 'panel', mapMounted: true, mapCovered: true, overlayOpen: false, mapHidden: true,
     });
   });
 
-  it('phone non-map tab: map unmounts, full-screen panel', () => {
-    expect(computeStageLayout('dashboard', false, false)).toEqual({
-      mapMounted: false, mapCovered: false, overlayOpen: false, mapHidden: false,
+  it('phone panel tab: map unmounts, full-screen panel', () => {
+    expect(computeStageLayout('build', false, false)).toEqual({
+      kind: 'panel', mapMounted: false, mapCovered: false, overlayOpen: false, mapHidden: false,
     });
     // the third argument defaults to the phone behaviour
-    expect(computeStageLayout('dashboard', false)).toEqual({
-      mapMounted: false, mapCovered: false, overlayOpen: false, mapHidden: false,
+    expect(computeStageLayout('build', false)).toEqual({
+      kind: 'panel', mapMounted: false, mapCovered: false, overlayOpen: false, mapHidden: false,
     });
+    expect(computeStageLayout('dashboard', false).mapMounted).toBe(false);
   });
 
   it('the map is never remounted by a hub switch on any viewport ≥768px', () => {

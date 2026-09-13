@@ -39,6 +39,9 @@ import HoloTip, { Concept } from '@/components/game/HoloTip';
 import type { IconName } from '@/lib/game/icons';
 import GameStartMenu from '@/components/game/GameStartMenu';
 import DashboardPanel from '@/components/game/DashboardPanel';
+// CC-1 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md): the Dashboard is the
+// Bridge — the headquarters' window band above the docked consoles.
+import BridgeStage from '@/components/game/BridgeStage';
 import SupplyStatusStrip from '@/components/game/SupplyStatusStrip';
 import { setBuildingSupplyPolicy } from '@/lib/game/consumption';
 // Meaningful Decisions Wave M2 (docs/MEANINGFUL_2026-08.md §M2 — finding F5,
@@ -1056,7 +1059,7 @@ export default function SpaceTycoonPage() {
   // `F` toggles, Escape exits (lowest-priority Escape on the page: a modal's
   // own Escape, the panel overlay's Escape-to-map, and anything that already
   // called preventDefault all win — see bridgeKeyAction).
-  const bridgeOverlayOpen = inGame && desktopStage && tab !== 'map';
+  const bridgeOverlayOpen = inGame && stageLayout.overlayOpen;
   useEffect(() => {
     if (!inGame) return;
     const onKey = (e: KeyboardEvent) => {
@@ -3003,6 +3006,13 @@ export default function SpaceTycoonPage() {
             className="absolute inset-0 w-full h-full bg-black/55 backdrop-blur-sm cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-cyan-400"
           />
         )}
+        {/* CC-1 — the Bridge stage (dashboard tab): the headquarters'
+            window fills the top of the column; the Dashboard's cards dock
+            beneath it as consoles (.hq-console-dock overlaps the window's
+            bottom band). Bridge mode (F) makes the window taller via
+            GameStyles' :root[data-bridge="on"] .hq-stage rule; phones get a
+            96 px banner with the consoles stacked below. */}
+        {stageLayout.kind === 'bridge' && !activeLocked && <BridgeStage state={state} />}
         <div
           key={tab}
           ref={stageLayout.overlayOpen ? overlaySheetRef : undefined}
@@ -3011,7 +3021,7 @@ export default function SpaceTycoonPage() {
           tabIndex={stageLayout.overlayOpen ? -1 : undefined}
           className={`overflow-y-auto p-2 sm:p-4 max-w-5xl mx-auto w-full tab-crossfade game-scroll ${
             stageLayout.overlayOpen ? 'relative flex-1 min-h-0 outline-none' : 'flex-1'
-          }`}
+          }${stageLayout.kind === 'bridge' && !activeLocked ? ' hq-console-dock' : ''}`}
         >
         {activeLocked && activeNav ? (
           <LockedSubtabNotice iconName={activeNav.entry.icon} label={activeNav.entry.label} tier={activeNav.unlockTier} />

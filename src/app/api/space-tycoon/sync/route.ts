@@ -47,6 +47,7 @@ import {
   type ValidatedSyncEconomics,
   type SyncService,
   type SyncShip,
+  sanitizeHqLocationId,
 } from '@/lib/game/sync-validation';
 import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
 // Money desync fix (2026-09-12): verifiable one-shot contract income widens
@@ -210,7 +211,12 @@ export async function POST(request: Request) {
       // stash-in-workforceData pattern (and same client-claimed trust level,
       // clamped at read time) as factionReputation above.
       factionLicenses = null,
+      // CC-1 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md §4): the client's
+      // headquarters seat, sanitized to a registered stage below. Public on
+      // the corp page / leaderboard. CC-2's relocation route takes over.
+      hqLocationId = null,
     } = body;
+    const safeHqLocationId = sanitizeHqLocationId(hqLocationId);
 
     // Audit Wave B (§1c commander marketPriceMultiplier): stash the hired
     // commander roster inside workforceData so market/trade can recompute
@@ -1271,6 +1277,7 @@ export async function POST(request: Request) {
       money: reconciledMoney, totalEarned, totalSpent, netWorth,
       creditedContractIds: creditedContractIdsToPersist,
       buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear,
+      hqLocationId: safeHqLocationId,
       resources: reconciledResources as object,
       buildingsData: safeBuildings as unknown as object,
       activeServicesData: safeServices as unknown as object,

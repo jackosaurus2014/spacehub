@@ -32,6 +32,7 @@ import { FACTION_LICENSE_MAP } from './factions';
 import { ARCHETYPE_MAP, type StartingArchetype } from './archetypes';
 import { STARTING_MONEY, STARTING_YEAR } from './constants';
 import { MIN_MARK_LEVEL, MAX_MARK_LEVEL } from './mark-upgrades';
+import { sanitizeHqLocationId as sanitizeHqSeat } from './headquarters';
 
 // ─── Hard caps ───────────────────────────────────────────────────────────────
 
@@ -431,6 +432,14 @@ export function stripStashKeys(workforce: unknown): Record<string, unknown> | nu
 }
 
 /** Commander ids must exist in the registry; deduped; roster-capped. */
+/** CC-1: the client's headquarters seat → GameProfile.hqLocationId. Only a
+ *  headquarters.ts stage's own locationId is stored; anything else (a
+ *  missing field from a pre-CC-1 client, a hand-edited payload) collapses
+ *  to the Earth default. CC-2's relocation route will own this column. */
+export function sanitizeHqLocationId(raw: unknown): string {
+  return sanitizeHqSeat(raw);
+}
+
 export function sanitizeCommanderIds(raw: unknown): string[] {
   if (!Array.isArray(raw)) return [];
   const out: string[] = [];

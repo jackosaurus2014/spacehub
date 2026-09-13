@@ -128,6 +128,11 @@ export default async function PublicCorpPage(props: { params: Promise<{ id: stri
                     {corp.allianceRole ? ` · ${corp.allianceRole}` : ''}
                   </span>
                 )}
+                {/* CC-1: the headquarters seat is public intelligence
+                    (docs/COMMAND_CENTER_DESIGN_2026-09-13.md §8 call 4). */}
+                <span className="text-[10px] px-2 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20" title="Headquarters">
+                  HQ: {corp.hqLabel}
+                </span>
               </div>
             </div>
             <ShareButton

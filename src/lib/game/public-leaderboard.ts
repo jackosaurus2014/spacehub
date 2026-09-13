@@ -13,6 +13,7 @@
 import prisma from '@/lib/db';
 import { notQaProfile } from '@/lib/qa-accounts';
 import { CORPORATION_TIERS } from './corporation-tiers';
+import { hqLabelForLocationId } from './headquarters';
 
 export interface PublicLeaderboardEntry {
   id: string;
@@ -23,6 +24,8 @@ export interface PublicLeaderboardEntry {
   tier: number;
   allianceTag: string | null;
   allianceName: string | null;
+  /** CC-1: headquarters seat label, e.g. "Earth Operations Center". */
+  hqLabel: string;
 }
 
 export interface PublicMilestone {
@@ -47,6 +50,8 @@ export interface PublicCorp {
   allianceName: string | null;
   allianceRole: string | null;
   foundedAt: Date;
+  /** CC-1: headquarters seat label ("HQ: Earth Operations Center"). */
+  hqLabel: string;
 }
 
 /**
@@ -80,6 +85,7 @@ export async function getPublicLeaderboard(limit = 50): Promise<PublicLeaderboar
       title: true,
       netWorth: true,
       totalEarned: true,
+      hqLocationId: true,
       allianceMembership: {
         select: { alliance: { select: { tag: true, name: true } } },
       },
@@ -95,6 +101,7 @@ export async function getPublicLeaderboard(limit = 50): Promise<PublicLeaderboar
     tier: estimateTierFromEarnings(p.totalEarned),
     allianceTag: p.allianceMembership?.alliance?.tag ?? null,
     allianceName: p.allianceMembership?.alliance?.name ?? null,
+    hqLabel: hqLabelForLocationId(p.hqLocationId),
   }));
 }
 
@@ -184,6 +191,7 @@ export async function getPublicCorp(id: string): Promise<PublicCorp | null> {
       locationsUnlocked: true,
       achievements: true,
       createdAt: true,
+      hqLocationId: true,
       allianceMembership: {
         select: { role: true, alliance: { select: { tag: true, name: true } } },
       },
@@ -217,5 +225,6 @@ export async function getPublicCorp(id: string): Promise<PublicCorp | null> {
     allianceName: profile.allianceMembership?.alliance?.name ?? null,
     allianceRole: profile.allianceMembership?.role ?? null,
     foundedAt: profile.createdAt,
+    hqLabel: hqLabelForLocationId(profile.hqLocationId),
   };
 }

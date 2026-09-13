@@ -34,7 +34,16 @@ export const STAGE_HIDDEN_MIN_WIDTH = 768;
 
 export const STAGE_HIDDEN_MEDIA_QUERY = `(min-width: ${STAGE_HIDDEN_MIN_WIDTH}px)`;
 
+/** Which stage the shell is showing. CC-1 (docs/COMMAND_CENTER_DESIGN_
+ *  2026-09-13.md §1): the Command hub's Dashboard is the Bridge — a second
+ *  stage kind whose window (BridgeWindow) fills the top of the column with
+ *  the Dashboard's cards docked beneath it as consoles. `map` is the 3D
+ *  stage; `panel` is every other tab (an overlay sheet on desktop). */
+export type StageKind = 'map' | 'bridge' | 'panel';
+
 export interface StageLayout {
+  /** The stage kind for this tab. */
+  kind: StageKind;
   /** Render MapCommandCenter at all (mounted ⇒ WebGL context preserved). */
   mapMounted: boolean;
   /** Map is mounted but not the active surface (covered by a panel overlay,
@@ -53,10 +62,18 @@ export interface StageLayout {
  *  result; `wideViewport` is the ≥768px one (phones are below it). */
 export function computeStageLayout(tab: GameTab, desktopStage: boolean, wideViewport = false): StageLayout {
   const onMap = tab === 'map';
-  if (onMap) return { mapMounted: true, mapCovered: false, overlayOpen: false, mapHidden: false };
-  if (desktopStage) return { mapMounted: true, mapCovered: true, overlayOpen: true, mapHidden: false };
-  if (wideViewport) return { mapMounted: true, mapCovered: true, overlayOpen: false, mapHidden: true };
-  return { mapMounted: false, mapCovered: false, overlayOpen: false, mapHidden: false };
+  if (onMap) return { kind: 'map', mapMounted: true, mapCovered: false, overlayOpen: false, mapHidden: false };
+  // The Bridge (dashboard tab) is a stage of its own, never an overlay over
+  // the dimmed map: the map stays mounted-but-hidden wherever it would have
+  // been mounted (WebGL context preserved, nothing drawn), the window takes
+  // the stage. Phones unmount the map exactly as for any other tab.
+  if (tab === 'dashboard') {
+    const keepMap = desktopStage || wideViewport;
+    return { kind: 'bridge', mapMounted: keepMap, mapCovered: keepMap, overlayOpen: false, mapHidden: keepMap };
+  }
+  if (desktopStage) return { kind: 'panel', mapMounted: true, mapCovered: true, overlayOpen: true, mapHidden: false };
+  if (wideViewport) return { kind: 'panel', mapMounted: true, mapCovered: true, overlayOpen: false, mapHidden: true };
+  return { kind: 'panel', mapMounted: false, mapCovered: false, overlayOpen: false, mapHidden: false };
 }
 
 /** Overlay dismissal: Escape (and only Escape) returns to the map tab.

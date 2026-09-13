@@ -1180,6 +1180,189 @@ export default function GameStyles() {
       }
 
       /* ═══════════════════════════════════════════════════════════════════
+         BRIDGE WINDOW (CC-1, docs/COMMAND_CENTER_DESIGN_2026-09-13.md;
+         components/game/BridgeWindow.tsx + BridgeStage.tsx)
+         The headquarters' view. --hq-h is the window height set by the
+         stage (desktop normal / bridge-mode tall / phone 96px banner);
+         --hq-nx/--hq-ny are the pointer/tilt offsets (-1..1) the window
+         writes; each layer shifts by its own --hq-p parallax factor times
+         --hq-shift (half the manifest overscan) so no edge is revealed.
+         Consoles dock over the bottom band (.hq-console-dock).
+         ═══════════════════════════════════════════════════════════════════ */
+      .hq-stage {
+        --hq-h: clamp(200px, 34vh, 420px);
+        position: relative;
+        flex: 0 0 auto;
+        height: var(--hq-h);
+        z-index: 0;
+      }
+      :root[data-bridge="on"] .hq-stage {
+        --hq-h: clamp(280px, 46vh, 560px);
+      }
+      @media (max-width: 767px) {
+        .hq-stage, :root[data-bridge="on"] .hq-stage {
+          --hq-h: 96px;
+        }
+      }
+      .hq-window {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background: #02040a;
+        --hq-nx: 0;
+        --hq-ny: 0;
+      }
+      .hq-window-plates {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+      .hq-plate {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+      }
+      .hq-plate-out {
+        animation: hq-variant-out 1.4s ease-in-out forwards;
+      }
+      .hq-window[data-reduced="true"] .hq-plate-out {
+        animation: none;
+        opacity: 0;
+      }
+      @keyframes hq-variant-out {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+      .hq-layer {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        user-select: none;
+        -webkit-user-drag: none;
+        transform: translate(
+          calc(var(--hq-nx) * var(--hq-p, 0) * var(--hq-shift, 1.5%) * -1),
+          calc(var(--hq-ny) * var(--hq-p, 0) * var(--hq-shift, 1.5%) * -0.6)
+        );
+        transition: transform 180ms ease-out;
+        will-change: transform;
+      }
+      .hq-actor {
+        position: absolute;
+        pointer-events: none;
+        transform: translate(
+          calc(var(--hq-nx) * var(--hq-p, 0) * var(--hq-shift, 1.5%) * -1),
+          calc(var(--hq-ny) * var(--hq-p, 0) * var(--hq-shift, 1.5%) * -0.6)
+        );
+        transition: transform 180ms ease-out;
+      }
+      .hq-actor > img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      /* padlights: blended in by the variant's own light level, flashed up
+         to full for a build completion. */
+      .hq-actor[data-motion="lights"] > img {
+        opacity: var(--hq-actor-base, 0);
+        transition: opacity 1.4s ease-in-out;
+      }
+      .hq-actor[data-motion="lights"][data-active="true"] > img {
+        animation: hq-lights-flash 6s ease-in-out forwards;
+      }
+      @keyframes hq-lights-flash {
+        0% { opacity: var(--hq-actor-base, 0); }
+        10% { opacity: 1; }
+        25% { opacity: 0.55; }
+        40% { opacity: 1; }
+        55% { opacity: 0.7; }
+        70% { opacity: 1; }
+        100% { opacity: var(--hq-actor-base, 0); }
+      }
+      /* plume: a launch — bloom up from the pad, drift, fade. */
+      .hq-actor[data-motion="plume"] > img {
+        opacity: 0;
+        transform-origin: 50% 100%;
+      }
+      .hq-actor[data-motion="plume"][data-active="true"] > img {
+        animation: hq-plume 6s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+      }
+      @keyframes hq-plume {
+        0% { opacity: 0; transform: scale(0.55, 0.4); }
+        12% { opacity: 1; transform: scale(1, 1); }
+        60% { opacity: 0.95; transform: scale(1.12, 1.25) translateY(-8%); }
+        100% { opacity: 0; transform: scale(1.3, 1.6) translateY(-30%); }
+      }
+      /* vehicle: at rest on the pad, lifts with the plume. */
+      .hq-actor[data-motion="lift"] > img {
+        opacity: 1;
+      }
+      .hq-actor[data-motion="lift"][data-active="true"] > img {
+        animation: hq-lift 6s cubic-bezier(0.55, 0, 0.8, 0.4) forwards;
+      }
+      @keyframes hq-lift {
+        0% { transform: translateY(0); opacity: 1; }
+        25% { transform: translateY(-6%); opacity: 1; }
+        70% { transform: translateY(-70%); opacity: 1; }
+        100% { transform: translateY(-220%); opacity: 0; }
+      }
+      /* weather and anything unknown: fade in while active. */
+      .hq-actor[data-motion="fade"] > img {
+        animation: hq-fade-in 1.6s ease-out forwards;
+      }
+      @keyframes hq-fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      /* Reduced motion: static plate. No parallax, no animations; the
+         variant-blended padlights and an active weather plate stay as
+         still images. */
+      .hq-window[data-reduced="true"] .hq-layer,
+      .hq-window[data-reduced="true"] .hq-actor {
+        transform: none;
+        transition: none;
+      }
+      .hq-window[data-reduced="true"] .hq-actor > img {
+        animation: none !important;
+        transition: none !important;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .hq-layer, .hq-actor { transition: none; }
+      }
+      /* Bottom band: darkens the manifest's consoleClearBottom so docked
+         consoles read cleanly; the sill strips stay visible above it. */
+      .hq-window-vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(to top, rgba(2, 4, 10, 0.92) 0%, rgba(2, 4, 10, 0.55) 10%, rgba(2, 4, 10, 0) 24%),
+          linear-gradient(to bottom, rgba(2, 4, 10, 0.35) 0%, rgba(2, 4, 10, 0) 18%);
+      }
+      /* HQ chip (top-left of the window, outside the aria-hidden plate). */
+      .hq-chip {
+        position: absolute;
+        top: 10px;
+        left: 12px;
+        z-index: 2;
+      }
+      @media (max-width: 767px) {
+        .hq-chip { top: 6px; left: 8px; }
+      }
+      /* Consoles dock over the window's bottom band. */
+      .hq-console-dock {
+        position: relative;
+        z-index: 1;
+        margin-top: calc(var(--hq-h, 240px) * -0.12);
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
          BRIDGE MODE (graphics review 2026-09-12 item 5, lib/game/bridge-mode.ts)
          The shell mirrors data-bridge="on" on to <html>; every site-chrome
          element the root layout mounts around the game (Navigation, launch

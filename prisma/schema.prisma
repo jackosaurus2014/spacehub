@@ -175,6 +175,11 @@ model GameProfile {
   serviceCount      Int   @default(0)
   locationsUnlocked Int   @default(0)
   gameYear          Int   @default(2025)
+  // CC-1 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md §4): the headquarters
+  // seat — a headquarters.ts stage's locationId, sanitized on sync. Public
+  // on the corp page and the leaderboard ("HQ: Earth Operations Center").
+  // CC-2's relocation route becomes the authoritative writer.
+  hqLocationId      String @default("earth_surface")
 
   resources       Json     @default("{}")
   achievements    String[] @default([])

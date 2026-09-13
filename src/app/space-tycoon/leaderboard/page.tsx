@@ -127,6 +127,8 @@ export default async function PublicLeaderboardPage() {
                     {entry.allianceTag && (
                       <span className="sm:hidden text-[10px] text-slate-500">[{entry.allianceTag}] {entry.allianceName}</span>
                     )}
+                    {/* CC-1: headquarters seat — public scouting intel. */}
+                    <span className="block text-[10px] text-slate-500 truncate">HQ: {entry.hqLabel}</span>
                   </div>
                   <div className="hidden sm:block w-28 text-xs text-slate-400 truncate" role="cell">
                     {entry.allianceTag ? `[${entry.allianceTag}]` : '—'}

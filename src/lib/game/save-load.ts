@@ -10,6 +10,7 @@ import type { LegacyState } from './legacy-system';
 import { checkCorporationTier } from './corporation-tiers';
 import { initializeFrontier } from './frontier';
 import { DEFAULT_DOCTRINE } from './corporate-doctrine';
+import { defaultHeadquarters, migrateHeadquarters } from './headquarters';
 import { DEFAULT_CORPORATE_ERAS } from './corporate-eras';
 import { DEFAULT_CONSUMPTION_STATE, applyGrandfatherGrace } from './consumption';
 import { getGlobalGameDate } from './server-time';
@@ -18,11 +19,12 @@ import { WORLD_EPOCH, ARCHIVED_SAVE_KEY } from './world-reset';
 
 /** Create a fresh new game state */
 export function getNewGameState(): GameState {
+  const foundedAt = Date.now();
   return {
     version: SAVE_VERSION,
     worldEpoch: WORLD_EPOCH,
-    createdAt: Date.now(),
-    lastTickAt: Date.now(),
+    createdAt: foundedAt,
+    lastTickAt: foundedAt,
     money: STARTING_MONEY,
     totalEarned: 0,
     totalSpent: 0,
@@ -87,6 +89,8 @@ export function getNewGameState(): GameState {
     tutorialDismissed: false,
     onboardingChainVersion: ONBOARDING_CHAIN_VERSION,
     hasTradedOnMarket: false,
+    // CC-1: every corporation is founded at the Earth Operations Center.
+    headquarters: defaultHeadquarters(foundedAt),
     // V10 fields — mining bonuses from survey probes
     miningBonuses: [],
     // V11 — Protected Frontier (new-player onramp shield)
@@ -879,6 +883,12 @@ export function migrateLoadedState(state: GameState): GameState | null {
         return valid ? s : { ...s, miningOrder: undefined, status: s.status === 'building' ? s.status : 'idle' as const, route: undefined };
       });
     }
+
+    // CC-1 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md §4 "State"): every
+    // save has a headquarters. Additive, no version bump — a pre-CC-1 save
+    // (or a malformed block) reads as the Earth Operations Center, moved in
+    // on the corporation's founding day.
+    migrateHeadquarters(state);
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

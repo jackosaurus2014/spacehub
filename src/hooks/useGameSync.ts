@@ -4,6 +4,7 @@ import { registerSyncNow, type SyncOutcome } from '@/lib/game/sync-bridge';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { TYCOON_EVENTS, trackTycoon, fireOnce } from '@/lib/game/funnel-events';
 import type { GameState } from '@/lib/game/types';
+import { getHeadquarters } from '@/lib/game/headquarters';
 import {
   queueServerReconciliation,
   queueMoneyCorrection,
@@ -250,6 +251,11 @@ export function useGameSync(
         // trade route can apply the Syndicate Gray-Market broker discount.
         // Same stash/trust level as factionReputation above.
         factionLicenses: state.factionLicenses || [],
+        // CC-1 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md §4): the
+        // headquarters seat, mirrored to GameProfile.hqLocationId for the
+        // public corp page / leaderboard. Sanitized server-side to a
+        // registered headquarters.ts stage.
+        hqLocationId: getHeadquarters(state).locationId,
         // One Wallet (audit A1): ack cursor — highest server ledger seq this
         // state has already applied. The server only reconciles/returns
         // entries beyond it (idempotent under retries).

@@ -547,6 +547,20 @@ export interface GameStats {
   missionsToOuterPlanets: number;
 }
 
+// ─── Headquarters (CC-1) ────────────────────────────────────────────────────
+
+export interface HeadquartersState {
+  /** headquarters.ts HqStageId (kept as string here so types.ts does not
+   *  import the registry; headquarters.ts narrows and validates). */
+  stage: string;
+  /** solar-system.ts location id of the seat — always the stage's own seat. */
+  locationId: string;
+  /** Real-clock ms the corporation moved in (founding for the Earth default). */
+  movedAtMs: number;
+  /** CC-2: relocation project in flight (hidden from rivals until complete). */
+  project?: { targetStage: string; startedAtMs: number; completesAtMs: number };
+}
+
 // ─── Game State ─────────────────────────────────────────────────────────────
 
 export interface GameState {
@@ -665,6 +679,13 @@ export interface GameState {
    *  world restarts fresh, WORLD_EPOCH is bumped and older-epoch saves are
    *  archived on load — the player starts the new era from scratch. */
   worldEpoch?: number;
+
+  /** CC-1 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md §4 "State"): where the
+   *  corporation's headquarters sits — the Bridge draws this stage's window.
+   *  Additive with a save-migration default (headquarters.ts
+   *  defaultHeadquarters: Earth Operations Center, moved in at founding).
+   *  `project` is reserved for CC-2's relocation project. */
+  headquarters?: HeadquartersState;
 
   // Competitive milestones
   claimedMilestones?: Record<string, string>;
