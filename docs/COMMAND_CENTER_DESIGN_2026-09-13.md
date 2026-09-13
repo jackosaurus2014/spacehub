@@ -82,10 +82,11 @@ is allowed (at cost), which matters for players who over-extend.
 
 ## 4. How it is built (fits the current stack)
 
-- **2.5D layered scene, not a second 3D canvas.** Each HQ stage is a set of
-  Gemini backplates (21:9, no text) generated with `scripts/generate-art.ts`:
-  far layer (sky/space), mid layer (horizon, station structure), near layer
-  (console bezel). CSS parallax on pointer/tilt, a day/night colour grade
+- **2.5D layered scene, not a second 3D canvas.** Each HQ stage is rendered
+  headlessly in Blender (procedural bpy scenes under `art/blender/`, RTX 4090,
+  21:9, no text) and split by its Z-depth pass into far (sky/space), mid
+  (horizon, station structure) and near (window frame/bezel) layers, with
+  actors rendered as separate alpha layers from the same camera. CSS parallax on pointer/tilt, a day/night colour grade
   driven by the world clock, and a small pool of SVG/CSS "actors" (a rocket
   plume, a glint, an aurora band) triggered by game events. This keeps the
   Bridge at parity on phones and inside the existing bundle budget (the page
@@ -107,9 +108,9 @@ is allowed (at cost), which matters for players who over-extend.
   `GameProfile.hqLocationId` set by the relocation route (server-authoritative
   like assets), read by the public corp page and the leaderboard ("HQ: Lunar
   Gateway") so scouting shows where rivals sit.
-- **Art pipeline.** Seven HQ stages × three layers × day/night ≈ 42 plates,
-  generated in one batch, resized by `scripts/resize-art.ts` to 2560/1280/640
-  widths; plus a 21:9 launch-pad plate per starting archetype (Cape coastal,
+- **Art pipeline.** Seven HQ stages × three layers × day/dusk/night ≈ 63
+  plates plus actor layers, rendered by `blender -b --python art/blender/<stage>.py`
+  and encoded with sharp to 2560/1280/640 widths (manifest.json per stage); plus a 21:9 launch-pad plate per starting archetype (Cape coastal,
   Meridian's antenna field, Tracking Consortium's desert array).
 
 ## 5. Lore hooks
