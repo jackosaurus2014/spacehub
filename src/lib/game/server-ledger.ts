@@ -132,6 +132,11 @@ export type LedgerReason =
   | 'mining_order_ore'
   | 'mining_order_sale'
   | 'survey_probe_purchase'
+  // Mining Phase B (2026-09-13, asteroid-claims.ts / server-mining.ts): the
+  // claim stake fee and the monthly claim upkeep are BURNED sinks (no
+  // matching credit; releasing a claim refunds nothing).
+  | 'claim_stake_fee'
+  | 'claim_upkeep'
   // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md): the Accord
   // Stabilization Assessment. BURNED — the pool is a sink, not an escrow, so
   // there is nothing to refund and nothing to exploit by pledging and

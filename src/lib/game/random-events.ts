@@ -2,6 +2,10 @@
 // Events fire randomly each game-month to create drama and player engagement.
 
 import type { GameState, GameDate } from './types';
+// Mining Phase B (2026-09-13): rock event cards read the surveyed rocks'
+// live event state (asteroids.ts rockEventMults) and the fleet's orders.
+import { getAsteroid, rockEventMults, RUBBLE_YIELD_MULT, RUBBLE_HULL_WEAR, SPIN_UP_RATE_MULT } from './asteroids';
+import { miningOrderPhase } from './mining-orders';
 
 export interface RandomEventEffect {
   moneyDelta?: number;
@@ -18,6 +22,11 @@ export interface RandomEventEffect {
   costMultiplier?: number;
   resourceGrant?: Record<string, number>;
   durationMonths?: number;
+  /** Mining Phase B: the choice stands the corporation off the card's rock
+   *  (state.pendingChoice.asteroidId) until the rock event ends — new mining
+   *  orders on it are refused locally (mining-orders.ts standing_off). A
+   *  self-restriction: no cash, no yield, nothing the server must verify. */
+  standOffRock?: boolean;
 }
 
 export interface RandomEventChoice {
@@ -36,6 +45,11 @@ export interface RandomEventDefinition {
   minTier: number;
   choices?: RandomEventChoice[];
   effect?: RandomEventEffect; // For non-choice events
+  /** Mining Phase B: 'rock_event' cards are raised by rollMiningEventCards
+   *  from a rock's live state (server-rolled, shared by everyone working the
+   *  rock — hazards.ts's "same weather for every player" precedent), never
+   *  by the monthly dice. rollRandomEvent skips them. */
+  trigger?: 'monthly' | 'rock_event';
 }
 
 export interface ActiveEffect {
@@ -154,6 +168,31 @@ export const RANDOM_EVENTS: RandomEventDefinition[] = [
       { label: 'Log and ignore', description: 'Probably natural. Save the money.', effect: {} },
     ],
   },
+
+  // ─── MINING PHASE B — rock event cards (docs/SPACE_MINING_DESIGN §4) ───
+  // Both carry NO cash and NO grant: the rock's state (yield x1.25 with
+  // hull wear; rate x0.6) lives on the Asteroid row and the planner reads
+  // it on both sides. The card's decision is whether to keep working the
+  // rock or stand off it while the event runs. probability 0 + trigger
+  // 'rock_event': never rolled by the monthly dice.
+  {
+    id: 'rubble_field', name: 'Rubble Field', icon: '🪨', category: 'choice',
+    description: `A rock your crews are working has fractured into a rubble field. Loose material is easy to grab — yield x${RUBBLE_YIELD_MULT} while it lasts — but every order completed on it costs hull (${Math.round(RUBBLE_HULL_WEAR * 100)}% x (1 + risk)).`,
+    probability: 0, minTier: 1, trigger: 'rock_event',
+    choices: [
+      { label: 'Work the rubble', description: 'Keep mining it hot: the bonus and the hull wear both apply.', effect: {} },
+      { label: 'Stand off', description: 'No new orders on this rock until it settles. Orders already under way finish as planned.', effect: { standOffRock: true } },
+    ],
+  },
+  {
+    id: 'spin_up', name: 'Spin-Up', icon: '🌀', category: 'choice',
+    description: `A rock your crews are working has spun up — anchoring and cutting are slower (rate x${SPIN_UP_RATE_MULT}) for the duration. Fuel per trip is unchanged; time on station is not.`,
+    probability: 0, minTier: 1, trigger: 'rock_event',
+    choices: [
+      { label: 'Ride it out', description: 'Keep working it at the slower rate.', effect: {} },
+      { label: 'Re-route crews', description: 'Stand off this rock until it settles; send hulls elsewhere.', effect: { standOffRock: true } },
+    ],
+  },
 ];
 
 /** Roll for a random event this tick. Returns null if no event triggers. */
@@ -161,7 +200,7 @@ export function rollRandomEvent(state: GameState): RandomEventDefinition | null 
   // Calculate player tier from unlocked locations count
   const locCount = state.unlockedLocations.length;
   const currentTier = locCount >= 8 ? 4 : locCount >= 5 ? 3 : locCount >= 3 ? 2 : 1;
-  const eligible = RANDOM_EVENTS.filter(e => e.minTier <= currentTier);
+  const eligible = RANDOM_EVENTS.filter(e => e.minTier <= currentTier && e.trigger !== 'rock_event');
 
   for (const event of eligible) {
     if (Math.random() < event.probability) {
@@ -202,6 +241,15 @@ export function applyEventEffect(state: GameState, effect: RandomEventEffect, ev
     newState.resources = resources;
   }
 
+  // Mining Phase B: stand off the card's rock until its event ends.
+  if (effect.standOffRock && state.pendingChoice?.asteroidId) {
+    const rockId = state.pendingChoice.asteroidId;
+    const rec = state.asteroidIntel?.[rockId];
+    const ev = rockEventMults(rec, Date.now());
+    const until = Math.max(ev.rubble ? (rec?.rubbleUntilMs ?? 0) : 0, ev.spinUp ? (rec?.spinUpUntilMs ?? 0) : 0);
+    if (until > Date.now()) newState.miningStandOff = { ...(newState.miningStandOff || {}), [rockId]: until };
+  }
+
   // Temporary modifiers
   if (effect.durationMonths && (effect.revenueMultiplier || effect.costMultiplier)) {
     const totalMonths = (newState.gameDate.year * 12 + newState.gameDate.month);
@@ -217,6 +265,55 @@ export function applyEventEffect(state: GameState, effect: RandomEventEffect, ev
   }
 
   return newState;
+}
+
+// ─── Mining Phase B: rock event cards ────────────────────────────────────────
+
+/** Key for "this card was raised for this rock and this event window". */
+export function rockEventCardKey(kind: 'rubble_field' | 'spin_up', asteroidId: string, untilMs: number): string {
+  return `${kind}:${asteroidId}:${Math.round(untilMs)}`;
+}
+
+/**
+ * Raise ONE rock event card when a rock the corporation is working (a ship
+ * on a 'mine' order there, or one of its claims) has a live rubble field or
+ * spin-up the player has not been shown yet. The pendingChoice slot is the
+ * single card slot the game already has; a busy slot waits. Pure; returns
+ * the same state when nothing is due.
+ */
+export function rollMiningEventCards(state: GameState, nowMs: number = Date.now()): GameState {
+  if (state.pendingChoice) return state;
+  const intel = state.asteroidIntel || {};
+  const seen = new Set(state.miningNoticesSeen || []);
+  const working = new Set<string>();
+  for (const s of state.ships || []) {
+    const o = s.miningOrder;
+    if (o?.mode === 'mine' && o.asteroidId && miningOrderPhase(o, nowMs) !== 'complete') working.add(o.asteroidId);
+  }
+  for (const id of Object.keys(state.asteroidClaims || {})) working.add(id);
+  for (const rockId of working) {
+    const rec = intel[rockId];
+    if (!rec) continue;
+    const ev = rockEventMults(rec, nowMs);
+    const kind: 'rubble_field' | 'spin_up' | null = ev.rubble ? 'rubble_field' : ev.spinUp ? 'spin_up' : null;
+    if (!kind) continue;
+    const until = kind === 'rubble_field' ? rec.rubbleUntilMs! : rec.spinUpUntilMs!;
+    const key = rockEventCardKey(kind, rockId, until);
+    if (seen.has(key)) continue;
+    const def = RANDOM_EVENTS.find(e => e.id === kind);
+    if (!def?.choices) continue;
+    const rock = getAsteroid(rockId);
+    return {
+      ...state,
+      pendingChoice: {
+        eventId: def.id, eventName: `${def.name} — ${rock?.name || rockId}`, eventIcon: def.icon, eventDescription: def.description,
+        choices: def.choices.map(c => ({ label: c.label, description: c.description })),
+        asteroidId: rockId,
+      },
+      miningNoticesSeen: [...Array.from(seen), key].slice(-300),
+    };
+  }
+  return state;
 }
 
 /** Get combined multipliers from all active effects */

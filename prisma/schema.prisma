@@ -206,6 +206,7 @@ model GameProfile {
   serverAssets       ServerAsset[]
   asteroidSurveys    AsteroidSurvey[]
   miningOrders       MiningOrder[]
+  asteroidClaims     AsteroidClaim[]
   economicSnapshots  EconomicSnapshot[]
 
   // Cloud save (2026-09-09): the player's full client GameState, pushed with
@@ -511,14 +512,58 @@ model Asteroid {
   initialReserve Float
   risk           Float
   exhaustedAt    DateTime?
+  /// Mining Phase B (2026-09-13): rock-level event state, shared by every
+  /// corporation working the rock (hazards.ts precedent: occurrence rolls are
+  /// identical for everyone). Rolled by the completion pass from `risk`.
+  rubbleUntil    DateTime?
+  spinUpUntil    DateTime?
+  /// Phase B field ageing: how many times this catalogue slot has been
+  /// re-charted after exhaustion (server-mining.ts respawnExhaustedRocks).
+  generation     Int       @default(0)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
   surveys AsteroidSurvey[]
   orders  MiningOrder[]
+  claims  AsteroidClaim[]
 
   @@index([fieldId])
   @@index([epoch, fieldId])
+}
+
+/// Mining Phase B (docs/SPACE_MINING_DESIGN_2026-09-12.md §3 "Claims", founder
+/// ruling 3): exclusive extraction rights on one rock. `activeKey` is the
+/// asteroidId while the claim is active and NULL once released, so the
+/// unique index is the one-active-claim-per-rock guarantee under a race.
+/// Lapses when unworked for CLAIM_EXPIRY_GAME_MONTHS (expiresAt =
+/// lastWorkedAt + 3 game-months, advanced by every completed mining order of
+/// the holder), when the monthly upkeep cannot be paid, when the rock is
+/// exhausted, or when the holder releases it. The stake fee and the upkeep
+/// are BURNED through the ledger (claim_stake_fee / claim_upkeep).
+model AsteroidClaim {
+  id                String      @id @default(cuid())
+  profileId         String
+  profile           GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  asteroidId        String
+  asteroid          Asteroid    @relation(fields: [asteroidId], references: [id], onDelete: Cascade)
+  fieldId           String
+  activeKey         String?     @unique
+  stakedAt          DateTime
+  lastWorkedAt      DateTime
+  expiresAt         DateTime
+  upkeepPaidThrough DateTime
+  fee               Float       @default(0)
+  upkeepPerMonth    Float       @default(0)
+  status            String      @default("active")
+  releasedAt        DateTime?
+  releaseReason     String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@index([profileId, status])
+  @@index([status, expiresAt])
+  @@index([status, upkeepPaidThrough])
+  @@index([fieldId, status])
 }
 
 /// One corporation's survey of one rock. `surveyedAt` is when the reveal
@@ -532,6 +577,10 @@ model AsteroidSurvey {
   asteroid   Asteroid    @relation(fields: [asteroidId], references: [id], onDelete: Cascade)
   surveyedAt DateTime
   via        String      @default("probe")
+  /// Phase B: the rock generation this survey saw. A survey of an older
+  /// generation than the Asteroid row's is stale (the slot was re-charted
+  /// after exhaustion) and the rock reads as unsurveyed again.
+  generation Int         @default(0)
   createdAt  DateTime    @default(now())
 
   @@unique([profileId, asteroidId])
@@ -573,6 +622,15 @@ model MiningOrder {
   unitsCredited  Int         @default(0)
   saleProceeds   Float       @default(0)
   ledgerSeq      Int?
+  /// Phase B: the Escort Cutter assigned to the order (a security hull in
+  /// the registry, one order at a time); shakedown outcome settled at
+  /// completion (npc-shakedown.ts); extraction-pressure share applied to the
+  /// hold (rock-pressure.ts); the holder's claim the order worked, if any.
+  escortInstanceId  String?
+  shakedownUnits    Int         @default(0)
+  shakedownRepelled Boolean     @default(false)
+  pressureShare     Float       @default(1)
+  claimId           String?
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
@@ -580,6 +638,7 @@ model MiningOrder {
   @@index([profileId, status])
   @@index([status, completesAt])
   @@index([shipInstanceId])
+  @@index([asteroidId, status])
 }
 
 model MarketResource {

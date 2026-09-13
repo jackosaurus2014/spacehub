@@ -2429,6 +2429,12 @@ export async function POST(request: Request) {
     } catch (hqError) {
       logger.warn('Headquarters block unavailable this sync', { error: String(hqError) });
     }
+    let miningBlock = null;
+    try {
+      miningBlock = await loadMiningBlock(profile.id, prisma, new Date());
+    } catch (miningError) {
+      logger.warn('Mining block unavailable this sync', { error: String(miningError) });
+    }
 
     return NextResponse.json({
       success: true,
@@ -2436,6 +2442,8 @@ export async function POST(request: Request) {
       // CC-2: server-authoritative headquarters (adopted by useGameSync →
       // hq-relocation.ts adoptServerHeadquarters).
       headquarters: headquartersBlock,
+      // Mining Phase B: claims, live intel, notices (adoptServerMining).
+      mining: miningBlock,
       // C-1: the first sync of a profile persists the server kit, not the
       // body — the client is told so it can reconcile against the server
       // figures if it wants to.

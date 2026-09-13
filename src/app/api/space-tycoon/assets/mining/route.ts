@@ -14,6 +14,11 @@ import { planMiningOrder, MINING_PLAN_ERROR_TEXT } from '@/lib/game/mining-order
 import { hqMiningLogisticsForLocationId } from '@/lib/game/headquarters';
 import { getResearchBonuses } from '@/lib/game/research-tree';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
+// Mining Phase B (2026-09-13): claims, shared-rock pressure, escorts.
+import { STAKE_CLAIM_ERROR_TEXT, checkStakeClaim, claimStakeFee } from '@/lib/game/asteroid-claims';
+import { tierFromProfileScalars } from '@/lib/game/corporation-tiers';
+import { FRONTIER_DURATION_MS } from '@/lib/game/frontier';
+import type { EscortCover } from '@/lib/game/npc-shakedown';
 import {
   ASSET_KIND_SHIP,
   ensureAssetAdoption,
@@ -36,6 +41,19 @@ import {
   loadLiveOrders,
   loadSurveyedIntel,
   resolveShipLocation,
+  surveyIsEffective,
+  CLAIM_RELEASED,
+  CLAIM_RELEASED_ACTIVITY,
+  CLAIM_STAKED_ACTIVITY,
+  claimRecordFromRow,
+  createClaimRow,
+  hasStationedEscortAt,
+  loadActiveClaim,
+  loadMiningBlock,
+  loadMyClaims,
+  postClaimActivity,
+  releaseClaimRow,
+  resetClaimFeedCache,
 } from '@/lib/game/server-mining';
 import {
   InsufficientFundsError,
@@ -86,7 +104,7 @@ export async function POST(request: NextRequest) {
     const op = typeof body.op === 'string' ? body.op : '';
 
     // Registry availability + one-time adoption of a pre-registry save.
-    let registry;
+    let registry: Awaited<ReturnType<typeof loadServerRegistry>>;
     try {
       await ensureAssetAdoption(profile, prisma);
       await ensureAssetAdoption2(profile, prisma);
@@ -145,7 +163,7 @@ export async function POST(request: NextRequest) {
       const row = await loadAsteroidRow(rock.id);
       if (!row) return NextResponse.json({ error: 'The asteroid catalogue has not been seeded on this world yet.', code: 'catalogue_not_seeded' }, { status: 503 });
       const existing = await findSurvey(profile.id, rock.id);
-      if (existing && existing.surveyedAt.getTime() <= now.getTime()) {
+      if (existing && surveyIsEffective(existing, row.generation, now)) {
         return NextResponse.json({ success: true, idempotent: true, asteroidId: rock.id, intel: intelFromRow(row), surveyedAtMs: existing.surveyedAt.getTime(), via: existing.via, probes: await countProbes(profile.id) });
       }
       let consumed = false;
@@ -154,14 +172,66 @@ export async function POST(request: NextRequest) {
         if (!consumed) return;
         await tx.asteroidSurvey.upsert({
           where: { profileId_asteroidId: { profileId: profile.id, asteroidId: rock.id } },
-          create: { profileId: profile.id, asteroidId: rock.id, surveyedAt: now, via: 'probe' },
-          update: { surveyedAt: now, via: 'probe' },
+          create: { profileId: profile.id, asteroidId: rock.id, surveyedAt: now, via: 'probe', generation: row.generation },
+          update: { surveyedAt: now, via: 'probe', generation: row.generation },
         });
       });
       if (!consumed) return badRequest('No survey probes in stock — buy probes first, or send a survey-capable ship.', 'no_probes');
       const probes = await countProbes(profile.id);
       logger.info('Rock surveyed by probe', { profileId: profile.id, asteroidId: rock.id });
       return NextResponse.json({ success: true, asteroidId: rock.id, intel: intelFromRow(row), surveyedAtMs: now.getTime(), via: 'probe', probes });
+    }
+
+    // ── stake_claim / release_claim (Phase B) ──────────────────────────────
+    if (op === 'stake_claim' || op === 'release_claim') {
+      const asteroidId = typeof body.asteroidId === 'string' ? body.asteroidId : '';
+      const rock = getAsteroid(asteroidId);
+      if (!rock) return badRequest(STAKE_CLAIM_ERROR_TEXT.unknown_rock, 'unknown_rock');
+      const existing = await loadActiveClaim(rock.id);
+      if (op === 'release_claim') {
+        if (!existing || existing.profileId !== profile.id) return badRequest('You hold no claim on that rock.', 'no_claim');
+        const ok = await releaseClaimRow(prisma, existing.id, CLAIM_RELEASED, 'released', now);
+        if (ok) {
+          resetClaimFeedCache();
+          void postClaimActivity(prisma, profile.id, CLAIM_RELEASED_ACTIVITY, rock.id, 'was released');
+          logger.info('Asteroid claim released', { profileId: profile.id, asteroidId: rock.id });
+        }
+        return NextResponse.json({ success: true, released: ok, asteroidId: rock.id, claims: (await loadMyClaims(profile.id)).map(claimRecordFromRow) });
+      }
+      const row = await loadAsteroidRow(rock.id);
+      if (!row) return NextResponse.json({ error: 'The asteroid catalogue has not been seeded on this world yet.', code: 'catalogue_not_seeded' }, { status: 503 });
+      const survey = await findSurvey(profile.id, rock.id);
+      const surveyed = !!survey && surveyIsEffective(survey, row.generation, now);
+      const myClaims = await loadMyClaims(profile.id);
+      if (existing && existing.profileId === profile.id) {
+        return NextResponse.json({ success: true, idempotent: true, claim: claimRecordFromRow(existing), claims: myClaims.map(claimRecordFromRow) });
+      }
+      const tier = tierFromProfileScalars({ totalEarned: profile.totalEarned, buildingCount: profile.buildingCount, researchCount: profile.researchCount, locationsUnlocked: profile.locationsUnlocked, serviceCount: profile.serviceCount });
+      const check = checkStakeClaim({
+        rock, intel: surveyed ? intelFromRow(row) : null, claimedByOther: !!existing, mine: false,
+        tier, myClaimCount: myClaims.length, money: profile.money,
+      });
+      if (!check.ok) {
+        if (check.error === 'insufficient_funds') return fundsError(claimStakeFee(rock, intelFromRow(row)), profile.money, `the claim on ${rock.name}`);
+        return badRequest(STAKE_CLAIM_ERROR_TEXT[check.error], check.error, { cap: check.error === 'claim_cap' ? tier : undefined });
+      }
+      let created;
+      try {
+        created = await prisma.$transaction(async (tx) => {
+          const c = await createClaimRow(tx, profile.id, rock.id, rock.fieldId, rock.class, intelFromRow(row), now);
+          await debitMoney(tx, profile.id, c.fee, 'claim_stake_fee', c.id, ledgerOn);
+          return c;
+        });
+      } catch (err) {
+        if (err instanceof InsufficientFundsError) return fundsError(check.fee, profile.money, `the claim on ${rock.name}`);
+        const code = (err as { code?: string })?.code;
+        if (code === 'P2002') return badRequest(STAKE_CLAIM_ERROR_TEXT.claimed_by_other, 'claimed_by_other');
+        throw err;
+      }
+      resetClaimFeedCache();
+      void postClaimActivity(prisma, profile.id, CLAIM_STAKED_ACTIVITY, rock.id, 'staked');
+      logger.info('Asteroid claim staked', { profileId: profile.id, asteroidId: rock.id, fee: created.fee, claimId: created.id });
+      return NextResponse.json({ success: true, claim: claimRecordFromRow(created), fee: created.fee, upkeepPerMonth: created.upkeepPerMonth, cap: check.cap, claims: [...myClaims, created].map(claimRecordFromRow) });
     }
 
     // ── order ──────────────────────────────────────────────────────────────
@@ -177,6 +247,7 @@ export async function POST(request: NextRequest) {
     const originId = typeof body.originId === 'string' ? body.originId : '';
     const destinationRaw = typeof body.destinationId === 'string' ? body.destinationId : undefined;
     if (destinationRaw !== undefined && !LOCATION_MAP.has(destinationRaw)) return badRequest('Unknown destination', 'unknown_location');
+    const escortRaw = typeof body.escortInstanceId === 'string' && body.escortInstanceId ? parseInstanceId(body.escortInstanceId) : null;
 
     // Retry-safe: the same order id already exists → return it, no charge.
     const orders = await loadLiveOrders(profile.id);
@@ -224,18 +295,48 @@ export async function POST(request: NextRequest) {
     // (never the client's claim) — the same pure planner the preview ran.
     const hqLogistics = hqMiningLogisticsForLocationId(profile.hqLocationId);
 
+    // Phase B: escort cover. An ASSIGNED escort must be a built security
+    // hull in the registry, not on an order or escorting one, persisted at
+    // the departure point or the field's parent. Otherwise STATIONED cover
+    // from an idle unassigned cutter at the field's parent (checked again at
+    // completion), or the Frontier shield.
+    const frontier = now.getTime() - profile.createdAt.getTime() < FRONTIER_DURATION_MS;
+    const resolveCover = async (parentLocationId: string): Promise<{ cover: EscortCover; escortInstanceId?: string } | NextResponse> => {
+      if (escortRaw) {
+        const esc = registry.ships.ships.find(s => s.instanceId === escortRaw);
+        const escDef = esc ? SHIP_MAP.get(esc.definitionId) : undefined;
+        const escPersisted = Array.isArray(profile.shipsData)
+          ? (profile.shipsData as Array<{ instanceId?: string; currentLocation?: string; status?: string; escortingOrderId?: string }>).find(s => s?.instanceId === escortRaw)
+          : undefined;
+        const busy = orders.some(o => o.status === MINING_ORDER_PENDING && (o.escortInstanceId === escortRaw || o.shipInstanceId === escortRaw));
+        const at = escPersisted?.currentLocation ?? null;
+        if (!esc || !esc.isBuilt || !escDef?.security || busy || escPersisted?.escortingOrderId || (at !== originId && at !== parentLocationId)) {
+          return badRequest(MINING_PLAN_ERROR_TEXT.escort_invalid, 'escort_invalid');
+        }
+        return { cover: 'assigned', escortInstanceId: escortRaw };
+      }
+      if (!frontier && await hasStationedEscortAt(prisma, profile.id, parentLocationId, orders)) return { cover: 'stationed' };
+      return { cover: 'none' };
+    };
+
     let plan;
     let rockRow: Awaited<ReturnType<typeof loadAsteroidRow>> = null;
     let heldOrderId: string | null = null;
+    let escortInstanceId: string | undefined;
     if (mode === 'return') {
       const held = orders.find(o => o.shipInstanceId === shipInstanceId && o.status === MINING_ORDER_HELD);
       if (!held) return badRequest(MINING_PLAN_ERROR_TEXT.nothing_held, 'nothing_held');
       heldOrderId = held.id;
+      const parentId = ASTEROID_FIELD_MAP.get(held.fieldId)?.parentLocationId || originId;
+      const cover = await resolveCover(parentId);
+      if (cover instanceof NextResponse) return cover;
+      escortInstanceId = cover.escortInstanceId;
       plan = planMiningOrder({
         def, cargoCapacity, mode: 'return', originId,
         destinationId: destinationRaw || 'earth_surface', thenAction,
         heldOre: { oreId: held.oreId, units: held.fillUnits, asteroidId: held.asteroidId, fieldId: held.fieldId },
         hullDamagePct, fuelEfficiencyMult, hqLogistics, nowMs: now.getTime(),
+        escortCover: cover.cover, escortInstanceId: cover.escortInstanceId, frontier,
       });
     } else {
       const asteroidId = typeof body.asteroidId === 'string' ? body.asteroidId : '';
@@ -251,11 +352,31 @@ export async function POST(request: NextRequest) {
       }
       rockRow = await loadAsteroidRow(rock.id);
       if (!rockRow) return NextResponse.json({ error: 'The asteroid catalogue has not been seeded on this world yet.', code: 'catalogue_not_seeded' }, { status: 503 });
-      if (rockRow.exhaustedAt || rockRow.reserve <= 0) return badRequest(MINING_PLAN_ERROR_TEXT.rock_exhausted, 'rock_exhausted');
+      if (mode === 'mine' && (rockRow.exhaustedAt || rockRow.reserve <= 0)) return badRequest(MINING_PLAN_ERROR_TEXT.rock_exhausted, 'rock_exhausted');
       const survey = await findSurvey(profile.id, rock.id);
-      const surveyed = !!survey && survey.surveyedAt.getTime() <= now.getTime();
+      const surveyed = !!survey && surveyIsEffective(survey, rockRow.generation, now);
       const intel = surveyed ? intelFromRow(rockRow) : null;
       const fillUnits = Number.isFinite(Number(body.fillUnits)) ? Math.floor(Number(body.fillUnits)) : cargoCapacity;
+      // Phase B: exclusivity (the holder mines it alone; anyone else is
+      // refused) and the public activity count for the pressure quote.
+      const claim = mode === 'mine' ? await loadActiveClaim(rock.id) : null;
+      const claimedByOther = !!claim && claim.profileId !== profile.id;
+      const claimed = !!claim && claim.profileId === profile.id;
+      if (mode === 'mine' && claimedByOther) return badRequest(MINING_PLAN_ERROR_TEXT.rock_claimed, 'rock_claimed');
+      let sharedMiners = 1;
+      if (mode === 'mine' && !claimed) {
+        try {
+          const others = await prisma.miningOrder.findMany({ where: { asteroidId: rock.id, mode: 'mine', status: MINING_ORDER_PENDING, profileId: { not: profile.id } }, select: { profileId: true }, distinct: ['profileId'], take: 200 });
+          sharedMiners = 1 + others.length;
+        } catch { sharedMiners = 1; }
+      }
+      let cover: { cover: EscortCover; escortInstanceId?: string } = { cover: 'none' };
+      if (mode === 'mine' && thenAction !== 'hold') {
+        const resolved = await resolveCover(field.parentLocationId);
+        if (resolved instanceof NextResponse) return resolved;
+        cover = resolved;
+        escortInstanceId = resolved.escortInstanceId;
+      }
       plan = planMiningOrder({
         def, cargoCapacity, mode, rock, intel,
         // An unsurveyed rock is still bounded by its true reserve — clamp
@@ -263,6 +384,7 @@ export async function POST(request: NextRequest) {
         fillUnits: mode === 'mine' ? Math.min(fillUnits, Math.max(1, Math.floor(rockRow.reserve))) : 0,
         thenAction, originId, destinationId: destinationRaw,
         hullDamagePct, fuelEfficiencyMult, hqLogistics, nowMs: now.getTime(),
+        claimed, claimedByOther, sharedMiners, escortCover: cover.cover, escortInstanceId: cover.escortInstanceId, frontier,
       });
       if (mode === 'survey' && surveyed) return badRequest('That rock is already surveyed.', 'already_surveyed');
     }
@@ -294,15 +416,18 @@ export async function POST(request: NextRequest) {
             ratePerHour: order.ratePerHour,
             surveyed: order.surveyed,
             status: MINING_ORDER_PENDING,
+            escortInstanceId: escortInstanceId ?? null,
+            pressureShare: order.pressureShare ?? 1,
           },
           select: { id: true },
         });
         await debitMoney(tx, profile.id, order.fuelCost, 'mining_order_fuel', row.id, ledgerOn);
         if (order.mode === 'survey' && order.asteroidId) {
+          const gen = rockRow?.generation ?? 0;
           await tx.asteroidSurvey.upsert({
             where: { profileId_asteroidId: { profileId: profile.id, asteroidId: order.asteroidId } },
-            create: { profileId: profile.id, asteroidId: order.asteroidId, surveyedAt: new Date(order.arrivesAtMs), via: 'ship' },
-            update: { surveyedAt: new Date(order.arrivesAtMs), via: 'ship' },
+            create: { profileId: profile.id, asteroidId: order.asteroidId, surveyedAt: new Date(order.arrivesAtMs), via: 'ship', generation: gen },
+            update: { surveyedAt: new Date(order.arrivesAtMs), via: 'ship', generation: gen },
           });
         }
         if (heldOrderId) {
@@ -345,21 +470,26 @@ export async function GET() {
     const profile = loaded.profile;
     let settled = 0;
     try { settled = await completeDueMiningOrders(prisma, profile.id); } catch { /* best-effort */ }
-    const [orders, intel, probes] = await Promise.all([
+    const [orders, intel, probes, block] = await Promise.all([
       loadLiveOrders(profile.id).catch(() => []),
       loadSurveyedIntel(profile.id).catch(() => ({})),
       countProbes(profile.id).catch(() => 0),
+      loadMiningBlock(profile.id).catch(() => null),
     ]);
     return NextResponse.json({
       settled,
       probes,
       intel,
+      // Phase B: claims + notices (the same block the sync delivers).
+      claims: block?.claims ?? [],
+      notices: block?.notices ?? [],
       orders: orders.map(o => ({
         instanceId: o.instanceId, shipInstanceId: o.shipInstanceId, mode: o.mode, status: o.status,
         asteroidId: o.asteroidId, fieldId: o.fieldId, oreId: o.oreId, fillUnits: o.fillUnits, thenAction: o.thenAction,
         originId: o.originId, destinationId: o.destinationId,
         startedAtMs: o.startedAt.getTime(), arrivesAtMs: o.arrivesAt.getTime(), miningEndsAtMs: o.miningEndsAt.getTime(), completesAtMs: o.completesAt.getTime(),
         fuelCost: o.fuelPaid, ratePerHour: o.ratePerHour, surveyed: o.surveyed,
+        escortInstanceId: o.escortInstanceId, pressureShare: o.pressureShare,
       })),
     }, { headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {

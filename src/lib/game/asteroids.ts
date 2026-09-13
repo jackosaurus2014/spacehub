@@ -64,10 +64,86 @@ export const ROCKS_PER_FIELD = 40;
 export const UNSURVEYED_YIELD_MULT = 0.15;
 
 /** Founder ruling 2026-09-12: a claim lapses after three game-months
- *  unworked. Phase B (design doc §8) implements claims through
- *  exploration.ts stakeClaim and reads this constant.
- *  TODO(Phase B): enforce on the server's claim rows. */
+ *  unworked. Phase B (asteroid-claims.ts, server-mining.ts) enforces it on
+ *  the AsteroidClaim rows: expiresAt = lastWorkedAt + this many game-months,
+ *  advanced by every completed mining order of the holder. */
 export const CLAIM_EXPIRY_GAME_MONTHS = 3;
+
+// ─── Phase B: depletion, field ageing, rock events (2026-09-13) ─────────────
+
+/** Field ageing (design §3 "Depletion"): a field's mean grade for NEWLY
+ *  charted rocks drifts down as its total reserve is consumed —
+ *  meanGrade × (1 − FIELD_AGEING_GRADE_DROP × consumedFraction). At full
+ *  consumption a Near-Earth field re-charts at grade 0.8 × 0.65 = 0.52. */
+export const FIELD_AGEING_GRADE_DROP = 0.35;
+
+/** An exhausted catalogue slot is re-charted ("a new rock spawns elsewhere
+ *  in the field") this many game-months after exhaustion — 6 game-months =
+ *  36 real hours, the weekly loop. Phase B re-charts IN PLACE (same id and
+ *  name, `generation` + 1): reserve × RESPAWN_RESERVE_MULT, grade at the
+ *  AGED field mean, risk re-rolled, every corporation's survey wiped. */
+export const ROCK_RESPAWN_GAME_MONTHS = 6;
+export const RESPAWN_RESERVE_MULT = 0.6;
+
+/** Rubble field (event card): a rock fractures — loose material is easier to
+ *  grab (yield × RUBBLE_YIELD_MULT for RUBBLE_DURATION_GAME_MONTHS) but every
+ *  order completed on it costs RUBBLE_HULL_WEAR × (1 + risk) hull. Rolled by
+ *  the completion pass with probability risk × RUBBLE_CHANCE_PER_ORDER. */
+export const RUBBLE_YIELD_MULT = 1.25;
+export const RUBBLE_DURATION_GAME_MONTHS = 2;
+export const RUBBLE_HULL_WEAR = 0.05;
+export const RUBBLE_CHANCE_PER_ORDER = 0.35;
+
+/** Spin-up (event card): the rock's rotation picks up — extraction rate ×
+ *  SPIN_UP_RATE_MULT for SPIN_UP_DURATION_GAME_MONTHS. Same roll shape. */
+export const SPIN_UP_RATE_MULT = 0.6;
+export const SPIN_UP_DURATION_GAME_MONTHS = 3;
+export const SPIN_UP_CHANCE_PER_ORDER = 0.25;
+
+/** Per-rock event state as the client sees it (SurveyRecord / server intel). */
+export interface RockEventState {
+  rubbleUntilMs?: number;
+  spinUpUntilMs?: number;
+}
+
+/** The yield / rate terms a rock's live events impose at `nowMs`. Pure;
+ *  identical on the client planner and the server quote. */
+export function rockEventMults(ev: RockEventState | null | undefined, nowMs: number): { yieldMult: number; rateMult: number; rubble: boolean; spinUp: boolean } {
+  const rubble = !!ev?.rubbleUntilMs && ev.rubbleUntilMs > nowMs;
+  const spinUp = !!ev?.spinUpUntilMs && ev.spinUpUntilMs > nowMs;
+  return { yieldMult: rubble ? RUBBLE_YIELD_MULT : 1, rateMult: spinUp ? SPIN_UP_RATE_MULT : 1, rubble, spinUp };
+}
+
+/**
+ * Roll the two rock events for one completed mining order. Deterministic in
+ * (seedKey) so the server pass and a local replay agree; a live event is
+ * never re-rolled (it runs its course first).
+ */
+export function rollRockEvents(
+  risk: number,
+  seedKey: string,
+  nowMs: number,
+  current: RockEventState | null | undefined,
+  monthMs: number,
+): RockEventState {
+  const rng = mulberry32(hashString(`rockevent:${seedKey}`));
+  const r = Math.max(0, Math.min(1, risk));
+  const out: RockEventState = { ...(current || {}) };
+  const rubbleLive = !!out.rubbleUntilMs && out.rubbleUntilMs > nowMs;
+  const spinLive = !!out.spinUpUntilMs && out.spinUpUntilMs > nowMs;
+  const rollRubble = rng();
+  const rollSpin = rng();
+  if (!rubbleLive && rollRubble < r * RUBBLE_CHANCE_PER_ORDER) out.rubbleUntilMs = nowMs + RUBBLE_DURATION_GAME_MONTHS * monthMs;
+  if (!spinLive && rollSpin < r * SPIN_UP_CHANCE_PER_ORDER) out.spinUpUntilMs = nowMs + SPIN_UP_DURATION_GAME_MONTHS * monthMs;
+  return out;
+}
+
+/** The AGED mean grade of a field: `consumedFraction` = 1 − Σreserve /
+ *  ΣinitialReserve over the field's rocks (server-mining.ts computes it). */
+export function agedMeanGrade(field: Pick<AsteroidField, 'meanGrade'>, consumedFraction: number): number {
+  const c = Math.max(0, Math.min(1, Number.isFinite(consumedFraction) ? consumedFraction : 0));
+  return Math.round(field.meanGrade * (1 - FIELD_AGEING_GRADE_DROP * c) * 100) / 100;
+}
 
 /** One-time-use survey probe (purchasable consumable, founder ruling). Priced
  *  against a near-Earth rock's monthly ore value (~$4-5M) so surveying is a
@@ -88,10 +164,12 @@ export const RISK_MAX = 0.65;
 export const ORE_LOAD_WEIGHT = 0.2;
 
 /** A corporation's survey of one rock (GameState.asteroidIntel). Server
- *  truth is the AsteroidSurvey row; local-only play rolls its own. */
-export interface SurveyRecord extends AsteroidIntel {
+ *  truth is the AsteroidSurvey row; local-only play rolls its own. Phase B
+ *  adds the rock's live event state and exhaustion (reserve 0). */
+export interface SurveyRecord extends AsteroidIntel, RockEventState {
   surveyedAtMs: number;
   via: 'probe' | 'ship';
+  exhausted?: boolean;
 }
 
 // ─── Fields ──────────────────────────────────────────────────────────────────
@@ -317,4 +395,22 @@ export function rollAsteroidIntel(rock: AsteroidRock, salt: string): AsteroidInt
 
 export function oreForRock(rock: Pick<AsteroidRock, 'class'>): ResourceId {
   return ORE_RESOURCE_BY_CLASS[rock.class];
+}
+
+/**
+ * Phase B respawn: the hidden truth for a re-charted slot. Grade centres on
+ * the AGED field mean (agedMeanGrade), reserve is RESPAWN_RESERVE_MULT of a
+ * fresh roll, risk is re-rolled. Deterministic in (rock, salt, generation).
+ */
+export function rollRespawnIntel(rock: AsteroidRock, salt: string, generation: number, consumedFraction: number): AsteroidIntel {
+  const field = ASTEROID_FIELD_MAP.get(rock.fieldId);
+  const rng = mulberry32(hashString(`respawn:${salt}:${rock.id}:${generation}`));
+  const mean = agedMeanGrade(field ?? { meanGrade: 1.0 }, consumedFraction);
+  const spread = (rng() + rng() - 1) * 0.6;
+  const grade = Math.round(Math.max(0.3, Math.min(1.5, mean + spread)) * 100) / 100;
+  const [lo, hi] = field?.reserveRange ?? [5_000, 20_000];
+  const reserve = Math.round((lo + rng() * (hi - lo)) * RESPAWN_RESERVE_MULT);
+  const riskCap = field?.frontier ? 0.2 : RISK_MAX;
+  const risk = Math.round(Math.max(RISK_MIN, Math.min(riskCap, RISK_MIN + rng() * (riskCap - RISK_MIN))) * 100) / 100;
+  return { grade, reserve, risk };
 }

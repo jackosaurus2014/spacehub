@@ -150,7 +150,7 @@ import { advanceOnboarding, skipOnboarding, restartOnboarding, isOnboardingActiv
 import { TYCOON_EVENTS, trackTycoon, fireOnce, startFunnelForNewGame, hasPlayerBuilt } from '@/lib/game/funnel-events';
 import FeatureUnlockToast, { useFeatureUnlockQueue } from '@/components/game/FeatureUnlockToast';
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
-import { getTierDef, getNextTierProgress } from '@/lib/game/corporation-tiers';
+import { getTierDef, getNextTierProgress, checkCorporationTier } from '@/lib/game/corporation-tiers';
 import GameChat from '@/components/game/GameChat';
 import CommanderPanel from '@/components/game/CommanderPanel';
 import { hireCommander, dismissCommander, assignCommander, unassignCommander } from '@/lib/game/commanders';
@@ -191,7 +191,7 @@ import FrontierBadge from '@/components/game/FrontierBadge';
 import WorldResetNotice from '@/components/game/WorldResetNotice';
 import EconomyCalibrationNotice from '@/components/game/EconomyCalibrationNotice';
 import FrontierGraduationModal from '@/components/game/FrontierGraduationModal';
-import { graduateFrontier } from '@/lib/game/frontier';
+import { graduateFrontier, isInFrontier } from '@/lib/game/frontier';
 import ModulesPanel from '@/components/game/ModulesPanel';
 import AnomaliesPanel from '@/components/game/AnomaliesPanel';
 import InterstellarPanel from '@/components/game/InterstellarPanel';
@@ -224,8 +224,11 @@ import BuildPanel from '@/components/game/BuildPanel';
 import SourcingPanel from '@/components/game/SourcingPanel';
 // Interactive asteroid mining Phase A (2026-09-12).
 import MiningPanel from '@/components/game/MiningPanel';
-import { getAsteroid, rollAsteroidIntel, LOCAL_INTEL_SALT, SURVEY_PROBE_COST, type AsteroidIntel } from '@/lib/game/asteroids';
-import { planMiningOrder, materializeOrder, canTakeMiningOrder, MINING_PLAN_ERROR_TEXT, type MiningOrderRequest } from '@/lib/game/mining-orders';
+import { getAsteroid, rollAsteroidIntel, ASTEROID_FIELD_MAP, LOCAL_INTEL_SALT, SURVEY_PROBE_COST, type AsteroidIntel } from '@/lib/game/asteroids';
+import { planMiningOrder, materializeOrder, canTakeMiningOrder, resolveEscortCover, MINING_PLAN_ERROR_TEXT, type MiningOrderRequest } from '@/lib/game/mining-orders';
+// Mining Phase B (2026-09-13): claims (server-first like orders) and the
+// sync's mining block (claims, live intel, notices → mail + Situation Log).
+import { adoptServerMining, stakeAsteroidClaimLocal, releaseAsteroidClaimLocal, STAKE_CLAIM_ERROR_TEXT, type AsteroidClaimRecord, type ServerMiningBlock } from '@/lib/game/asteroid-claims';
 import { getShipCargoCapacity, getFuelEfficiencyMultiplier } from '@/lib/game/cargo-logistics';
 import { hqMiningLogisticsForState } from '@/lib/game/headquarters';
 import { adoptServerHeadquarters, type ServerHeadquartersBlock } from '@/lib/game/hq-relocation';
@@ -1199,6 +1202,10 @@ export default function SpaceTycoonPage() {
     // flipped yet posts its charter mail here.
     if (serverData.headquarters !== undefined) {
       setState(prev => prev ? adoptServerHeadquarters(prev, serverData.headquarters as ServerHeadquartersBlock | null) : prev);
+    }
+    // Mining Phase B: claims / live intel / notices are server truth.
+    if (serverData.mining !== undefined) {
+      setState(prev => prev ? adoptServerMining(prev, serverData.mining as ServerMiningBlock | null) : prev);
     }
   });
 
@@ -2465,11 +2472,21 @@ export default function SpaceTycoonPage() {
     if (!canTakeMiningOrder(ship)) { reportAssetFailure({ message: `${ship.name} is busy.` }, 'Mining', () => playSound('error')); return; }
     const rock = req.asteroidId ? getAsteroid(req.asteroidId) ?? null : null;
     const intel = rock ? (cur.asteroidIntel?.[rock.id] ?? null) : null;
+    // Phase B: escort cover (assigned cutter, stationed cutter, Frontier
+    // shield), the corporation's own claim, and any stand-off from an event
+    // card. The server re-derives all of it; a bad escort id is refused.
+    const parentId = rock ? (ASTEROID_FIELD_MAP.get(rock.fieldId)?.parentLocationId || ship.currentLocation)
+      : (ship.heldOre ? (ASTEROID_FIELD_MAP.get(ship.heldOre.fieldId)?.parentLocationId || ship.currentLocation) : ship.currentLocation);
+    const escort = resolveEscortCover(cur, ship.currentLocation, parentId, req.escortInstanceId);
+    if (escort.error) { reportAssetFailure({ message: MINING_PLAN_ERROR_TEXT[escort.error] }, 'Mining', () => playSound('error')); return; }
     const localPlan = planMiningOrder({
       def, cargoCapacity: getShipCargoCapacity(cur, ship.instanceId), mode: req.mode, rock, intel,
       fillUnits: req.fillUnits, thenAction: req.thenAction, originId: ship.currentLocation, destinationId: req.destinationId,
       heldOre: ship.heldOre ?? null, hullDamagePct: ship.hullDamagePct, fuelEfficiencyMult: getFuelEfficiencyMultiplier(cur),
       hqLogistics: hqMiningLogisticsForState(cur), // CC-2: Lunar HQ logistics terms
+      claimed: !!(rock && cur.asteroidClaims?.[rock.id]),
+      standOffUntilMs: rock ? cur.miningStandOff?.[rock.id] : undefined,
+      escortCover: escort.cover, escortInstanceId: escort.escortInstanceId, frontier: isInFrontier(cur),
       nowMs: Date.now(),
     });
     if (!localPlan.ok) { reportAssetFailure({ message: MINING_PLAN_ERROR_TEXT[localPlan.error] }, 'Mining', () => playSound('error')); return; }
@@ -2479,6 +2496,7 @@ export default function SpaceTycoonPage() {
     void requestAssetOp('mining', {
       op: 'order', instanceId: orderId, shipInstanceId: ship.instanceId, mode: req.mode, asteroidId: req.asteroidId,
       fillUnits: localPlan.order.fillUnits, thenAction: localPlan.order.thenAction, originId: ship.currentLocation, destinationId: localPlan.order.destinationId,
+      escortInstanceId: escort.escortInstanceId ?? null,
     }, 'mining order').then(res => {
       if (res.kind === 'fail') { reportAssetFailure(res, 'Mining', () => playSound('error')); return; }
       const server = res.kind === 'ok' ? res.data as { order?: Omit<MiningOrder, 'id' | 'serverAuthoritative'>; intel?: AsteroidIntel } : null;
@@ -2491,14 +2509,15 @@ export default function SpaceTycoonPage() {
         const target = (prev.ships || []).find(s => s.instanceId === ship.instanceId);
         if (!target || target.miningOrder) return prev; // idempotent
         const rockName = rock?.name || 'held ore';
-        const ships = (prev.ships || []).map(s => s.instanceId !== ship.instanceId ? s : {
+        const escortId = order.escortInstanceId;
+        const ships = (prev.ships || []).map(s => s.instanceId === ship.instanceId ? {
           ...s,
           miningOrder: order,
           heldOre: order.mode === 'return' ? undefined : s.heldOre,
           status: 'in_transit' as const,
           miningOperation: undefined,
           route: { from: order.originId, to: order.mode === 'return' ? order.destinationId : order.parentLocationId, departedAtMs: order.startedAtMs, arrivalAtMs: order.mode === 'return' ? order.completesAtMs : order.arrivesAtMs, cargo: {} },
-        });
+        } : (escortId && s.instanceId === escortId) ? { ...s, escortingOrderId: orderId } : s);
         const verb = order.mode === 'survey' ? 'Survey order' : order.mode === 'return' ? 'Return order' : 'Mining order';
         return {
           ...prev,
@@ -2508,6 +2527,41 @@ export default function SpaceTycoonPage() {
           eventLog: [{ id: generateId(), date: prev.gameDate, type: 'build_complete' as const, title: `${verb}: ${target.name} → ${rockName}`, description: `${order.mode === 'mine' ? `${order.fillUnits} units, ${order.thenAction.replace('_', ' & ')}. ` : ''}Fuel ${formatMoney(order.fuelCost)} · back ${formatCountdown(Math.max(0, (order.completesAtMs - Date.now()) / 1000))}.` }, ...prev.eventLog].slice(0, 50),
         };
       });
+    });
+  }, []);
+
+  // ─── Asteroid claims (mining Phase B, 2026-09-13) ─────────────────────
+  // Server-first: /assets/mining {op:'stake_claim'} files the AsteroidClaim
+  // row and burns the fee; the local reducer mirrors the same refusal
+  // ladder (asteroid-claims.ts checkStakeClaim) and records the server's
+  // row. 'local' (no profile) stakes and pays locally.
+  const handleStakeClaim = useCallback((asteroidId: string) => {
+    const cur = stateRef.current;
+    const rock = getAsteroid(asteroidId);
+    if (!cur || !rock) return;
+    const tier = checkCorporationTier(cur);
+    const preview = stakeAsteroidClaimLocal(cur, asteroidId, tier, Date.now());
+    if (!preview.result.ok) { reportAssetFailure({ message: STAKE_CLAIM_ERROR_TEXT[preview.result.error] }, 'Claims', () => playSound('error')); return; }
+    playSound('click');
+    void requestAssetOp('mining', { op: 'stake_claim', asteroidId }, 'claim').then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Claims', () => playSound('error')); return; }
+      const server = res.kind === 'ok' ? res.data as { claim?: AsteroidClaimRecord } : null;
+      playSound('build_start');
+      setState(prev => {
+        if (!prev) return prev;
+        if (prev.asteroidClaims?.[asteroidId]) return prev; // idempotent
+        return stakeAsteroidClaimLocal(prev, asteroidId, checkCorporationTier(prev), Date.now(), server?.claim ?? null).state;
+      });
+    });
+  }, []);
+
+  const handleReleaseClaim = useCallback((asteroidId: string) => {
+    const cur = stateRef.current;
+    if (!cur?.asteroidClaims?.[asteroidId]) return;
+    playSound('click');
+    void requestAssetOp('mining', { op: 'release_claim', asteroidId }, 'claim release').then(res => {
+      if (res.kind === 'fail') { reportAssetFailure(res, 'Claims', () => playSound('error')); return; }
+      setState(prev => prev ? releaseAsteroidClaimLocal(prev, asteroidId) : prev);
     });
   }, []);
 
@@ -3079,7 +3133,7 @@ export default function SpaceTycoonPage() {
         />}
         {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} onSetSupplyPolicy={handleSetSupplyPolicy} onOpenSourcing={() => { playSound('click'); navigateToTab('markets:sourcing'); }} onMothballBuilding={handleMothballBuilding} onReactivateBuilding={handleReactivateBuilding} onRushRepairBuilding={handleRushRepairBuilding} onMarkUpgradeBuilding={handleMarkUpgradeBuilding} onDispatchShip={handleDispatchShip} />}
         {tab === 'sourcing' && <SourcingPanel state={state} onSetSupplyPolicy={handleSetSupplyPolicy} onNavigate={(navTab) => { playSound('click'); navigateToTab(navTab); }} />}
-        {tab === 'mining' && <MiningPanel state={state} onPlaceOrder={handleMiningOrder} onSurveyProbe={handleSurveyProbe} onBuyProbes={handleBuyProbes} onNavigate={(navTab) => { playSound('click'); navigateToTab(navTab); }} />}
+        {tab === 'mining' && <MiningPanel state={state} onPlaceOrder={handleMiningOrder} onSurveyProbe={handleSurveyProbe} onBuyProbes={handleBuyProbes} onStakeClaim={handleStakeClaim} onReleaseClaim={handleReleaseClaim} onNavigate={(navTab) => { playSound('click'); navigateToTab(navTab); }} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'fleet' && <FleetPanel

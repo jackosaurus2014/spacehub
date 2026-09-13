@@ -126,6 +126,10 @@ export const SHIP_ASSETS: Record<string, string> = {
   asteroid_miner: `${BASE}/ship-mining-m.webp`,
   deep_space_miner: `${BASE}/ship-mining-l.webp`,
   survey_probe: `${BASE}/ship-scout.webp`,
+  // Mining Phase B (2026-09-13): the Escort Cutter — a slim, fast security
+  // craft. NO dedicated art yet; borrows the scout dart explicitly (see
+  // SHIP_ART_BACKLOG) so the assets test can assert the choice is intentional.
+  escort_cutter: `${BASE}/ship-scout.webp`,
   // Maintenance hulls (2026-08-31 damage-visibility wave) — NO dedicated art
   // yet. GAME_DESIGN_REVIEW_2026-09 §4: both silently fell through to the
   // cargo_shuttle fallback. Mapped EXPLICITLY to the closest existing
@@ -161,6 +165,10 @@ export const SHIP_ART_BACKLOG: Record<string, { borrows: string; brief: string }
   fleet_tender: {
     borrows: 'fuel_tanker',
     brief: 'Fleet Tender: mid-size roving repair tender, drone bays along the flanks, self-healing hull plant amidships; top-down plan view, amber support accent.',
+  },
+  escort_cutter: {
+    borrows: 'survey_probe',
+    brief: 'Escort Cutter: slim fast security cutter, point-defence turrets fore and aft, no cargo bay, shield emitters along the spine; top-down plan view, rose security accent.',
   },
   prospector_barge: {
     borrows: 'ore_harvester',

@@ -140,6 +140,30 @@ Real money never buys a reveal, a longer reveal, or a way to hide your ships.
 
 ---
 
+## Asteroid Claims
+
+A claim is exclusive extraction rights on one surveyed rock. It is a filed, on-ledger right, and the rules are the same for everyone.
+
+- **You stake what you have seen.** Only a rock your corporation has surveyed can be claimed. The stake fee scales with what is in the ground (grade × reserve × ore price × 3%, minimum $1M) and is burned; a monthly upkeep of 10% of the fee keeps it alive.
+- **Exclusive means exclusive.** Nobody else can mine a rock under your claim. Anyone can still survey it. Rocks nobody has claimed are open to every corporation — and crowded rocks yield less to each (extraction pressure).
+- **Use it or lose it.** A claim lapses after **three game-months unworked**. Every completed mining order of yours on the rock resets the clock. The Outliner warns you one game-month before it lapses.
+- **The only ways to lose a claim are your own or the rock's:** it lapses unworked, its upkeep goes unpaid, the rock is exhausted, or you release it. **No other player can take, jump, contest or damage a claim.** Ever.
+- **Claims are public.** Every active claim appears in the claim feed with the holding corporation's name, when it was staked, when it was last worked and when it lapses. What the feed never shows: the fee paid, the upkeep state, or what the holder is extracting — that intelligence stays earned through espionage.
+- **Caps grow with your corporation** (1 claim at tier 1 up to 12 at tier 7). Real money never buys a claim, a bigger cap, a longer expiry or a place in the feed.
+
+---
+
+## Security Ships
+
+Space Tycoon has NPC pirates (the Void Corsairs) who shake down ore runs on the belt and outer-system lanes. It has **no player-versus-player combat** and never will.
+
+- **The Escort Cutter is a security ship, not a warship.** Assigned to a mining order, or stationed at a field, it reduces the odds that the Corsairs shake down *your own corporation's* ore run. That is its entire effect.
+- **It cannot be pointed at another player.** There is no target, no intercept, no blockade and no order that acts on another corporation's ships, claims or cargo. A security hull that is not covering your own run does nothing.
+- **Shakedowns are NPC, transparent and bounded.** The odds per lane are published in the game (and in `docs/BALANCE.md`), the roll is fixed per order so it cannot be re-rolled, a hit takes a share of the ore aboard and never the hull or the crew, and the Protected Frontier is exempt.
+- **Nothing here is for sale.** Real money buys no cover, no lower odds and no immunity.
+
+---
+
 ## Data and Privacy
 
 Space Tycoon stores per-player game state, chat messages (if you participate in corporate or alliance chat), and basic account information.

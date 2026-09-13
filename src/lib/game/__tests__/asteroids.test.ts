@@ -119,9 +119,9 @@ describe('founder rulings (2026-09-12)', () => {
 });
 
 describe('ship roster (Phase A)', () => {
-  it('enumerates the roster: the fourteen originals plus the Prospector Barge and the Hauler', () => {
+  it('enumerates the roster: the fourteen originals plus the Prospector Barge, the Hauler and (Phase B) the Escort Cutter', () => {
     expect(SHIPS.map(s => s.id).sort()).toEqual([
-      'asteroid_miner', 'cargo_shuttle', 'colony_ark', 'deep_space_miner', 'fleet_tender', 'freighter', 'fuel_tanker',
+      'asteroid_miner', 'cargo_shuttle', 'colony_ark', 'deep_space_miner', 'escort_cutter', 'fleet_tender', 'freighter', 'fuel_tanker',
       'hauler', 'heavy_transport', 'mining_drone', 'ore_harvester', 'prospector_barge', 'prospector_drone',
       'servicer_tug', 'starfarer_explorer', 'survey_probe',
     ]);

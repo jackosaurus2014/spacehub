@@ -3858,3 +3858,158 @@ contract; save migration for seat-less and malformed saves.
   share of a mining corporation's P&L turns out small on live telemetry,
   the Luna terms should broaden to freight legs (cargo-logistics.ts) before
   the price moves.
+
+## Pass 12 — mining Phase B (2026-09-13)
+
+### What shipped (row B of `docs/SPACE_MINING_DESIGN_2026-09-12.md` §8)
+
+Ownership and depletion on the Phase A rocks: **claims** (exclusive
+extraction rights, founder ruling 3 — lapse after 3 unworked game-months),
+**exhaustion + in-place respawn with field ageing**, **extraction pressure
+on shared unclaimed rocks**, two **rock event cards** (rubble field,
+spin-up) on the existing random-event system, the **Escort Cutter**
+(security role, founder ruling 4) and the **NPC shakedown** on the ore run
+home, a **public claim feed**, and the sync's **mining block** (claims, live
+intel, notices → mail + Situation Log).
+
+Files: `asteroid-claims.ts` (pure claim rules + client records + block
+adoption), `rock-pressure.ts`, `npc-shakedown.ts`, `asteroids.ts` (ageing /
+respawn / event constants), `mining-orders.ts` (planner inputs + local
+settlement), `random-events.ts` (cards), `server-mining.ts` (AsteroidClaim
+rows, settlement, cron passes, block, feed), `/api/space-tycoon/assets/mining`
+(`stake_claim` / `release_claim`, escort + claim checks on `order`),
+`/api/space-tycoon/claims` (feed), the sync route (`mining` block), the
+assets-complete cron (expiry / upkeep / respawn), `MiningPanel.tsx`,
+`order-queue.ts` (claim-lapsing row), `ships.ts` (`security` role, Escort
+Cutter), `scripts/sim-mining.ts` scenarios 4-5.
+
+### Claims
+
+| Rule | Value |
+|---|---|
+| Who may stake | the corporation that has SURVEYED the rock (effective survey of the current generation) |
+| Exclusivity | mining a rock under another corporation's claim is refused server-side (`rock_claimed`); surveying stays open; unclaimed rocks stay open to all under pressure |
+| Stake fee | max($1M, grade × reserve × ore base price × 3%) — BURNED (`claim_stake_fee`) |
+| Upkeep | 10% of the fee per game-month — BURNED (`claim_upkeep`); an unpayable month lapses the claim |
+| Expiry | `expiresAt = lastWorkedAt + 3 game-months` (18 real hours); every completed mining order of the holder on the rock advances `lastWorkedAt` |
+| Cap per corporation | T1 1 · T2 2 · T3 4 · T4 6 · T5 8 · T6 10 · T7 12 (`CLAIM_CAP_BY_TIER`) |
+| Loss | expiry (unworked), lapse (unpaid), exhaustion of the rock, release (no refund) — never another player's action |
+| Feed | PUBLIC with the corporation NAME (design §3 "holder public"); never the profile id, fee or upkeep state; per-rock activity count (pending orders) rides along |
+| Outliner | a row when a claim lapses within 1 game-month ("work it or lose it") |
+
+Fees at the design's anchors: median Near-Earth C rock (0.8, 5,000, $14k)
+≈ $1.7M; Inner Belt M rock (1.04, 8,108, $10k) = $2.5M (upkeep $253K/mo);
+Kuiper X prize (1.3, 75,000, $70k) ≈ $205M.
+
+### Depletion, ageing, respawn, events
+
+| Constant | Value | Meaning |
+|---|---|---|
+| exhaustion | reserve ≤ 0 → `exhaustedAt`, the holder's claim closes (`exhausted`), the planner refuses the rock, the rock table pips it |
+| `ROCK_RESPAWN_GAME_MONTHS` | 6 (36 real hours) | an exhausted slot is re-charted IN PLACE (same id/name, `generation` + 1); every survey of it goes stale by generation |
+| `RESPAWN_RESERVE_MULT` | 0.6 | the re-charted reserve is 60% of a fresh roll; `initialReserve` accumulates so the ageing curve is monotone |
+| `FIELD_AGEING_GRADE_DROP` | 0.35 | re-charted grade centres on `meanGrade × (1 − 0.35 × consumedFraction)`, `consumedFraction = 1 − Σreserve/ΣinitialReserve` over the field |
+| `RUBBLE_*` | chance risk × 0.35 per completed order; yield × 1.25 for 2 game-months; hull wear 5% × (1 + risk) per completed order on it |
+| `SPIN_UP_*` | chance risk × 0.25 per completed order; extraction rate × 0.6 for 3 game-months |
+
+Rock events live on the **Asteroid row** (rolled deterministically from the
+order id by the completion pass; local-only play rolls the same function
+on the client) so every corporation working the rock sees the same state —
+the hazards.ts "same weather for everyone" precedent. The card
+(`random-events.ts` `rubble_field` / `spin_up`, `trigger: 'rock_event'`,
+probability 0 on the monthly dice) offers "work it" vs "stand off" — a
+client-side self-restriction, **no cash, no grant**, nothing the sync
+ceiling has to verify.
+
+### Extraction pressure on shared rocks
+
+`share(n) = n^−0.5` over the corporations whose `mine` orders on the rock
+overlapped the order's extraction window (server, at completion; the client
+quote uses the public activity count): 1 → 1.00, 2 → 0.71, 3 → 0.58, 4 →
+0.50, floor 0.25. Total extraction `n × share(n) = √n` — the face is the
+bottleneck. A claimed rock is share 1 for its holder. Pressure costs
+UNITS, never time or fuel (the schedule is unchanged), and the rock loses
+what was extracted.
+
+### NPC shakedowns and the Escort Cutter
+
+| Lane (field parent) | Odds per return leg |
+|---|---|
+| lunar_orbit (Near-Earth, Frontier field) | 0 |
+| jupiter_system (Trojans) | 8% |
+| ceres_surface (Ceres Approaches) | 10% |
+| asteroid_belt (Inner Belt) | 12% |
+| outer_system (Kuiper Fringe) | 15% |
+
+Hit → the Void Corsairs take **25%** of the ore aboard (after pressure);
+hull and crew untouched. Cover: **assigned** Escort Cutter × 0.25 (−75%),
+**stationed** cutter idle at the field's parent × 0.5, **Protected
+Frontier** → 0 (createdAt on the server, `isInFrontier` on the client).
+The roll is deterministic in the order id; the outcome is written on the
+MiningOrder row and reaches the client as a notice (mail + a `pirate_raid`
+Situation Log line). Never a player-vs-player effect: the cutter's odds are
+a pure function of lane, cover and Frontier — no target anywhere in the
+signature (docs/POLICY.md "Security ships").
+
+Escort Cutter: T3, `spacecraft_armor` + `autonomous_docking` (the doc's
+`point_defense` does not exist), $260M, 0 hold, upkeep $600K/mo, point
+defence 0.45 / shielding 0.30.
+
+### Sim (`npx tsx scripts/sim-mining.ts`, 2026-09-13)
+
+Phase A gates re-run unchanged: solo surveyed barge month-3 net **+$859K
+✓**; blind barge negative (surveying is the decision); three-ship cycle
+does NOT beat two returning barges (Phase C); best ship gross÷capex
+**0.65×** the Basic Lunar Extractor (limit 1.5×) ✓.
+
+Scenario 4 — Prospector Barge on the Inner Belt M rock from Ceres, 6 months:
+
+| Scenario | Share | Units | Revenue | Claim cost | Net |
+|---|---|---|---|---|---|
+| Open · alone | 1.00 | 1,746 | $16.9M | — | $6.0M |
+| Open · 2 corporations | 0.71 | 1,233 | $12.0M | — | $1.0M |
+| Open · 3 corporations | 0.58 | 1,008 | $9.8M | — | −$1.2M |
+| Open · 4 corporations | 0.50 | 873 | $8.5M | — | −$2.5M |
+| Claimed | 1.00 | 1,746 | $16.9M | $4.0M | $1.9M |
+
+A claim costs $4.0M over 6 months against an uncontested rock and is worth
++$929K the moment ONE rival shares it → **claims pay only when contested**,
+which is the shape wanted (a solo player on an empty server has no reason
+to file; a corporation in a rush does).
+
+Scenario 5 — Asteroid Mining Ship, Inner Belt M, return & sell at Ceres,
+6 months: no cover 12%/leg, 3,104 units landed, net $6.9M; stationed cutter
+6%, 3,152 units, net $3.8M after $3.6M cutter upkeep; assigned cutter 3%,
+3,184 units, net $4.1M. Expected toll per unescorted belt trip $60K (a
+Kuiper X-ore run: ~$525K). **One belt miner never justifies a cutter; a
+fleet or the Kuiper Fringe does** — a fleet-scale decision, not an
+auto-buy.
+
+### Design invariants
+
+- Meaningful decision: claim or share; escort or pay; work the rubble or
+  stand off; keep a claim alive or let it lapse.
+- Supply/demand: exhaustion + ageing cap every rock's exploit ceiling;
+  pressure makes rushes self-limiting; ore still clears through the
+  market-pressure pipe.
+- Sinks: stake fee, upkeep, cutter hull + upkeep, rubble hull wear (all
+  burned; nothing refunded).
+- Time loops: tactical (event card, escort choice), daily (upkeep), weekly
+  (claims lapse, respawn cycle 36 h), monthly (field ageing).
+- No PvP: shakedowns are NPC; the only ways to lose a claim are your own or
+  the rock's.
+- No pay-to-win: nothing here is purchasable for real money.
+- Intelligence: the claim feed and per-rock activity are public; grades and
+  rates stay behind surveys and espionage.
+
+### Risks / watch
+
+- Stationed cover reads the cutter's persisted position (client-owned
+  condition, like every ship location) — a forged position saves
+  repositioning fuel, nothing more. Move to a server-side ship position when
+  one exists.
+- The claim fee is 3% of in-ground value: on a Kuiper X prize that is
+  $205M up front + $20M/mo — intended to be a corporate decision; watch
+  whether any solo player ever files one.
+- Respawn is in place (same catalogue id) — Phase C/D can spawn NEW ids once
+  the map affordance exists.

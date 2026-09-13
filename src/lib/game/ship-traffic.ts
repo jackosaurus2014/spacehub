@@ -102,6 +102,10 @@ export function hullClassOf(definitionId: string): ContactHullClass {
     case 'survey': return 'survey';
     case 'tanker': return 'tanker';
     case 'maintenance': return 'servicer';
+    // Mining Phase B: the Escort Cutter is a slim security craft — the
+    // servicer silhouette (contacts only ever show a hull class; POLICY.md
+    // "Ship Visibility").
+    case 'security': return 'servicer';
     case 'transport':
     default: return 'freighter';
   }
@@ -334,3 +338,34 @@ export const FACTION_CONTACT_TINT: Record<FactionId, string> = {
 };
 
 export const ANON_CONTACT_COLOR = '#7c8594';
+
+// ─── Local-scene tags (graphics Phase 2, addendum (c)) ───────────────────────
+
+/** One-line tag for a contact inside a body's local scene: the revealed
+ *  corporation and hull, or the honest anonymised class, plus the live ETA
+ *  for transits. Short on purpose — it hangs off the hull in the scene; the
+ *  full detail stays on hover / in the screen-reader list. */
+export function contactTagText(c: TrafficContact, nowMs: number, asOfMs: number): string {
+  const hull = CONTACT_HULL_LABEL[c.hullClass] ?? 'Contact';
+  const who = c.intel ? `${c.intel.corpName} · ${hull}` : c.npc ? `NPC ${hull.toLowerCase()}` : hull;
+  if (c.status === 'transit' && typeof c.etaMs === 'number') {
+    const remaining = Math.max(0, c.etaMs - (nowMs - asOfMs));
+    return `${who} · ETA ${formatEta(remaining)}`;
+  }
+  return who;
+}
+
+/** Which contacts get a persistent tag in a local scene (the rest stay
+ *  hover-only): revealed first, then the soonest arrivals, capped. */
+export const LOCAL_CONTACT_TAG_CAP = 12;
+
+export function pickTaggedContacts(contacts: readonly TrafficContact[], cap = LOCAL_CONTACT_TAG_CAP): TrafficContact[] {
+  const transit = contacts.filter(c => c.status === 'transit');
+  transit.sort((a, b) => {
+    const ra = a.intel ? 0 : a.npc ? 2 : 1;
+    const rb = b.intel ? 0 : b.npc ? 2 : 1;
+    if (ra !== rb) return ra - rb;
+    return (a.etaMs ?? Infinity) - (b.etaMs ?? Infinity);
+  });
+  return transit.slice(0, Math.max(0, cap));
+}

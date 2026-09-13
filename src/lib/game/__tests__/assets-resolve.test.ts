@@ -96,6 +96,6 @@ describe('ship art resolution (§4 servicer tug / fleet tender)', () => {
     expect(getShipAsset('fleet_tender')).not.toBe(SHIP_ASSETS.cargo_shuttle);
     // Mining Phase A (2026-09-12): the Prospector Barge and the Hauler borrow
     // renders until their art batch lands (SHIP_ART_BACKLOG carries the briefs).
-    expect(Object.keys(SHIP_ART_BACKLOG).sort()).toEqual(['fleet_tender', 'hauler', 'prospector_barge', 'servicer_tug']);
+    expect(Object.keys(SHIP_ART_BACKLOG).sort()).toEqual(['escort_cutter', 'fleet_tender', 'hauler', 'prospector_barge', 'servicer_tug']);
   });
 });

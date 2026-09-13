@@ -3,7 +3,11 @@
 // Balance pass: adjusted mining rates for ROI, added survey expedition system,
 // added fleet maintenance costs, buffed deep space miner.
 
-export type ShipRole = 'transport' | 'mining' | 'survey' | 'tanker' | 'maintenance';
+/** Mining Phase B (2026-09-13): 'security' — the Escort Cutter. A security
+ *  hull only reduces NPC shakedown odds on its corporation's ore runs
+ *  (npc-shakedown.ts); it has no effect on any other player, ever
+ *  (docs/POLICY.md "Security ships"). */
+export type ShipRole = 'transport' | 'mining' | 'survey' | 'tanker' | 'maintenance' | 'security';
 
 export type ShipHardpointType = 'engine' | 'shield' | 'cargo' | 'sensor' | 'drone' | 'utility';
 
@@ -83,6 +87,11 @@ export interface ShipDefinition {
    *  survey a rock on station — unlimited surveys, the fuel to get there is
    *  the cost. Probes (SURVEY_PROBE_COST) are the consumable alternative. */
   survey?: boolean;
+  /** Mining Phase B security capability (founder ruling 4): the hull can be
+   *  ASSIGNED to a Mining Order (escortInstanceId) or STATIONED at a field
+   *  to cut NPC shakedown odds — npc-shakedown.ts. Never a weapon against
+   *  a player: there is no field, order or op that points it at one. */
+  security?: boolean;
 }
 
 // ─── Mining Orders (Phase A, design doc §4) ──────────────────────────────────
@@ -131,6 +140,22 @@ export interface MiningOrder {
    *  asteroidIntel when the ship arrives (the survey row's surveyedAt IS the
    *  arrival time, so the mining rate cannot be claimed early). */
   intel?: { grade: number; reserve: number; risk: number };
+  // ── Mining Phase B (2026-09-13) ──
+  /** The Escort Cutter assigned to this order (a `security` hull, idle at
+   *  the origin or the field's parent when the order was placed). */
+  escortInstanceId?: string;
+  /** Whether the rock was under THIS corporation's claim at creation (share
+   *  1 — exclusive) or open (rock-pressure.ts sharing applies). */
+  claimed?: boolean;
+  /** Corporations (including this one) working the rock when the order was
+   *  quoted — the public activity count the pressure quote used. */
+  sharedMiners?: number;
+  /** rock-pressure.ts share the quote assumed (server settles the real one). */
+  pressureShare?: number;
+  /** Units the quote expects to land: fill × share − expected shakedown. */
+  expectedUnits?: number;
+  /** npc-shakedown.ts odds on the return leg as quoted. */
+  shakedownOdds?: number;
 }
 
 /** Ore sitting in a hull after a 'hold' order (no inventory has it yet). */
@@ -157,6 +182,7 @@ export const SHIP_CREW_PILOT_SHARE: Readonly<Record<ShipRole, number>> = {
   survey: 0.7,
   mining: 0.4,
   maintenance: 0.3,
+  security: 0.6,
 };
 
 /**
@@ -233,6 +259,9 @@ export interface ShipInstance {
   /** Phase A: ore held aboard after a 'hold' order, until a 'return' order. */
   heldOre?: HeldOre;
   hullDamagePct?: number;
+  /** Mining Phase B: a `security` hull assigned to another ship's Mining
+   *  Order (its id) — busy until that order completes. */
+  escortingOrderId?: string;
 }
 
 // ─── Survey Expedition System ────────────────────────────────────────────────
@@ -325,6 +354,31 @@ export const SHIPS: ShipDefinition[] = [
     requiredResearch: ['modular_spacecraft'], buildTimeSeconds: 720, tier: 2,
     maintenancePerMonth: 900_000,
     stats: { warpFactor: 0.6, deltaVBudget: 6_000, sublightSpeed: 1_400, fuelCapacity: 1_400, crewRequired: 3, moduleSlots: 3, hardpointTypes: ['cargo', 'cargo', 'engine'] },
+  },
+
+  // ─── SECURITY (mining Phase B, docs/SPACE_MINING_DESIGN_2026-09-12.md §5) ──
+  // Founder ruling 4: a SECURITY ship. It cuts NPC shakedown odds on its own
+  // corporation's ore runs (npc-shakedown.ts: x0.25 assigned, x0.5 stationed
+  // at the field) and does nothing else — no cargo, no mining, no effect on
+  // any other player's hull (docs/POLICY.md). The doc's `point_defense` gate
+  // does not exist in the tree; the nearest real techs are the Whipple
+  // Shield Enhancement (hull defence) and Autonomous Docking (formation
+  // flying), both tier 2 — the hull itself is tier 3 like the belt miners
+  // whose runs it protects.
+  {
+    id: 'escort_cutter', name: 'Escort Cutter', icon: '🛡️', role: 'security',
+    description: 'Point-defence and shielding on a fast frame, no hold. Escorts ore runs and patrols a field — cuts NPC shakedown odds. Never targets another corporation.',
+    tooltip: 'WHY BUILD: The belt and the outer system have NPC pirates (Void Corsairs) who shake down ore runs — 8-15% of return legs lose a quarter of the hold. Assign a cutter to a Mining Order and the odds fall by 75%; leave one idle at a field and every run from that field is halved. Its cost IS the decision: patrol or pay the shakedown. It carries nothing, mines nothing, and has no effect on other players — a security ship, not a warship.',
+    cargoCapacity: 0, baseCost: 260_000_000,
+    resourceCost: { titanium: 40, aluminum: 60, rare_earth: 8 },
+    requiredResearch: ['spacecraft_armor', 'autonomous_docking'], buildTimeSeconds: 900, tier: 3,
+    // Sized in scripts/sim-mining.ts scenario 5 (2026-09-13): the expected
+    // toll on one belt miner's run is ~$60K/trip, on a Kuiper X-ore run
+    // ~$525K/trip. At $600K/mo a cutter never pays for ONE belt miner (a
+    // fleet-scale decision) and always pays on the Kuiper Fringe.
+    maintenancePerMonth: 600_000,
+    security: true,
+    stats: { pointDefenseRating: 0.45, shieldingRating: 0.30, warpFactor: 1.3, sublightSpeed: 3_800, crewRequired: 4, moduleSlots: 3, hardpointTypes: ['shield', 'utility', 'engine'] },
   },
 
   // TANKER — doubles capacity for water/fuel, reduces propellant depot costs
@@ -574,6 +628,29 @@ const ROLE_PROFILE: Record<ShipRole, (tier: number) => ShipDerivedStats> = {
     insuredValue: 0,
     moduleSlots: 3 + tier,
     hardpointTypes: ['sensor', 'engine', 'utility'],
+  }),
+  // Mining Phase B: the security profile — fast, well-shielded, point-defence
+  // heavy, no hold, no sensors. Hazard resilience only (CLAUDE.md: no PvP).
+  security: (tier) => ({
+    sublightSpeed: 3_000 + tier * 400,
+    warpFactor: 1.0 + tier * 0.2,
+    fuelCapacity: 600 + tier * 200,
+    fuelBurnRate: 4 + tier * 0.6,
+    deltaVBudget: 11_000 + tier * 2_000,
+    crewRequired: 2 + tier,
+    crewCapacity: 4 + tier,
+    lifeSupportDays: 120 + tier * 30,
+    hullIntegrity: 500 + tier * 200,
+    shieldingRating: 0.20 + tier * 0.04,
+    pointDefenseRating: 0.25 + tier * 0.06,
+    surveyRange: 0,
+    surveyAccuracy: 0,
+    stealthSignature: 0.9 - tier * 0.04,
+    mtbfHours: 1_600 + tier * 600,
+    insurancePremium: 0,
+    insuredValue: 0,
+    moduleSlots: 2 + tier,
+    hardpointTypes: ['shield', 'utility', 'engine'],
   }),
 };
 

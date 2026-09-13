@@ -20,7 +20,10 @@ import { RESEARCH_MAP } from './research-tree';
 import { resolveIcon, type IconName } from './icons';
 // Mining Phase A (2026-09-12): one row per active Mining Order.
 import { describeMiningOrder } from './mining-orders';
-import { getAsteroid } from './asteroids';
+import { getAsteroid, ASTEROID_FIELD_MAP } from './asteroids';
+// Mining Phase B (2026-09-13): a claim about to lapse is an order too —
+// "work it or lose it" within one game-month.
+import { isClaimExpiringSoon } from './asteroid-claims';
 // CC-2: the headquarters relocation project (campaign loop) as one row.
 import { getHeadquarters, getHqStage, isHqStageId } from './headquarters';
 import { hqProjectProgress } from './hq-relocation';
@@ -172,6 +175,26 @@ export function buildOrderQueue(state: GameState): OrderQueueItem[] {
         target: { kind: 'location', id: s.surveyExpedition.targetLocation },
       });
     }
+  }
+
+  // Mining Phase B: claims lapsing within one game-month (asteroid-claims.ts
+  // CLAIM_EXPIRING_SOON_MS). Clicking opens the Mining tab; the target is
+  // the field's parent body.
+  for (const claim of Object.values(state.asteroidClaims || {})) {
+    if (!isClaimExpiringSoon(claim, nowMs)) continue;
+    const rock = getAsteroid(claim.asteroidId);
+    const field = ASTEROID_FIELD_MAP.get(claim.fieldId);
+    const total = Math.max(1, claim.expiresAtMs - claim.lastWorkedAtMs);
+    items.push({
+      id: `claim-expiring-${claim.id}`,
+      icon: 'mining',
+      label: `Claim lapsing · ${rock?.name || claim.asteroidId}`,
+      sub: `Work it or lose it · ${field?.name || claim.fieldId}`,
+      pct: Math.max(0, Math.min(100, ((nowMs - claim.lastWorkedAtMs) / total) * 100)),
+      etaSeconds: Math.max(0, (claim.expiresAtMs - nowMs) / 1000),
+      target: { kind: 'location', id: field?.parentLocationId || 'earth_surface' },
+      tab: 'mining',
+    });
   }
 
   // Interstellar expeditions in flight (Wave 10) — outbound/exploring/returning.

@@ -33,6 +33,7 @@ function shipRoleIcon(role: string): IconName {
     case 'mining': return 'ship-mining';
     case 'survey': return 'ship-survey';
     case 'tanker': return 'ship-tanker';
+    case 'security': return 'ship-survey';
     default: return 'ship-transport';
   }
 }
@@ -500,6 +501,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                         ship.role === 'transport' ? 'bg-green-500/10 text-green-400' :
                         ship.role === 'tanker' ? 'bg-blue-500/10 text-blue-400' :
                         ship.role === 'maintenance' ? 'bg-cyan-500/10 text-cyan-400' :
+                        ship.role === 'security' ? 'bg-rose-500/10 text-rose-300' :
                         'bg-purple-500/10 text-purple-400'
                       }`}>{ship.role}</span>
                     </div>

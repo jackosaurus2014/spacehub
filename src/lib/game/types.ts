@@ -674,6 +674,9 @@ export interface GameState {
     // the finale slot) rather than adding parallel fields.
     chapterId?: string;
     chapterName?: string;
+    /** Mining Phase B: set when this card is a rock event (random-events.ts
+     *  rubble_field / spin_up) so the stand-off choice knows its rock. */
+    asteroidId?: string;
   } | null;
   incomeHistory?: number[];
 
@@ -782,6 +785,8 @@ export interface GameState {
     miningOrder?: MiningOrder;
     /** Mining Phase A: ore aboard after a 'hold' order, until a Return. */
     heldOre?: HeldOre;
+    /** Mining Phase B: a security hull assigned to another ship's order. */
+    escortingOrderId?: string;
   }[];
 
   // Prestige (deprecated — kept for migration; see legacy-system.ts)
@@ -1599,6 +1604,17 @@ export interface GameState {
    *  AsteroidSurvey rows; a synced save only ever writes what the survey
    *  route or a survey order returned. Local-only play rolls its own. */
   asteroidIntel?: Record<string, SurveyRecord>;
+  /** Mining Phase B (2026-09-13). [SAVE] additive, save-load.ts defaults
+   *  all three. The corporation's OWN active claims keyed by asteroidId
+   *  (server truth = AsteroidClaim rows; adopted from the sync's mining
+   *  block). */
+  asteroidClaims?: Record<string, import('./asteroid-claims').AsteroidClaimRecord>;
+  /** Rocks the player chose to stand off from on a rubble / spin-up event
+   *  card (rock id → until ms). A client-side self-restriction. */
+  miningStandOff?: Record<string, number>;
+  /** Mining notices (claim lapses, shakedowns, respawns) already posted as
+   *  mail + Situation Log rows — dedupe across syncs. */
+  miningNoticesSeen?: string[];
 
   /** V32 — Wave E3 "The Consumption Engine" (docs/ECONOMY_PVP_2026-08.md
    *  §2.2/§E3, engine: consumption.ts). Additive. Tracks the world-month

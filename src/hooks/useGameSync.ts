@@ -117,6 +117,9 @@ export function useGameSync(
      *  pending project) — adopted via hq-relocation.ts
      *  adoptServerHeadquarters. null = schema lagging (keep the client's). */
     headquarters?: ServerHeadquartersBlock | null;
+    /** Mining Phase B: the server's mining block (claims, live intel,
+     *  notices) — adopted via asteroid-claims.ts adoptServerMining. */
+    mining?: ServerMiningBlock | null;
   }) => void,
 ): SyncStatus {
   const [status, setStatus] = useState<SyncStatus>({
@@ -558,6 +561,7 @@ export function useGameSync(
             // CC-2: server-authoritative headquarters (object = adopt; null /
             // absent = the server had nothing to say this sync).
             headquarters: data.headquarters && typeof data.headquarters === 'object' ? (data.headquarters as ServerHeadquartersBlock) : undefined,
+            mining: data.mining && typeof data.mining === 'object' ? (data.mining as ServerMiningBlock) : undefined,
           });
         }
 

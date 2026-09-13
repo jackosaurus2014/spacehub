@@ -2607,6 +2607,16 @@ export function processFullTick(state: GameState): GameState {
   } catch (err) {
     console.error('Mining order processing error (non-fatal):', err);
   }
+  // 6a-claims. Mining Phase B: expire unworked claims (mirrors the server
+  // pass; local-only play — no profile — also pays the monthly upkeep here)
+  // and raise a rubble / spin-up card for a rock the fleet is working.
+  try {
+    const localOnly = !newState.lastSyncAt;
+    newState = advanceAsteroidClaims(newState, Date.now(), localOnly);
+    newState = rollMiningEventCards(newState, Date.now());
+  } catch (err) {
+    console.error('Mining claim processing error (non-fatal):', err);
+  }
 
   // 6e. AAA Round 1 E3.2 — lifetime legacy trackers, part 2.
   //

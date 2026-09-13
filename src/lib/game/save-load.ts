@@ -268,6 +268,9 @@ export function getNewGameState(): GameState {
     // no probes bought, no rocks surveyed. Mining Orders live on ships[].
     surveyProbes: 0,
     asteroidIntel: {},
+    asteroidClaims: {},
+    miningStandOff: {},
+    miningNoticesSeen: [],
   };
 }
 
@@ -875,6 +878,10 @@ export function migrateLoadedState(state: GameState): GameState | null {
     // rather than left stuck.
     if (typeof state.surveyProbes !== 'number' || !Number.isFinite(state.surveyProbes) || state.surveyProbes < 0) state.surveyProbes = 0;
     if (!state.asteroidIntel || typeof state.asteroidIntel !== 'object') state.asteroidIntel = {};
+    // Mining Phase B (2026-09-13): claims, stand-offs, notice dedupe.
+    if (!state.asteroidClaims || typeof state.asteroidClaims !== 'object') state.asteroidClaims = {};
+    if (!state.miningStandOff || typeof state.miningStandOff !== 'object') state.miningStandOff = {};
+    if (!Array.isArray(state.miningNoticesSeen)) state.miningNoticesSeen = [];
     if (Array.isArray(state.ships)) {
       state.ships = state.ships.map(s => {
         const o = s.miningOrder;

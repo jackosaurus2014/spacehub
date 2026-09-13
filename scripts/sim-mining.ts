@@ -1,4 +1,8 @@
-// ─── Space Tycoon: mining-specialist strategy sims (Phase A balance gate) ──
+// ─── Space Tycoon: mining-specialist strategy sims (Phase A + B balance gates) ──
+// Phase B (2026-09-13, docs/BALANCE.md Pass 12): scenarios 4-5 add claimed vs
+// unclaimed rocks under shared-rock pressure (rock-pressure.ts) and the
+// escort-vs-no-escort run against NPC shakedowns (npc-shakedown.ts). The
+// Phase A gates (1-3) are re-run unchanged and must still pass.
 // docs/SPACE_MINING_DESIGN_2026-09-12.md §8: "the sim harness run with a
 // mining-specialist strategy, checking that a solo barge is cash-positive by
 // month 3 in the Frontier, that a three-ship cycle beats two parked miners
@@ -16,6 +20,9 @@
 import { GAME_MONTH_MS, OUTPUT_SELL_MULT, fm, mdTable } from './sim-harness';
 import { ASTEROID_FIELD_MAP, generateFieldRocks, rollAsteroidIntel, oreForRock, type AsteroidRock, LOCAL_INTEL_SALT, SURVEY_PROBE_COST } from '../src/lib/game/asteroids';
 import { planMiningOrder, MINING_SALE_BROKER_FEE } from '../src/lib/game/mining-orders';
+import { claimStakeFee, claimUpkeepPerMonth, CLAIM_CAP_BY_TIER } from '../src/lib/game/asteroid-claims';
+import { rockPressureShare } from '../src/lib/game/rock-pressure';
+import { shakedownOdds, SHAKEDOWN_TAKE_SHARE, type EscortCover } from '../src/lib/game/npc-shakedown';
 import { SHIP_MAP } from '../src/lib/game/ships';
 import { RESOURCE_MAP, MINING_PRODUCTION } from '../src/lib/game/resources';
 import { BUILDING_MAP } from '../src/lib/game/buildings';
@@ -32,9 +39,14 @@ interface MinerSim {
   surveyed: boolean;
   thenAction: 'return_sell' | 'return_store' | 'hold';
   originId: string;
+  /** Phase B: corporations (incl. this one) working the rock; the claim;
+   *  escort cover on the lane home. Defaults = Phase A (alone, open, none). */
+  sharedMiners?: number;
+  claimed?: boolean;
+  escortCover?: EscortCover;
 }
 
-interface MonthLine { month: number; trips: number; units: number; revenue: number; fuel: number; maintenance: number; probes: number; net: number; cumulative: number }
+interface MonthLine { month: number; trips: number; units: number; revenue: number; fuel: number; maintenance: number; probes: number; claim: number; net: number; cumulative: number }
 
 /** Run one miner for MONTHS months: back-to-back orders, each quoted by the
  *  real planner. Cash-positive = monthly net (revenue − fuel − maintenance −
@@ -50,13 +62,21 @@ function simulateMiner(m: MinerSim, months: number = MONTHS): { lines: MonthLine
   let reserve = intel?.reserve ?? Number.MAX_SAFE_INTEGER;
   let origin = m.originId;
   const horizon = months * GAME_MONTH_MS;
+  const claimFee = m.claimed && intel ? claimStakeFee(m.rock, intel) : 0;
+  const upkeep = m.claimed ? claimUpkeepPerMonth(claimFee) : 0;
   while (clock < horizon && reserve > 0) {
-    const plan = planMiningOrder({ def, cargoCapacity: def.cargoCapacity, mode: 'mine', rock: m.rock, intel: intel ? { ...intel, reserve } : null, thenAction: m.thenAction, originId: origin, nowMs: clock });
+    const plan = planMiningOrder({
+      def, cargoCapacity: def.cargoCapacity, mode: 'mine', rock: m.rock, intel: intel ? { ...intel, reserve } : null, thenAction: m.thenAction, originId: origin, nowMs: clock,
+      claimed: !!m.claimed, sharedMiners: m.sharedMiners ?? 1, escortCover: m.escortCover ?? 'none', frontier: false,
+    });
     if (!plan.ok) break;
     const o = plan.order;
-    const revenue = Math.round(o.fillUnits * price * (m.thenAction === 'return_sell' ? (1 - MINING_SALE_BROKER_FEE) : OUTPUT_SELL_MULT));
-    trips.push({ completesAt: o.completesAtMs, units: o.fillUnits, fuel: o.fuelCost, revenue });
-    reserve -= o.fillUnits;
+    // Phase B: the EXPECTED units landed (pressure share, then the expected
+    // shakedown toll) price the trip; the rock loses what was extracted.
+    const extracted = Math.max(1, Math.round(o.fillUnits * plan.pressureShare));
+    const revenue = Math.round(plan.expectedUnits * price * (m.thenAction === 'return_sell' ? (1 - MINING_SALE_BROKER_FEE) : OUTPUT_SELL_MULT));
+    trips.push({ completesAt: o.completesAtMs, units: plan.expectedUnits, fuel: o.fuelCost, revenue });
+    reserve -= extracted;
     clock = o.completesAtMs;
     origin = o.destinationId; // hold: stays at the field (no outbound next time)
   }
@@ -65,13 +85,14 @@ function simulateMiner(m: MinerSim, months: number = MONTHS): { lines: MonthLine
   for (let month = 1; month <= months; month++) {
     const inMonth = trips.filter(t => t.completesAt > (month - 1) * GAME_MONTH_MS && t.completesAt <= month * GAME_MONTH_MS);
     const probes = month === 1 && m.surveyed ? SURVEY_PROBE_COST : 0;
+    const claim = (month === 1 ? claimFee : 0) + upkeep;
     const revenue = inMonth.reduce((s, t) => s + t.revenue, 0);
     const fuel = inMonth.reduce((s, t) => s + t.fuel, 0);
     const units = inMonth.reduce((s, t) => s + t.units, 0);
     const maintenance = def.maintenancePerMonth;
-    const net = revenue - fuel - maintenance - probes;
+    const net = revenue - fuel - maintenance - probes - claim;
     cumulative += net;
-    lines.push({ month, trips: inMonth.length, units, revenue, fuel, maintenance, probes, net, cumulative });
+    lines.push({ month, trips: inMonth.length, units, revenue, fuel, maintenance, probes, claim, net, cumulative });
   }
   return { lines, capex: def.baseCost };
 }
@@ -157,6 +178,47 @@ function main() {
   const bestShip = Math.max(avg(bargeNE, 'revenue') / bargeNE.capex, avg(bargeIB, 'revenue') / bargeIB.capex, avg(minerIB, 'revenue') / minerIB.capex);
   const bestBld = Math.max(...bench.map(([, b]) => b.grossPerMonth / b.capex));
   console.log(`\nGATE: best ship-mining gross÷capex is ${(bestShip / bestBld).toFixed(2)}× the best building benchmark (limit ~1.5×) → ${bestShip / bestBld <= 1.5 ? 'OK ✓' : 'OVER ✗'}\n`);
+
+  // ── Scenario 4 (Phase B): claimed vs unclaimed rock under shared-rock pressure ──
+  console.log('## 4. Phase B — claimed vs unclaimed rock (Prospector Barge, Inner Belt M rock, Ceres storage, 6 months)\n');
+  const fee = claimStakeFee(rockM, intelM);
+  console.log(`Stake fee for ${rockM.name} (grade ${intelM.grade}, reserve ${intelM.reserve}, M-ore ${fm(orePrice)}): ${fm(fee)}; upkeep ${fm(claimUpkeepPerMonth(fee))}/month. Claim caps by tier: ${Object.entries(CLAIM_CAP_BY_TIER).map(([t, c]) => `T${t}:${c}`).join(' ')}.\n`);
+  const s4 = [
+    ['Open · alone', simulateMiner({ name: 'b', defId: 'prospector_barge', fieldId: 'field_inner_belt', rock: rockM, surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface' })],
+    ['Open · 2 corporations', simulateMiner({ name: 'b', defId: 'prospector_barge', fieldId: 'field_inner_belt', rock: rockM, surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface', sharedMiners: 2 })],
+    ['Open · 3 corporations', simulateMiner({ name: 'b', defId: 'prospector_barge', fieldId: 'field_inner_belt', rock: rockM, surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface', sharedMiners: 3 })],
+    ['Open · 4 corporations', simulateMiner({ name: 'b', defId: 'prospector_barge', fieldId: 'field_inner_belt', rock: rockM, surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface', sharedMiners: 4 })],
+    ['Claimed (fee + upkeep, exclusive)', simulateMiner({ name: 'b', defId: 'prospector_barge', fieldId: 'field_inner_belt', rock: rockM, surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface', claimed: true })],
+  ] as const;
+  console.log(mdTable(['Scenario', 'Share', 'Units/6mo', 'Revenue/6mo', 'Claim cost/6mo', 'Net/6mo', 'Net month 3'],
+    s4.map(([name, r], i) => [name, i === 4 ? '1.00' : rockPressureShare(i + 1).toFixed(2), r.lines.reduce((s, l) => s + l.units, 0), fm(r.lines.reduce((s, l) => s + l.revenue, 0)), fm(r.lines.reduce((s, l) => s + l.claim, 0)), fm(r.lines[5].cumulative), fm(r.lines[2].net)])));
+  const openAlone = s4[0][1].lines[5].cumulative;
+  const open2 = s4[1][1].lines[5].cumulative;
+  const claimed = s4[4][1].lines[5].cumulative;
+  console.log(`\nGATE: a claim costs ${fm(openAlone - claimed)} over 6 months against an uncontested rock (${((1 - claimed / openAlone) * 100).toFixed(1)}% of net) and is worth ${fm(claimed - open2)} once ONE rival shares the rock → ${claimed > open2 && claimed < openAlone ? 'claims pay only when contested ✓' : 'CHECK ✗'}\n`);
+
+  // ── Scenario 5 (Phase B): escort vs no escort on a belt run ──
+  console.log('## 5. Phase B — Escort Cutter vs no escort (Asteroid Mining Ship, Inner Belt M rock, return & sell at Ceres, 6 months)\n');
+  const cutter = SHIP_MAP.get('escort_cutter')!;
+  const s5 = [
+    ['No cover', 'none' as EscortCover],
+    ['Stationed cutter at the field', 'stationed' as EscortCover],
+    ['Assigned cutter (flies the run)', 'assigned' as EscortCover],
+  ] as const;
+  const rows5: (string | number)[][] = [];
+  const nets5: number[] = [];
+  for (const [name, cover] of s5) {
+    const r = simulateMiner({ name: 'a', defId: 'asteroid_miner', fieldId: 'field_inner_belt', rock: rockM, surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface', escortCover: cover });
+    const odds = shakedownOdds('asteroid_belt', cover, false);
+    const escortCost = cover === 'none' ? 0 : MONTHS * cutter.maintenancePerMonth;
+    const net = r.lines[5].cumulative - escortCost;
+    nets5.push(net);
+    rows5.push([name, `${(odds * 100).toFixed(1)}%`, r.lines.reduce((s, l) => s + l.units, 0), fm(r.lines.reduce((s, l) => s + l.revenue, 0)), fm(escortCost), fm(net)]);
+  }
+  console.log(mdTable(['Cover', 'Odds/leg', 'Units landed/6mo', 'Revenue/6mo', 'Cutter upkeep/6mo', 'Net/6mo (excl. cutter capex)'], rows5));
+  const tollPerTrip = SHIP_MAP.get('asteroid_miner')!.cargoCapacity * shakedownOdds('asteroid_belt', 'none', false) * SHAKEDOWN_TAKE_SHARE * orePrice;
+  console.log(`\nExpected toll per unescorted belt trip: ${fm(tollPerTrip)} (${(shakedownOdds('asteroid_belt', 'none', false) * 100).toFixed(0)}% × ${SHAKEDOWN_TAKE_SHARE * 100}% of a 200-unit hold). Cutter capex ${fm(cutter.baseCost)}, upkeep ${fm(cutter.maintenancePerMonth)}/mo.`);
+  console.log(`GATE: with ONE miner an assigned cutter ${nets5[2] > nets5[0] ? 'BEATS' : 'does NOT beat'} no cover on 6-month net before capex (${fm(nets5[2] - nets5[0])}); it pays for its hull only across a fleet or a longer horizon → ${nets5[2] - nets5[0] < cutter.baseCost ? 'a fleet-scale decision, not a solo auto-buy ✓' : 'CHECK ✗'}\n`);
 }
 
 main();
