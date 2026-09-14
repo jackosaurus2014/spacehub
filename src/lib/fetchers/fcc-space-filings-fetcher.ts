@@ -1,5 +1,6 @@
 import { logger } from '@/lib/logger';
 import { createCircuitBreaker } from '@/lib/circuit-breaker';
+import { ecfsApiKey } from './ecfs-api-key';
 
 const circuitBreaker = createCircuitBreaker('fcc-space-filings', {
   failureThreshold: 3,
@@ -19,10 +20,20 @@ interface FCCFiling {
 
 /**
  * Fetch FCC ECFS filings related to satellite/NGSO/spectrum.
- * Uses the public FCC ECFS search API.
+ *
+ * ECFS requires an api_key as of 2026 (ecfs-api-key.ts); without one every
+ * request answered 403 and this fetcher swallowed it. Two further bugs went
+ * with it and are fixed here: the response array is `filing`, not
+ * `filings`, and four of the fields this mapper read no longer exist on a
+ * filing row. Live shape re-derived 2026-09-14.
  */
 export async function fetchFCCSpaceFilings(): Promise<FCCFiling[]> {
   return circuitBreaker.execute(async () => {
+    const apiKey = ecfsApiKey();
+    if (!apiKey) {
+      logger.info('[FCC] No FCC_API_KEY / CONGRESS_GOV_API_KEY — space-filings feed skipped (one free key from https://api.congress.gov/sign-up/ serves both)');
+      return [];
+    }
     // Search for satellite and NGSO filings in key proceedings
     const searchTerms = [
       'satellite',
@@ -40,6 +51,7 @@ export async function fetchFCCSpaceFilings(): Promise<FCCFiling[]> {
           q: term,
           sort: 'date_disseminated,DESC',
           limit: '10',
+          api_key: apiKey,
         });
 
         const response = await fetch(
@@ -56,18 +68,26 @@ export async function fetchFCCSpaceFilings(): Promise<FCCFiling[]> {
         }
 
         const data = await response.json();
-        const filings = data.filings || [];
+        const filings = data.filing || data.filings || [];
 
         for (const filing of filings) {
+          const proc = filing.proceedings?.[0];
+          const filingType = filing.submissiontype?.description || filing.submissiontype?.short || 'filing';
+          const proceedingName = proc?.description_display || proc?.description || '';
+          const filingId = filing.id_submission || filing.confirmation_number || '';
           allFilings.push({
-            title: filing.short_comment || filing.text_data?.substring(0, 200) || `FCC Filing: ${term}`,
-            filingId: filing.id_submission || filing.confirmation_number || '',
-            proceedings: filing.proceedings?.[0]?.name || '',
+            // No comment text rides a filing row; the proceeding is the
+            // substance, and the docket number is `name`, not `id`.
+            title: proceedingName ? `${filingType} — ${proceedingName}` : `FCC Filing: ${term}`,
+            filingId,
+            proceedings: proc?.name || '',
             datePosted: filing.date_disseminated || filing.date_submission || '',
-            url: `https://www.fcc.gov/ecfs/search/filings?q=${encodeURIComponent(term)}`,
+            url: filing.documents?.[0]?.src
+              || (filingId ? `https://www.fcc.gov/ecfs/filing/${filingId}`
+                : `https://www.fcc.gov/ecfs/search/filings?q=${encodeURIComponent(term)}`),
             filer: filing.filers?.[0]?.name || 'Unknown',
-            filingType: filing.type_of_filing || 'filing',
-            bureau: filing.bureau?.name || 'International Bureau',
+            filingType,
+            bureau: proc?.bureau_name || 'Space Bureau',
           });
         }
       } catch (err) {

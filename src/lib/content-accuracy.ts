@@ -15,6 +15,7 @@
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { sendFreshnessAlert, resolveFreshnessAlertsByPrefix } from '@/lib/freshness-alerts';
+import { hasEcfsApiKey } from '@/lib/fetchers/ecfs-api-key';
 import { QA_EMAIL_DOMAIN } from '@/lib/qa-accounts';
 import { STARTUP_HUB_ASOF } from '@/lib/startup-hub-data';
 import { REPORT_CARDS_QUARTER_ASSESSED } from '@/lib/report-cards-data';
@@ -745,10 +746,11 @@ async function checkTablePipelineLiveness(): Promise<AccuracyCheckOutcome> {
       newest: async () => (await prisma.debrisObject.findFirst({ orderBy: { updatedAt: 'desc' }, select: { updatedAt: true } }))?.updatedAt ?? null,
     },
   ];
-  // Spectrum filings are gated on FCC_API_KEY (a known pending founder
-  // action) — only watch them once the key exists, so the sentinel doesn't
-  // nag about a feed that cannot run yet.
-  if (process.env.FCC_API_KEY) {
+  // Spectrum filings need an ECFS api_key, which CONGRESS_GOV_API_KEY also
+  // satisfies (see fetchers/ecfs-api-key.ts — one api.data.gov key serves
+  // both federal feeds). Watch the table only once a key exists, so the
+  // sentinel never nags about a feed that cannot run.
+  if (hasEcfsApiKey()) {
     checks.push({
       label: 'SpectrumFiling (FCC ECFS)',
       maxAgeDays: 21,

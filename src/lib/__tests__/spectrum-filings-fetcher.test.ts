@@ -19,51 +19,43 @@ import {
 const FIXTURE_RAW_FILINGS: RawECFSFiling[] = [
   {
     id_submission: '1082312345678',
-    short_comment: 'Comments of Example Satellite Co. on NGSO spectrum sharing proceeding',
-    proceedings: [{ name: 'NGSO Spectrum Sharing', id: 'RM-11868' }],
+    submissiontype: { description: 'COMMENT', short: 'CO' },
+    proceedings: [{ name: 'RM-11868', description_display: 'NGSO Spectrum Sharing', bureau_name: 'Space Bureau' }],
     date_disseminated: '2026-08-10T00:00:00Z',
     filers: [{ name: 'Example Satellite Co.' }],
-    type_of_filing: 'COMMENT',
-    bureau: { name: 'Space Bureau' },
+    documents: [{ filename: 'Example Satellite Comments.pdf', src: 'https://www.fcc.gov/ecfs/document/1082312345678/1' }],
   },
   {
     id_submission: '1082312345679',
-    short_comment: 'Petition for reconsideration regarding earth station licensing rules',
-    proceedings: [{ name: 'Earth Station Licensing', id: 'IB Docket 21-102' }],
+    submissiontype: { description: 'PETITION' },
+    proceedings: [{ name: 'IB Docket 21-102', description: 'Earth Station Licensing', bureau_name: 'Space Bureau' }],
     date_disseminated: '2026-08-09T00:00:00Z',
     filers: [{ name: 'Orbital Comms LLC' }],
-    type_of_filing: 'PETITION',
-    bureau: { name: 'Space Bureau' },
   },
   {
     // Duplicate id_submission of the first entry — should be deduped
     id_submission: '1082312345678',
-    short_comment: 'Duplicate submission',
-    proceedings: [{ name: 'NGSO Spectrum Sharing', id: 'RM-11868' }],
+    submissiontype: { description: 'COMMENT' },
+    proceedings: [{ name: 'RM-11868', description_display: 'NGSO Spectrum Sharing' }],
     date_disseminated: '2026-08-10T00:00:00Z',
     filers: [{ name: 'Example Satellite Co.' }],
-    type_of_filing: 'COMMENT',
-    bureau: { name: 'Space Bureau' },
   },
   {
     // Not spectrum-relevant — should be filtered out
     id_submission: '1082312345680',
-    short_comment: 'Comments on annual EEO public file report',
-    proceedings: [{ name: 'Broadcast EEO Compliance', id: 'MB Docket 98-204' }],
+    submissiontype: { description: 'COMMENT' },
+    proceedings: [{ name: 'MB Docket 98-204', description_display: 'Broadcast EEO Compliance', bureau_name: 'Media Bureau' }],
     date_disseminated: '2026-08-08T00:00:00Z',
     filers: [{ name: 'Local Radio Group' }],
-    type_of_filing: 'COMMENT',
-    bureau: { name: 'Media Bureau' },
   },
   {
-    // No id_submission, falls back to confirmation_number
+    // No id_submission, falls back to confirmation_number; no proceeding, so
+    // the title falls back to the attached document's filename.
     confirmation_number: 'confirm-9988',
-    text_data: 'A lengthy filing regarding satellite constellation deployment milestones that runs on for a while past two hundred characters so it gets truncated by the mapper as expected in the fallback title path.',
-    proceedings: [{ name: 'Satellite Constellation Milestones', id: 'IB Docket 22-411' }],
+    submissiontype: { description: 'NOTICE' },
     date_submission: '2026-08-07T00:00:00Z',
     filers: [{ name: 'Constellation Ops Inc.' }],
-    type_of_filing: 'NOTICE',
-    bureau: { name: 'Space Bureau' },
+    documents: [{ filename: 'Satellite constellation deployment milestones.pdf' }],
   },
 ];
 
@@ -71,7 +63,9 @@ function fixtureResponse(overrideFilings?: RawECFSFiling[]) {
   return {
     ok: true,
     status: 200,
-    json: async () => ({ filings: overrideFilings ?? FIXTURE_RAW_FILINGS }),
+    // ECFS returns the array under `filing`, singular. Reading the plural
+    // is the bug that kept this feed empty until 2026-09-14.
+    json: async () => ({ filing: overrideFilings ?? FIXTURE_RAW_FILINGS }),
   };
 }
 
@@ -116,7 +110,10 @@ describe('mapECFSFiling', () => {
     const record = mapECFSFiling(FIXTURE_RAW_FILINGS[0], 'NGSO');
     expect(record).toMatchObject({
       filingId: '1082312345678',
-      title: 'Comments of Example Satellite Co. on NGSO spectrum sharing proceeding',
+      // A filing row carries no comment text; the proceeding is the substance.
+      title: 'COMMENT — NGSO Spectrum Sharing',
+      // `name` is the docket number, `description` the proceeding title —
+      // the reverse of what this mapper assumed before 2026-09-14.
       docket: 'RM-11868',
       proceedingName: 'NGSO Spectrum Sharing',
       filer: 'Example Satellite Co.',
@@ -124,14 +121,21 @@ describe('mapECFSFiling', () => {
       bureau: 'Space Bureau',
       filedDate: '2026-08-10T00:00:00Z',
     });
-    expect(record.url).toBe('https://www.fcc.gov/ecfs/document/1082312345678');
+    // The API hands us the document URL; we do not construct one.
+    expect(record.url).toBe('https://www.fcc.gov/ecfs/document/1082312345678/1');
   });
 
-  it('falls back to confirmation_number for filingId and truncates text_data for title', () => {
+  it('falls back to confirmation_number for filingId and to the document filename for title', () => {
     const record = mapECFSFiling(FIXTURE_RAW_FILINGS[4], 'satellite constellation');
     expect(record.filingId).toBe('confirm-9988');
-    expect(record.title.length).toBeLessThanOrEqual(200);
+    expect(record.title).toBe('Satellite constellation deployment milestones.pdf');
     expect(record.filedDate).toBe('2026-08-07T00:00:00Z');
+    // No document src on this row, so the filing page is constructed.
+    expect(record.url).toBe('https://www.fcc.gov/ecfs/filing/confirm-9988');
+  });
+
+  it(`reads the bureau off the proceeding, since the row own bureaus array is empty`, () => {
+    expect(mapECFSFiling(FIXTURE_RAW_FILINGS[3], 'EEO').bureau).toBe('Media Bureau');
   });
 
   it('produces a search-based fallback URL when no filingId is present', () => {
@@ -161,10 +165,39 @@ describe('dedupeByFilingId', () => {
 
 describe('fetchSpectrumFilings', () => {
   const originalFetch = global.fetch;
+  const originalFcc = process.env.FCC_API_KEY;
+  const originalCongress = process.env.CONGRESS_GOV_API_KEY;
+
+  beforeEach(() => { process.env.FCC_API_KEY = 'test-ecfs-key'; });
 
   afterEach(() => {
     global.fetch = originalFetch;
+    if (originalFcc === undefined) delete process.env.FCC_API_KEY; else process.env.FCC_API_KEY = originalFcc;
+    if (originalCongress === undefined) delete process.env.CONGRESS_GOV_API_KEY; else process.env.CONGRESS_GOV_API_KEY = originalCongress;
     jest.restoreAllMocks();
+  });
+
+  // ECFS began refusing keyless requests in 2026 (403 API_KEY_MISSING). A
+  // request we know will be refused is worse than no request: it burns the
+  // circuit breaker and logs noise, so the feed skips instead.
+  it('makes NO network call when neither key is configured', async () => {
+    delete process.env.FCC_API_KEY;
+    delete process.env.CONGRESS_GOV_API_KEY;
+    const fetchMock = jest.fn();
+    global.fetch = fetchMock as unknown as typeof fetch;
+    await expect(fetchSpectrumFilings(new Date('2026-08-14T00:00:00Z'))).resolves.toEqual([]);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  // One api.data.gov key serves both congress.gov and ECFS (confirmed against
+  // the live endpoint 2026-09-14), so the Congress key alone is enough.
+  it('falls back to CONGRESS_GOV_API_KEY when FCC_API_KEY is absent', async () => {
+    delete process.env.FCC_API_KEY;
+    process.env.CONGRESS_GOV_API_KEY = 'shared-umbrella-key';
+    const fetchMock = jest.fn().mockResolvedValue(fixtureResponse());
+    global.fetch = fetchMock as unknown as typeof fetch;
+    await fetchSpectrumFilings(new Date('2026-08-14T00:00:00Z'));
+    expect(fetchMock.mock.calls[0][0] as string).toContain('api_key=shared-umbrella-key');
   });
 
   it('issues exactly one HTTP request and returns filtered, deduped, mapped records', async () => {
@@ -177,6 +210,7 @@ describe('fetchSpectrumFilings', () => {
     const calledUrl = fetchMock.mock.calls[0][0] as string;
     expect(calledUrl).toContain('publicapi.fcc.gov/ecfs/filings');
     expect(calledUrl).toContain('limit=20');
+    expect(calledUrl).toContain('api_key=test-ecfs-key');
 
     // 5 raw -> 1 filtered out (not relevant) -> 1 deduped -> 3 unique results
     expect(results).toHaveLength(3);
@@ -200,9 +234,13 @@ describe('fetchSpectrumFilings', () => {
 
 describe('fetchAndStoreSpectrumFilings', () => {
   const originalFetch = global.fetch;
+  const originalFcc = process.env.FCC_API_KEY;
+
+  beforeEach(() => { process.env.FCC_API_KEY = 'test-ecfs-key'; });
 
   afterEach(() => {
     global.fetch = originalFetch;
+    if (originalFcc === undefined) delete process.env.FCC_API_KEY; else process.env.FCC_API_KEY = originalFcc;
     jest.restoreAllMocks();
     jest.resetModules();
   });

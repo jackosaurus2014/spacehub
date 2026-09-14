@@ -6,7 +6,9 @@
  * used by src/lib/fetchers/fcc-space-filings-fetcher.ts for the compliance
  * module, reused here with a spectrum-coordination-focused search rotation.
  *
- * API docs: https://publicapi.fcc.gov/ecfs/filings (no API key required)
+ * API docs: https://publicapi.fcc.gov/ecfs/filings. An api_key IS required
+ * as of 2026 (see ecfs-api-key.ts); a keyless request answers 403
+ * API_KEY_MISSING, which this fetcher used to absorb silently.
  *
  * Design notes:
  * - The existing SpectrumFiling Prisma model (src/lib/spectrum-data.ts) is
@@ -32,6 +34,7 @@
 import { logger } from '@/lib/logger';
 import { createCircuitBreaker } from '@/lib/circuit-breaker';
 import { bulkUpsertContent } from '@/lib/dynamic-content';
+import { ecfsApiKey } from './ecfs-api-key';
 
 const circuitBreaker = createCircuitBreaker('spectrum-ecfs-filings', {
   failureThreshold: 3,
@@ -68,17 +71,25 @@ export function pickSearchTerm(date: Date = new Date()): string {
   return SPECTRUM_SEARCH_TERMS[dayOfYear % SPECTRUM_SEARCH_TERMS.length];
 }
 
+/**
+ * The subset of an ECFS filing we consume, as the endpoint actually returns
+ * it (re-derived from a live response 2026-09-14). The previous shape was
+ * written against an older ECFS and named four fields that no longer exist
+ * — `short_comment`, `text_data`, `type_of_filing` and a singular
+ * `bureau` — so every mapped record fell through to its placeholder even
+ * on the rare occasion a request succeeded. Note that a proceeding's
+ * `name` is the DOCKET NUMBER ("13-115") and its `description` is the
+ * proceeding's title; the old mapping had those two the other way round.
+ */
 export interface RawECFSFiling {
   id_submission?: string;
   confirmation_number?: string;
-  short_comment?: string;
-  text_data?: string;
-  proceedings?: Array<{ name?: string; id?: string }>;
+  submissiontype?: { description?: string; short?: string };
+  proceedings?: Array<{ name?: string; description_display?: string; description?: string; bureau_name?: string }>;
   date_disseminated?: string;
   date_submission?: string;
   filers?: Array<{ name?: string }>;
-  type_of_filing?: string;
-  bureau?: { name?: string };
+  documents?: Array<{ filename?: string; src?: string }>;
 }
 
 export interface SpectrumFilingRecord {
@@ -117,23 +128,34 @@ export function isSpectrumRelevant(
 /** Map a raw ECFS API filing into our normalized record shape. */
 export function mapECFSFiling(raw: RawECFSFiling, searchTerm: string): SpectrumFilingRecord {
   const filingId = raw.id_submission || raw.confirmation_number || '';
-  const proceedingName = raw.proceedings?.[0]?.name || '';
-  const docket = raw.proceedings?.[0]?.id || '';
+  const proc = raw.proceedings?.[0];
+  const docket = proc?.name || '';
+  const proceedingName = proc?.description_display || proc?.description || '';
+  const filingType = raw.submissiontype?.description || raw.submissiontype?.short || 'filing';
+  const filer = raw.filers?.[0]?.name || 'Unknown filer';
+  // ECFS carries no comment text on the filing row — the substance is the
+  // proceeding it was filed into, plus the document that was attached. Build
+  // the title from those rather than from a field that does not exist.
+  const title = proceedingName
+    ? `${filingType} — ${proceedingName}`
+    : raw.documents?.[0]?.filename?.trim() || `FCC ECFS filing: ${searchTerm}`;
 
   return {
     filingId,
-    title:
-      raw.short_comment?.trim() ||
-      (raw.text_data ? raw.text_data.substring(0, 200).trim() : `FCC ECFS filing: ${searchTerm}`),
+    title,
     docket,
     proceedingName,
-    filer: raw.filers?.[0]?.name || 'Unknown filer',
-    filingType: raw.type_of_filing || 'filing',
-    bureau: raw.bureau?.name || 'Space Bureau',
+    filer,
+    filingType,
+    // The bureau lives on the proceeding; the row's own `bureaus` array is
+    // empty on every sample.
+    bureau: proc?.bureau_name || 'Space Bureau',
     filedDate: raw.date_disseminated || raw.date_submission || null,
-    url: filingId
-      ? `https://www.fcc.gov/ecfs/document/${filingId}`
-      : `https://www.fcc.gov/ecfs/search/filings?q=${encodeURIComponent(searchTerm)}`,
+    // The API hands us the document URL; prefer it over a constructed one.
+    url: raw.documents?.[0]?.src
+      || (filingId
+        ? `https://www.fcc.gov/ecfs/filing/${filingId}`
+        : `https://www.fcc.gov/ecfs/search/filings?q=${encodeURIComponent(searchTerm)}`),
   };
 }
 
@@ -154,11 +176,17 @@ export function dedupeByFilingId(records: SpectrumFilingRecord[]): SpectrumFilin
  */
 export async function fetchSpectrumFilings(date: Date = new Date()): Promise<SpectrumFilingRecord[]> {
   return circuitBreaker.execute(async () => {
+    const apiKey = ecfsApiKey();
+    if (!apiKey) {
+      logger.info('[SpectrumFilings] No FCC_API_KEY / CONGRESS_GOV_API_KEY — ECFS feed skipped (one free key from https://api.congress.gov/sign-up/ serves both)');
+      return [];
+    }
     const term = pickSearchTerm(date);
     const params = new URLSearchParams({
       q: term,
       sort: 'date_disseminated,DESC',
       limit: String(PAGE_LIMIT),
+      api_key: apiKey,
     });
 
     const response = await fetch(`${ECFS_FILINGS_URL}?${params.toString()}`, {
@@ -171,7 +199,10 @@ export async function fetchSpectrumFilings(date: Date = new Date()): Promise<Spe
     }
 
     const data = await response.json();
-    const rawFilings: RawECFSFiling[] = data.filings || [];
+    // ECFS returns the array under `filing` (singular). Reading `filings`
+    // meant this fetcher stored nothing even when the request succeeded;
+    // the plural is kept as a fallback in case the endpoint ever changes back.
+    const rawFilings: RawECFSFiling[] = data.filing || data.filings || [];
 
     const mapped = rawFilings.map((f) => mapECFSFiling(f, term));
     const relevant = mapped.filter(isSpectrumRelevant);
