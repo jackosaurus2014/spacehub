@@ -389,8 +389,26 @@ describe('POST /api/space-tycoon/sync — delivery credit', () => {
 
     expect(json.deliveryCredit).toEqual({ creditedNow: [], headroomCredit: 0, rejected: [{ id: gen.id, reason: 'resource_gate' }], deferred: 0 });
     expect(json.unverifiedIncome.deliveries).toEqual([gen.id]);
-    expect(persisted().money as number).toBeLessThan(claim);
     expect(persisted().creditedContractIds).toEqual([]);
+
+    // The delivery must contribute NOTHING. Asserting `money < claim` here
+    // used to stand in for that, but it was really asserting that the
+    // plausibility ceiling happened to bite — and the ceiling is an ALLOWANCE
+    // over elapsed time, not a per-transaction check. `gen` is generated from
+    // a time-bucketed seed, so its payout changes with the delivery pool; on a
+    // day when the payout sat under the allowance the money was legitimately
+    // kept and the assertion failed for no good reason (it did, on
+    // 2026-09-14, once Mining Phase D widened the ceiling). Compare against
+    // the SAME sync with no delivery attached instead: identical persisted
+    // money proves the rejected delivery paid nothing, whatever the day's
+    // payout. The ceiling itself is covered deterministically by the
+    // inflated-payment case below, which claims $1e12.
+    const withDelivery = persisted().money as number;
+    setup(existingRow({ resources: { [gen.resourceId]: 2_000 } }));
+    await postSync({ money: claim, resources: { [gen.resourceId]: 2_000 } });
+    expect(withDelivery).toBe(persisted().money as number);
+    setup(existingRow({ resources: { [gen.resourceId]: 2_000 } }));
+    await postSync({ money: claim, resources: { [gen.resourceId]: 2_000 }, completedDeliveries: [delivery] });
     expect(auditEvents()).toContain('income_credit_rejected');
     const audit = mockMarketAuditLog.create.mock.calls.find(c => c[0].data.eventType === 'income_credit_rejected')![0].data;
     expect(audit.details.deliveries.resourceGate[gen.resourceId]).toEqual({ claimed: gen.quantity, decrease: 0, passed: false });

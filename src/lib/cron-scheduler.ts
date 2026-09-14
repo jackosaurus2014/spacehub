@@ -186,6 +186,10 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '*/10 * * * *', path: '/api/cron/satellite-pass-alerts',           label: 'satellite-pass-alerts',      maxStaleMinutes: 60 },
   // Launch alerts without an account (2026-08-29): T-24h / T-1h / outcome emails for LaunchWatch rows.
   { schedule: '*/20 * * * *', path: '/api/cron/launch-watch',                    label: 'launch-watch',               maxStaleMinutes: 90 },
+  // Forum discussion anchors (2026-09-14 forum revival): opens a standing
+  // thread per upcoming launch, refreshes slipped dates, sweeps orphans. At
+  // :50 so anchors exist before the :20 launch-watch alerts link to them.
+  { schedule: '50 * * * *',   path: '/api/cron/forum-anchors',                   label: 'forum-anchors',              maxStaleMinutes: 180 },
   // Weekly company briefs without an account (2026-08-31): Monday owned-data digest per verified CompanyWatch, idempotent per ISO week.
   { schedule: '0 9 * * 1',    path: '/api/cron/company-brief',                   label: 'company-brief',              maxStaleMinutes: 11520 },
   // Space Tycoon weekly corporation report (2026-09-01): Monday per-player email for GameProfile.weeklyReportEmail opt-ins, idempotent per ISO week (TycoonWeeklySend).
@@ -351,6 +355,19 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 14 3 * *',   path: '/api/cron/email-programs?program=hiring-index',  label: 'hiring-index-email',         maxStaleMinutes: 46080 },
   { schedule: '0 15 3 * *',   path: '/api/cron/email-programs?program=slip-report',   label: 'slip-report-email',          maxStaleMinutes: 46080 },
   { schedule: '30 13 * * *',  path: '/api/cron/job-posting-expiry',                label: 'job-posting-expiry',             maxStaleMinutes: 2880 },
+  // SpaceNexus Research (2026-09-14).
+  //
+  // The score snapshot runs REGARDLESS of RESEARCH_TIER_ENABLED, on purpose:
+  // Space Score history cannot be backfilled, so if collection only began on
+  // launch day the tier would ship promising a time series it did not have.
+  // Collecting is free; reading the series is what is gated. 02:10 UTC, after
+  // the 01:00 content run has refreshed the company data it scores.
+  { schedule: '10 2 * * *',   path: '/api/cron/space-score-snapshot',              label: 'space-score-snapshot',           maxStaleMinutes: 2880 },
+  // Weekly screen alerts — Monday 13:00 UTC. The route re-checks Research
+  // authorization per screen and sends nothing when a result set is unchanged,
+  // so a quiet week is a successful run, not a missed one. maxStaleMinutes
+  // spans a full week plus a day of grace.
+  { schedule: '0 13 * * 1',   path: '/api/cron/research-screens',                  label: 'research-screen-alerts',         maxStaleMinutes: 11520 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

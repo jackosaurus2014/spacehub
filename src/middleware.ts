@@ -101,8 +101,18 @@ function getRateLimitConfig(pathname: string, method: string): RateLimitConfig {
     return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 per hour
   }
   // Community rate limits
-  if (pathname.startsWith('/api/community/forums')) {
-    return { maxRequests: 20, windowMs: 60 * 60 * 1000 }; // 20 forum actions/hour
+  //
+  // Split by method (2026-09-14 forum revival). A single 20/hour bucket
+  // covered forum READS as well as writes, and browsing a forum is many GETs
+  // — a reader working through one busy thread would have been 429d inside a
+  // couple of minutes. Writes keep the strict budget (that is the spam
+  // surface); reads get the ordinary API allowance. Per-ACCOUNT posting
+  // budgets live in src/lib/forum-guard.ts, since an IP bucket punishes a
+  // shared office NAT and barely inconveniences a rotating spammer.
+  if (pathname.startsWith('/api/community/forums') || pathname.startsWith('/api/forums')) {
+    return method === 'GET'
+      ? { maxRequests: 300, windowMs: 60 * 1000 }
+      : { maxRequests: 20, windowMs: 60 * 60 * 1000 }; // 20 forum writes/hour
   }
   if (pathname.startsWith('/api/community/reports')) {
     return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 reports/hour
@@ -242,8 +252,10 @@ function checkRateLimit(
     routeKey = 'contact';
   } else if (pathname.startsWith('/api/feedback')) {
     routeKey = 'feedback';
-  } else if (pathname.startsWith('/api/community/forums')) {
-    routeKey = 'community-forums';
+  } else if (pathname.startsWith('/api/community/forums') || pathname.startsWith('/api/forums')) {
+    // Reads and writes are budgeted separately, so they must not share a
+    // counter — a busy reader would otherwise spend the posting allowance.
+    routeKey = method === 'GET' ? 'community-forums-read' : 'community-forums-write';
   } else if (pathname.startsWith('/api/community/reports')) {
     routeKey = 'community-reports';
   } else if (pathname.startsWith('/api/messages')) {

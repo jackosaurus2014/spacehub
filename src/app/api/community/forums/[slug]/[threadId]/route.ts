@@ -12,8 +12,19 @@ import {
   notFoundError,
   forbiddenError,
   internalError,
+  rateLimitedError,
 } from '@/lib/errors';
-import { validateBody, editContentSchema } from '@/lib/validations';
+import { validateBody, editContentSchema, forumReplySchema } from '@/lib/validations';
+import {
+  postingThrottle,
+  sanitizeForumBody,
+  sanitizeForumTitle,
+  inspectContent,
+  isDuplicateBody,
+  validationMessage,
+} from '@/lib/forum-guard';
+import { getAnchorForThread, anchorThreadPath } from '@/lib/forum-anchors';
+import { REPLIES_PER_PAGE, clampPage, pageCount, wasEdited } from '@/lib/forum-seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +38,7 @@ export async function GET(
 ) {
   try {
     const { slug, threadId } = await params;
+    const { searchParams } = new URL(req.url);
 
     // Verify category exists
     const category = await prisma.forumCategory.findUnique({
@@ -42,7 +54,14 @@ export async function GET(
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
 
-    // Fetch thread with posts
+    // Replies are paginated (2026-09-14). This route used to select EVERY
+    // post on a thread; a thread that actually takes off would have shipped
+    // the whole discussion in one response, on every view, to every reader.
+    const totalPosts = await prisma.forumPost.count({ where: { threadId } });
+    const totalPages = pageCount(totalPosts, REPLIES_PER_PAGE);
+    const page = clampPage(searchParams.get('page'), totalPages);
+
+    // Fetch thread with one page of posts
     const thread = await prisma.forumThread.findUnique({
       where: { id: threadId },
       include: {
@@ -61,6 +80,8 @@ export async function GET(
             },
           },
           orderBy: { createdAt: 'asc' },
+          skip: (page - 1) * REPLIES_PER_PAGE,
+          take: REPLIES_PER_PAGE,
         },
         _count: {
           select: { posts: true },
@@ -72,8 +93,11 @@ export async function GET(
       return notFoundError('Forum thread');
     }
 
-    // Increment view count (fire and forget)
-    prisma.forumThread
+    // Increment view count (fire and forget). Page 1 only — paging through a
+    // long thread is one reader, not twenty, and viewCount feeds the 'popular'
+    // sort, so counting pages would rank long threads over read ones.
+    if (page === 1) {
+      prisma.forumThread
       .update({
         where: { id: threadId },
         data: { viewCount: { increment: 1 } },
@@ -84,6 +108,12 @@ export async function GET(
           error: err.message,
         });
       });
+    }
+
+    // The anchor, when this is an anchored thread. Carries the subject so an
+    // empty thread still renders the launch/company/guide it is about — an
+    // anchored thread with no replies is thin, not blank.
+    const anchor = await getAnchorForThread(threadId).catch(() => null);
 
     // Get user's vote on the thread and subscription status
     let userThreadVote: number | null = null;
@@ -138,6 +168,9 @@ export async function GET(
           isSubscribed,
           createdAt: thread.createdAt,
           updatedAt: thread.updatedAt,
+          // An edit is disclosed, never silent: a post whose text changed
+          // after people replied to it has to say so.
+          isEdited: wasEdited(thread.createdAt, thread.updatedAt),
         },
         posts: thread.posts.map((p: any) => ({
           ...p,
@@ -146,8 +179,28 @@ export async function GET(
           downvoteCount: p.downvoteCount || 0,
           isAccepted: p.isAccepted || false,
           userVote: userPostVotes[p.id] ?? null,
+          isEdited: wasEdited(p.createdAt, p.updatedAt),
         })),
         category,
+        anchor: anchor
+          ? {
+              anchorType: anchor.anchorType,
+              anchorKey: anchor.anchorKey,
+              subjectTitle: anchor.subjectTitle,
+              subjectUrl: anchor.retiredAt ? null : anchor.subjectUrl,
+              subtitle: anchor.subtitle,
+              facts: anchor.facts,
+              subjectDate: anchor.subjectDate,
+              retired: !!anchor.retiredAt,
+              threadPath: anchorThreadPath(anchor),
+            }
+          : null,
+        pagination: {
+          page,
+          limit: REPLIES_PER_PAGE,
+          total: totalPosts,
+          totalPages,
+        },
       },
     });
   } catch (error) {
@@ -207,27 +260,54 @@ export async function POST(
       return forbiddenError('This thread is locked and cannot receive new replies');
     }
 
-    const body = await req.json();
-    const { content, postAsCompany } = body;
+    const raw = await req.json().catch(() => null);
+    if (!raw) return validationError('A request body is required');
 
-    if (!content || typeof content !== 'string' || content.trim().length === 0) {
-      return validationError('Reply content is required');
+    const validation = validateBody(forumReplySchema, raw);
+    if (!validation.success) {
+      return validationError(validationMessage(validation.errors), validation.errors);
+    }
+    const { postAsCompany } = validation.data;
+
+    const throttle = postingThrottle(session.user.id, 'reply');
+    if (!throttle.allowed) {
+      return rateLimitedError(Math.ceil(throttle.retryAfterMs / 1000));
     }
 
-    if (content.length > 10000) {
-      return validationError('Reply content must be 10000 characters or less');
+    const content = sanitizeForumBody(validation.data.content);
+
+    const author = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { createdAt: true, claimedCompanyId: true },
+    });
+
+    const verdict = inspectContent(content, { accountCreatedAt: author?.createdAt ?? null });
+    if (!verdict.ok) {
+      return validationError(verdict.reason || 'That reply was rejected');
     }
 
-    // Optional: post as company
+    // Same body twice in a row from the same person is a double-submit or a
+    // bot. Checked against this author's own recent posts only — two people
+    // independently writing the same sentence is not an offence.
+    const recent = await prisma.forumPost.findMany({
+      where: {
+        authorId: session.user.id,
+        createdAt: { gte: new Date(Date.now() - 60 * 60 * 1000) },
+      },
+      select: { content: true },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (recent.some((r: any) => isDuplicateBody(r.content, content))) {
+      return validationError('You have already posted that. Say something new, or edit the original.');
+    }
+
+    // Optional: post as company. The claim is read from the DB — the request
+    // flag only says "use my claim", it never names the company.
     let companyId: string | null = null;
-    if (postAsCompany) {
-      const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { claimedCompanyId: true },
-      });
-      if (user?.claimedCompanyId) {
-        companyId = user.claimedCompanyId;
-      }
+    if (postAsCompany && author?.claimedCompanyId) {
+      companyId = author.claimedCompanyId;
     }
 
     // Create the post, update thread's updatedAt, and auto-subscribe the replier
@@ -237,7 +317,7 @@ export async function POST(
           threadId,
           authorId: session.user.id,
           ...(companyId ? { companyId } : {}),
-          content: content.trim(),
+          content,
         },
         include: {
           author: {
@@ -395,11 +475,45 @@ export async function PATCH(
       return forbiddenError('You can only edit your own threads');
     }
 
-    // Build update data
+    const throttle = postingThrottle(session.user.id, 'edit');
+    if (!throttle.allowed) {
+      return rateLimitedError(Math.ceil(throttle.retryAfterMs / 1000));
+    }
+
+    // Edits go through exactly the same sanitiser and spam inspection as the
+    // original post. Skipping it here would leave the obvious hole: post
+    // something clean, then edit the links in.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {};
-    if (content) updateData.content = content;
-    if (title) updateData.title = title;
+
+    const editor = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { createdAt: true },
+    });
+
+    if (content) {
+      const clean = sanitizeForumBody(content);
+      const verdict = inspectContent(clean, { accountCreatedAt: editor?.createdAt ?? null });
+      if (!verdict.ok) {
+        return validationError(verdict.reason || 'That edit was rejected');
+      }
+      updateData.content = clean;
+    }
+
+    if (title) {
+      const clean = sanitizeForumTitle(title);
+      if (clean.length < 3) {
+        return validationError('Give the thread a title of at least 3 characters');
+      }
+      const verdict = inspectContent(clean, {
+        accountCreatedAt: editor?.createdAt ?? null,
+        isTitle: true,
+      });
+      if (!verdict.ok) {
+        return validationError(verdict.reason || 'That title was rejected');
+      }
+      updateData.title = clean;
+    }
 
     if (Object.keys(updateData).length === 0) {
       return validationError('No fields to update');

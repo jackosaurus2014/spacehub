@@ -19,6 +19,14 @@
  */
 
 import { getStripe } from '@/lib/stripe';
+import {
+  RESEARCH_CAPABILITIES,
+  RESEARCH_PLAN,
+  RESEARCH_PRICE_ENV_VAR,
+  getResearchPriceId,
+  isResearchTierEnabled,
+} from '@/lib/research';
+import { TIER_ACCESS } from '@/lib/subscription';
 
 /**
  * Founding Member offer — WITHDRAWN 2026-08-24 by founder decision.
@@ -125,4 +133,144 @@ export async function checkAdvertisedDiscountsMatchStripe(): Promise<DiscountChe
     return { ok: false, detail: problems.join(' | ') };
   }
   return { ok: true, detail: `${live.length} advertised discount(s) match their Stripe configuration.` };
+}
+
+// ===========================================================================
+// SpaceNexus Research — the pricing-truth rule applied to a whole tier
+// ===========================================================================
+//
+// The 2026-08-24 incident was a DISCOUNT the site advertised and Stripe did not
+// deliver. A new paid tier can fail the same way in two more places, so both
+// are checked here:
+//
+//   1. The PRICE. /research and /pricing render RESEARCH_PLAN.priceYearly on a
+//      yearly interval. If the Stripe price behind STRIPE_PRICE_RESEARCH_YEARLY
+//      charges a different amount, a different currency or a different interval,
+//      the first buyer is mischarged.
+//   2. The CAPABILITIES. Every bullet the tier claims must be backed by a
+//      TIER_ACCESS flag that is genuinely true for 'research' and false for
+//      'pro' (otherwise it is not a Research capability at all) and by a file
+//      that performs the gate. A bullet with no gate is the same lie in a
+//      different font.
+//
+// Both run only when the tier is actually being advertised. A tier behind a
+// disabled flag promises nothing, so there is nothing to honour — exactly the
+// same rule ADVERTISED_DISCOUNTS uses for a withdrawn offer.
+
+/** True when the site is currently showing Research to buyers. */
+export function isResearchAdvertised(): boolean {
+  return isResearchTierEnabled() && getResearchPriceId() !== null;
+}
+
+/**
+ * Check every advertised Research capability against the tier model. Pure and
+ * synchronous — no Stripe, no database — so the guard test can run it directly.
+ */
+export function checkResearchCapabilitiesAreGated(): DiscountCheckOutcome {
+  const problems: string[] = [];
+
+  for (const cap of RESEARCH_CAPABILITIES) {
+    const onResearch = TIER_ACCESS.research[cap.accessFlag];
+    const onPro = TIER_ACCESS.pro[cap.accessFlag];
+    const onFree = TIER_ACCESS.free[cap.accessFlag];
+
+    if (onResearch !== true) {
+      problems.push(
+        `${cap.id}: advertised on Research but TIER_ACCESS.research.${cap.accessFlag} is not true — the tier would be sold a capability it does not have`
+      );
+    }
+    if (onPro === true || onFree === true) {
+      problems.push(
+        `${cap.id}: TIER_ACCESS.${cap.accessFlag} is already true for ${
+          onPro ? 'pro' : 'free'
+        } — advertising it as a Research exclusive misrepresents what the upgrade buys`
+      );
+    }
+    if (!cap.enforcedBy || !cap.enforcedBy.startsWith('src/')) {
+      problems.push(`${cap.id}: does not name the file that enforces it`);
+    }
+  }
+
+  return problems.length > 0
+    ? { ok: false, detail: problems.join(' | ') }
+    : {
+        ok: true,
+        detail: `${RESEARCH_CAPABILITIES.length} Research capabilities are each backed by a tier flag that is true for research and false for pro.`,
+      };
+}
+
+/**
+ * Compare the advertised Research price against the live Stripe price.
+ *
+ * Fails loudly on: a missing or inactive price, a different amount, a different
+ * currency, a non-recurring price, or an interval that is not a single year.
+ * Returns ok with a note when the tier is not being advertised.
+ */
+export async function checkResearchTierMatchesStripe(): Promise<DiscountCheckOutcome> {
+  if (!isResearchTierEnabled()) {
+    return {
+      ok: true,
+      detail: 'SpaceNexus Research is behind its feature flag and is not advertised.',
+    };
+  }
+
+  const priceId = getResearchPriceId();
+  if (!priceId) {
+    return {
+      ok: false,
+      detail: `SpaceNexus Research is ENABLED but ${RESEARCH_PRICE_ENV_VAR} is not set — /pricing would show a plan checkout is guaranteed to refuse.`,
+    };
+  }
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return {
+      ok: false,
+      detail:
+        'SpaceNexus Research is advertised but STRIPE_SECRET_KEY is not configured — cannot verify billing matches.',
+    };
+  }
+
+  const problems: string[] = [];
+
+  const capabilities = checkResearchCapabilitiesAreGated();
+  if (!capabilities.ok) problems.push(capabilities.detail);
+
+  try {
+    const price = await getStripe().prices.retrieve(priceId);
+
+    if (!price.active) {
+      problems.push(`Stripe price ${priceId} is INACTIVE but Research is advertised`);
+    }
+    const expectedCents = Math.round(RESEARCH_PLAN.priceYearly * 100);
+    if (price.unit_amount !== expectedCents) {
+      problems.push(
+        `site advertises $${RESEARCH_PLAN.priceYearly}/year, Stripe charges ${
+          price.unit_amount == null ? 'a metered or tiered amount' : `$${price.unit_amount / 100}`
+        } — buyers would be mischarged`
+      );
+    }
+    if (price.currency !== RESEARCH_PLAN.currency) {
+      problems.push(
+        `site advertises ${RESEARCH_PLAN.currency.toUpperCase()}, Stripe bills in ${price.currency.toUpperCase()}`
+      );
+    }
+    if (price.type !== 'recurring' || !price.recurring) {
+      problems.push(`Stripe price ${priceId} is not recurring, but Research is sold as a subscription`);
+    } else if (price.recurring.interval !== 'year' || (price.recurring.interval_count ?? 1) !== 1) {
+      problems.push(
+        `site advertises annual billing, Stripe bills every ${price.recurring.interval_count ?? 1} ${price.recurring.interval}`
+      );
+    }
+  } catch (err) {
+    problems.push(
+      `could not read the Research price from Stripe (${err instanceof Error ? err.message : String(err)})`
+    );
+  }
+
+  return problems.length > 0
+    ? { ok: false, detail: `SpaceNexus Research: ${problems.join(' | ')}` }
+    : {
+        ok: true,
+        detail: `SpaceNexus Research is advertised at $${RESEARCH_PLAN.priceYearly}/year and Stripe agrees.`,
+      };
 }

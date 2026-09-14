@@ -3,11 +3,26 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import Image from 'next/image';
+import { UGC_LINK_REL } from '@/lib/forum-seo';
 
 interface MarkdownContentProps {
   content: string;
   className?: string;
+}
+
+/**
+ * Schemes a user-authored link may use. react-markdown sanitises hrefs by
+ * default, but this content is stored user input rendered on a public page,
+ * so the allowlist is stated here rather than inherited — javascript:,
+ * data: and vbscript: never reach an anchor.
+ */
+function safeHref(href: string | undefined): string | undefined {
+  if (!href) return undefined;
+  const trimmed = href.trim();
+  if (/^(https?:|mailto:)/i.test(trimmed)) return trimmed;
+  // Relative and same-page links are fine; anything else is dropped.
+  if (/^[/#]/.test(trimmed)) return trimmed;
+  return undefined;
 }
 
 /**
@@ -62,16 +77,29 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          a: ({ href, children }) => (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/70 hover:text-white underline transition-colors"
-            >
-              {children}
-            </a>
-          ),
+          // Every link in user-generated content is rel="ugc nofollow".
+          //
+          // This is the single most valuable line in the file: nofollow
+          // removes the entire economic reason to spam the forum for
+          // backlinks, and ugc states honestly what the link is. Without it a
+          // public posting surface on a domain with real search authority
+          // becomes a link farm within a week. It applies to EVERY post,
+          // including on threads good enough to be indexed — there is no tier
+          // of member that earns followed links.
+          a: ({ href, children }) => {
+            const safe = safeHref(href);
+            if (!safe) return <>{children}</>;
+            return (
+              <a
+                href={safe}
+                target="_blank"
+                rel={UGC_LINK_REL}
+                className="text-cyan-300/90 hover:text-cyan-200 underline transition-colors"
+              >
+                {children}
+              </a>
+            );
+          },
           code: ({ className: codeClassName, children, ...props }) => {
             const isInline = !codeClassName;
             if (isInline) {
@@ -141,18 +169,53 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
             </td>
           ),
           hr: () => <hr className="border-white/[0.06] my-4" />,
-          // @types/react 19 widens <img src> to `string | Blob`; next/image
-          // only accepts a string URL, so drop anything that is not one.
-          img: ({ src, alt }) => (
-            <Image
-              src={typeof src === 'string' ? src : ''}
-              alt={alt || ''}
-              width={800}
-              height={400}
-              className="max-w-full h-auto rounded-lg border border-white/[0.06] my-2"
-              unoptimized
-            />
-          ),
+          // Images.
+          //
+          // A same-origin image embeds. A REMOTE image does not: an <img>
+          // whose src a poster controls is a tracking pixel that reports
+          // every reader's IP and user agent to a third party, and a way to
+          // put a picture nobody reviewed on a public page while the host can
+          // swap it after the fact. It renders as a labelled link instead, so
+          // the content is still reachable and the reader chooses.
+          //
+          // @types/react 19 widens <img src> to `string | Blob`, so anything
+          // that is not a string is dropped.
+          img: ({ src, alt }) => {
+            const url = typeof src === 'string' ? src.trim() : '';
+            if (!url) return null;
+
+            const isLocal = url.startsWith('/');
+            if (isLocal) {
+              // eslint-disable-next-line @next/next/no-img-element
+              return (
+                <img
+                  src={url}
+                  alt={alt || ''}
+                  className="max-w-full h-auto rounded-lg border border-white/[0.06] my-2"
+                />
+              );
+            }
+
+            const safe = safeHref(url);
+            if (!safe) return null;
+            let host = 'an external site';
+            try {
+              host = new URL(safe).hostname.replace(/^www./, '');
+            } catch {
+              // Keep the generic label.
+            }
+            return (
+              <a
+                href={safe}
+                target="_blank"
+                rel={UGC_LINK_REL}
+                className="inline-flex items-center gap-1.5 my-2 px-2.5 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-xs text-cyan-300/90 hover:text-cyan-200"
+              >
+                <span aria-hidden="true">🖼</span>
+                {alt ? `Image: ${alt}` : 'Image'} ({host})
+              </a>
+            );
+          },
         }}
       >
         {content}

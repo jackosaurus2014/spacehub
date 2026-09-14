@@ -34,7 +34,8 @@ export interface MothballedRoute {
 
 export const MOTHBALLED_ROUTES: readonly MothballedRoute[] = [
   // ── Social suite → /community ──────────────────────────────────────────
-  { prefix: '/community/forums', redirectTo: '/community', group: 'social' },
+  // NOTE: /community/forums came OFF this list on 2026-09-14 — see the
+  // RELISTED note below the array.
   { prefix: '/community/directory', redirectTo: '/community', group: 'social' },
   { prefix: '/community/profile', redirectTo: '/community', group: 'social' },
   { prefix: '/messages', redirectTo: '/community', group: 'social' },
@@ -64,6 +65,21 @@ export const MOTHBALLED_ROUTES: readonly MothballedRoute[] = [
   { prefix: '/use-cases', redirectTo: '/tools', group: 'consolidation' },
   { prefix: '/vs', redirectTo: '/about', group: 'consolidation' },
 ];
+
+// ─── Relisted ───────────────────────────────────────────────────
+//
+// /community/forums — relisted 2026-09-14.
+//
+// It was mothballed for the right reason: zero posts, and an empty forum is
+// worse than no forum. Deleting its row on its own would have rebuilt that
+// ghost town, so it only came off the list alongside the thing that answers
+// the cold start — discussion anchors (src/lib/forum-anchors.ts), which bind
+// a thread to a launch, company or guide the site ALREADY has readers for, so
+// the forum inherits existing traffic instead of waiting for its own.
+//
+// The rest of the social suite (directory, profiles, DMs, mentors, AMAs,
+// study groups, speaking, teams) stays mothballed — none of them has an
+// equivalent answer to the cold start yet.
 
 /**
  * The mothball entry covering a pathname, or null when the page is live.

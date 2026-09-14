@@ -1,8 +1,8 @@
-import fs from 'fs';
-import path from 'path';
 /**
  * @jest-environment node
  */
+import fs from 'fs';
+import path from 'path';
 /**
  * Pricing integrity — the site must never advertise a discount Stripe cannot
  * deliver. These tests encode the production incident of 2026-08-24: the site
@@ -16,8 +16,25 @@ import {
 } from '../pricing-integrity';
 
 const listMock = jest.fn();
+/** prices.retrieve — added 2026-09-14 for the SpaceNexus Research price check. */
+const priceRetrieveMock = jest.fn();
 jest.mock('@/lib/stripe', () => ({
-  getStripe: () => ({ promotionCodes: { list: listMock } }),
+  getStripe: () => ({
+    promotionCodes: { list: listMock },
+    prices: { retrieve: priceRetrieveMock },
+  }),
+}));
+
+// pricing-integrity now imports lib/research, which imports Prisma. Nothing in
+// these tests touches the database; the stub just keeps a real client from
+// being constructed.
+jest.mock('@/lib/db', () => ({
+  __esModule: true,
+  default: {
+    user: { findUnique: jest.fn() },
+    researchAccount: { findUnique: jest.fn() },
+    researchSeat: { findMany: jest.fn() },
+  },
 }));
 
 const promo = (over: Record<string, unknown> = {}) => ({
@@ -164,5 +181,189 @@ describe('checkAdvertisedDiscountsMatchStripe', () => {
     undo();
     expect(r.ok).toBe(false);
     expect(r.detail).toContain('cannot verify');
+  });
+});
+
+// ===========================================================================
+// SpaceNexus Research (2026-09-14)
+// ===========================================================================
+//
+// The 2026-08-24 incident was an advertised DISCOUNT Stripe did not deliver.
+// A whole new tier can fail the same way in two more places — a price that
+// does not match, and a feature bullet with no gate behind it — so both are
+// pinned here alongside the discount checks above.
+
+import {
+  checkResearchCapabilitiesAreGated,
+  checkResearchTierMatchesStripe,
+  isResearchAdvertised,
+} from '../pricing-integrity';
+import {
+  RESEARCH_CAPABILITIES,
+  RESEARCH_PLAN,
+  RESEARCH_PRICE_ENV_VAR,
+  RESEARCH_TIER_FLAG_ENV_VAR,
+} from '../research';
+
+describe('SpaceNexus Research capability gates', () => {
+  it('every advertised capability is backed by a real tier flag', () => {
+    const outcome = checkResearchCapabilitiesAreGated();
+    expect(outcome.ok).toBe(true);
+    expect(outcome.detail).toContain(String(RESEARCH_CAPABILITIES.length));
+  });
+
+  it('every capability names a file that enforces it', () => {
+    for (const cap of RESEARCH_CAPABILITIES) {
+      expect(cap.enforcedBy.startsWith('src/')).toBe(true);
+      expect(fs.existsSync(path.join(process.cwd(), cap.enforcedBy))).toBe(true);
+    }
+  });
+
+  it('the /research page has no hand-written feature list to drift out of sync', () => {
+    const src = fs.readFileSync(path.join(process.cwd(), 'src/app/research/page.tsx'), 'utf-8');
+    // Bullets are rendered from the registry, not typed into JSX.
+    expect(src).toContain('RESEARCH_CAPABILITIES.map');
+    // And the price shown is the one the integrity check verifies against Stripe.
+    expect(src).toContain('availability.plan.priceYearly');
+  });
+
+  it('the /pricing band renders nothing unless the server says the tier is available', () => {
+    const src = fs.readFileSync(
+      path.join(process.cwd(), 'src/components/pricing/ResearchTierBand.tsx'),
+      'utf-8'
+    );
+    expect(src).toContain('/api/research/availability');
+    expect(src).toContain('if (!availability) return null;');
+    // No NEXT_PUBLIC_ copy of the flag: the server stays the single authority.
+    expect(src).not.toContain('NEXT_PUBLIC_RESEARCH');
+  });
+
+  it('checkout refuses Research while the flag is off, and never falls back to another price', () => {
+    const src = fs.readFileSync(
+      path.join(process.cwd(), 'src/app/api/stripe/checkout/route.ts'),
+      'utf-8'
+    );
+    expect(src).toContain('isResearchTierEnabled()');
+    expect(src).toContain('getResearchPriceId()');
+    // Annual only — the advertised terms say so.
+    expect(src).toContain("interval !== 'year'");
+  });
+});
+
+describe('checkResearchTierMatchesStripe', () => {
+  const saved = {
+    flag: process.env[RESEARCH_TIER_FLAG_ENV_VAR],
+    price: process.env[RESEARCH_PRICE_ENV_VAR],
+    key: process.env.STRIPE_SECRET_KEY,
+  };
+
+  afterEach(() => {
+    const restore = (k: string, v: string | undefined) => {
+      if (v === undefined) delete process.env[k];
+      else process.env[k] = v;
+    };
+    restore(RESEARCH_TIER_FLAG_ENV_VAR, saved.flag);
+    restore(RESEARCH_PRICE_ENV_VAR, saved.price);
+    restore('STRIPE_SECRET_KEY', saved.key);
+    priceRetrieveMock.mockReset();
+  });
+
+  it('passes trivially while the tier is behind its flag — nothing is promised', async () => {
+    delete process.env[RESEARCH_TIER_FLAG_ENV_VAR];
+    expect(isResearchAdvertised()).toBe(false);
+    const r = await checkResearchTierMatchesStripe();
+    expect(r.ok).toBe(true);
+    expect(r.detail).toContain('feature flag');
+  });
+
+  it('fails loudly when the tier is enabled but its price is not configured', async () => {
+    process.env[RESEARCH_TIER_FLAG_ENV_VAR] = 'true';
+    delete process.env[RESEARCH_PRICE_ENV_VAR];
+    const r = await checkResearchTierMatchesStripe();
+    expect(r.ok).toBe(false);
+    expect(r.detail).toContain(RESEARCH_PRICE_ENV_VAR);
+  });
+
+  it('fails when advertised but Stripe cannot be reached at all', async () => {
+    process.env[RESEARCH_TIER_FLAG_ENV_VAR] = 'true';
+    process.env[RESEARCH_PRICE_ENV_VAR] = 'price_research';
+    delete process.env.STRIPE_SECRET_KEY;
+    const r = await checkResearchTierMatchesStripe();
+    expect(r.ok).toBe(false);
+    expect(r.detail).toContain('cannot verify');
+  });
+
+  const enableAdvertised = () => {
+    process.env[RESEARCH_TIER_FLAG_ENV_VAR] = 'true';
+    process.env[RESEARCH_PRICE_ENV_VAR] = 'price_research';
+    process.env.STRIPE_SECRET_KEY = 'sk_test_x';
+  };
+
+  const stripePrice = (over: Record<string, unknown> = {}) => ({
+    active: true,
+    unit_amount: RESEARCH_PLAN.priceYearly * 100,
+    currency: 'usd',
+    type: 'recurring',
+    recurring: { interval: 'year', interval_count: 1 },
+    ...over,
+  });
+
+  it('passes when Stripe charges exactly what the site advertises', async () => {
+    enableAdvertised();
+    priceRetrieveMock.mockResolvedValue(stripePrice());
+    const r = await checkResearchTierMatchesStripe();
+    expect(r.ok).toBe(true);
+    expect(r.detail).toContain(String(RESEARCH_PLAN.priceYearly));
+  });
+
+  /** The 2026-08-24 shape of failure, applied to a tier instead of a coupon. */
+  it('catches a price that does not match the advertised amount', async () => {
+    enableAdvertised();
+    priceRetrieveMock.mockResolvedValue(stripePrice({ unit_amount: 4999 }));
+    const r = await checkResearchTierMatchesStripe();
+    expect(r.ok).toBe(false);
+    expect(r.detail).toContain('mischarged');
+  });
+
+  it('catches a monthly price sold as an annual seat', async () => {
+    enableAdvertised();
+    priceRetrieveMock.mockResolvedValue(
+      stripePrice({ recurring: { interval: 'month', interval_count: 1 } })
+    );
+    const r = await checkResearchTierMatchesStripe();
+    expect(r.ok).toBe(false);
+    expect(r.detail).toContain('annual billing');
+  });
+
+  it('catches a one-off price sold as a subscription', async () => {
+    enableAdvertised();
+    priceRetrieveMock.mockResolvedValue(stripePrice({ type: 'one_time', recurring: null }));
+    const r = await checkResearchTierMatchesStripe();
+    expect(r.ok).toBe(false);
+    expect(r.detail).toContain('not recurring');
+  });
+
+  it('catches the wrong currency', async () => {
+    enableAdvertised();
+    priceRetrieveMock.mockResolvedValue(stripePrice({ currency: 'eur' }));
+    const r = await checkResearchTierMatchesStripe();
+    expect(r.ok).toBe(false);
+    expect(r.detail).toContain('EUR');
+  });
+
+  it('catches an archived price still being advertised', async () => {
+    enableAdvertised();
+    priceRetrieveMock.mockResolvedValue(stripePrice({ active: false }));
+    const r = await checkResearchTierMatchesStripe();
+    expect(r.ok).toBe(false);
+    expect(r.detail).toContain('INACTIVE');
+  });
+
+  it('fails loudly rather than silently when Stripe errors', async () => {
+    enableAdvertised();
+    priceRetrieveMock.mockRejectedValue(new Error('network down'));
+    const r = await checkResearchTierMatchesStripe();
+    expect(r.ok).toBe(false);
+    expect(r.detail).toContain('network down');
   });
 });

@@ -6,6 +6,7 @@ import LaunchDayDashboard from '@/components/launch/LaunchDayDashboard';
 import RelatedModules from '@/components/ui/RelatedModules';
 import LaunchWatchForm from '@/components/launches/LaunchWatchForm';
 import LaunchCrossLinks from '@/components/launches/LaunchCrossLinks';
+import DiscussThis from '@/components/community/DiscussThis';
 import MissionHeader from '@/components/launch/MissionHeader';
 import LaunchWeatherOdds from '@/components/launch/LaunchWeatherOdds';
 import LaunchLiveMode from '@/components/launch/LaunchLiveMode';
@@ -199,6 +200,14 @@ export default async function LaunchPage(props: LaunchPageProps) {
           <LaunchWatchForm eventId={event.id} label="this launch" source="launch-page" />
         </div>
       )}
+      {/* Forum discussion for this launch (2026-09-14 forum revival).
+          The anchor cron opens a thread for every launch inside the horizon,
+          so this usually links straight into an existing one — the launch
+          page and the T-24 alert email are where the forum gets its readers
+          from, rather than waiting for people to find /community. */}
+      <div id="discussion" className="max-w-[1400px] mx-auto px-4 pb-6 scroll-mt-24">
+        <DiscussThis anchorType="launch" anchorKey={event.id} subjectLabel={event.name} />
+      </div>
       <div className="max-w-[1400px] mx-auto px-4 pb-6">
         <LaunchCrossLinks rocket={event.rocket} location={event.location} eventId={event.id} debriefSlug={debrief?.slug ?? null} upcoming={!!event.launchDate && event.launchDate.getTime() > Date.now()} hide={['mc']} />
       </div>

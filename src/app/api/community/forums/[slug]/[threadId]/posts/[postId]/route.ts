@@ -11,8 +11,10 @@ import {
   validationError,
   notFoundError,
   internalError,
+  rateLimitedError,
 } from '@/lib/errors';
 import { validateBody, editContentSchema } from '@/lib/validations';
+import { postingThrottle, sanitizeForumBody, inspectContent } from '@/lib/forum-guard';
 
 /**
  * PATCH /api/community/forums/[slug]/[threadId]/posts/[postId]
@@ -73,13 +75,35 @@ export async function PATCH(
       return forbiddenError('You can only edit your own posts');
     }
 
-    // Update the post
+    const throttle = postingThrottle(session.user.id, 'edit');
+    if (!throttle.allowed) {
+      return rateLimitedError(Math.ceil(throttle.retryAfterMs / 1000));
+    }
+
+    // Same sanitiser and spam inspection as the original post — otherwise the
+    // hole is obvious: post something clean, then edit the links in.
+    const clean = sanitizeForumBody(content);
+    const editor = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { createdAt: true },
+    });
+    const verdict = inspectContent(clean, { accountCreatedAt: editor?.createdAt ?? null });
+    if (!verdict.ok) {
+      return validationError(verdict.reason || 'That edit was rejected');
+    }
+
+    // Update the post.
+    //
+    // The author join selects NO email. It used to, and this response is
+    // returned to whoever edited the post — including an admin editing
+    // someone else's — so it handed out the author's address. The thread GET
+    // route carries the same warning; it applies to every forum join.
     const updatedPost = await prisma.forumPost.update({
       where: { id: postId },
-      data: { content },
+      data: { content: clean },
       include: {
         author: {
-          select: { id: true, name: true, email: true },
+          select: { id: true, name: true },
         },
       },
     });

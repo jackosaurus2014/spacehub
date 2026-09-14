@@ -41,5 +41,11 @@ export const MAX_KEYS_PER_TIER: Record<string, number> = {
 export const SUBSCRIPTION_TO_API_TIERS: Record<string, ApiTier[]> = {
   free: [],
   pro: ['developer', 'business', 'enterprise'],
+  // SpaceNexus Research is a superset of Pro everywhere, including here. Pro
+  // already reaches the unlimited 'enterprise' API tier, so Research grants no
+  // extra API volume — there was nothing left to sell without taking something
+  // away from Pro. Omitting this row would have silently DOWNGRADED a Research
+  // subscriber to no API access at all.
+  research: ['developer', 'business', 'enterprise'],
   test: ['developer', 'business', 'enterprise'],
 };

@@ -33,21 +33,37 @@ export function getPriceIds() {
     sponsor_verified_yearly: process.env.STRIPE_PRICE_SPONSOR_VERIFIED_YEARLY || '',
     sponsor_premium_monthly: process.env.STRIPE_PRICE_SPONSOR_PREMIUM_MONTHLY || '',
     sponsor_premium_yearly: process.env.STRIPE_PRICE_SPONSOR_PREMIUM_YEARLY || '',
+    // SpaceNexus Research — annual only, its own price. Deliberately NOT one of
+    // the enterprise_* entries above: those point at the withdrawn $49.99/mo
+    // plan and selling an annual firm seat against them would charge every
+    // buyer the wrong amount.
+    research_yearly: process.env.STRIPE_PRICE_RESEARCH_YEARLY || '',
   };
 }
 
 /**
  * Map a Stripe price ID back to our internal tier name.
  * Returns null if the price ID doesn't match any known tier.
- * Legacy Enterprise price IDs map to 'pro' — there is a single paid tier now.
+ *
+ * Legacy Enterprise price IDs still map to 'pro' and must keep doing so. They
+ * belong to the withdrawn $49.99/mo plan collapsed into Pro on 2026-08-11;
+ * re-pointing them at 'research' would hand the new tier to anyone still on an
+ * old subscription without their paying for it, and re-pointing them at null
+ * would strip access from a paying customer. Research is sold from its own
+ * price ID only (STRIPE_PRICE_RESEARCH_YEARLY).
  */
-export function priceIdToTier(priceId: string): 'pro' | null {
+export function priceIdToTier(priceId: string): 'pro' | 'research' | null {
   const prices = getPriceIds();
   if (priceId === prices.pro_monthly || priceId === prices.pro_yearly) {
     return 'pro';
   }
   if (priceId === prices.enterprise_monthly || priceId === prices.enterprise_yearly) {
     return 'pro';
+  }
+  // Guard against an unset env var matching an unset price ID: '' === '' would
+  // otherwise resolve every unknown price to 'research'.
+  if (prices.research_yearly && priceId === prices.research_yearly) {
+    return 'research';
   }
   return null;
 }

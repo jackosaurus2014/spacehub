@@ -9,6 +9,8 @@ import { AD_CAMPAIGN_PAYMENT_KIND, AD_SPONSORSHIP_PAYMENT_KIND } from '@/lib/ads
 import { Resend } from 'resend';
 import { createNotification } from '@/lib/notifications/create';
 import { JOB_POSTING_PAYMENT_KIND, getJobPostingPlan } from '@/lib/job-posting-plans';
+import { RESEARCH_PLAN } from '@/lib/research';
+import { normalizeTier } from '@/lib/subscription';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Allow up to 60s for webhook processing (DB + email)
@@ -236,6 +238,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     },
   });
 
+  // SpaceNexus Research buys SEATS as well as access. The Stripe subscription
+  // item quantity is the sole authority on how many; resolveResearchAccess
+  // applies it at read time, so a quantity change takes effect immediately.
+  if (tier === 'research') {
+    await upsertResearchAccount(userId, subscription, priceId);
+  }
+
   logger.info('Subscription activated via checkout', {
     userId,
     tier,
@@ -378,6 +387,25 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     data: updateData,
   });
 
+  // Keep the seat ledger in step with Stripe: a quantity change, a move off
+  // Research, or a past_due status all have to reach ResearchAccount, because
+  // that row is what authorizes the firm's seats.
+  //
+  // Nothing is read or written for the overwhelming majority of subscriptions,
+  // which have nothing to do with Research: the ledger is touched only when the
+  // subscription IS Research now, or WAS before this event.
+  const wasResearch = normalizeTier(user.subscriptionTier) === 'research';
+  if (newTier === 'research') {
+    await upsertResearchAccount(user.id, subscription, priceId);
+  } else if (wasResearch && newTier) {
+    // Moved onto a non-Research price: the firm's seats end with the plan.
+    await deactivateResearchAccount(user.id, 'canceled');
+  } else if (wasResearch && newStatus !== 'active') {
+    // Unrecognised price, but the subscription went past_due or canceled — the
+    // seats must stop either way.
+    await deactivateResearchAccount(user.id, newStatus);
+  }
+
   logger.info('Subscription updated', {
     userId: user.id,
     previousTier: user.subscriptionTier,
@@ -399,14 +427,16 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   if (userId) {
     user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true },
+      // subscriptionTier is selected so the Research seat ledger is touched
+      // only for a firm that actually had one.
+      select: { id: true, email: true, subscriptionTier: true },
     });
   }
 
   if (!user) {
     user = await prisma.user.findUnique({
       where: { stripeCustomerId: customerId },
-      select: { id: true, email: true },
+      select: { id: true, email: true, subscriptionTier: true },
     });
   }
 
@@ -451,10 +481,77 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     },
   });
 
+  // Every seat on this firm dies with the subscription that paid for it. The
+  // seat rows are kept for history; resolveResearchAccess refuses them because
+  // the account is no longer 'active'.
+  if (normalizeTier(user.subscriptionTier) === 'research') {
+    await deactivateResearchAccount(user.id, 'canceled');
+  }
+
   logger.info('Subscription deleted, downgraded to free', {
     userId: user.id,
     subscriptionId: subscription.id,
   });
+}
+
+/**
+ * Mirror a Stripe Research subscription into ResearchAccount.
+ *
+ * seatsTotal comes from the subscription item QUANTITY, which is the only
+ * number a firm can change without our involvement. resolveResearchAccess
+ * applies it at read time against a deterministic seat ordering, so reducing
+ * the quantity de-authorizes the newest seats on the very next request — no
+ * reconciliation job, no window in which a firm has more access than it pays
+ * for.
+ */
+async function upsertResearchAccount(
+  userId: string,
+  subscription: Stripe.Subscription,
+  priceId: string | undefined
+): Promise<void> {
+  const item = subscription.items.data[0];
+  const quantity = item?.quantity;
+  const seatsTotal =
+    typeof quantity === 'number' && quantity > 0 ? quantity : RESEARCH_PLAN.totalSeats;
+  const periodEnd = item?.current_period_end;
+  const status = mapSubscriptionStatus(subscription.status);
+
+  const payload = {
+    stripeSubscriptionId: subscription.id,
+    stripePriceId: priceId ?? null,
+    seatsTotal,
+    status,
+    currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
+    canceledAt: status === 'canceled' ? new Date() : null,
+  };
+
+  await prisma.researchAccount.upsert({
+    where: { ownerUserId: userId },
+    create: { ownerUserId: userId, ...payload },
+    update: payload,
+  });
+
+  logger.info('Research account synced from Stripe', {
+    userId,
+    seatsTotal,
+    status,
+    subscriptionId: subscription.id,
+  });
+}
+
+/** Stop a firm's seats without deleting the record of who held them. */
+async function deactivateResearchAccount(userId: string, status: string): Promise<void> {
+  const existing = await prisma.researchAccount.findUnique({
+    where: { ownerUserId: userId },
+    select: { id: true, status: true },
+  });
+  if (!existing || existing.status === status) return;
+
+  await prisma.researchAccount.update({
+    where: { ownerUserId: userId },
+    data: { status, canceledAt: status === 'canceled' ? new Date() : null },
+  });
+  logger.info('Research account deactivated', { userId, status });
 }
 
 /**

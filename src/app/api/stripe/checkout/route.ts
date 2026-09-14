@@ -3,6 +3,13 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { getStripe, getPriceIds } from '@/lib/stripe';
 import { TRIAL_DAYS } from '@/lib/subscription';
+import {
+  RESEARCH_PLAN,
+  RESEARCH_PRICE_ENV_VAR,
+  RESEARCH_TIER_FLAG_ENV_VAR,
+  getResearchPriceId,
+  isResearchTierEnabled,
+} from '@/lib/research';
 import { stripeCheckoutSchema, validateBody } from '@/lib/validations';
 import { unauthorizedError, validationError, internalError, createSuccessResponse } from '@/lib/errors';
 import { logger } from '@/lib/logger';
@@ -28,6 +35,35 @@ export async function POST(req: Request) {
     }
 
     const { tier, interval } = validation.data;
+
+    // --- SpaceNexus Research: three refusals, all of them explicit ---------
+    //
+    // Building the tier is not launching it. Research can only be SOLD when the
+    // founder flips RESEARCH_TIER_ENABLED, and even then only against its own
+    // annual price. Each refusal below is a clean, logged error — never a
+    // silent fallback to a different price, which is how two customers got
+    // charged the wrong amount in August.
+    if (tier === 'research') {
+      if (!isResearchTierEnabled()) {
+        logger.warn('Research checkout attempted while the tier is disabled', {
+          flag: RESEARCH_TIER_FLAG_ENV_VAR,
+        });
+        return validationError('SpaceNexus Research is not available for purchase yet.');
+      }
+      if (interval !== 'year') {
+        return validationError(
+          'SpaceNexus Research is billed annually. Choose the yearly option.'
+        );
+      }
+      if (!getResearchPriceId()) {
+        logger.error('Research tier is enabled but its Stripe price is not configured', {
+          envVar: RESEARCH_PRICE_ENV_VAR,
+        });
+        return internalError(
+          'SpaceNexus Research is not configured for checkout yet. Please contact us and we will invoice you directly.'
+        );
+      }
+    }
 
     // Look up the correct price ID
     const priceIds = getPriceIds();
@@ -104,6 +140,13 @@ export async function POST(req: Request) {
     } else if (!hasHadTrial) {
       trialData = { trial_period_days: TRIAL_DAYS };
     }
+    // The 14-day trial is a PRO trial. SpaceNexus Research is an annual firm
+    // seat bought on an invoice, and RESEARCH_PLAN.trialDays is 0 — letting it
+    // inherit a Pro trial window would mean /pricing's "14-day trial" copy
+    // silently applying to a plan we never advertise a trial for.
+    if (tier === 'research' && RESEARCH_PLAN.trialDays === 0) {
+      trialData = {};
+    }
     const hasTrialDays = Object.keys(trialData).length > 0;
 
     // Create Stripe Checkout Session
@@ -118,6 +161,19 @@ export async function POST(req: Request) {
       ],
       success_url: `${APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${APP_URL}/pricing?canceled=true`,
+      // Research is bought by firms, so the buyer needs a VAT/registration
+      // number and a billing address on the invoice their finance team files.
+      ...(tier === 'research'
+        ? {
+            billing_address_collection: 'required' as const,
+            tax_id_collection: { enabled: true },
+            custom_text: {
+              submit: {
+                message: `${RESEARCH_PLAN.totalSeats} named seats, billed annually. You can invite colleagues from the Research workspace once you are set up.`,
+              },
+            },
+          }
+        : {}),
       subscription_data: {
         ...trialData,
         metadata: {

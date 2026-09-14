@@ -159,8 +159,18 @@ export function alertEmail(kind: WatchKind, e: EventLike, unsubscribeToken: stri
   // not on a static record. #live is the live layout's anchor.
   const liveUrl = kind === 't1' ? `${url}#live` : url;
   const chatLine = kind === 't1' ? `Join the live chat: ${url}#chat\n\n` : '';
-  const text = `${lead}\n\n${meta}\n\nWatch / details: ${liveUrl}\n${chatLine ? '\n' + chatLine : '\n'}Stop these alerts: ${unsub}\n`;
-  const html = `<!doctype html><html><body style="margin:0;background:#000;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif"><div style="max-width:560px;margin:0 auto;padding:28px 20px"><p style="color:#22d3ee;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px">SpaceNexus launch alert</p><h1 style="font-size:22px;margin:0 0 12px;color:#fff">${escapeHtml(title)}</h1><p style="font-size:15px;line-height:1.5;margin:0 0 8px">${escapeHtml(lead)}</p><p style="color:#94a3b8;font-size:13px;margin:0 0 20px">${escapeHtml(meta)}</p><a href="${liveUrl}" style="display:inline-block;background:#6366f1;color:#fff;text-decoration:none;padding:12px 18px;border-radius:6px;font-weight:600">${kind === 't1' ? 'Watch live' : 'Watch &amp; details'}</a>${kind === 't1' ? `<p style="font-size:13px;margin:14px 0 0"><a href="${url}#chat" style="color:#22d3ee;text-decoration:none">💬 Join the live launch chat →</a></p>` : ''}<p style="color:#6b6b6b;font-size:12px;margin:28px 0 0">You asked for these on spacenexus.us. <a href="${unsub}" style="color:#94a3b8">Stop these alerts</a>.</p></div></body></html>`;
+  // 2026-09-14 (forum revival): the forum's single largest source of readers
+  // is this email. At T-24 and after the outcome there is something to say
+  // and time to say it, so those two carry a discussion link; T-1 does not,
+  // because it already points at the live chat and should stay one decision.
+  // The link goes to the launch page's #discussion block rather than to a
+  // thread id: the block resolves the anchor itself, so the email needs no DB
+  // lookup and can never carry a link to a thread that has been deleted.
+  const discussUrl = `${url}#discussion`;
+  const showDiscuss = kind === 't24' || kind === 'outcome';
+  const discussLine = showDiscuss ? `Discuss this launch: ${discussUrl}\n\n` : '';
+  const text = `${lead}\n\n${meta}\n\nWatch / details: ${liveUrl}\n${chatLine ? '\n' + chatLine : '\n'}${discussLine}Stop these alerts: ${unsub}\n`;
+  const html = `<!doctype html><html><body style="margin:0;background:#000;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif"><div style="max-width:560px;margin:0 auto;padding:28px 20px"><p style="color:#22d3ee;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px">SpaceNexus launch alert</p><h1 style="font-size:22px;margin:0 0 12px;color:#fff">${escapeHtml(title)}</h1><p style="font-size:15px;line-height:1.5;margin:0 0 8px">${escapeHtml(lead)}</p><p style="color:#94a3b8;font-size:13px;margin:0 0 20px">${escapeHtml(meta)}</p><a href="${liveUrl}" style="display:inline-block;background:#6366f1;color:#fff;text-decoration:none;padding:12px 18px;border-radius:6px;font-weight:600">${kind === 't1' ? 'Watch live' : 'Watch &amp; details'}</a>${kind === 't1' ? `<p style="font-size:13px;margin:14px 0 0"><a href="${url}#chat" style="color:#22d3ee;text-decoration:none">💬 Join the live launch chat →</a></p>` : ''}${showDiscuss ? `<p style="font-size:13px;margin:14px 0 0"><a href="${discussUrl}" style="color:#22d3ee;text-decoration:none">💬 Discuss this launch in the forum →</a></p>` : ''}<p style="color:#6b6b6b;font-size:12px;margin:28px 0 0">You asked for these on spacenexus.us. <a href="${unsub}" style="color:#94a3b8">Stop these alerts</a>.</p></div></body></html>`;
   return { subject, html, text };
 }
 

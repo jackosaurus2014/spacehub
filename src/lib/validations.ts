@@ -504,14 +504,54 @@ export const searchQuerySchema = z.object({
     .default('desc'),
 });
 
-// Stripe checkout schema — single paid tier
+// Stripe checkout schema.
+//
+// 'research' is the annual SpaceNexus Research firm seat (2026-09-14). Accepting
+// it HERE is not the same as selling it: the checkout route additionally
+// requires RESEARCH_TIER_ENABLED and a configured STRIPE_PRICE_RESEARCH_YEARLY,
+// and refuses a monthly interval for it. The schema stays permissive so the
+// refusal is an explicit, logged decision in the route rather than a confusing
+// "tier must be pro" validation error.
 export const stripeCheckoutSchema = z.object({
-  tier: z.enum(['pro'], {
-    message: 'Tier must be "pro"',
+  tier: z.enum(['pro', 'research'], {
+    message: 'Tier must be "pro" or "research"',
   }),
   interval: z.enum(['month', 'year'], {
     message: 'Interval must be "month" or "year"',
   }),
+});
+
+// --- SpaceNexus Research -------------------------------------------------
+// Lives here rather than in the route file: Next type-checks route modules and
+// rejects exports that are not HTTP handlers or route config, so a schema
+// shared between /api/research/portfolios and its [id] sibling cannot live in
+// either of them.
+
+/** Upper bounds keep a portfolio a portfolio rather than free-form storage. */
+export const RESEARCH_MAX_PORTFOLIOS_PER_USER = 25;
+export const RESEARCH_MAX_HOLDINGS = 500;
+
+export const researchPortfolioSchema = z.object({
+  name: z.string().trim().min(1, 'Name is required').max(120, 'Name is too long'),
+  holdings: z
+    .array(z.string().trim().min(1).max(160))
+    .max(RESEARCH_MAX_HOLDINGS, `A portfolio holds at most ${RESEARCH_MAX_HOLDINGS} companies`)
+    .default([]),
+  notes: z.string().trim().max(2000).optional().nullable(),
+});
+
+export const researchSeatInviteSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(3, 'Email is required')
+    .max(254, 'Email is too long')
+    .email('Enter a valid email address'),
+});
+
+export const researchSeatAcceptSchema = z.object({
+  token: z.string().trim().min(16, 'Invalid invite token').max(200, 'Invalid invite token'),
 });
 
 // Company Intelligence query schema
@@ -2009,6 +2049,36 @@ export const threadTagsSchema = z.object({
 
 export const acceptAnswerSchema = z.object({
   postId: z.string().min(1, 'Post ID is required'),
+});
+
+// ------------------------------------------------------------
+// Community: Forum posting (2026-09-14 revival)
+// ------------------------------------------------------------
+//
+// The forum routes validated inline before the revival. These pull that into
+// the house pattern so every write goes through validateBody. Bodies are
+// still HTML-stripped separately by sanitizeForumBody in src/lib/forum-guard
+// — zod bounds the shape, the guard bounds the content.
+
+export const forumThreadCreateSchema = z.object({
+  title: z.string().min(3, 'Give the thread a title of at least 3 characters').max(200),
+  content: z.string().min(2, 'Say something in the opening post').max(10000),
+  tags: z.array(z.enum(FORUM_TAGS)).max(5, 'Maximum 5 tags per thread').optional().default([]),
+  postAsCompany: z.boolean().optional().default(false),
+});
+
+export const forumReplySchema = z.object({
+  content: z.string().min(2, 'Say something in the reply').max(10000),
+  postAsCompany: z.boolean().optional().default(false),
+});
+
+// Anchor creation is the only write that names a subject elsewhere on the
+// site, so the type is a closed enum and the key is length-bounded — it
+// becomes a unique index value.
+export const forumAnchorSchema = z.object({
+  anchorType: z.enum(['launch', 'company', 'guide', 'tycoon']),
+  anchorKey: z.string().min(1).max(200),
+  content: z.string().min(2, 'Say something to open the discussion').max(10000),
 });
 
 // ============================================================

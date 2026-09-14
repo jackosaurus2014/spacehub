@@ -13,6 +13,7 @@ import AcceptedAnswerBadge from '@/components/community/AcceptedAnswerBadge';
 import SubscribeButton from '@/components/community/SubscribeButton';
 import ThreadTags from '@/components/community/ThreadTags';
 import VerifiedBadge from '@/components/VerifiedBadge';
+import AnchorSubjectPanel, { AnchorPanelData } from '@/components/community/AnchorSubjectPanel';
 import { toast } from '@/lib/toast';
 import { extractApiError } from '@/lib/errors';
 import { useSession } from 'next-auth/react';
@@ -35,9 +36,17 @@ interface ForumPost {
   upvoteCount: number;
   downvoteCount: number;
   isAccepted: boolean;
+  isEdited: boolean;
   userVote: number | null;
   companyName?: string;
   companyId?: string;
+}
+
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
 interface ThreadDetail {
@@ -62,6 +71,7 @@ interface ThreadDetail {
   downvoteCount: number;
   userVote: number | null;
   isSubscribed: boolean;
+  isEdited: boolean;
   companyName?: string;
   companyId?: string;
 }
@@ -106,6 +116,9 @@ export default function ThreadDetailPage() {
 
   const [thread, setThread] = useState<ThreadDetail | null>(null);
   const [replies, setReplies] = useState<ForumPost[]>([]);
+  const [anchor, setAnchor] = useState<AnchorPanelData | null>(null);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [replyContent, setReplyContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -132,10 +145,16 @@ export default function ThreadDetailPage() {
     fetchCompany();
   }, [session?.user?.id]);
 
+  // Reset to page 1 whenever we land on a different thread
   useEffect(() => {
+    setPage(1);
+  }, [slug, threadId]);
+
+  useEffect(() => {
+    setLoading(true);
     const fetchThread = async () => {
       try {
-        const res = await fetch(`/api/community/forums/${slug}/${threadId}`);
+        const res = await fetch(`/api/community/forums/${slug}/${threadId}?page=${page}`);
         if (res.ok) {
           const json = await res.json();
           const data = json.data || json;
@@ -163,6 +182,7 @@ export default function ThreadDetailPage() {
               downvoteCount: t.downvoteCount || 0,
               userVote: t.userVote ?? null,
               isSubscribed: t.isSubscribed || false,
+              isEdited: t.isEdited || false,
               companyName: t.companyName || t.company?.name || undefined,
               companyId: t.companyId || undefined,
             });
@@ -180,11 +200,14 @@ export default function ThreadDetailPage() {
             upvoteCount: p.upvoteCount || 0,
             downvoteCount: p.downvoteCount || 0,
             isAccepted: p.isAccepted || false,
+            isEdited: p.isEdited || false,
             userVote: p.userVote ?? null,
             companyName: p.companyName || p.company?.name || undefined,
             companyId: p.companyId || undefined,
           }));
           setReplies(posts);
+          setAnchor(data.anchor || null);
+          setPagination(data.pagination || null);
         }
       } catch {
         // silently fail
@@ -193,7 +216,7 @@ export default function ThreadDetailPage() {
       }
     };
     fetchThread();
-  }, [slug, threadId]);
+  }, [slug, threadId, page]);
 
   const handleAcceptAnswer = useCallback((postId: string) => {
     setAcceptedPostId((prev) => prev === postId ? null : postId);
@@ -226,21 +249,30 @@ export default function ThreadDetailPage() {
         // API returns { success, data: post } — map to our ForumPost shape
         const newPost = json.data || json.reply;
         if (newPost) {
-          setReplies((prev) => [...prev, {
-            id: newPost.id,
-            content: newPost.content,
-            authorId: newPost.author?.id || newPost.authorId || '',
-            authorName: newPost.author?.name || newPost.authorName || 'Unknown',
-            isStaffAuthor: newPost.isStaffAuthor || false,
-            createdAt: newPost.createdAt,
-            updatedAt: newPost.updatedAt || newPost.createdAt,
-            upvoteCount: newPost.upvoteCount || 0,
-            downvoteCount: newPost.downvoteCount || 0,
-            isAccepted: false,
-            userVote: null,
-            companyName: newPost.companyName || (wasPostAsCompany && claimedCompany ? claimedCompany.name : undefined),
-            companyId: newPost.companyId || (wasPostAsCompany && claimedCompany ? claimedCompany.id : undefined),
-          }]);
+          // A new reply always lands on the last page. If we're not already
+          // there, jump to it and let the fetch effect pull the real page
+          // (which will include this reply); otherwise append it locally.
+          const isLastPage = !pagination || page >= pagination.totalPages;
+          if (!isLastPage) {
+            setPage(pagination!.totalPages);
+          } else {
+            setReplies((prev) => [...prev, {
+              id: newPost.id,
+              content: newPost.content,
+              authorId: newPost.author?.id || newPost.authorId || '',
+              authorName: newPost.author?.name || newPost.authorName || 'Unknown',
+              isStaffAuthor: newPost.isStaffAuthor || false,
+              createdAt: newPost.createdAt,
+              updatedAt: newPost.updatedAt || newPost.createdAt,
+              upvoteCount: newPost.upvoteCount || 0,
+              downvoteCount: newPost.downvoteCount || 0,
+              isAccepted: false,
+              isEdited: false,
+              userVote: null,
+              companyName: newPost.companyName || (wasPostAsCompany && claimedCompany ? claimedCompany.name : undefined),
+              companyId: newPost.companyId || (wasPostAsCompany && claimedCompany ? claimedCompany.id : undefined),
+            }]);
+          }
         }
       } else {
         const data = await res.json();
@@ -297,6 +329,9 @@ export default function ThreadDetailPage() {
           <span className="text-slate-600">/</span>
           <span className="text-white/70 whitespace-nowrap">{thread.title}</span>
         </nav>
+
+        {/* Anchor subject panel — what this thread is about */}
+        {anchor && <AnchorSubjectPanel anchor={anchor} />}
 
         {/* Thread header */}
         <motion.div
@@ -392,7 +427,12 @@ export default function ThreadDetailPage() {
                       )}
                     </p>
                   )}
-                  <p className="text-xs text-slate-500">{formatDate(thread.createdAt)}</p>
+                  <p className="text-xs text-slate-500">
+                    {formatDate(thread.createdAt)}
+                    {thread.isEdited && (
+                      <span className="text-slate-500" title="This post was edited after it was published"> · edited</span>
+                    )}
+                  </p>
                 </div>
               </div>
 
@@ -432,7 +472,7 @@ export default function ThreadDetailPage() {
         {replies.length > 0 && (
           <div className="space-y-3 mb-6">
             <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">
-              Replies ({replies.length})
+              Replies ({pagination?.total ?? thread.replyCount ?? replies.length})
             </h3>
             {replies.map((reply, idx) => (
               <motion.div
@@ -487,7 +527,12 @@ export default function ThreadDetailPage() {
                           )}
                         </span>
                       )}
-                      <span className="text-xs text-slate-500">{timeAgo(reply.createdAt)}</span>
+                      <span className="text-xs text-slate-500">
+                        {timeAgo(reply.createdAt)}
+                        {reply.isEdited && (
+                          <span className="text-slate-500" title="This post was edited after it was published"> · edited</span>
+                        )}
+                      </span>
                       {reply.isAccepted && (
                         <span className="text-xs px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded font-medium flex items-center gap-0.5">
                           <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -517,6 +562,33 @@ export default function ThreadDetailPage() {
           </div>
         )}
 
+        {/* Reply pagination */}
+        {pagination && pagination.totalPages > 1 && (
+          <nav aria-label="Reply pages" className="flex items-center justify-center gap-3 mb-6">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              aria-disabled={page <= 1}
+              className="px-3 py-2 text-sm bg-white/[0.06] hover:bg-white/[0.1] disabled:opacity-40 disabled:cursor-not-allowed text-white/80 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-slate-400">
+              Page {pagination.page} of {pagination.totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+              disabled={page >= pagination.totalPages}
+              aria-disabled={page >= pagination.totalPages}
+              className="px-3 py-2 text-sm bg-white/[0.06] hover:bg-white/[0.1] disabled:opacity-40 disabled:cursor-not-allowed text-white/80 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+            >
+              Next
+            </button>
+          </nav>
+        )}
+
         {/* Reply form */}
         {thread.isLocked ? (
           <div className="card p-5 text-center">
@@ -534,7 +606,9 @@ export default function ThreadDetailPage() {
           >
             <h3 className="text-sm font-semibold text-white/70 mb-3">Post a Reply</h3>
             <form onSubmit={handleReply}>
+              <label htmlFor="reply-content" className="sr-only">Reply content</label>
               <textarea
+                id="reply-content"
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
                 placeholder="Share your thoughts... (Markdown supported, use @username to mention someone)"
@@ -565,7 +639,7 @@ export default function ThreadDetailPage() {
                 <button
                   type="submit"
                   disabled={submitting || !replyContent.trim()}
-                  className="px-5 py-2 bg-white hover:bg-slate-100 text-slate-900 font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="px-5 py-2 bg-white hover:bg-slate-100 text-slate-900 font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
                 >
                   {submitting ? (
                     <>

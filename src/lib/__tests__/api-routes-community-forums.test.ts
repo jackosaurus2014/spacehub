@@ -54,6 +54,7 @@ jest.mock('@/lib/moderation', () => ({
 import prisma from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { checkUserBanStatus } from '@/lib/moderation';
+import { __resetForumThrottle } from '@/lib/forum-guard';
 
 import { GET as forumsListGET } from '@/app/api/community/forums/route';
 import {
@@ -148,6 +149,12 @@ beforeEach(() => {
   mockCheckUserBanStatus.mockResolvedValue({ isBanned: false, isMuted: false });
   // Default: thread subscription create resolves (fire-and-forget)
   mockPrisma.threadSubscription.create.mockResolvedValue({});
+  // The per-account posting throttle (src/lib/forum-guard.ts) is module-level
+  // state keyed by user id, and every case here posts as 'user-1'. Without
+  // this reset the fifth thread-creating case onwards would 429 — which is
+  // the throttle working, but it would be measuring the test file rather
+  // than the route.
+  __resetForumThrottle();
 });
 
 // =============================================================================
@@ -622,28 +629,45 @@ describe('POST /api/community/forums/[slug]', () => {
     );
   });
 
-  it('limits tags to a maximum of 5', async () => {
+  // Tags became strict on 2026-09-14: the route used to silently truncate to
+  // five and drop anything non-string, which meant a poster's tags could
+  // vanish with no explanation. They are now validated against FORUM_TAGS by
+  // zod and a bad set is refused with a reason.
+  it('accepts up to five tags drawn from FORUM_TAGS', async () => {
     const req = makePostRequest('http://localhost/api/community/forums/general', {
-      title: 'Many tags',
-      content: 'Content',
-      tags: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+      title: 'Five real tags',
+      content: 'Content that is long enough.',
+      tags: ['launch', 'technical', 'business', 'news', 'question'],
     });
-    await forumSlugPOST(req, makeSlugParams('general'));
+    const res = await forumSlugPOST(req, makeSlugParams('general'));
 
+    expect(res.status).toBe(201);
     const createCall = mockPrisma.forumThread.create.mock.calls[0][0];
     expect(createCall.data.tags).toHaveLength(5);
   });
 
-  it('filters out non-string tags', async () => {
+  it('rejects more than five tags rather than silently truncating', async () => {
+    const req = makePostRequest('http://localhost/api/community/forums/general', {
+      title: 'Too many tags',
+      content: 'Content that is long enough.',
+      tags: ['launch', 'technical', 'business', 'news', 'question', 'career'],
+    });
+    const res = await forumSlugPOST(req, makeSlugParams('general'));
+
+    expect(res.status).toBe(400);
+    expect(mockPrisma.forumThread.create).not.toHaveBeenCalled();
+  });
+
+  it('rejects tags that are not real forum tags', async () => {
     const req = makePostRequest('http://localhost/api/community/forums/general', {
       title: 'Mixed tags',
-      content: 'Content',
-      tags: ['valid', 123, null, 'also-valid', true],
+      content: 'Content that is long enough.',
+      tags: ['launch', 123, null, 'not-a-real-tag'],
     });
-    await forumSlugPOST(req, makeSlugParams('general'));
+    const res = await forumSlugPOST(req, makeSlugParams('general'));
 
-    const createCall = mockPrisma.forumThread.create.mock.calls[0][0];
-    expect(createCall.data.tags).toEqual(['valid', 'also-valid']);
+    expect(res.status).toBe(400);
+    expect(mockPrisma.forumThread.create).not.toHaveBeenCalled();
   });
 
   // ── Authentication tests ──────────────────────────────────────────────────
@@ -819,8 +843,14 @@ describe('POST /api/community/forums/[slug]', () => {
   });
 
   it('accepts title at exactly 200 characters', async () => {
+    // Real prose, not 'A'.repeat(200): the anti-abuse guard added on
+    // 2026-09-14 rejects all-capitals and long runs of one character, so a
+    // synthetic fixture would fail this case for a reason that has nothing to
+    // do with the length boundary it is named for. (Those rejections are
+    // covered directly in forum-guard.test.ts.)
+    const title = 'Pad turnaround and range scheduling across providers, '.repeat(4).slice(0, 200);
     const req = makePostRequest('http://localhost/api/community/forums/general', {
-      title: 'A'.repeat(200),
+      title,
       content: 'Content here',
     });
     const res = await forumSlugPOST(req, makeSlugParams('general'));
@@ -878,9 +908,13 @@ describe('POST /api/community/forums/[slug]', () => {
   });
 
   it('accepts content at exactly 10000 characters', async () => {
+    // Real prose for the same reason as the title boundary above.
+    const content = 'Notes on launch cadence, pad turnaround and range scheduling. '
+      .repeat(200)
+      .slice(0, 10000);
     const req = makePostRequest('http://localhost/api/community/forums/general', {
       title: 'Valid title',
-      content: 'A'.repeat(10000),
+      content,
     });
     const res = await forumSlugPOST(req, makeSlugParams('general'));
 

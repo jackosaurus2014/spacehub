@@ -8655,3 +8655,231 @@ model ShipFitting {
   @@index([profileId, status])
   @@index([shipInstanceId])
 }
+
+
+// ============================================================
+// Community: Forum discussion anchors (2026-09-14)
+// ============================================================
+//
+// The forum was mothballed on 2026-08-26 for being a ghost town. It is back
+// on the air attached to traffic that already exists rather than hoping
+// people arrive: an anchor binds one ForumThread to one object elsewhere on
+// the site that people already read — an upcoming launch, a company profile,
+// a guide, a Space Tycoon surface.
+//
+// Two things fall out of that binding. The subject page gets a real
+// "Discuss this" destination (launch alert emails included), and a thread
+// with zero replies is still worth landing on, because the anchor carries
+// enough of the subject to render a useful empty state.
+//
+// Relation-free on purpose (house style, cf. ShipTransit / ShipFitting):
+// threadId is a plain string, not an FK, so this model is additive and a
+// dropped thread simply orphans its anchor instead of cascading. Orphans are
+// swept by the anchor cron.
+model ForumAnchor {
+  id String @id @default(cuid())
+
+  /// launch | company | guide | tycoon
+  anchorType String
+  /// SpaceEvent.id, CompanyProfile.slug, guide slug, or a tycoon surface key.
+  anchorKey  String
+
+  /// ForumThread.id. Plain string — deliberately NOT a relation.
+  threadId     String @unique
+  /// ForumCategory.slug the thread was filed under, denormalized so the
+  /// subject page can build /community/forums/<slug>/<threadId> without a join.
+  categorySlug String
+
+  /// Subject title and canonical on-site URL, as of the last sync.
+  subjectTitle String
+  subjectUrl   String
+  /// One line of context for the thread header and the empty state.
+  subtitle     String?
+  /// Subject facts the empty state renders (launch date, vehicle, pad...).
+  /// Display only — never a source of truth for anything but this panel.
+  facts        Json?
+
+  /// Anchors for a dated subject stop being auto-refreshed after it passes.
+  subjectDate DateTime?
+  /// Set when the cron finds the subject gone, so the panel degrades to the
+  /// thread alone instead of linking into a 404.
+  retiredAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([anchorType, anchorKey])
+  @@index([anchorType, subjectDate])
+  @@index([categorySlug])
+}
+
+// ============================================================
+// SpaceNexus Research (2026-09-14) — the annual firm seat.
+//
+// docs/RESEARCH_TIER_2026-09-14.md. Additive and relation-free on purpose:
+// these five models are joined in application code by id, so nothing in the
+// long-lived User/CompanyProfile graph had to move to ship a paid tier, and
+// dropping the tier is a table drop rather than a migration.
+//
+// Availability is behind RESEARCH_TIER_ENABLED (src/lib/research.ts), default
+// OFF: with the flag off /pricing does not advertise Research and checkout
+// refuses to sell it. The tables are harmless while the flag is off.
+// ============================================================
+
+/// One row per PAYING Research account — the firm, not the person. Created by
+/// the Stripe webhook when a research price is paid, and the sole authority on
+/// how many seats that firm bought (Stripe subscription item quantity).
+/// Deliberately keyed by ownerUserId rather than related to User: the seat
+/// authorization path reads this row and the owner's User row explicitly, so
+/// there is no cascade that could quietly widen access.
+model ResearchAccount {
+  id          String @id @default(cuid())
+  /// User.id of the payer. The owner's own access comes from their
+  /// User.subscriptionTier = 'research'; this row governs their SEATS.
+  ownerUserId String @unique
+
+  /// Stripe subscription backing the seats, for reconciliation.
+  stripeSubscriptionId String?
+  /// Stripe price ID actually charged — recorded so a support question about
+  /// what a firm pays is answered from our data, not from memory.
+  stripePriceId        String?
+
+  /// TOTAL seats the firm bought, owner included. Mirrors the Stripe
+  /// subscription item quantity; RESEARCH_TOTAL_SEATS_DEFAULT when Stripe
+  /// reports none. Member seats allowed = seatsTotal - 1 (the owner holds one).
+  /// Lowering this in Stripe immediately de-authorizes the newest seats — the
+  /// cap is applied at read time, never trusted from the seat rows.
+  seatsTotal Int @default(5)
+
+  /// active | past_due | canceled — mirrored from the Stripe subscription.
+  /// Anything other than 'active' de-authorizes every seat on the account.
+  status String @default("active")
+
+  currentPeriodEnd DateTime?
+  canceledAt       DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([stripeSubscriptionId])
+}
+
+/// A named member seat on a ResearchAccount. A seat grants the Research
+/// capability set ONLY (exports, portfolio exposure, screens, score history,
+/// the quarterly) — it is not a Professional subscription and never touches
+/// User.subscriptionTier, so a seat cannot leak into an unrelated Pro gate.
+model ResearchSeat {
+  id          String @id @default(cuid())
+  /// User.id of the payer whose ResearchAccount this seat belongs to.
+  ownerUserId String
+
+  /// Lowercased invited email. The invite is bound to the ADDRESS; it only
+  /// becomes usable when a signed-in account with that verified email accepts.
+  email String
+
+  /// User.id of the member once accepted. NULL while invited.
+  memberUserId String?
+
+  /// invited | active | revoked
+  status String @default("invited")
+
+  /// SHA-256 of the single-use invite token. The plaintext token is emailed
+  /// and never stored, the same shape as the account email-change tokens.
+  inviteTokenHash String?   @unique
+  inviteExpiresAt DateTime?
+
+  invitedAt  DateTime  @default(now())
+  acceptedAt DateTime?
+  revokedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// One seat per address per firm — re-inviting updates the row rather than
+  /// creating a second seat that would consume the cap twice.
+  @@unique([ownerUserId, email])
+  @@index([memberUserId, status])
+  @@index([ownerUserId, status])
+}
+
+/// A saved basket of companies a Research subscriber wants exposure analysis
+/// on (an investor's portfolio, a strategy team's supplier list).
+model ResearchPortfolio {
+  id     String @id @default(cuid())
+  /// User.id of the owner OR of a seat member — whoever created it. Exposure
+  /// reads re-check Research authorization on every request.
+  userId String
+
+  name String
+  /// string[] of CompanyProfile slugs / supply-chain company ids. Stored as
+  /// Json because the membership list is read whole and never queried into.
+  holdings Json @default("[]")
+  notes    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+/// A saved multi-criteria screen over the funding, score and hiring data, with
+/// optional weekly change alerts. lastResultIds is what makes an alert about a
+/// CHANGE rather than a re-send of the same list.
+model ResearchScreen {
+  id     String @id @default(cuid())
+  userId String
+
+  name String
+  /// Criteria object validated by researchScreenCriteriaSchema
+  /// (src/lib/research-screens.ts). Json so new criteria do not need a
+  /// migration.
+  criteria Json @default("{}")
+
+  /// none | weekly
+  alertCadence String @default("none")
+
+  lastRunAt       DateTime?
+  lastResultCount Int      @default(0)
+  /// string[] of the ids that matched at lastRunAt, for change detection.
+  lastResultIds   Json     @default("[]")
+  lastAlertAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([alertCadence, lastAlertAt])
+}
+
+/// Space Score history. The CURRENT leaderboard stays free for everyone at
+/// /space-score — this table is the time series behind it, which is the part
+/// Research sells. Written by /api/cron/space-score-snapshot; one row per
+/// company per calendar day.
+model SpaceScoreSnapshot {
+  id String @id @default(cuid())
+
+  /// CompanyProfile.slug (or the static score map key) — not a relation, so a
+  /// company later renamed or removed cannot erase its own history.
+  companySlug String
+  companyName String
+
+  /// YYYY-MM-DD in UTC, so a re-run on the same day updates rather than
+  /// duplicating.
+  day DateTime
+
+  score  Int
+  tier   String?
+  sector String?
+  /// Per-pillar breakdown as returned by calculateSpaceScore, so the
+  /// methodology is auditable years later even if the weights change.
+  components Json?
+  /// The scoring methodology version in force when this row was written.
+  methodologyVersion String @default("1")
+
+  createdAt DateTime @default(now())
+
+  @@unique([companySlug, day])
+  @@index([day])
+  @@index([companySlug, day])
+}

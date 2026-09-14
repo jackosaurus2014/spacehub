@@ -776,5 +776,80 @@ async function getContentRoutes(): Promise<MetadataRoute.Sitemap> {
     logger.error('Sitemap segment 3: Failed to fetch morning brief routes', { error: error instanceof Error ? error.message : String(error) });
   }
 
-  return [...blogRoutes, ...launchRoutes, ...galleryRoutes, ...insightRoutes, ...explainerRoutes, ...radarActionRoutes, ...podcastRoutes, ...morningBriefRoutes];
+  // Forum (2026-09-14 revival). Only threads that PASS the indexability gate
+  // in src/lib/forum-seo.ts are listed — the same gate that decides the
+  // page's own meta robots, so the sitemap and the page never disagree.
+  //
+  // This is the whole answer to "do not let user-generated content pollute
+  // the sitemap": a thread needs real replies before it is advertised to a
+  // crawler. Auto-created anchor threads sitting at zero replies — which is
+  // most of them, most of the time — are deliberately absent. The categories
+  // are listed unconditionally: they are ours, there are eight of them, and
+  // they are how a crawler discovers whatever is worth finding underneath.
+  let forumRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const { threadIsIndexable, MIN_INDEXABLE_REPLIES } = await import('@/lib/forum-seo');
+
+    const categories = await prisma.forumCategory.findMany({
+      select: { slug: true },
+      orderBy: { sortOrder: 'asc' },
+    });
+
+    const anchoredThreadIds = new Set(
+      (await prisma.forumAnchor.findMany({ select: { threadId: true } })).map(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (a: any) => a.threadId
+      )
+    );
+
+    // Pre-filtered on reply count so the candidate set stays small; the
+    // shared predicate then makes the final call.
+    const threads = await prisma.forumThread.findMany({
+      where: { posts: { some: {} } },
+      select: {
+        id: true,
+        content: true,
+        updatedAt: true,
+        category: { select: { slug: true } },
+        _count: { select: { posts: true } },
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 2000,
+    });
+
+    forumRoutes = [
+      ...categories.map((c: { slug: string }) => ({
+        url: `${BASE_URL}/community/forums/${c.slug}`,
+        changeFrequency: 'daily' as const,
+        priority: 0.5,
+      })),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ...threads
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .filter((t: any) =>
+          threadIsIndexable({
+            postCount: t._count.posts,
+            contentLength: t.content.length,
+            isAnchored: anchoredThreadIds.has(t.id),
+          })
+        )
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .map((t: any) => ({
+          url: `${BASE_URL}/community/forums/${t.category.slug}/${t.id}`,
+          lastModified: t.updatedAt,
+          changeFrequency: 'weekly' as const,
+          // Deliberately below editorial. A good thread is worth crawling;
+          // it is not worth crawling ahead of a fact-checked guide.
+          priority: 0.4,
+        })),
+    ];
+
+    void MIN_INDEXABLE_REPLIES;
+  } catch (error) {
+    logger.error('Sitemap segment 3: Failed to fetch forum routes', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  return [...blogRoutes, ...launchRoutes, ...galleryRoutes, ...insightRoutes, ...explainerRoutes, ...radarActionRoutes, ...podcastRoutes, ...morningBriefRoutes, ...forumRoutes];
 }

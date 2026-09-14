@@ -38,7 +38,10 @@ export default function FeatureTeaser({
   const { tier } = useSubscription();
 
   // User has access — render children directly
-  const tierOrder = { free: 0, pro: 1, test: 2 };
+  // Mirrors TIER_ORDER in lib/subscription: research sits above pro, test on
+  // top. A missing key here would silently DOWNGRADE a Research member to the
+  // teaser on every Pro-gated surface.
+  const tierOrder = { free: 0, pro: 1, research: 2, test: 3 };
   if ((tierOrder[tier] ?? 0) >= (tierOrder[requiredTier] ?? 0)) {
     return <>{children}</>;
   }

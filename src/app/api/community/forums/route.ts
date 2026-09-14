@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { FORUM_CATEGORY_SEEDS } from '@/lib/forum-categories';
 import { internalError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
@@ -8,16 +9,10 @@ export const dynamic = 'force-dynamic';
 /**
  * Default forum categories — auto-seeded if the ForumCategory table is empty.
  */
-const DEFAULT_FORUM_CATEGORIES = [
-  { slug: 'launch-tech', name: 'Launch Technology', description: 'Discuss propulsion systems, launch vehicles, reusability, and next-gen launch platforms.', icon: '🚀', sortOrder: 1 },
-  { slug: 'satellite-ops', name: 'Satellite Operations', description: 'Orbital mechanics, satellite design, constellation management, and ground systems.', icon: '🛰️', sortOrder: 2 },
-  { slug: 'space-policy', name: 'Space Policy & Regulation', description: 'Government policy, spectrum allocation, licensing, and international space law.', icon: '⚖️', sortOrder: 3 },
-  { slug: 'business-funding', name: 'Business & Funding', description: 'Space industry investment, startup funding, business models, and market analysis.', icon: '💰', sortOrder: 4 },
-  { slug: 'deep-space', name: 'Deep Space Exploration', description: 'Lunar missions, Mars colonization, asteroid mining, and interplanetary travel.', icon: '🌌', sortOrder: 5 },
-  { slug: 'careers', name: 'Careers & Education', description: 'Career advice, job opportunities, academic programs, and professional development.', icon: '🎓', sortOrder: 6 },
-  { slug: 'general', name: 'General Discussion', description: "Open forum for space industry topics that don't fit neatly into other categories.", icon: '💬', sortOrder: 7 },
-  { slug: 'announcements', name: 'Announcements', description: 'Official SpaceNexus announcements, platform updates, and community news.', icon: '📢', sortOrder: 8 },
-];
+// Canonical list lives in src/lib/forum-categories.ts. It used to be copied
+// into three route files that each asked the next person to keep them in
+// sync; the alias keeps the local name while removing the duplicate.
+const DEFAULT_FORUM_CATEGORIES = FORUM_CATEGORY_SEEDS;
 
 /**
  * GET /api/community/forums

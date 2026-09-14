@@ -170,9 +170,17 @@ export interface ModuleConfig {
   subModuleIds?: string[];    // For parent modules, list of child module IDs
 }
 
-// Subscription tiers — single paid tier. Legacy 'enterprise' subscribers are
-// normalized to 'pro' at every read boundary (see normalizeTier in lib/subscription).
-export type SubscriptionTier = 'free' | 'pro' | 'test';
+// Subscription tiers.
+//
+// 'free' and 'pro' are the two publicly sold plans. 'research' is the annual
+// firm seat (SpaceNexus Research) — built 2026-09-14, sold only when
+// RESEARCH_TIER_ENABLED is on (src/lib/research.ts). 'test' is internal.
+//
+// Legacy 'enterprise' rows (the withdrawn $49.99/mo plan, collapsed into Pro
+// on 2026-08-11) are still normalized to 'pro' at every read boundary — they
+// are NOT research subscribers and must never be silently promoted. See
+// normalizeTier in lib/subscription.
+export type SubscriptionTier = 'free' | 'pro' | 'research' | 'test';
 
 export interface SubscriptionPlan {
   id: SubscriptionTier;

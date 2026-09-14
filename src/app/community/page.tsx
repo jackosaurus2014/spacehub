@@ -4,12 +4,17 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 
 // Community hub — Phase 2 of the 2026-08 consolidation.
 //
-// The forums, professional directory, direct messaging, mentorship, study
-// groups, AMAs and speaking board are built but had zero usage ever, so they
-// are mothballed (see src/lib/mothballed-routes.ts) until the audience
-// exists. This page is the honest front door: it says what's staged, and
-// points at the places where the community actually gathers today. It used
-// to fetch member/thread/post counts — those are all zero, so no stats bar.
+// The professional directory, direct messaging, mentorship, study groups,
+// AMAs and speaking board are built but had zero usage ever, so they are
+// mothballed (see src/lib/mothballed-routes.ts) until the audience exists.
+// This page is the honest front door: it says what's staged, and points at
+// the places where the community actually gathers today. It used to fetch
+// member/thread/post counts — those were all zero, so no stats bar.
+//
+// The FORUMS came off the mothball list on 2026-09-14. They shipped with an
+// answer to the cold start the others still lack: discussion anchors bind a
+// thread to a launch, company or guide that already has readers, so the
+// forum inherits existing traffic instead of waiting for its own.
 
 export const metadata: Metadata = {
   title: 'Community Hub',
@@ -18,6 +23,15 @@ export const metadata: Metadata = {
 };
 
 const LIVE_NOW = [
+  {
+    title: 'Discussion Forums',
+    description:
+      'Eight categories, from launch technology to policy and careers. Every upcoming launch gets a standing thread, so there is always somewhere to talk about a flight.',
+    href: '/community/forums',
+    cta: 'Open the forums',
+    accent: 'from-cyan-500/20 to-blue-500/20',
+    border: 'hover:border-cyan-500/30',
+  },
   {
     title: 'Space Tycoon',
     description:
@@ -57,7 +71,6 @@ const LIVE_NOW = [
 ];
 
 const STAGED = [
-  'Discussion forums by topic',
   'Professional directory and profiles',
   'Direct messaging',
   'Mentorship matching',
@@ -109,8 +122,11 @@ export default function CommunityPage() {
               <h2 className="text-lg font-semibold text-white mb-2">Staged for launch</h2>
               <p className="text-sm text-slate-400 leading-relaxed">
                 These community features are built and waiting. We&apos;re holding them until there are
-                enough of you here for a forum thread to get a reply and a mentor request to get a match —
-                an empty forum is worse than no forum. When they open, they open for everyone at once, free.
+                enough of you here for a mentor request to get a match and a study group to fill —
+                an empty room is worse than no room. The forums opened first because they had an
+                answer to that problem: every upcoming launch gets a thread automatically, so there
+                is always something to walk into. When the rest open, they open for everyone at
+                once, free.
               </p>
               <p className="text-sm text-slate-400 leading-relaxed mt-3">
                 Want one of these sooner? Say so on the{' '}

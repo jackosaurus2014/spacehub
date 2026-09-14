@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { FORUM_CATEGORY_SEEDS } from '@/lib/forum-categories';
 import { checkUserBanStatus } from '@/lib/moderation';
 import {
   unauthorizedError,
@@ -10,8 +11,19 @@ import {
   validationError,
   notFoundError,
   internalError,
+  rateLimitedError,
   constrainPagination,
 } from '@/lib/errors';
+import { validateBody, forumThreadCreateSchema } from '@/lib/validations';
+import {
+  postingThrottle,
+  sanitizeForumBody,
+  sanitizeForumTitle,
+  inspectContent,
+  validationMessage,
+} from '@/lib/forum-guard';
+import { getAnchorsForThreads } from '@/lib/forum-anchors';
+import { THREADS_PER_PAGE } from '@/lib/forum-seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,16 +31,10 @@ export const dynamic = 'force-dynamic';
  * Default forum categories — auto-seeded if the ForumCategory table is empty.
  * Kept in sync with the init route's FORUM_CATEGORIES list.
  */
-const DEFAULT_FORUM_CATEGORIES = [
-  { slug: 'launch-tech', name: 'Launch Technology', description: 'Discuss propulsion systems, launch vehicles, reusability, and next-gen launch platforms.', icon: '🚀', sortOrder: 1 },
-  { slug: 'satellite-ops', name: 'Satellite Operations', description: 'Orbital mechanics, satellite design, constellation management, and ground systems.', icon: '🛰️', sortOrder: 2 },
-  { slug: 'space-policy', name: 'Space Policy & Regulation', description: 'Government policy, spectrum allocation, licensing, and international space law.', icon: '⚖️', sortOrder: 3 },
-  { slug: 'business-funding', name: 'Business & Funding', description: 'Space industry investment, startup funding, business models, and market analysis.', icon: '💰', sortOrder: 4 },
-  { slug: 'deep-space', name: 'Deep Space Exploration', description: 'Lunar missions, Mars colonization, asteroid mining, and interplanetary travel.', icon: '🌌', sortOrder: 5 },
-  { slug: 'careers', name: 'Careers & Education', description: 'Career advice, job opportunities, academic programs, and professional development.', icon: '🎓', sortOrder: 6 },
-  { slug: 'general', name: 'General Discussion', description: "Open forum for space industry topics that don't fit neatly into other categories.", icon: '💬', sortOrder: 7 },
-  { slug: 'announcements', name: 'Announcements', description: 'Official SpaceNexus announcements, platform updates, and community news.', icon: '📢', sortOrder: 8 },
-];
+// Canonical list lives in src/lib/forum-categories.ts. It used to be copied
+// into three route files that each asked the next person to keep them in
+// sync; the alias keeps the local name while removing the duplicate.
+const DEFAULT_FORUM_CATEGORIES = FORUM_CATEGORY_SEEDS;
 
 /**
  * Auto-seed forum categories if the table is empty.
@@ -68,7 +74,7 @@ export async function GET(
     const { searchParams } = new URL(req.url);
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
     const limit = constrainPagination(
-      parseInt(searchParams.get('limit') || '20', 10),
+      parseInt(searchParams.get('limit') || String(THREADS_PER_PAGE), 10),
       50
     );
     const sort = searchParams.get('sort') || 'newest'; // newest | popular | top
@@ -120,6 +126,16 @@ export async function GET(
       prisma.forumThread.count({ where }),
     ]);
 
+    // Anchors for this page of threads, in one query. An anchored thread
+    // shows what it is about in the listing, so a category of launch threads
+    // reads as a launch schedule rather than a wall of near-identical titles.
+    // Fail soft: a listing must still render if the anchor lookup breaks.
+    // Anchors are context on top of a thread, never the thread itself.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const anchors = await getAnchorsForThreads(threads.map((t: any) => t.id)).catch(
+      () => new Map()
+    );
+
     // Transform to include postCount, tags, vote counts
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const threadsData = threads.map((t: any) => ({
@@ -139,6 +155,15 @@ export async function GET(
       downvoteCount: t.downvoteCount || 0,
       createdAt: t.createdAt,
       updatedAt: t.updatedAt,
+      anchor: anchors.get(t.id)
+        ? {
+            anchorType: anchors.get(t.id)!.anchorType,
+            subjectTitle: anchors.get(t.id)!.subjectTitle,
+            subjectUrl: anchors.get(t.id)!.retiredAt ? null : anchors.get(t.id)!.subjectUrl,
+            subtitle: anchors.get(t.id)!.subtitle,
+            subjectDate: anchors.get(t.id)!.subjectDate,
+          }
+        : null,
     }));
 
     return NextResponse.json({
@@ -206,38 +231,60 @@ export async function POST(
       return notFoundError('Forum category');
     }
 
-    const body = await req.json();
-    const { title, content, tags, postAsCompany } = body;
+    const raw = await req.json().catch(() => null);
+    if (!raw) return validationError('A request body is required');
 
-    if (!title || typeof title !== 'string' || title.trim().length === 0) {
-      return validationError('Thread title is required');
+    const validation = validateBody(forumThreadCreateSchema, raw);
+    if (!validation.success) {
+      return validationError(validationMessage(validation.errors), validation.errors);
+    }
+    const { tags: validTags, postAsCompany } = validation.data;
+
+    // Per-account posting budget. A new thread is the expensive object here —
+    // each one is a new indexable page — so it carries the tightest budget.
+    // The middleware's per-IP bucket sits in front of this; neither is
+    // sufficient alone (see src/lib/forum-guard.ts).
+    const throttle = postingThrottle(session.user.id, 'thread');
+    if (!throttle.allowed) {
+      return rateLimitedError(Math.ceil(throttle.retryAfterMs / 1000));
     }
 
-    if (title.trim().length > 200) {
-      return validationError('Thread title must be 200 characters or less');
+    // Strip HTML before anything is persisted. Bodies are stored as Markdown
+    // source and rendered without rehype-raw, so tags are already inert at
+    // render time — this is defence in depth for the next renderer (an email
+    // digest, an RSS feed) that forgets.
+    const title = sanitizeForumTitle(validation.data.title);
+    const content = sanitizeForumBody(validation.data.content);
+
+    if (title.length < 3) {
+      return validationError('Give the thread a title of at least 3 characters');
     }
 
-    if (!content || typeof content !== 'string' || content.trim().length === 0) {
-      return validationError('Thread content is required');
+    const author = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { createdAt: true, claimedCompanyId: true },
+    });
+
+    const titleVerdict = inspectContent(title, {
+      accountCreatedAt: author?.createdAt ?? null,
+      isTitle: true,
+    });
+    if (!titleVerdict.ok) {
+      return validationError(titleVerdict.reason || 'That title was rejected');
     }
 
-    if (content.length > 10000) {
-      return validationError('Thread content must be 10000 characters or less');
+    const contentVerdict = inspectContent(content, {
+      accountCreatedAt: author?.createdAt ?? null,
+    });
+    if (!contentVerdict.ok) {
+      return validationError(contentVerdict.reason || 'That post was rejected');
     }
 
-    // Validate tags if provided (max 5, must be from allowed list)
-    const validTags = Array.isArray(tags) ? tags.filter((t: string) => typeof t === 'string').slice(0, 5) : [];
-
-    // Optional: post as company (must own a claimed company)
+    // Optional: post as company (must own a claimed company). Read from the
+    // DB, never from the request — the flag only says "use my claim".
     let companyId: string | null = null;
-    if (postAsCompany) {
-      const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { claimedCompanyId: true },
-      });
-      if (user?.claimedCompanyId) {
-        companyId = user.claimedCompanyId;
-      }
+    if (postAsCompany && author?.claimedCompanyId) {
+      companyId = author.claimedCompanyId;
     }
 
     const thread = await prisma.forumThread.create({
@@ -245,8 +292,8 @@ export async function POST(
         categoryId: category.id,
         authorId: session.user.id,
         ...(companyId ? { companyId } : {}),
-        title: title.trim(),
-        content: content.trim(),
+        title,
+        content,
         tags: validTags,
       } as any,
       include: {

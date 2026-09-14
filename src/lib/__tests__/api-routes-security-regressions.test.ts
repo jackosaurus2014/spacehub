@@ -35,6 +35,11 @@ jest.mock('@/lib/db', () => ({
     user: { findUnique: jest.fn(), findMany: jest.fn() },
     forumCategory: { findUnique: jest.fn() },
     forumThread: { findUnique: jest.fn(), update: jest.fn() },
+    // Replies paginate (2026-09-14), so the thread GET counts posts before it
+    // reads the thread. Without this the count throws, the route 500s, and
+    // the email assertion below silently passes on a call that never happened.
+    forumPost: { count: jest.fn() },
+    forumAnchor: { findUnique: jest.fn() },
     skillEndorsement: { findMany: jest.fn(), count: jest.fn() },
     threadVote: { findUnique: jest.fn() },
     threadSubscription: { findUnique: jest.fn() },
@@ -205,6 +210,8 @@ describe('public directory GETs do not select user emails', () => {
       name: 'General',
     });
     prisma.forumThread.findUnique.mockResolvedValue(null);
+    prisma.forumPost.count.mockResolvedValue(0);
+    prisma.forumAnchor.findUnique.mockResolvedValue(null);
 
     const { GET } = await import('@/app/api/community/forums/[slug]/[threadId]/route');
     const { NextRequest } = await import('next/server');

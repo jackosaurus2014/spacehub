@@ -19,13 +19,38 @@ interface CategoryInfo {
   description: string;
 }
 
+interface AnchorInfo {
+  anchorType: string;
+  subjectTitle: string;
+  subjectUrl: string | null;
+  subtitle: string | null;
+  subjectDate: string | null;
+}
+
+type ThreadWithAnchor = ThreadData & { anchor: AnchorInfo | null };
+
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+const ANCHOR_TYPE_LABEL: Record<string, string> = {
+  launch: 'Launch',
+  company: 'Company',
+  guide: 'Guide',
+};
+
 export default function ForumCategoryPage() {
   const params = useParams();
   const slug = params.slug as string;
   const { data: session } = useSession();
 
   const [category, setCategory] = useState<CategoryInfo | null>(null);
-  const [threads, setThreads] = useState<ThreadData[]>([]);
+  const [threads, setThreads] = useState<ThreadWithAnchor[]>([]);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [categoryNotFound, setCategoryNotFound] = useState(false);
   const [showNewThread, setShowNewThread] = useState(false);
@@ -57,9 +82,10 @@ export default function ForumCategoryPage() {
   }, [session?.user?.id]);
 
   useEffect(() => {
+    setLoading(true);
     const fetchThreads = async () => {
       try {
-        const res = await fetch(`/api/community/forums/${slug}`);
+        const res = await fetch(`/api/community/forums/${slug}?page=${page}&sort=${sortBy}`);
         if (res.ok) {
           const json = await res.json();
           const data = json.data || json;
@@ -84,8 +110,10 @@ export default function ForumCategoryPage() {
             downvoteCount: t.downvoteCount || 0,
             companyName: t.companyName || t.company?.name || undefined,
             companyId: t.companyId || undefined,
+            anchor: t.anchor || null,
           }));
           setThreads(threadsList);
+          setPagination(data.pagination || null);
         } else if (res.status === 404) {
           setCategoryNotFound(true);
           setCategory({ id: slug, slug, name: slug.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()), description: '' });
@@ -98,7 +126,12 @@ export default function ForumCategoryPage() {
       }
     };
     fetchThreads();
-  }, [slug]);
+  }, [slug, page, sortBy]);
+
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(e.target.value);
+    setPage(1);
+  };
 
   const handleCreateThread = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,6 +175,7 @@ export default function ForumCategoryPage() {
             downvoteCount: 0,
             companyName: thread.companyName || (wasPostAsCompany && claimedCompany ? claimedCompany.name : undefined),
             companyId: thread.companyId || (wasPostAsCompany && claimedCompany ? claimedCompany.id : undefined),
+            anchor: null,
           }, ...prev]);
         }
       } else {
@@ -157,21 +191,6 @@ export default function ForumCategoryPage() {
       setCreating(false);
     }
   };
-
-  // Sort: pinned first, then by selected sort
-  const sortedThreads = [...threads].sort((a, b) => {
-    if (a.isPinned && !b.isPinned) return -1;
-    if (!a.isPinned && b.isPinned) return 1;
-    if (sortBy === 'top') {
-      const aScore = (a.upvoteCount || 0) - (a.downvoteCount || 0);
-      const bScore = (b.upvoteCount || 0) - (b.downvoteCount || 0);
-      return bScore - aScore;
-    }
-    if (sortBy === 'popular') {
-      return (b.viewCount || 0) - (a.viewCount || 0);
-    }
-    return new Date(b.lastActivityAt).getTime() - new Date(a.lastActivityAt).getTime();
-  });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
@@ -189,7 +208,7 @@ export default function ForumCategoryPage() {
           <button
             onClick={() => setShowNewThread(!showNewThread)}
             disabled={categoryNotFound}
-            className="px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-900 font-medium rounded-lg transition-colors flex items-center gap-2 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-900 font-medium rounded-lg transition-colors flex items-center gap-2 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -308,7 +327,7 @@ export default function ForumCategoryPage() {
         )}
 
         {/* Empty state */}
-        {!loading && !categoryNotFound && sortedThreads.length === 0 && (
+        {!loading && !categoryNotFound && threads.length === 0 && (
           <div className="text-center py-20">
             <div className="mx-auto w-16 h-16 rounded-2xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center mb-4">
               <svg className="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -327,12 +346,13 @@ export default function ForumCategoryPage() {
         )}
 
         {/* Sort dropdown */}
-        {!loading && sortedThreads.length > 0 && (
+        {!loading && threads.length > 0 && (
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xs text-slate-500">Sort by:</span>
+            <label htmlFor="forum-sort" className="text-xs text-slate-500">Sort by:</label>
             <select
+              id="forum-sort"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={handleSortChange}
               className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="newest">Newest</option>
@@ -343,17 +363,50 @@ export default function ForumCategoryPage() {
         )}
 
         {/* Thread list */}
-        {!loading && sortedThreads.length > 0 && (
+        {!loading && threads.length > 0 && (
           <div className="space-y-2">
-            {sortedThreads.map((thread, idx) => (
-              <ThreadCard
-                key={thread.id}
-                thread={thread}
-                categorySlug={slug}
-                index={idx}
-              />
+            {threads.map((thread, idx) => (
+              <div key={thread.id}>
+                <ThreadCard
+                  thread={thread}
+                  categorySlug={slug}
+                  index={idx}
+                />
+                {thread.anchor && (
+                  <p className="text-[11px] text-slate-500 px-2 mt-0.5">
+                    {ANCHOR_TYPE_LABEL[thread.anchor.anchorType] || 'Subject'}: {thread.anchor.subjectTitle}
+                  </p>
+                )}
+              </div>
             ))}
           </div>
+        )}
+
+        {/* Pagination */}
+        {!loading && threads.length > 0 && pagination && pagination.totalPages > 1 && (
+          <nav aria-label="Thread pages" className="flex items-center justify-center gap-3 mt-6">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              aria-disabled={page <= 1}
+              className="px-3 py-2 text-sm bg-white/[0.06] hover:bg-white/[0.1] disabled:opacity-40 disabled:cursor-not-allowed text-white/80 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-slate-400">
+              Page {pagination.page} of {pagination.totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+              disabled={page >= pagination.totalPages}
+              aria-disabled={page >= pagination.totalPages}
+              className="px-3 py-2 text-sm bg-white/[0.06] hover:bg-white/[0.1] disabled:opacity-40 disabled:cursor-not-allowed text-white/80 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+            >
+              Next
+            </button>
+          </nav>
         )}
       </div>
     </div>

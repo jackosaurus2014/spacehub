@@ -856,11 +856,23 @@ describe('stripeCheckoutSchema', () => {
   });
 
   it('rejects retired tier "enterprise"', () => {
+    // The withdrawn $49.99/mo plan. It is still rejected at checkout after
+    // SpaceNexus Research shipped (2026-09-14) — Research is its own tier key,
+    // deliberately NOT a revival of 'enterprise', so legacy rows keep the Pro
+    // access they have and nobody is silently upgraded.
     const result = stripeCheckoutSchema.safeParse({ tier: 'enterprise', interval: 'month' });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('Tier must be "pro"');
+      expect(result.error.issues[0].message).toBe('Tier must be "pro" or "research"');
     }
+  });
+
+  it('accepts tier "research" with a yearly interval', () => {
+    // The schema accepts it; whether it can actually be BOUGHT is decided in
+    // the checkout route by RESEARCH_TIER_ENABLED and a configured price.
+    expect(stripeCheckoutSchema.safeParse({ tier: 'research', interval: 'year' }).success).toBe(
+      true
+    );
   });
 
   it('rejects unknown tiers and invalid intervals', () => {

@@ -127,7 +127,12 @@ const PERK_MAP: Record<SubscriptionTier, SubscriberPerks> = {
 };
 
 export function getSubscriberPerks(tier: string): SubscriberPerks {
-  const normalized = tier === 'enterprise' ? 'pro' : tier;
+  // 'enterprise' is the withdrawn legacy plan; 'research' is the annual firm
+  // seat added 2026-09-14. Both resolve to the Pro perk table on purpose:
+  // Research buys site/data capability, never a game advantage (no pay-to-win),
+  // and without this line a paying Research member would silently drop to the
+  // FREE perk table — a downgrade.
+  const normalized = tier === 'enterprise' || tier === 'research' ? 'pro' : tier;
   return PERK_MAP[normalized as SubscriptionTier] || FREE_PERKS;
 }
 
