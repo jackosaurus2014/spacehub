@@ -20,8 +20,12 @@ const COMPARISON_DATA = [
   { metric: 'Small Launch Vehicle', a: 'Electron (310 kg to LEO)', b: 'N/A (no small launcher)' },
   { metric: 'Medium Launch Vehicle', a: 'Neutron (in development; ~13,000 kg to LEO)', b: 'Falcon 9 (22,800 kg to LEO)' },
   { metric: 'Heavy / Super Heavy', a: 'None planned', b: 'Falcon Heavy (63,800 kg LEO); Starship (150,000+ kg LEO)' },
-  { metric: 'Electron Launches (career)', a: '55+ (through early 2026)', b: 'N/A' },
-  { metric: 'Falcon 9 Launches (career)', a: 'N/A', b: '300+ (through early 2026)' },
+  // Career totals and success rates track src/lib/launch-vehicles-data.ts
+  // (Electron asOf 2026-08-20, Falcon 9 asOf 2026-08-22). The '55+ / 300+'
+  // figures here were left over from early 2026 and were shipping in the
+  // page title; refreshed 2026-09-14.
+  { metric: 'Electron Launches (career)', a: '93 (Aug 2026)', b: 'N/A' },
+  { metric: 'Falcon 9 Launches (career)', a: 'N/A', b: '680 (Aug 2026)' },
   { metric: 'Engine Technology', a: 'Rutherford (electric pump-fed, 3D-printed); Archimedes (Neutron, ox-rich staged combustion, LOX/CH4)', b: 'Merlin (gas gen, LOX/RP-1); Raptor (full-flow staged combustion, LOX/CH4)' },
   { metric: 'Reusability (Current)', a: 'Electron — mid-air helicopter catch (demonstrated)', b: 'Falcon 9 — propulsive booster landing (routine, 200+ landings)' },
   { metric: 'Spacecraft Division', a: 'Photon spacecraft bus (8 missions+); Pioneer spacecraft platform', b: 'Crew Dragon, Cargo Dragon, Starship' },
@@ -31,7 +35,7 @@ const COMPARISON_DATA = [
   { metric: 'Key Government Customer', a: 'NRO, NASA (ESCAPADE Mars mission), DARPA', b: 'NASA (Crew, Cargo, HLS), DoD (NSSL), NRO' },
   { metric: 'Constellation Ownership', a: 'None (but builds components used by constellation operators)', b: 'Starlink (6,000+ sats, $6.6B+ revenue)' },
   // Rows below were merged from the retired /compare/spacex-vs-rocket-lab page (2026-08-26).
-  { metric: 'Launch Success Rate', a: '~93% (Electron)', b: '~99% (Falcon 9)' },
+  { metric: 'Launch Success Rate', a: '~96% (Electron, 89/93)', b: '~99.6% (Falcon 9, 677/680)' },
   { metric: 'Launch Price (approx.)', a: '~$8M (Electron dedicated)', b: '~$74M (Falcon 9 commercial list, 2026)' },
   { metric: 'Cost per kg to LEO', a: '~$26,000/kg (Electron); ~$600/kg Neutron target', b: '~$3,000/kg (Falcon 9, full payload); ~$1,500/kg (Falcon Heavy)' },
   { metric: 'Launch Sites', a: 'Mahia, NZ (LC-1); Wallops, VA (LC-2)', b: 'Cape Canaveral (SLC-40), KSC (LC-39A), Vandenberg (SLC-4E), Starbase (Boca Chica)' },

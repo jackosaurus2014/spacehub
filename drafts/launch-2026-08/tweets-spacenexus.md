@@ -86,7 +86,7 @@ funding rounds, new job postings, and upcoming launches — generated from live 
 takes. This week's edition: spacenexus.us/intelligence-brief
 
 **D2 — jobs**
-6,500+ live space-industry jobs, aggregated from company career boards daily and
+8,500+ live space-industry jobs, aggregated from company career boards daily and
 searchable in one place. Engineering, ops, business, gigs. spacenexus.us/space-talent
 
 **D3 — the tracking layer**

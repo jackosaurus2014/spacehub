@@ -15,14 +15,14 @@ export const metadata: Metadata = {
     'government contracts API',
   ],
   openGraph: {
-    title: 'API Documentation | SpaceNexus Developer API',
+    title: 'API Documentation | SpaceNexus',
     description:
       'Complete API reference for the SpaceNexus space industry data API. Endpoints for satellite tracking, launch schedules, company profiles, space weather, and more.',
     url: 'https://spacenexus.us/developer/docs',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'API Documentation | SpaceNexus Developer API',
+    title: 'API Documentation | SpaceNexus',
     description:
       'Complete API reference for the SpaceNexus space industry data API. Endpoints for satellite tracking, launch schedules, company profiles, space weather, and more.',
   },

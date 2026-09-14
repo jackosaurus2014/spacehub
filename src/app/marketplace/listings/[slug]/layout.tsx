@@ -27,10 +27,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const desc = listing.description?.slice(0, 160) || `${listing.name} - space industry service listing on SpaceNexus Marketplace`;
 
   return {
-    title: `${listing.name} - SpaceNexus Marketplace`,
+    title: listing.name,
     description: desc,
     openGraph: {
-      title: `${listing.name} | SpaceNexus Marketplace`,
+      title: `${listing.name} | SpaceNexus`,
       description: desc,
       url: `https://spacenexus.us/marketplace/listings/${slug}`,
       images: [{ url: '/og-marketplace.png', width: 1200, height: 630, alt: listing.name }],

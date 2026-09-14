@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 // can't set the status code.
 //
 // This is the highest-volume instance of the defect on the site: the ATS
-// crawler keeps ~6,500 postings and jobs-sitemap.xml points at every one of
+// crawler keeps ~8,800 postings and jobs-sitemap.xml points at every one of
 // them, so expired ids are exactly the URLs Google re-crawls most.
 //
 // Mirrors the page's gate: src/app/space-talent/job/[id]/page.tsx calls

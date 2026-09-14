@@ -15,7 +15,7 @@ import { JOB_CATEGORIES, SENIORITY_LEVELS } from '@/types';
 
 // "How do I get a job in the space industry" (2026-09-04). The searches for
 // this question return nothing useful — generic career-site listicles. We
-// have the one thing they don't: ~6,500 live postings from 16 ATS boards,
+// have the one thing they don't: ~8,800 live postings from 16 ATS boards,
 // a monthly hiring index, and salary ranges from the postings that state
 // them. So every number on this page is read from those at request time,
 // and the advice is organised around what the postings actually ask for.

@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${category.name} - Community Forum`,
     description: desc,
     openGraph: {
-      title: `${category.name} | SpaceNexus Community`,
+      title: category.name,
       description: desc,
       url: `https://spacenexus.us/community/forums/${slug}`,
     },

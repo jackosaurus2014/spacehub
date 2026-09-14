@@ -21,15 +21,20 @@ export const revalidate = 3600;
 
 const SLUG = 'when-does-the-iss-retire';
 const CANONICAL = `https://spacenexus.us/guide/${SLUG}`;
-const TITLE = 'When Does the ISS Retire? The 2030 Plan, the Push to 2032, and What Replaces It (2026)';
+// CTR pass (2026-09-14): 104 visible characters with the section suffix, so
+// Google cut everything after "The 2030 Plan". The title now answers the
+// question inside the ~60-char budget and is ABSOLUTE (the brand suffix would
+// put it back over). /blog/iss-decommission-what-happens-space-station-retires
+// 301s here, and that old URL is where the impressions still land.
+const TITLE = 'When Does the ISS Retire? Late 2030, and What Replaces It';
 const DESCRIPTION =
-  'NASA still plans to deorbit the ISS in late 2030 with a SpaceX tug, but a Senate draft would extend it to 2032, GAO warns of a gap, and NASA rewrote its replacement plan in March 2026. Every date, the deorbit mechanics, and where each commercial station actually stands.';
+  'NASA plans to deorbit the ISS in late 2030 with a SpaceX tug; a Senate draft would push it to 2032. Every date, and where each replacement stands.';
 /** Bumped by hand when the prose changes. */
 const LAST_EDITED = '2026-09-07T00:00:00Z';
 const AS_OF = 'September 7, 2026';
 
 export const metadata: Metadata = {
-  title: TITLE,
+  title: { absolute: TITLE },
   description: DESCRIPTION,
   keywords: ['when does the iss retire', 'iss deorbit 2030', 'iss decommission', 'what replaces the iss', 'iss deorbit vehicle', 'commercial space stations 2026', 'haven-1 launch date', 'axiom station', 'iss 2032 extension'],
   alternates: { canonical: CANONICAL },

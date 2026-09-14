@@ -238,13 +238,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getBlogPost(slug);
   if (!post) return { title: 'Post Not Found' };
 
+  // CTR pass (2026-09-14): editorial headlines regularly run past the ~60-char
+  // visible budget once the root layout appends "| SpaceNexus", so Google cut
+  // the answer and kept the brand. A post may now carry a shorter `seoTitle`,
+  // used absolute (the suffix would put it back over budget); the <h1> and the
+  // listing cards still show `title`.
+  const title = post.seoTitle ?? post.title;
+  const description = post.seoDescription ?? post.excerpt;
+
   return {
-    title: post.title,
-    description: post.excerpt,
+    title: post.seoTitle ? { absolute: post.seoTitle } : post.title,
+    description,
     keywords: post.keywords,
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
+      title,
+      description,
       type: 'article',
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt || post.publishedAt,

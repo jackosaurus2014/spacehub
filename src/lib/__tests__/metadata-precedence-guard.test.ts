@@ -44,6 +44,25 @@ function staticTitle(src: string): string | null {
   return m[1] ?? m[2];
 }
 
+/**
+ * `title: { absolute: '...' }` — used by pages whose title has no room for the
+ * brand suffix (2026-09-14 CTR pass). Next appends no template to an absolute
+ * title, so the "no brand suffix" rule below does NOT apply to these; they are
+ * resolved only for the layout-vs-page agreement check, which still matters:
+ * a retitle in one file without the other would still ship the wrong title.
+ */
+function absoluteTitle(src: string): string | null {
+  const block = src.match(/export const metadata[^=]*=\s*\{([\s\S]*?)\n\};/);
+  if (!block) return null;
+  const m = block[1].match(/^\s{2}title:\s*\{\s*absolute:\s*(?:'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"|([A-Z_][A-Z0-9_]*))\s*\}/m);
+  if (!m) return null;
+  if (m[3]) {
+    const c = src.match(new RegExp(`const ${m[3]}\\s*=\\s*(?:'((?:[^'\\\\]|\\\\.)*)'|"((?:[^"\\\\]|\\\\.)*)")`));
+    return c ? (c[1] ?? c[2]) : null;
+  }
+  return m[1] ?? m[2];
+}
+
 /** Sections whose layout sets `title.template` re-append the brand; a static
  *  title that already ends in "| SpaceNexus" renders it twice. Seen live on
  *  /guide/space-economy-investment ("... | SpaceNexus | SpaceNexus Guide"). */
@@ -92,8 +111,10 @@ describe('layout.tsx and page.tsx metadata agree', () => {
 
   for (const d of dirs) {
     it(relative(APP, d).replace(/\\/g, '/'), () => {
-      const lt = staticTitle(readFileSync(join(d, 'layout.tsx'), 'utf-8'));
-      const pt = staticTitle(readFileSync(join(d, 'page.tsx'), 'utf-8'));
+      const ls = readFileSync(join(d, 'layout.tsx'), 'utf-8');
+      const ps = readFileSync(join(d, 'page.tsx'), 'utf-8');
+      const lt = staticTitle(ls) ?? absoluteTitle(ls);
+      const pt = staticTitle(ps) ?? absoluteTitle(ps);
       if (lt == null || pt == null) return; // computed or absent on one side — nothing to compare
       expect(pt).toBe(lt);
     });

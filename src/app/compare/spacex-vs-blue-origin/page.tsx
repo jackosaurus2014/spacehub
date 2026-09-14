@@ -22,7 +22,7 @@ const COMPARISON_DATA = [
   { metric: 'Total Funding', spacex: '~$10B+', blueOrigin: '~$13B+ (mostly Bezos)' },
   { metric: 'Valuation', spacex: '~$2T market cap (NASDAQ: SPCX)', blueOrigin: 'Private (est. $30B+)' },
   { metric: 'Primary Vehicle', spacex: 'Falcon 9 / Starship', blueOrigin: 'New Glenn / New Shepard' },
-  { metric: 'Orbital Launches (Career)', spacex: '500+ (Falcon 9 & Falcon Heavy)', blueOrigin: '3 New Glenn flights: 2 successes (Jan & Nov 2025), 1 failure (Apr 2026)' },
+  { metric: 'Orbital Launches (Career)', spacex: '690+ (Falcon 9 680 + Falcon Heavy 13, Aug 2026)', blueOrigin: '3 New Glenn flights: 2 successes (Jan & Nov 2025), 1 failure (Apr 2026)' },
   { metric: 'Reusability', spacex: 'Falcon 9 booster (400+ landings, 20+ flights on a single booster)', blueOrigin: 'New Glenn booster landed once (Nov 2025); New Shepard routinely reused' },
   { metric: 'LEO Payload Capacity', spacex: '22,800 kg (F9) / 150,000 kg (Starship)', blueOrigin: '45,000 kg (New Glenn)' },
   { metric: 'Constellation', spacex: 'Starlink (9,000+ sats in orbit)', blueOrigin: 'Amazon Leo (formerly Kuiper): 3,236 planned, deployment under way — launching on Atlas V, Vulcan, Falcon 9 and New Glenn' },
@@ -124,7 +124,7 @@ export default async function SpaceXVsBlueOrigin() {
       <div className="prose prose-invert max-w-none mb-12">
         <h2 className="text-display text-xl mb-3">Key Differences</h2>
         <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-          SpaceX leads in operational scale with 500+ orbital launches and a Starlink constellation generating well over $10 billion a year. Blue Origin, despite being founded two years earlier, reached orbit for the first time with New Glenn in January 2025, landed a booster on its second flight that November, and lost its third vehicle in April 2026 — a normal early-programme record, but one that leaves it years behind on cadence. Its bet is long-horizon: BE-4 engines power ULA&apos;s Vulcan as well as New Glenn, and the Blue Moon lander anchors its NASA Artemis role.
+          SpaceX leads in operational scale with 690+ orbital launches and a Starlink constellation generating well over $10 billion a year. Blue Origin, despite being founded two years earlier, reached orbit for the first time with New Glenn in January 2025, landed a booster on its second flight that November, and lost its third vehicle in April 2026 — a normal early-programme record, but one that leaves it years behind on cadence. Its bet is long-horizon: BE-4 engines power ULA&apos;s Vulcan as well as New Glenn, and the Blue Moon lander anchors its NASA Artemis role.
         </p>
         <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
           SpaceX&apos;s Starship represents the largest launch vehicle ever built, while Blue Origin&apos;s New Glenn targets the commercial and government launch market as a heavy-lift competitor to Falcon 9 and Falcon Heavy. Both are tied to LEO broadband constellations — SpaceX owns Starlink outright, while Blue Origin is one of several launchers for Amazon&apos;s Leo constellation (formerly Project Kuiper), a sister company rather than a subsidiary.

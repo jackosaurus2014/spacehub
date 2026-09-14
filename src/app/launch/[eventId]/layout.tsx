@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | SpaceNexus Launch Tracker',
+    template: '%s | SpaceNexus',
     default: 'Launch Event Details',
   },
   description: 'Real-time launch event details including countdown, mission parameters, vehicle information, and live status updates.',

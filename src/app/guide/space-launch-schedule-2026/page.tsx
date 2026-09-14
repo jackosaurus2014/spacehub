@@ -32,9 +32,10 @@ export const dynamic = 'force-dynamic';
 const LAST_EDITED = '2026-09-12T00:00:00Z';
 
 export const metadata: Metadata = {
-  title: 'Cape Canaveral Launch Schedule 2026: Dates, Times & How to Watch (Updated Weekly)',
+  // Must stay identical to layout.tsx - metadata-precedence-guard enforces it.
+  title: { absolute: 'Cape Canaveral Launch Schedule 2026: Dates & How to Watch' },
   description:
-    'Every Cape Canaveral and Kennedy launch in 2026, month by month: SpaceX, ULA and Blue Origin missions from SLC-40, SLC-41 and LC-39A with dates, times, live streams and viewing spots. Plus the worldwide manifest.',
+    'Every Cape Canaveral and Kennedy launch in 2026, month by month: dates, times, live streams and viewing spots for SLC-40, SLC-41 and LC-39A.',
   keywords: [
     'cape canaveral launch schedule 2026',
     'space launch schedule 2026',
@@ -47,9 +48,9 @@ export const metadata: Metadata = {
     'orbital launch manifest',
   ],
   openGraph: {
-    title: 'Cape Canaveral Launch Schedule 2026: Dates, Times & How to Watch (Updated Weekly)',
+    title: 'Cape Canaveral Launch Schedule 2026: Dates & How to Watch | SpaceNexus',
     description:
-    'Every Cape Canaveral and Kennedy launch in 2026, month by month: SpaceX, ULA and Blue Origin missions from SLC-40, SLC-41 and LC-39A with dates, times, live streams and viewing spots. Plus the worldwide manifest.',
+    'Every Cape Canaveral and Kennedy launch in 2026, month by month: dates, times, live streams and viewing spots for SLC-40, SLC-41 and LC-39A.',
     type: 'article',
     publishedTime: '2026-02-14T00:00:00Z',
     authors: ['SpaceNexus'],

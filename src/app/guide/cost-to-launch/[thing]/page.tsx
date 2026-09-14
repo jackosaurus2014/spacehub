@@ -25,10 +25,13 @@ export async function generateMetadata(props: { params: Promise<{ thing: string 
   const c = getCostToLaunch(params.thing);
   if (!c) return {};
   return {
-    title: c.metaTitle,
+    // CTR pass (2026-09-14): these titles are all "How much does it cost to
+    // ..." questions that already run 48-84 characters; the section suffix
+    // pushed every one past the visible budget. Absolute keeps the question.
+    title: { absolute: c.metaTitle },
     description: c.description,
     alternates: { canonical: `https://spacenexus.us/guide/cost-to-launch/${c.slug}` },
-    openGraph: { title: c.metaTitle, description: c.description, type: 'article', images: [{ url: `/api/og?title=${encodeURIComponent(c.title)}&subtitle=${encodeURIComponent('2026 prices, by option')}&type=guide`, width: 1200, height: 630 }] },
+    openGraph: { title: `${c.metaTitle} | SpaceNexus`, description: c.description, type: 'article', images: [{ url: `/api/og?title=${encodeURIComponent(c.title)}&subtitle=${encodeURIComponent('2026 prices, by option')}&type=guide`, width: 1200, height: 630 }] },
   };
 }
 

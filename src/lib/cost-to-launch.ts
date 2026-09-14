@@ -51,7 +51,7 @@ export const COST_TO_LAUNCH: readonly CostToLaunchEntry[] = [
     thing: 'a CubeSat',
     title: 'How Much Does It Cost to Launch a CubeSat?',
     metaTitle: 'How Much Does It Cost to Launch a CubeSat? (2026 Prices)',
-    description: 'Launching a 1U CubeSat costs roughly $40,000–$80,000 on a rideshare; a 3U about $100,000–$250,000; a 6U $250,000–$500,000. Full 2026 price breakdown by size and provider, plus the costs nobody quotes.',
+    description: 'A 1U CubeSat rides to orbit for $40k–$80k, a 3U for $100k–$250k, a 6U for $250k–$500k. Full 2026 rideshare pricing by size, provider and hidden cost.',
     shortAnswer: 'A 1U CubeSat rides to low Earth orbit for roughly $40,000–$80,000 through a rideshare broker; a 3U runs about $100,000–$250,000, and a 6U or 12U $250,000–$600,000. SpaceX\'s Transporter missions set the floor at about $7,000 per kilogram after a $350,000 minimum, but CubeSats buy a slot in a deployer rather than raw kilograms, so brokers (Exolaunch, ISILaunch, D-Orbit, Maverick) price by unit size, orbit and deployment options. The satellite itself typically costs as much again — or several times more.',
     rows: [
       { option: '1U CubeSat, rideshare via broker', price: '$40k–$80k', notes: 'Standard deployer slot on a Transporter-class mission to ~500 km SSO' },

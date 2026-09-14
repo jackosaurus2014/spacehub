@@ -8,13 +8,15 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { SITE_STATS } from '@/lib/site-stats';
 
 export const metadata: Metadata = {
-  title: `Space Companies: ${SITE_STATS.companies} Aerospace & Space Companies Listed (2026 Directory)`,
-  description: `The biggest space companies and ${SITE_STATS.companies} more, in one list: SpaceX, Blue Origin, Rocket Lab, Planet Labs, Lockheed Martin, Northrop Grumman. Public and private, with funding, valuation and what each one does.`,
+  // CTR pass (2026-09-14): 96 visible characters before, with the head term
+  // "space companies" surviving but the rest cut. 44 + " | SpaceNexus" = 57.
+  title: `Space Companies: ${SITE_STATS.companies} Biggest & Newest (2026)`,
+  description: `SpaceX, Blue Origin, Rocket Lab, Planet Labs, Northrop Grumman and ${SITE_STATS.companies} more: public and private space companies with funding, valuation and focus.`,
   keywords: ['space companies', 'aerospace companies', 'space companies list', 'top space companies 2026', 'commercial space companies', 'space startup companies', 'satellite companies'],
   alternates: { canonical: 'https://spacenexus.us/guide/space-companies-directory' },
   openGraph: {
-    title: 'Top Space Companies 2026 — Complete Directory',
-    description: `Browse ${SITE_STATS.companies} space company profiles with funding data, market intelligence, and SpaceNexus Score ratings.`,
+    title: `Space Companies: ${SITE_STATS.companies} Biggest & Newest (2026) | SpaceNexus`,
+    description: `SpaceX, Blue Origin, Rocket Lab, Planet Labs, Northrop Grumman and ${SITE_STATS.companies} more: public and private space companies with funding, valuation and focus.`,
     url: 'https://spacenexus.us/guide/space-companies-directory',
   },
 };

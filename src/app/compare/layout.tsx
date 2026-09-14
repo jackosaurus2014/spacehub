@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | SpaceNexus Compare',
+    template: '%s | SpaceNexus',
     default: 'Compare Space Industry Players - Launch Vehicles, Satellites, Companies | SpaceNexus',
   },
   description:

@@ -9,8 +9,10 @@
  * When a number changes materially, update it here once.
  */
 export const SITE_STATS = {
-  /** Company profiles in the directory (actual: 319 CompanyProfile rows after the Aug 2026 DB merge) */
-  companies: '300+',
+  /** Company profiles in the directory (actual: 331, measured 2026-09-14 against
+   *  /api/company-profiles `stats.totalCompanies`; was '300+' against a stale
+   *  319-row count from the Aug 2026 DB merge) */
+  companies: '330+',
   /** Original articles: blog posts + published AI insights (actual: ~270) */
   articles: '250+',
   /** Named external data sources — matches /data-sources page inventory */
@@ -23,8 +25,8 @@ export const SITE_STATS = {
   modules: '40+',
   /** Automated data-refresh jobs (cron roster, actual: 56 scheduled jobs) */
   automatedFeeds: '50+',
-  /** Live ATS-synced job listings (actual: ~6,540 active Aug 2026, resyncs daily) */
-  jobListings: '6,500+',
+  /** Live ATS-synced job listings (actual: 8,842 active, measured 2026-09-14 against /api/jobs/search; resyncs daily) */
+  jobListings: '8,500+',
   /** RSS/news feeds ingested (actual: 63 in news-fetcher RSS_FEEDS after Aug 2026 dead-feed prune) */
   newsFeeds: '60+',
   /** Global space economy, current (single canonical figure — do not fork; Space Foundation 2025, corrected from $630B in the 2026-09-01 audit) */

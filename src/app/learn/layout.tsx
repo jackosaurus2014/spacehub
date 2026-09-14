@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | SpaceNexus Learning Center',
+    template: '%s | SpaceNexus',
     default: 'Space Industry Learning Center',
   },
   description:

@@ -6,9 +6,12 @@ import type { Metadata } from 'next';
 // ("2 Launches vs 300+") was also factually stale — New Glenn has flown three
 // times — and it was still shipping on Twitter cards because the page's own
 // metadata never overrode the twitter block.
-const TITLE = 'SpaceX vs Blue Origin: Side-by-Side Comparison Table (2026)';
+// CTR pass (2026-09-14): 80 visible characters before, so the suffix ate the
+// end of the phrase. Title now carries the headline number instead of the
+// word "Side-by-Side"; description leads with it too.
+const TITLE = 'SpaceX vs Blue Origin 2026: 690+ Launches vs 3';
 const DESCRIPTION =
-  'Every key number in one table — orbital launches, reusability, payload to LEO, Starlink vs Amazon Leo, crewed flights, NASA contracts, funding and valuation — with live figures. For the full analysis, read our Blue Origin vs SpaceX guide.';
+  '690+ SpaceX orbital launches against 3 New Glenn flights. Payload, reuse, Starlink vs Amazon Leo, crew, NASA contracts and valuation in one table.';
 
 export const metadata: Metadata = {
   title: TITLE,

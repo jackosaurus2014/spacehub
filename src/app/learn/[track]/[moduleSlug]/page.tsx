@@ -21,7 +21,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     });
     if (!mod || mod.track !== params.track) return { title: 'Module Not Found' };
     return {
-      title: `${mod.title} | SpaceNexus Learning Zone`,
+      title: mod.title,
       description: mod.description.slice(0, 160),
       alternates: {
         canonical: `https://spacenexus.us/learn/${params.track}/${params.moduleSlug}`,

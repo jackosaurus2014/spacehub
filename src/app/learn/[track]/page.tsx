@@ -48,7 +48,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const meta = TRACK_NAMES[params.track];
   if (!meta) return { title: 'Track Not Found' };
   return {
-    title: `${meta.title} | SpaceNexus Learning Zone`,
+    title: meta.title,
     description: meta.description,
     alternates: { canonical: `https://spacenexus.us/learn/${params.track}` },
   };

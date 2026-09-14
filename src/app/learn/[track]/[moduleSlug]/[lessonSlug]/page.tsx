@@ -30,7 +30,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       return { title: 'Lesson Not Found' };
     }
     return {
-      title: `${lesson.title} | SpaceNexus Learning Zone`,
+      title: lesson.title,
       description: lesson.bodyMd.slice(0, 160).replace(/\s+/g, ' ').trim(),
       alternates: {
         canonical: `https://spacenexus.us/learn/${params.track}/${params.moduleSlug}/${params.lessonSlug}`,

@@ -11,14 +11,14 @@ export const metadata: Metadata = {
     'interactive API console',
   ],
   openGraph: {
-    title: 'API Explorer | SpaceNexus Developer API',
+    title: 'API Explorer | SpaceNexus',
     description:
       'Interactive API explorer for the SpaceNexus space industry data API. Test endpoints, inspect responses, and build integration code in real-time.',
     url: 'https://spacenexus.us/developer/explorer',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'API Explorer | SpaceNexus Developer API',
+    title: 'API Explorer | SpaceNexus',
     description:
       'Interactive API explorer for the SpaceNexus space industry data API. Test endpoints, inspect responses, and build integration code in real-time.',
   },

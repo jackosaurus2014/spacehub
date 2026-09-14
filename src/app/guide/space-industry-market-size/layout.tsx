@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Space Industry Market Size 2026 | SpaceNexus Guide',
+    title: 'Space Industry Market Size 2026 | SpaceNexus',
     description: 'Market size data, trends, and forecasts through 2035 with sector analysis and growth projections.',
     images: ['/api/og?title=Space+Industry+Market+Size+2026&subtitle=Data%2C+trends%2C+and+forecasts+through+2035+with+sector+analysis&type=guide'],
   },

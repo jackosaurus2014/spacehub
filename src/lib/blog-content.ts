@@ -13,6 +13,16 @@ export interface OriginalBlogPost {
   slug: string;
   title: string;
   excerpt: string;
+  /**
+   * SERP title, when the editorial headline is too long for the ~60-character
+   * visible budget or buries the query phrase. When set, blog/[slug]'s
+   * generateMetadata uses it as an ABSOLUTE title (no "| SpaceNexus" suffix,
+   * which would push it back over budget); the on-page <h1> and the listing
+   * cards keep `title`. Keep it at or under 60 characters.
+   */
+  seoTitle?: string;
+  /** Meta description, when `excerpt` runs past the ~155-character snippet budget. */
+  seoDescription?: string;
   category: BlogCategory;
   author: string;
   authorRole: string;
@@ -3119,6 +3129,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     slug: 'space-industry-investment-guide-2026',
     title: 'Space Industry Investment Guide: Where Smart Money Is Going in 2026',
     excerpt: 'From launch providers to satellite operators to in-space services, here\'s a comprehensive guide to investing in the space economy — including the sectors, stocks, and strategies that are attracting the most capital in 2026. Updated August 2026 for the SpaceX (SPCX) listing.',
+    seoTitle: 'Space Industry Investment Guide 2026: Where the Money Goes',
+    seoDescription: 'Where space capital went in 2026: launch, satellites, in-space services and defense — the sectors, public tickers and private rounds worth watching.',
     category: 'market',
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
@@ -4031,7 +4043,9 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   {
     slug: 'space-launch-schedule-2026-complete-guide',
     title: 'Rocket Launch Schedule 2026: NASA, SpaceX, Starship and Every Mission Worldwide',
-    excerpt: '2026 is on pace for 300+ orbital launches. Track Artemis II, Starship V3, New Glenn, and Vulcan month by month, with how-to-watch details for every mission.',
+    excerpt: '2026 is on track to beat the record 324 orbital launch attempts of 2025. Track Artemis II, Starship V3, New Glenn and Vulcan month by month, with how to watch.',
+    seoTitle: 'Rocket Launch Schedule 2026: Every Mission, Month by Month',
+    seoDescription: '2026 is on track to beat the record 324 orbital launch attempts of 2025. Artemis II, Starship V3, New Glenn and Vulcan month by month, with how to watch.',
     category: 'guide',
     author: 'SpaceNexus Team',
     authorRole: 'Mission Intelligence',
@@ -4041,7 +4055,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     featured: true,
     keywords: ['space launch schedule 2026', 'rocket launch schedule', 'upcoming space launches', 'Artemis II launch date', 'Starship launch schedule', 'New Glenn launch', 'Vulcan launch schedule', 'SpaceX launch schedule 2026', 'how to watch rocket launches', 'space mission calendar 2026'],
     content: `
-<p>2026 is shaping up to be the most ambitious year in spaceflight history. With over <strong>300 orbital launches</strong> expected — up from 230+ in 2025 — the cadence of missions reaching orbit has never been higher. From NASA\'s Artemis II crewed lunar flyby to SpaceX\'s next-generation Starship V3, Blue Origin\'s New Glenn entering service, and ULA\'s Vulcan ramping operations, the launch manifest is packed with historic firsts and record-breaking campaigns.</p>
+<p>2026 is shaping up to be the most ambitious year in spaceflight history. With the manifest on track to beat the record <strong>324 orbital launch attempts</strong> of 2025 — the cadence of missions reaching orbit has never been higher. From NASA\'s Artemis II crewed lunar flyby to SpaceX\'s next-generation Starship V3, Blue Origin\'s New Glenn entering service, and ULA\'s Vulcan ramping operations, the launch manifest is packed with historic firsts and record-breaking campaigns.</p>
 
 <p>This guide provides a comprehensive overview of the 2026 space launch schedule, organized by month and provider. Whether you\'re an industry professional tracking the competitive landscape, an investor monitoring company milestones, or a space enthusiast who wants to know when to look up, this is your definitive reference.</p>
 
@@ -6134,6 +6148,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     slug: 'complete-guide-space-etfs-arkx-ufo-ita-2026',
     title: 'The Complete Guide to Space ETFs: ARKX, UFO, ITA and Beyond',
     excerpt: 'A comprehensive breakdown of every space-focused ETF available in 2026 — holdings, expense ratios, AUM, performance, and strategy. The definitive resource for investors building space exposure through exchange-traded funds. Updated August 2026 for the SpaceX (SPCX) listing.',
+    seoTitle: 'Space ETFs 2026: ARKX vs UFO vs ITA Compared',
+    seoDescription: 'ARKX, UFO and ITA compared on holdings, expense ratio, AUM and performance, plus every other space ETF an investor can buy in 2026.',
     category: 'market',
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
@@ -7322,8 +7338,10 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   },
   {
     slug: 'how-many-satellites-in-space-2026',
-    title: 'How Many Satellites in Space? 10,500+ (2026)',
-    excerpt: 'Active satellites in orbit passed 10,500 in 2026, nearly triple the 2019 count. See who operates them — Starlink, OneWeb, Planet Labs, governments — and why.',
+    title: 'How Many Satellites in Space? 16,000+ (2026)',
+    excerpt: 'Active satellites in orbit passed 16,000 in 2026, nearly triple the 2019 count. See who operates them — Starlink, OneWeb, Planet Labs, governments — and why.',
+    seoTitle: 'How Many Satellites Are in Space? 16,000+ (2026)',
+    seoDescription: 'About 16,000 active satellites are in orbit in 2026, nearly triple the 2019 count - and Starlink runs over 10,000 of them. Who operates the rest, and why.',
     category: 'guide',
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
@@ -7331,14 +7349,14 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     readingTime: 7,
     keywords: ['how many satellites are in space', 'satellites in orbit 2026', 'number of satellites', 'active satellites', 'satellite count', 'Starlink satellites'],
     content: `
-<p>If you searched "how many satellites are in space" five years ago, the answer was around 3,300. Today, in 2026, the number of <strong>active satellites in Earth orbit exceeds 10,000</strong> — and the pace of deployment is accelerating. Here is everything you need to know about the satellite population orbiting our planet.</p>
+<p>If you searched "how many satellites are in space" five years ago, the answer was around 3,300. Today, in 2026, the number of <strong>active satellites in Earth orbit exceeds 16,000</strong> — and the pace of deployment is accelerating. Here is everything you need to know about the satellite population orbiting our planet.</p>
 
 <h2 id="total-satellite-count">Total Satellites in Orbit: The 2026 Numbers</h2>
 
 <p>As of early 2026, the <strong>Union of Concerned Scientists (UCS) Satellite Database</strong> and the <strong>U.S. Space Force 18th Space Defense Squadron</strong> track the following:</p>
 
 <ul>
-<li><strong>Active satellites:</strong> ~10,500 (operational, performing their intended mission)</li>
+<li><strong>Active satellites:</strong> ~16,300 (operational, performing their intended mission)</li>
 <li><strong>Total cataloged objects:</strong> ~45,000+ (including defunct satellites, rocket bodies, and debris fragments larger than 10 cm)</li>
 <li><strong>Estimated smaller debris:</strong> 1 million+ objects between 1-10 cm, and 130 million+ objects smaller than 1 cm</li>
 </ul>
@@ -7350,7 +7368,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Satellite ownership is increasingly concentrated in a handful of mega-constellation operators, though hundreds of organizations still operate individual spacecraft:</p>
 
 <h3>SpaceX Starlink: The Dominant Player</h3>
-<p>SpaceX\'s <strong>Starlink constellation accounts for over 6,000 active satellites</strong> — roughly 57% of all operational satellites in orbit. Starlink provides broadband internet service to 4+ million subscribers across 70+ countries. SpaceX launches batches of 20-23 Starlink V2 Mini satellites approximately every 4-5 days on Falcon 9, adding roughly 1,500 new satellites per year.</p>
+<p>SpaceX\'s <strong>Starlink constellation accounts for over 10,000 active satellites</strong> — roughly 63% of all operational satellites in orbit. Starlink provides broadband internet service to 4+ million subscribers across 70+ countries. SpaceX launches batches of 20-23 Starlink V2 Mini satellites approximately every 4-5 days on Falcon 9, adding roughly 1,500 new satellites per year.</p>
 
 <h3>OneWeb</h3>
 <p>Eutelsat OneWeb operates <strong>634 satellites</strong> in a 1,200 km orbit, providing broadband services focused on enterprise, aviation, maritime, and government markets.</p>
@@ -7560,6 +7578,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     slug: 'top-50-space-companies-to-watch-2026',
     title: 'The Top 50 Space Companies to Watch in 2026',
     excerpt: 'The definitive list of the 50 most important space companies in 2026, organized by sector — from launch providers and satellite operators to defense primes and emerging startups reshaping the industry.',
+    seoTitle: 'Top 50 Space Companies to Watch in 2026 (Ranked)',
+    seoDescription: 'The 50 most important space companies of 2026 by sector: launch providers, satellite operators, defense primes and the startups reshaping the industry.',
     category: 'market',
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
@@ -8585,6 +8605,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     slug: 'artemis-accords-explained-space-law',
     title: 'The Artemis Accords Explained: Space Law for the 21st Century',
     excerpt: 'The Artemis Accords are reshaping international space law for a new era of lunar exploration and commercial activity. Learn what they require, who has signed, and what they mean for the future of space governance.',
+    seoTitle: 'Artemis Accords Explained: 71 Nations, What They Signed',
+    seoDescription: '71 nations have now signed the Artemis Accords. What the ten principles require, who has signed, and what they mean for lunar mining and space law.',
     category: 'policy',
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
@@ -8592,7 +8614,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     readingTime: 9,
     keywords: ['artemis accords', 'space law', 'outer space treaty', 'moon agreement', 'space governance', 'international space law', 'lunar exploration law', 'space resource utilization'],
     content: `
-<p>The <strong>Artemis Accords</strong> are a set of bilateral agreements between the United States and other spacefaring nations that establish practical principles for the civil exploration and use of outer space. First signed in October 2020 by eight founding nations, the Accords have since grown to include <strong>61 signatories as of early 2026</strong>, with the number expected to surpass 60 by year-end — making them the most significant development in international space law since the Outer Space Treaty of 1967.</p>
+<p>The <strong>Artemis Accords</strong> are a set of bilateral agreements between the United States and other spacefaring nations that establish practical principles for the civil exploration and use of outer space. First signed in October 2020 by eight founding nations, the Accords have since grown to include <strong>71 signatories as of September 2026</strong>, with more nations in active negotiation — making them the most significant development in international space law since the Outer Space Treaty of 1967.</p>
 
 <p>But the Artemis Accords are more than a diplomatic framework. They are actively shaping how companies operate in space, how nations cooperate on lunar missions, and how the trillion-dollar space economy of the 2030s will be governed. If you work in the space industry — whether in launch, satellites, manufacturing, or investment — the Accords affect your business.</p>
 
@@ -8629,7 +8651,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Nations commit to rendering assistance to astronauts in distress, consistent with the 1968 Rescue Agreement. In a future with multiple nations and companies operating on the lunar surface, this principle becomes operationally critical — a crew at the south pole must be able to seek emergency shelter at any nearby habitat regardless of nationality.</p>
 
 <h3>5. Registration of Space Objects</h3>
-<p>All space objects launched under the Accords must be registered, consistent with the 1975 Registration Convention. With 10,000+ active satellites and growing, accurate registration is essential for space traffic management, collision avoidance, and attribution of responsibility for debris-generating events.</p>
+<p>All space objects launched under the Accords must be registered, consistent with the 1975 Registration Convention. With 16,000+ active satellites and growing, accurate registration is essential for space traffic management, collision avoidance, and attribution of responsibility for debris-generating events.</p>
 
 <h3>6. Release of Scientific Data</h3>
 <p>Signatories commit to the public release of scientific data from space exploration activities. This builds on NASA's long tradition of open data access and ensures that knowledge gained from publicly funded missions benefits all of humanity. Commercial proprietary data is explicitly exempted.</p>
@@ -8656,7 +8678,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>2022:</strong> Colombia, France, Saudi Arabia, Rwanda, Bahrain, Singapore, and others</li>
 <li><strong>2023:</strong> India, Argentina, Czech Republic, Spain, Ecuador, and more — a major expansion year with India's signing being particularly significant</li>
 <li><strong>2024-2025:</strong> Continued growth across Europe, South America, Africa, and Asia-Pacific</li>
-<li><strong>2026:</strong> Total signatories approaching 55-60, with several more nations in active negotiation</li>
+<li><strong>2026:</strong> 71 signatories, most recently Türkiye on August 31, 2026, with several more nations in active negotiation</li>
 </ul>
 
 <p>Notable absences: <strong>China and Russia</strong> have not signed and have publicly criticized the Accords as U.S.-centric. Both nations are pursuing their own lunar exploration programs — China's International Lunar Research Station (ILRS) represents an alternative framework with its own set of partner nations. This creates a de facto bifurcation of the lunar governance landscape.</p>
@@ -9697,6 +9719,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     slug: 'spacex-blue-origin-rocket-lab-comparison-2026',
     title: 'Rocket Lab vs SpaceX vs Blue Origin (2026): Rockets, Prices and Track Records Compared',
     excerpt: 'A side-by-side comparison of the three dominant commercial launch providers — their vehicles, pricing, track records, and future plans for 2026 and beyond.',
+    seoTitle: 'Rocket Lab vs SpaceX vs Blue Origin (2026 Compared)',
+    seoDescription: 'Falcon 9, New Glenn and Electron compared on payload, price, reuse and track record - plus Starship, Neutron and what each company is really betting on.',
     category: 'analysis',
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
@@ -12696,6 +12720,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     slug: 'rocket-fuel-explained-kerosene-methane',
     title: 'Rocket Fuel Explained: From Kerosene to Methane',
     excerpt: 'Why do some rockets burn kerosene, others hydrogen, and the next generation methane? Here\'s a deep dive into rocket propellants — the chemistry, engineering trade-offs, and why fuel choice defines a rocket\'s capabilities.',
+    seoTitle: 'Rocket Fuel Explained: RP-1 vs Methane vs Hydrogen',
+    seoDescription: 'RP-1, methane, hydrogen and hypergolics compared: density, specific impulse, cost, soot and reuse - and why Starship and Neutron both chose methane.',
     category: 'technology',
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
@@ -15124,6 +15150,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     slug: 'space-exploration-milestones-timeline-achievement',
     title: 'Timeline of Space Exploration: Every Milestone from Sputnik to Starship (1957–2026)',
     excerpt: 'From Sputnik in 1957 to Starship in the 2020s, the history of space exploration is a story of audacious ambition, engineering breakthroughs, and the relentless expansion of human presence beyond Earth. Here are the milestones that defined the journey.',
+    seoTitle: 'Space Exploration Timeline: Sputnik to Starship (1957-2026)',
+    seoDescription: 'Sputnik 1957 to Starship: every space exploration milestone with dates — first satellite, first human, Apollo 11, the Shuttle, ISS and the new era.',
     category: 'guide',
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
