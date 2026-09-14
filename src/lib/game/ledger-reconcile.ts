@@ -95,6 +95,16 @@ export const CLIENT_APPLIED_LEDGER_REASONS = [
   'ship_build_resources',
   'ship_scrap_recovery',
   'location_unlock',
+  // Mining (Phase A, 2026-09-12) and its Phase C additions. The client
+  // charges these the moment the player commits — page.tsx subtracts the
+  // fuel bill and the probe cost in the same setState that creates the
+  // order — so the server's own row must NOT come back as a pending delta.
+  // It did until 2026-09-14, which charged every signed-in player twice for
+  // the same mining order. Anything the server charges WITHOUT the client
+  // also charging it (expedition_launch, refining_opex, depot_restock,
+  // survey_report_purchase) stays off this list on purpose.
+  'mining_order_fuel',
+  'survey_probe_purchase',
   // CC-2: the HQ relocation project + burned seat lease — the client debits
   // locally on the 2xx (HqRelocationConsole.tsx), same contract.
   'hq_relocation',
@@ -188,10 +198,11 @@ export function reconcileBalance(
 //                   500 x elapsedMs )
 //   elapsedMonths = elapsedMs / REAL_MS_PER_GAME_MONTH   (6 real hours)
 //
-// where `serverMonthlyGross` is the profile's theoretical-max monthly gross
-// revenue from the engine's own formula evaluated over the PERSISTED row
-// (resource-plausibility.ts computeServerMonthlyGross — every server-known
-// term real, every client-only multiplier at its documented cap). There is NO
+// where `serverMonthlyGross` is the profile's maximum monthly gross revenue
+// from the engine's own formula evaluated over the PERSISTED row
+// (resource-plausibility.ts computeServerMonthlyGross — every term the row
+// can prove read for real, only the genuinely unverifiable ones left at a
+// documented allowance; see that module's "Verified terms"). There is NO
 // per-request floor (exploit batch C-2). Ledger-mediated income (contracts,
 // mega-projects, bounties...) is NOT subject to this ceiling — it is added on
 // top via `moneyDelta`, which is independently server-verified.
@@ -254,18 +265,20 @@ export function reconcileBalance(
 //     and if the rail is not finite either, to the $500/ms floor. Those are
 //     the paths the floor exists for.
 //
-// KNOWN TRADE-OFF: the flat rail was also, by accident, the only thing
-// tightening computeServerMonthlyGrossDetailed, which is a THEORETICAL
-// maximum (every client-only multiplier at its documented cap —
-// MAX_SERVICE_REVENUE_CLIENT_MULT is ~1,821x nameplate). A 14-service row
-// nameplated at $28M/game-month reports a verified gross of ~$76.7B, so it
-// is now allowed ~$461M per 65 s sync where the flat rail allowed $32.5M —
-// ~3.4x looser for mid-size profiles. That is the price of never clipping an
-// honest large corporation, which is this clamp's contract. Tightening it
-// means making the gross itself less theoretical (tier / era / legacy /
-// commander terms are partially server-known and could be read from the
-// persisted row instead of taken at cap) — that work belongs in
-// resource-plausibility.ts, never in this rail.
+// CLOSED 2026-09-13: the gross now reads the row. The flat rail was also, by
+// accident, the only thing tightening computeServerMonthlyGrossDetailed,
+// which used to be a purely THEORETICAL maximum (every client-only
+// multiplier at its documented cap — MAX_SERVICE_REVENUE_CLIENT_MULT is
+// ~1,821x nameplate). Replacing the rail therefore loosened every mid-size
+// profile's allowance ~3.4x. That input has since been rebuilt: tier, era
+// eligibility, the commander roster, completed research at the row's own
+// tier, the megastructure gates, the legacy soft cap, mothball status and
+// the crew mix are all evaluated from the persisted GameProfile instead of
+// assumed at cap (resource-plausibility.ts "Verified terms"). Measured on
+// the audit's own fixtures, a 14-service row went from ~2,827x nameplate to
+// ~82x and its 65 s allowance from ~$1.63B to ~$49M; a fresh solo from
+// ~4,916x to ~113x. The rail formula below is UNCHANGED — only its input
+// got honest, which is where that work always belonged.
 //
 // Money desync fix (2026-09-12): one-off client-side credits were NOT
 // absorbed over later syncs — each window clamps from the already-clamped
