@@ -1,6 +1,8 @@
 /**
  * @jest-environment node
  */
+import { readFileSync } from 'fs';
+import { join } from 'path';
 /**
  * SpaceNexus Research — the guards that keep the tier honest.
  *
@@ -254,6 +256,25 @@ describe('the RESEARCH_TIER_ENABLED flag', () => {
     delete process.env[RESEARCH_TIER_FLAG_ENV_VAR];
     expect(isResearchTierEnabled()).toBe(false);
     expect(getResearchAvailability().available).toBe(false);
+  });
+
+  // Regression, 2026-09-14. The page's own redirect() was not enough: a Server
+  // Component redirect runs AFTER Next resolves the route's `metadata` and
+  // flushes the HTML shell, so /research answered 200 in production with the
+  // title "SpaceNexus Research - an annual data seat for firms" while the flag
+  // was off. Middleware now gates the path so the route is never reached.
+  // These two assertions are what keep it that way.
+  it('the flag module has NO imports, so middleware can use it without pulling in Prisma', () => {
+    const src = readFileSync(join(process.cwd(), 'src/lib/research-flag.ts'), 'utf8');
+    const importLines = src.split(/\r?\n/).filter((l) => /^\s*import\s/.test(l));
+    expect(importLines).toEqual([]);
+  });
+
+  it('middleware gates /research on the flag, not only the page', () => {
+    const mw = readFileSync(join(process.cwd(), 'src/middleware.ts'), 'utf8');
+    expect(mw).toContain("from '@/lib/research-flag'");
+    expect(mw).toContain("pathname === '/research'");
+    expect(mw).toContain('isResearchTierEnabled()');
   });
 
   it('fails closed on anything but the exact string "true"', () => {

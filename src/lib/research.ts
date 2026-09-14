@@ -39,11 +39,11 @@ import { normalizeTier } from '@/lib/subscription';
  * Read through isResearchTierEnabled() rather than inlining the env lookup, so
  * the tests can flip it and so there is exactly one place to look.
  */
-export const RESEARCH_TIER_FLAG_ENV_VAR = 'RESEARCH_TIER_ENABLED';
-
-export function isResearchTierEnabled(): boolean {
-  return process.env[RESEARCH_TIER_FLAG_ENV_VAR] === 'true';
-}
+// Defined in research-flag.ts, which has no imports, because middleware.ts
+// needs the flag and this module imports Prisma. Re-exported here so every
+// existing caller keeps working and there is still one definition.
+import { RESEARCH_TIER_FLAG_ENV_VAR, isResearchTierEnabled } from './research-flag';
+export { RESEARCH_TIER_FLAG_ENV_VAR, isResearchTierEnabled };
 
 /**
  * The env var the founder must create in Stripe and set in Railway: a RECURRING

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resolveMothball } from '@/lib/mothballed-routes';
+import { isResearchTierEnabled } from '@/lib/research-flag';
 import { registryRouteMissing } from '@/lib/registry-routes';
 import { CSP_REPORT_PATH, REPORTING_ENDPOINTS_HEADER, documentCspHeaders } from '@/lib/csp';
 
@@ -836,6 +837,28 @@ export async function middleware(req: NextRequest) {
   }
 
   const pathname = req.nextUrl.pathname;
+
+  // SpaceNexus Research is BUILT BUT NOT LAUNCHED. The page itself redirects
+  // when RESEARCH_TIER_ENABLED is off, but a Server Component's redirect()
+  // runs AFTER Next has resolved the route's `metadata` and flushed the HTML
+  // shell — so /research answered 200 with the title "SpaceNexus Research —
+  // an annual data seat for firms" and was indexable, which is precisely the
+  // visibility the flag exists to prevent (observed in production
+  // 2026-09-14). Gating here means nothing about an unlaunched product is
+  // ever emitted: the request never reaches the route.
+  //
+  // The in-page redirect stays as defence in depth. This is availability
+  // only — it never touches an existing subscriber's entitlement, and the
+  // /api/research/* routes gate on their own guard, not on this.
+  if (pathname === '/research' || pathname.startsWith('/research/')) {
+    if (!isResearchTierEnabled()) {
+      const hub = req.nextUrl.clone();
+      hub.pathname = '/pricing';
+      hub.search = '';
+      hub.hash = '';
+      return NextResponse.redirect(hub, 307);
+    }
+  }
 
   // Mothballed feature suites (2026-08 consolidation Phase 2) — 307 to the
   // hub that will relist them. Runs before the existence probes below so a
