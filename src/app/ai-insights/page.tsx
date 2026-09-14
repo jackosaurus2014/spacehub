@@ -9,6 +9,8 @@ import SourceCitation from '@/components/ui/SourceCitation';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import EmptyState from '@/components/ui/EmptyState';
+import DeskByline from '@/components/desk/DeskByline';
+import { DESK_ABOUT_HREF, DESK_BYLINE, DESK_STANDING_VIEW } from '@/lib/ai-insights-desk';
 import { clientLogger } from '@/lib/client-logger';
 
 interface Insight {
@@ -188,6 +190,34 @@ export default function AIInsightsPage() {
           accentColor="purple"
         />
 
+        {/* Standing byline + disclosure. Every piece below carries the desk
+            name, so the hub states once — up front, not in a footer — what
+            the desk is and who is accountable for it. */}
+        <ScrollReveal>
+          <div className="card p-5 mb-8 border border-white/10">
+            <DeskByline />
+            <details className="mt-4 group">
+              <summary className="cursor-pointer text-xs text-slate-400 hover:text-white transition-colors list-none inline-flex items-center gap-1.5">
+                <span aria-hidden="true" className="transition-transform group-open:rotate-90">&rsaquo;</span>
+                The {DESK_BYLINE} standing view
+              </summary>
+              <ul className="mt-3 space-y-2 pl-4">
+                {DESK_STANDING_VIEW.map((view) => (
+                  <li key={view} className="text-xs text-slate-400 leading-relaxed list-disc">
+                    {view}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href={DESK_ABOUT_HREF}
+                className="inline-block mt-3 text-xs text-cyan-300 hover:text-cyan-200 underline underline-offset-2"
+              >
+                How these are written, checked and corrected &rarr;
+              </Link>
+            </details>
+          </div>
+        </ScrollReveal>
+
         {/* Category Filter Tabs */}
         <ScrollReveal>
           <div className="flex flex-wrap gap-2 mb-8">
@@ -273,17 +303,21 @@ export default function AIInsightsPage() {
                       {/* Source Citations */}
                       <SourceCitation sources={getInsightSourceTypes(insight)} />
 
-                      {/* Footer */}
-                      <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/[0.06]">
-                        <span className="text-slate-500 text-sm">
-                          {formatDate(insight.generatedAt)}
-                        </span>
-                        <Link
-                          href={`/ai-insights/${insight.slug}`}
-                          className="text-sm font-medium text-white/70 hover:text-white transition-colors"
-                        >
-                          Read Analysis &rarr;
-                        </Link>
+                      {/* Footer — the byline travels on every card, with its
+                          link to /editorial, so the desk is never anonymous. */}
+                      <div className="mt-auto pt-3 border-t border-white/[0.06]">
+                        <DeskByline variant="compact" className="mb-2" />
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-500 text-sm">
+                            {formatDate(insight.generatedAt)}
+                          </span>
+                          <Link
+                            href={`/ai-insights/${insight.slug}`}
+                            className="text-sm font-medium text-white/70 hover:text-white transition-colors"
+                          >
+                            Read Analysis &rarr;
+                          </Link>
+                        </div>
                       </div>
                     </GlassCard>
                   </StaggerItem>

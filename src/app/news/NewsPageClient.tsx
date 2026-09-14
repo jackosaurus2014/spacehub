@@ -19,6 +19,7 @@ import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 import ContentEngagementBadge from '@/components/ui/ContentEngagementBadge';
 import EmptyState from '@/components/ui/EmptyState';
+import SaveToReadingListButton from '@/components/ui/SaveToReadingListButton';
 import { clientLogger } from '@/lib/client-logger';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -411,6 +412,14 @@ export default function NewsPageClient({ featuredBlogPosts, initialArticles, ini
             <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {featuredBlogPosts.map(post => (
                 <StaggerItem key={post.slug}>
+                  <div className="relative">
+                  {/* Same save affordance as the news cards above — outside
+                      the <Link> so the button is valid markup and never
+                      navigates. */}
+                  <SaveToReadingListButton
+                    item={{ title: post.title, url: `/blog/${post.slug}`, source: 'SpaceNexus', category: post.category }}
+                    className="absolute top-1 right-1 z-10"
+                  />
                   <Link
                     href={`/blog/${post.slug}`}
                     className="group block card p-5 hover:border-white/15"
@@ -431,6 +440,7 @@ export default function NewsPageClient({ featuredBlogPosts, initialArticles, ini
                     </h3>
                     <p className="text-xs text-slate-400 line-clamp-2">{post.excerpt}</p>
                   </Link>
+                  </div>
                 </StaggerItem>
               ))}
             </StaggerContainer>

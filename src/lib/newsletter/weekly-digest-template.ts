@@ -223,6 +223,18 @@ function renderMarketMovers(movers: WeeklyMarketMover[]): string {
   return html;
 }
 
+/**
+ * "Save to reading list" link (2026-09-13, competitor review #10). The story
+ * travels in the query string; /reading-list/save performs the save on
+ * arrival, so it works for a subscriber with no account.
+ */
+function saveHref(s: WeeklyTopStory): string {
+  const params = new URLSearchParams({ url: s.url ?? '', title: s.title });
+  if (s.source) params.set('source', s.source);
+  if (s.category) params.set('category', s.category);
+  return `${APP_URL}/reading-list/save?${params.toString()}`;
+}
+
 function renderTopStories(stories: WeeklyTopStory[]): string {
   if (stories.length === 0) return '';
 
@@ -240,7 +252,7 @@ function renderTopStories(stories: WeeklyTopStory[]): string {
                 ${s.category ? `<span style="display:inline-block;padding:1px 6px;background-color:${DIGEST_BORDER};color:${DIGEST_TEXT_MUTED};font-size:10px;border-radius:3px;margin-left:6px;vertical-align:middle;">${escapeHtml(s.category)}</span>` : ''}
               </p>
               <p style="margin:0;font-size:14px;color:${DIGEST_TEXT_MUTED};line-height:1.5;">${escapeHtml(s.summary)}</p>
-              ${s.source ? `<p style="margin:4px 0 0 0;font-size:11px;color:${DIGEST_TEXT_DIM};">${escapeHtml(s.source)}</p>` : ''}
+              ${s.source || s.url ? `<p style="margin:4px 0 0 0;font-size:11px;color:${DIGEST_TEXT_DIM};">${s.source ? escapeHtml(s.source) : ''}${s.source && s.url ? ' &middot; ' : ''}${s.url ? `<a href="${escapeHtml(saveHref(s))}" style="color:${DIGEST_ACCENT_LIGHT};text-decoration:underline;">Save to reading list</a>` : ''}</p>` : ''}
             </td>
           </tr>
         </table>
@@ -442,6 +454,7 @@ export function generateWeeklyDigestPlainText(data: WeeklyDigestData): string {
       text += `    ${s.summary}\n`;
       if (s.source) text += `    Source: ${s.source}\n`;
       if (s.url) text += `    Read more: ${s.url}\n`;
+      if (s.url) text += `    Save for later: ${saveHref(s)}\n`;
       text += '\n';
     }
   }

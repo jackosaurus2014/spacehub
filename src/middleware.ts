@@ -519,6 +519,19 @@ export const SLUG_EXISTENCE_CHECKS: Array<{
     existsApiPath: (slug) => `/api/hiring-index/${encodeURIComponent(slug)}/exists`,
   },
   {
+    // Recurring rankings (2026-09-13): the quarterly Space Score Top 25.
+    // Edition validity is date math, but a new quarter opens without a
+    // deploy, so the probe keeps unknown quarters a genuine 404.
+    match: /^\/rankings\/space-score-top-25\/([^/]+)\/?$/,
+    existsApiPath: (quarter) => `/api/rankings/space-score-top-25/${encodeURIComponent(quarter)}/exists`,
+  },
+  {
+    // Recurring rankings (2026-09-13): fastest-hiring, monthly. Mirrors the
+    // /hiring-index/[month] probe because it serves the same month range.
+    match: /^\/rankings\/fastest-hiring\/([^/]+)\/?$/,
+    existsApiPath: (month) => `/api/rankings/fastest-hiring/${encodeURIComponent(month)}/exists`,
+  },
+  {
     // Podcast show pages (2026-09-01): DB-backed slugs from the roster sync.
     match: /^\/podcasts\/([^/]+)\/?$/,
     existsApiPath: (slug) => `/api/podcasts/${encodeURIComponent(slug)}/exists`,

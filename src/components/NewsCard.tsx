@@ -168,6 +168,8 @@ export default function NewsCard({ article, featured = false, priority = false }
               itemId={article.id}
               itemTitle={article.title}
               itemUrl={article.url}
+              itemSource={article.source}
+              itemCategory={article.category}
               className="shrink-0 bg-white/[0.06] hover:bg-white/10 rounded-lg"
             />
           </div>
@@ -202,6 +204,8 @@ export default function NewsCard({ article, featured = false, priority = false }
           itemId={article.id}
           itemTitle={article.title}
           itemUrl={article.url}
+          itemSource={article.source}
+          itemCategory={article.category}
           className="absolute top-3 right-3 z-10 bg-black/40 backdrop-blur-sm rounded-lg"
         />
         <Link
@@ -255,6 +259,8 @@ export default function NewsCard({ article, featured = false, priority = false }
             itemId={article.id}
             itemTitle={article.title}
             itemUrl={article.url}
+            itemSource={article.source}
+            itemCategory={article.category}
             className="shrink-0 bg-white/[0.06] hover:bg-white/10 rounded-lg"
           />
         </div>
@@ -296,6 +302,8 @@ export default function NewsCard({ article, featured = false, priority = false }
         itemId={article.id}
         itemTitle={article.title}
         itemUrl={article.url}
+        itemSource={article.source}
+        itemCategory={article.category}
         className="absolute top-2 right-2 z-10 bg-black/40 backdrop-blur-sm rounded-lg"
       />
       <a

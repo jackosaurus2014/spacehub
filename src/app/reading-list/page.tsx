@@ -10,16 +10,22 @@ import { toast } from '@/lib/toast';
 import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import {
+  READING_LIST_EVENT,
+  fetchAccountReadingList,
+  mergeReadingLists,
+  readLocalReadingList,
+  removeLocalByUrl,
+  syncLocalToAccount,
+  unsyncedItems,
+  writeLocalReadingList,
+  type ReadingListItem,
+} from '@/lib/reading-list';
 
-interface ReadingListItem {
-  id: string;
-  title: string;
-  url: string;
-  source: string;
-  category: string;
-  savedAt: string;
-  read: boolean;
-}
+// 2026-09-13 (competitor review #10): this page used to be account-only while
+// the save button on news cards wrote to a localStorage key nothing read. Both
+// now share src/lib/reading-list.ts, so a signed-out visitor sees the articles
+// they saved and is offered the account rather than being blocked by it.
 
 const categoryColors: Record<string, string> = {
   launches: 'bg-white/[0.08] text-white/70',
@@ -49,28 +55,70 @@ export default function ReadingListPage() {
   const [items, setItems] = useState<ReadingListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all');
+  const [syncing, setSyncing] = useState(false);
+
+  const signedIn = !!session?.user?.id;
 
   useEffect(() => {
     if (status === 'loading') return;
 
-    const fetchList = async () => {
-      try {
-        const res = await fetch('/api/reading-list');
-        if (res.ok) {
-          const data = await res.json();
-          setItems(data.items || []);
-        }
-      } catch {
-        // Silently fail
-      } finally {
-        setLoading(false);
-      }
+    // Browser copy first (instant, works signed out), account copy second.
+    const load = async () => {
+      setItems(mergeReadingLists(readLocalReadingList(), []));
+      const account = await fetchAccountReadingList();
+      setItems(mergeReadingLists(readLocalReadingList(), account));
+      setLoading(false);
     };
 
-    fetchList();
+    void load();
+
+    // Saves made elsewhere in the tab (a card, the /reading-list/save link)
+    // land here without a reload.
+    const onLocalChange = () =>
+      setItems((prev) =>
+        mergeReadingLists(
+          readLocalReadingList(),
+          prev.filter((i) => i.synced),
+        ),
+      );
+    window.addEventListener(READING_LIST_EVENT, onLocalChange);
+    return () => window.removeEventListener(READING_LIST_EVENT, onLocalChange);
   }, [status]);
 
+  const pendingCount = unsyncedItems(items).length;
+
+  const keepOnAccount = async () => {
+    setSyncing(true);
+    try {
+      const saved = await syncLocalToAccount();
+      const account = await fetchAccountReadingList();
+      setItems(mergeReadingLists(readLocalReadingList(), account));
+      toast.success(
+        saved > 0
+          ? `Kept ${saved} article${saved !== 1 ? 's' : ''} on your account`
+          : 'Nothing new to keep',
+      );
+    } catch {
+      toast.error('Could not sync your reading list');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const toggleRead = async (id: string) => {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+
+    // Local-only rows have no server row to PATCH — flip them in the browser.
+    if (!item.synced) {
+      const next = readLocalReadingList().map((i) =>
+        i.id === id ? { ...i, read: !i.read } : i,
+      );
+      writeLocalReadingList(next);
+      setItems((prev) => prev.map((i) => (i.id === id ? { ...i, read: !i.read } : i)));
+      return;
+    }
+
     try {
       const res = await fetch('/api/reading-list', {
         method: 'PATCH',
@@ -80,9 +128,7 @@ export default function ReadingListPage() {
       if (res.ok) {
         const data = await res.json();
         setItems((prev) =>
-          prev.map((item) =>
-            item.id === id ? { ...item, read: data.read } : item
-          )
+          prev.map((i) => (i.id === id ? { ...i, read: data.read } : i))
         );
       }
     } catch {
@@ -91,16 +137,25 @@ export default function ReadingListPage() {
   };
 
   const removeItem = async (id: string) => {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+
+    // Always clear the browser copy, so the save button on the feed goes
+    // back to "Save" immediately whether or not the account call succeeds.
+    removeLocalByUrl(item.url);
+    setItems((prev) => prev.filter((i) => i.id !== id));
+
+    if (!item.synced) {
+      toast.success('Removed from reading list');
+      return;
+    }
     try {
-      const res = await fetch('/api/reading-list', {
+      await fetch('/api/reading-list', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id }),
       });
-      if (res.ok) {
-        setItems((prev) => prev.filter((item) => item.id !== id));
-        toast.success('Removed from reading list');
-      }
+      toast.success('Removed from reading list');
     } catch {
       toast.error('Failed to remove');
     }
@@ -175,68 +230,6 @@ export default function ReadingListPage() {
     );
   }
 
-  if (!session?.user?.id) {
-    return (
-      <main className="min-h-screen bg-black py-8 px-4">
-        <div className="container mx-auto max-w-7xl">
-          <AnimatedPageHeader
-            title="Reading List"
-            subtitle="Save articles to read later"
-            accentColor="cyan"
-            icon={
-              <svg
-                className="w-8 h-8 text-slate-300"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.5}
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                />
-              </svg>
-            }
-          />
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-16"
-          >
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/[0.04] flex items-center justify-center">
-              <svg
-                className="w-8 h-8 text-slate-500"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.5}
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </div>
-            <h2 className="text-xl font-semibold text-white/90 mb-2">
-              Sign in to use your reading list
-            </h2>
-            <p className="text-slate-400 mb-6">
-              Save articles from the news feed to read later.
-            </p>
-            <Link
-              href="/login"
-              className="btn-primary inline-block text-sm py-2.5 px-6"
-            >
-              Sign In
-            </Link>
-          </motion.div>
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main className="min-h-screen bg-black py-8 px-4">
       <div className="container mx-auto max-w-7xl">
@@ -282,6 +275,42 @@ export default function ReadingListPage() {
             </Link>
           </div>
         </AnimatedPageHeader>
+
+        {/* Keep-these-on-your-account nudge. Signed out, this is the only
+            place we ask for an account; signed in, it appears only while the
+            browser still holds rows the server has not accepted. */}
+        {!loading && pendingCount > 0 && (
+          <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/[0.05] p-4 mb-6 text-sm text-slate-200">
+            {signedIn ? (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <span>
+                  {pendingCount} article{pendingCount !== 1 ? 's' : ''} {pendingCount !== 1 ? 'are' : 'is'} saved
+                  in this browser only.
+                </span>
+                <button
+                  type="button"
+                  onClick={keepOnAccount}
+                  disabled={syncing}
+                  className="btn-primary px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+                >
+                  {syncing ? 'Keeping…' : 'Keep them on my account'}
+                </button>
+              </div>
+            ) : (
+              <span>
+                These {pendingCount} saved article{pendingCount !== 1 ? 's' : ''} live only in this browser.{' '}
+                <Link href="/login?callbackUrl=%2Freading-list" className="text-cyan-300 underline underline-offset-2">
+                  Sign in
+                </Link>{' '}
+                or{' '}
+                <Link href="/register?callbackUrl=%2Freading-list" className="text-cyan-300 underline underline-offset-2">
+                  create a free account
+                </Link>{' '}
+                to keep them across devices.
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Filter tabs */}
         <ScrollReveal>

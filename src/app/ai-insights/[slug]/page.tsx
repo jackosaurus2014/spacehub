@@ -16,6 +16,8 @@ import NewsletterSignup from '@/components/NewsletterSignup';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { linkifyCompanyNames } from '@/lib/entity-linker';
+import DeskByline from '@/components/desk/DeskByline';
+import { DESK_ABOUT_HREF, DESK_BYLINE, DESK_CORRECTIONS_HREF } from '@/lib/ai-insights-desk';
 import type { ReactNode } from 'react';
 
 interface Insight {
@@ -270,9 +272,12 @@ export default function AIInsightDetailPage() {
                 '@context': 'https://schema.org',
                 '@type': 'Article',
                 headline: insight.title,
+                // Organization, never Person: the desk is a pipeline, not a
+                // writer, and structured data must not imply otherwise.
                 author: {
                   '@type': 'Organization',
-                  name: 'SpaceNexus AI',
+                  name: DESK_BYLINE,
+                  url: `https://spacenexus.us${DESK_ABOUT_HREF}`,
                 },
                 datePublished: insight.generatedAt,
                 publisher: {
@@ -331,7 +336,17 @@ export default function AIInsightDetailPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
-              className="flex items-center gap-4 mb-8"
+              className="mb-6"
+            >
+              <DeskByline />
+            </motion.div>
+
+            {/* Meta Row */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.22 }}
+              className="flex flex-wrap items-center gap-4 mb-8"
             >
               <span className="text-slate-500 text-sm">
                 {formatDate(insight.generatedAt)}
@@ -446,6 +461,24 @@ export default function AIInsightDetailPage() {
                 </GlassCard>
               </motion.div>
             )}
+
+            {/* Provenance + corrections. The byline at the top names the
+                desk; this closes the loop by saying how to get it fixed. */}
+            <div className="mt-8 rounded-xl border border-white/10 bg-white/[0.03] p-5">
+              <p className="text-sm font-semibold text-white mb-1.5">About this analysis</p>
+              <p className="text-sm text-slate-400 leading-relaxed">
+                Written by the {DESK_BYLINE} &mdash; a language model drafts each piece from the sources
+                listed above, a second model pass fact-checks it against those sources, and drafts that
+                fail that check are held for a person. No human typed this article.{' '}
+                <Link href={DESK_ABOUT_HREF} className="text-cyan-300 underline underline-offset-2 hover:text-cyan-200">
+                  How the desk works
+                </Link>
+                {' · '}
+                <Link href={DESK_CORRECTIONS_HREF} className="text-cyan-300 underline underline-offset-2 hover:text-cyan-200">
+                  Report a correction
+                </Link>
+              </p>
+            </div>
 
             {/* Inline newsletter capture — the article IS the funnel */}
             <div className="mt-12">

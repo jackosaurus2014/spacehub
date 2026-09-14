@@ -11,6 +11,7 @@ import ContentEngagementBadge from '@/components/ui/ContentEngagementBadge';
 import LaunchCountdownWidget from '@/components/LaunchCountdownWidget';
 import SpaceHistoryToday from '@/components/SpaceHistoryToday';
 import RelatedModules from '@/components/ui/RelatedModules';
+import SaveToReadingListButton from '@/components/ui/SaveToReadingListButton';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 function formatDate(iso: string): string {
@@ -281,8 +282,15 @@ function BlogListingContent({ posts }: BlogListingClientProps) {
           <ScrollReveal>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
               {featuredPosts.map((post) => (
+                <div key={post.slug} className="relative">
+                {/* Save sits outside the card's <Link> — a <button> inside an
+                    <a> is invalid markup, and the reading-list save must not
+                    navigate. */}
+                <SaveToReadingListButton
+                  item={{ title: post.title, url: `/blog/${post.slug}`, source: 'SpaceNexus', category: post.category }}
+                  className="absolute top-2 right-2 z-10"
+                />
                 <Link
-                  key={post.slug}
                   href={`/blog/${post.slug}`}
                   className="group block bg-white/[0.05] border border-white/[0.06] rounded-xl overflow-hidden hover:border-white/15 transition-all duration-300"
                 >
@@ -322,6 +330,7 @@ function BlogListingContent({ posts }: BlogListingClientProps) {
                     </div>
                   </div>
                 </Link>
+                </div>
               ))}
             </div>
           </ScrollReveal>
@@ -385,7 +394,11 @@ function BlogListingContent({ posts }: BlogListingClientProps) {
           <div className="flex-1 min-w-0">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredPosts.map((post) => (
-                <div key={post.slug}>
+                <div key={post.slug} className="relative">
+                  <SaveToReadingListButton
+                    item={{ title: post.title, url: `/blog/${post.slug}`, source: 'SpaceNexus', category: post.category }}
+                    className="absolute top-2 right-2 z-10"
+                  />
                   <Link
                     href={`/blog/${post.slug}`}
                     className="group block bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 hover:border-white/15 transition-all duration-300 h-full"

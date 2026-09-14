@@ -19,6 +19,8 @@ import { JOB_LANDING_PAGES } from '@/lib/job-landing-pages';
 import { BALANCE_REPORTS } from '@/lib/game/balance-reports';
 import { getJobsByCompany } from '@/lib/jobs-by-company';
 import { SALARY_PAGE_MIN_ROLES, isSalaryEligible, salaryCompanySlug } from '@/lib/salaries-by-company';
+import { spaceScoreQuarterKeys, monthKeysBetween } from '@/lib/rankings';
+import { EARLIEST_INDEX_MONTH, latestEditionMonthKey } from '@/lib/hiring-index';
 
 const BASE_URL = 'https://spacenexus.us';
 
@@ -104,6 +106,23 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/markets-daily`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/hiring-index`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
+    // Recurring rankings (2026-09-13). Hubs plus every concrete edition —
+    // edition existence is pure date math (no DB), so it is safe to enumerate
+    // here and each edition is a permanent, citable URL.
+    { url: `${BASE_URL}/rankings`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/rankings/space-score-top-25`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/rankings/fastest-hiring`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    ...spaceScoreQuarterKeys().map((q) => ({
+      url: `${BASE_URL}/rankings/space-score-top-25/${q}`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    })),
+    ...monthKeysBetween(EARLIEST_INDEX_MONTH, latestEditionMonthKey()).map((m) => ({
+      url: `${BASE_URL}/rankings/fastest-hiring/${m}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })),
+
     // Job landing pages (programmatic SEO) — category/remote/location slices of
     // the jobs board, defined in src/lib/job-landing-pages.ts. Listed here
     // unconditionally since eligibility for noindex depends on a live DB count
@@ -179,6 +198,9 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/live/artemis-ii-blog`, changeFrequency: 'always' as const, priority: 1.0 },
     { url: `${BASE_URL}/live/pad`, changeFrequency: 'hourly' as const, priority: 0.8 },
     { url: `${BASE_URL}/ai-insights`, changeFrequency: 'daily' as const, priority: 0.6 },
+    // Masthead for the SpaceNexus Desk byline (2026-09-13) — linked from
+    // every insight, so it needs to be crawlable in its own right.
+    { url: `${BASE_URL}/editorial`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/search`, changeFrequency: 'weekly' as const, priority: 0.5 },
     { url: `${BASE_URL}/alerts`, changeFrequency: 'daily' as const, priority: 0.5 },
 

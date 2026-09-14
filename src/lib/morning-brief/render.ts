@@ -56,16 +56,28 @@ export function fmtNet(iso: string, precision: string | null): string {
   return `${day} · ${utc} UTC (${et} ET)`;
 }
 
+/**
+ * "Save" link (2026-09-13, competitor review #10). Email clients cannot run
+ * our JavaScript, so the article travels in the query string and
+ * /reading-list/save does the localStorage write on arrival -- which means it
+ * works for a reader with no account, exactly like the button on a news card.
+ */
+export function saveHref(s: { url: string; headline: string; source: string }): string {
+  const params = new URLSearchParams({ url: s.url, title: s.headline, source: s.source });
+  return `${APP_URL}/reading-list/save?${params.toString()}`;
+}
+
 function storyHtml(s: MorningBriefStory, i: number): string {
   const internal = s.internalHref
     ? ` · <a href="${APP_URL}${escapeHtml(s.internalHref)}" style="${S.link}">${escapeHtml(s.internalLabel || 'On SpaceNexus')}</a>`
     : '';
-  return `<p style="${S.head}">${i + 1}. <a href="${escapeHtml(s.url)}" style="color:#fff;text-decoration:none">${escapeHtml(s.headline)}</a></p><p style="${S.why}">${escapeHtml(s.whyItMatters)}</p><p style="${S.meta}"><a href="${escapeHtml(s.url)}" style="${S.link}">${escapeHtml(s.source)}</a>${internal}</p>`;
+  const save = ` · <a href="${escapeHtml(saveHref(s))}" style="${S.link}">Save</a>`;
+  return `<p style="${S.head}">${i + 1}. <a href="${escapeHtml(s.url)}" style="color:#fff;text-decoration:none">${escapeHtml(s.headline)}</a></p><p style="${S.why}">${escapeHtml(s.whyItMatters)}</p><p style="${S.meta}"><a href="${escapeHtml(s.url)}" style="${S.link}">${escapeHtml(s.source)}</a>${internal}${save}</p>`;
 }
 
 function storyPlain(s: MorningBriefStory, i: number): string {
   const internal = s.internalHref ? `\n   SpaceNexus: ${APP_URL}${s.internalHref}` : '';
-  return `${i + 1}. ${s.headline}\n   ${s.whyItMatters}\n   ${s.source}: ${s.url}${internal}`;
+  return `${i + 1}. ${s.headline}\n   ${s.whyItMatters}\n   ${s.source}: ${s.url}${internal}\n   Save for later: ${saveHref(s)}`;
 }
 
 function launchHtml(nl: MorningBriefNextLaunch): string {
