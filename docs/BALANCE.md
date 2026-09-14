@@ -4886,3 +4886,108 @@ the last two.
   order in the game outside construction. If telemetry shows players
   abandoning sessions mid-batch, lower `REFINE_MAX_BATCH_HOURS` rather than
   the throughput.
+
+---
+
+## Pass 17 — timed-event targets ask for new work (2026-09-14)
+
+**File:** `src/lib/game/timed-events.ts`
+**Guard:** `src/lib/game/__tests__/timed-events-targets.test.ts`
+
+### The defect
+
+`game-engine.ts` step 8 freezes `target: template.getTarget(state)` onto a
+timed-event occurrence when it spawns, then compares
+`template.getProgress(state)` against that frozen number on every subsequent
+tick and credits `evt.rewardAmount` the moment `progress >= target`.
+
+Seven of the 21 templates wrote a target that was a *fraction of the very
+quantity `getProgress` reads* — or ignored state altogether. Those events were
+already satisfied at the instant they spawned: the next tick paid the full
+reward for zero player activity. The engine spawns an event every 2 hours up
+to 3 concurrent, so an established corporation was collecting several free
+payouts a day. The founder reported "a couple of contracts that paid out about
+$500M" — `evt_precious_metals` at ×4 on a five-service income base is exactly
+that number.
+
+This was never a reward-magnitude problem. It was a target problem: the events
+asked for nothing.
+
+### What changed
+
+Only `getTarget` (and, where the two sides measured different quantities,
+`getProgress`). **No `rewardMultiplier` was touched** — reward magnitudes are
+a separate decision.
+
+| Template | × | Old target | Instant? | New target |
+|---|---|---|---|---|
+| `evt_iron_rush` | 2 | 50% of the **total** stockpile, vs progress reading iron alone | broken both ways — instant when iron was over half the pile, unreachable otherwise | `iron + max(150, 5%)` |
+| `evt_water_collection` | 1.5 | `water × 0.4 + 30` | yes, above ~50 units | `water + max(40, 4%)` |
+| `evt_precious_metals` | 4 | `(pt+au) × 0.3 + 5` | yes, from 8 units | `(pt+au) + max(25, 5%)` |
+| `evt_construction_sprint` | 2.5 | `completed × 0.15 + 2` | yes, from 3 buildings | `completed + 3` |
+| `evt_satellite_deploy` | 2 | `sats × 0.2 + 2` | yes, from 2 satellites | `sats + 3` |
+| `evt_infrastructure_push` | 2 | `allBuildings × 0.1 + 1`, vs progress reading only the ground/solar/fab subset | yes, whenever infra exceeded a tenth of the estate | `infra + 2`, both sides on the same subset |
+| `evt_research_marathon` | 3 | `completed × 0.08 + 1` | yes, from 2 techs | `completed + 2` |
+| `evt_survey_expedition` | 1.5 | flat `1`, state ignored | yes, for anyone holding a built probe | `probes + 1` |
+
+The remaining 13 templates were audited and left alone: `evt_rare_earth_hunt`
+(restated through the shared helper, numerically identical), `evt_tech_diversity`,
+`evt_revenue_surge`, `evt_profit_target`, `evt_earnings_streak`,
+`evt_fleet_buildup`, `evt_mining_fleet`, `evt_new_frontier`,
+`evt_multi_location`, `evt_hire_spree`, `evt_resource_hoarder`,
+`evt_contract_completionist`, `evt_diversified_income`. Each already used a
+delta (`current + n`) or a growth factor above 1.
+
+### How the new figures were calibrated
+
+One game-month is 6 real hours (`server-time.ts
+REAL_SECONDS_PER_GAME_MONTH`), so a 4-hour window is 0.67 of any
+`amountPerMonth` figure in `resources.ts MINING_PRODUCTION`. The already-sound
+`evt_rare_earth_hunt` sets the house ratio: +15 rare earth over 6 hours is
+~75% of one Asteroid Mining Rig's window output (20/game-month). The mining
+targets follow it:
+
+- **Iron** — an Asteroid Mining Rig yields 500/month, so 333 over the 4-hour
+  window; a Mars Mining Operation yields 133. +150 is reachable on one rig and
+  worth spinning up a second.
+- **Water** — a Lunar Ice Mine yields 100/month, so 67 over 4 hours; +40 is
+  ~60% of that. The growth term is a deliberately low 4% because water boils
+  off at 2%/game-month (`consumption.ts VOLATILE_BOILOFF_PER_MONTH`) and a
+  large stockpile is already shrinking ~1.3% inside the window.
+- **Precious metals** — a rig yields pt 10 + au 15 = 25/month, so 33 over the
+  8-hour window; +25 is the same 75%-of-one-rig ask as rare earth, over the
+  longer window this ×4 payout deserves.
+
+Build and research counts follow the wall-clock durations: tier-1/2 buildings
+are 3-20 real minutes and `sat_*` are 4-15 (`buildings.ts realBuildSeconds`),
+so +3 inside 4-6 hours is money-bound rather than time-bound; tier-1/2/3 techs
+are 10/30/90 real minutes across two parallel slots
+(`research-tree.ts TIER_RESEARCH_SECONDS`), so +2 in 8 hours is routine
+mid-game. A deep-tier corporation queueing 4-hour (T4) or 12-hour (T5) techs
+will sometimes let Research Marathon expire — intended, not a bug.
+
+### The invariant, and the guard
+
+**`getTarget(s)` must be strictly greater than `getProgress(s)` for every
+reachable state.** Use `deltaTarget()` for counts and stockpiles, or a growth
+factor above 1 for money-like quantities. Never a fraction of progress.
+
+`timed-events-targets.test.ts` asserts `progress < target` for all 21
+templates against three fixtures built from the real `GameState` — a fresh
+corporation, an established mid-game corporation, and a late-game whale — plus
+per-template checks that Iron Rush and Infrastructure Push measure the same
+quantity on both sides. It also replays all eight *old* formulas against the
+mid-game fixture and asserts each one would have paid instantly, so the
+fixture is provably strong enough to have caught the original defect.
+
+### Risks / watch
+
+- **`evt_precious_metals` at ×4 is now the file's steepest ask and its richest
+  payout.** With a real target it is defensible, but it is the multiplier to
+  re-examine first if timed events read as the dominant income source in the
+  next quarterly balance report.
+- **`evt_hire_spree` (×1.5) and `evt_survey_expedition` (×1.5) are sound but
+  cheap** — one hire, one $25M probe. Not instantly satisfiable, so out of
+  scope for this pass, but they are the thinnest asks remaining.
+- **No reward magnitude changed.** If the founder decides the payouts are too
+  rich now that they must be earned, that edit is one field per template.
