@@ -16,6 +16,25 @@ import { getResearchBonuses } from '@/lib/game/research-tree';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
 // Mining Phase B (2026-09-13): claims, shared-rock pressure, escorts.
 import { STAKE_CLAIM_ERROR_TEXT, checkStakeClaim, claimStakeFee } from '@/lib/game/asteroid-claims';
+// Mining Phase C (2026-09-13): refining, propellant depots, survey reports.
+import { MOBILE_REFINERY_RECOVERY } from '@/lib/game/ore-refining';
+import {
+  DEPOT_ERROR_TEXT,
+  DEPOT_FEEDSTOCK_YIELD,
+  DEPOT_MAX_RESTOCK_UNITS,
+  checkDeployDepot,
+  depotSlotsForFieldId,
+  feedstockForPropellant,
+  feedstockPropellant,
+} from '@/lib/game/propellant-depots';
+import {
+  REPORT_ERROR_TEXT,
+  checkBuyReport,
+  checkListReport,
+  reportPriceBounds,
+  reportSellerProceeds,
+} from '@/lib/game/survey-reports';
+import { resolveSellableQuantity } from '@/lib/game/server-inventory';
 import { tierFromProfileScalars } from '@/lib/game/corporation-tiers';
 import { FRONTIER_DURATION_MS } from '@/lib/game/frontier';
 import type { EscortCover } from '@/lib/game/npc-shakedown';
@@ -54,12 +73,30 @@ import {
   postClaimActivity,
   releaseClaimRow,
   resetClaimFeedCache,
+  addDepotStock,
+  createDepotRow,
+  depotRecordFromRow,
+  depotRestockCost,
+  drawDepotFuel,
+  findMyDepot,
+  findReportById,
+  listReportRow,
+  loadFieldDepotSlots,
+  loadMyDepots,
+  loadMyReports,
+  loadPublicDepots,
+  loadReportMarket,
+  pickSweepTargets,
+  recallDepotRow,
+  unlistReportRow,
 } from '@/lib/game/server-mining';
 import {
   InsufficientFundsError,
   badRequest,
+  creditMoney,
   debitMoney,
   fundsError,
+  ledgerResources,
   loadAssetProfile,
   parseInstanceId,
 } from '@/lib/game/asset-route-shared';
@@ -234,6 +271,166 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, claim: claimRecordFromRow(created), fee: created.fee, upkeepPerMonth: created.upkeepPerMonth, cap: check.cap, claims: [...myClaims, created].map(claimRecordFromRow) });
     }
 
+    // ── Phase C: propellant depots ─────────────────────────────────────────
+    // deploy_depot: a depot hull at the field's parent takes one of the
+    // field's finite slots (the unique activeKey settles the race).
+    if (op === 'deploy_depot' || op === 'recall_depot' || op === 'stock_depot') {
+      const fieldId = typeof body.fieldId === 'string' ? body.fieldId : '';
+      const field = ASTEROID_FIELD_MAP.get(fieldId);
+      if (!field) return badRequest(DEPOT_ERROR_TEXT.unknown_field, 'unknown_field');
+      const existing = await findMyDepot(profile.id, fieldId);
+
+      if (op === 'recall_depot') {
+        if (!existing) return badRequest(DEPOT_ERROR_TEXT.no_depot, 'no_depot');
+        const ok = await recallDepotRow(prisma, existing.id, now);
+        logger.info('Propellant depot recalled', { profileId: profile.id, fieldId, ok });
+        return NextResponse.json({ success: true, recalled: ok, fieldId, depots: (await loadMyDepots(profile.id)).map(depotRecordFromRow) });
+      }
+
+      if (op === 'deploy_depot') {
+        const shipInstanceId = parseInstanceId(body.shipInstanceId);
+        if (!shipInstanceId) return badRequest('shipInstanceId is required', 'invalid_ship');
+        const shipView = registry.ships.ships.find(sh => sh.instanceId === shipInstanceId);
+        if (!shipView || !shipView.isBuilt) return badRequest('That hull is not a built ship in the corporate registry.', 'unknown_ship');
+        const shipDef = SHIP_MAP.get(shipView.definitionId);
+        const liveOrders = await loadLiveOrders(profile.id);
+        const persistedShip = Array.isArray(profile.shipsData)
+          ? (profile.shipsData as Array<{ instanceId?: string; currentLocation?: string }>).find(sh => sh?.instanceId === shipInstanceId)
+          : undefined;
+        const at = resolveShipLocation(shipInstanceId, liveOrders, persistedShip?.currentLocation ?? null, registry.rows.find(r => r.kind === ASSET_KIND_SHIP && r.instanceId === shipInstanceId)?.locationId ?? null);
+        const check = checkDeployDepot({
+          fieldId,
+          depotCapacity: shipDef?.depotCapacity ?? 0,
+          shipLocationId: at,
+          shipBusy: liveOrders.some(o => o.shipInstanceId === shipInstanceId && o.status === MINING_ORDER_PENDING),
+          shipAlreadyDeployed: (await loadMyDepots(profile.id)).some(d => d.shipInstanceId === shipInstanceId),
+          takenSlots: await loadFieldDepotSlots(fieldId),
+        });
+        if (!check.ok) return badRequest(DEPOT_ERROR_TEXT[check.error], check.error, { slots: depotSlotsForFieldId(fieldId) });
+        let created;
+        try {
+          created = await createDepotRow(prisma, profile.id, fieldId, check.slotIndex, shipInstanceId, check.capacity, now);
+        } catch (err) {
+          if ((err as { code?: string })?.code === 'P2002') return badRequest(DEPOT_ERROR_TEXT.field_full, 'field_full');
+          throw err;
+        }
+        logger.info('Propellant depot deployed', { profileId: profile.id, fieldId, slot: check.slotIndex });
+        return NextResponse.json({ success: true, depot: depotRecordFromRow(created), depots: (await loadMyDepots(profile.id)).map(depotRecordFromRow) });
+      }
+
+      // stock_depot — cash delivery or locally refined feedstock.
+      if (!existing) return badRequest(DEPOT_ERROR_TEXT.no_depot, 'no_depot');
+      const source = body.source === 'feedstock' ? 'feedstock' : 'cash';
+      const units = Math.floor(Number(body.units));
+      if (!Number.isFinite(units) || units < 1 || units > DEPOT_MAX_RESTOCK_UNITS) return badRequest(DEPOT_ERROR_TEXT.invalid_units, 'invalid_units');
+      const room = Math.max(0, existing.capacity - existing.stockUnits);
+      if (room <= 0) return badRequest(DEPOT_ERROR_TEXT.depot_full, 'depot_full');
+      const want = Math.min(units, Math.floor(room));
+      if (source === 'cash') {
+        const cost = await depotRestockCost(fieldId, want);
+        if (!Number.isFinite(profile.money) || profile.money < cost.total) return fundsError(cost.total, profile.money, `${want} units of propellant delivered to ${field.name}`);
+        let loaded = 0;
+        try {
+          loaded = await prisma.$transaction(async (tx) => {
+            const n = await addDepotStock(tx, existing, want);
+            if (n > 0) await debitMoney(tx, profile.id, Math.round(cost.perUnit * n), 'depot_restock', `${existing.id}:${now.getTime()}`, ledgerOn);
+            return n;
+          });
+        } catch (err) {
+          if (err instanceof InsufficientFundsError) return fundsError(cost.total, profile.money, 'the propellant delivery');
+          throw err;
+        }
+        logger.info('Depot restocked for cash', { profileId: profile.id, fieldId, loaded, perUnit: cost.perUnit });
+        return NextResponse.json({ success: true, loaded, perUnit: cost.perUnit, cost: Math.round(cost.perUnit * loaded), depots: (await loadMyDepots(profile.id)).map(depotRecordFromRow) });
+      }
+      // feedstock: consume a refinable volatile the corporation actually holds.
+      const slug = typeof body.resourceSlug === 'string' ? body.resourceSlug : '';
+      if (!DEPOT_FEEDSTOCK_YIELD[slug]) return badRequest('That resource is not depot feedstock.', 'invalid_feedstock');
+      const needed = feedstockForPropellant(slug, want);
+      const held = await resolveSellableQuantity(profile, slug);
+      if (held.held < needed) return badRequest(`${DEPOT_ERROR_TEXT.insufficient_feedstock} ${needed} units of ${slug} needed, ${Math.floor(held.held)} held.`, 'insufficient_feedstock', { needed, held: Math.floor(held.held) });
+      const gained = feedstockPropellant(slug, needed);
+      const loadedUnits = await prisma.$transaction(async (tx) => {
+        const n = await addDepotStock(tx, existing, gained);
+        if (n > 0) await ledgerResources(tx, profile.id, { [slug]: -feedstockForPropellant(slug, n) }, 'depot_feedstock', `${existing.id}:${now.getTime()}`, ledgerOn);
+        return n;
+      });
+      logger.info('Depot restocked with feedstock', { profileId: profile.id, fieldId, slug, loadedUnits });
+      return NextResponse.json({ success: true, loaded: loadedUnits, feedstock: slug, consumed: feedstockForPropellant(slug, loadedUnits), depots: (await loadMyDepots(profile.id)).map(depotRecordFromRow) });
+    }
+
+    // ── Phase C: survey reports ────────────────────────────────────────────
+    if (op === 'list_report' || op === 'unlist_report') {
+      const asteroidId = typeof body.asteroidId === 'string' ? body.asteroidId : '';
+      const rock = getAsteroid(asteroidId);
+      if (!rock) return badRequest(REPORT_ERROR_TEXT.unknown_rock, 'unknown_rock');
+      if (op === 'unlist_report') {
+        const ok = await unlistReportRow(prisma, profile.id, rock.id);
+        return NextResponse.json({ success: true, unlisted: ok, reports: await loadMyReports(profile.id) });
+      }
+      const row = await loadAsteroidRow(rock.id);
+      if (!row) return NextResponse.json({ error: 'The asteroid catalogue has not been seeded on this world yet.', code: 'catalogue_not_seeded' }, { status: 503 });
+      const survey = await findSurvey(profile.id, rock.id);
+      const check = checkListReport({
+        rock,
+        intel: survey ? intelFromRow(row) : null,
+        surveyEffective: !!survey && surveyIsEffective(survey, row.generation, now),
+        exhausted: !!row.exhaustedAt || row.reserve <= 0,
+        price: Math.floor(Number(body.price)),
+      });
+      if (!check.ok) return badRequest(REPORT_ERROR_TEXT[check.error], check.error, { bounds: check.bounds ?? reportPriceBounds(rock, intelFromRow(row)) });
+      const ok = await listReportRow(prisma, profile.id, rock.id, check.price, now);
+      logger.info('Survey report listed', { profileId: profile.id, asteroidId: rock.id, price: check.price });
+      return NextResponse.json({ success: true, listed: ok, price: check.price, bounds: check.bounds, reports: await loadMyReports(profile.id) });
+    }
+
+    if (op === 'buy_report') {
+      const reportId = typeof body.reportId === 'string' ? body.reportId : '';
+      const report = reportId ? await findReportById(reportId) : null;
+      if (!report) return badRequest(REPORT_ERROR_TEXT.not_listed, 'not_listed');
+      const rock = getAsteroid(report.asteroidId);
+      const row = rock ? await loadAsteroidRow(rock.id) : null;
+      if (!rock || !row) return badRequest(REPORT_ERROR_TEXT.unknown_rock, 'unknown_rock');
+      const sellerEffective = surveyIsEffective({ surveyedAt: report.surveyedAt, generation: report.generation }, row.generation, now);
+      if (!sellerEffective || row.exhaustedAt) return badRequest(REPORT_ERROR_TEXT.stale_survey, 'stale_survey');
+      const mySurvey = await findSurvey(profile.id, rock.id);
+      const check = checkBuyReport({
+        rock,
+        listed: report.listedPrice != null,
+        price: report.listedPrice ?? 0,
+        sellerIsMe: report.profileId === profile.id,
+        buyerAlreadySurveyed: !!mySurvey && surveyIsEffective(mySurvey, row.generation, now),
+        money: profile.money,
+      });
+      if (!check.ok) {
+        if (check.error === 'insufficient_funds') return fundsError(report.listedPrice ?? 0, profile.money, `the survey report on ${rock.name}`);
+        return badRequest(REPORT_ERROR_TEXT[check.error], check.error);
+      }
+      try {
+        await prisma.$transaction(async (tx) => {
+          // The buyer pays the asking price; the seller banks it minus the
+          // broker's cut, which is burned (the gap between the two rows).
+          await debitMoney(tx, profile.id, check.price, 'survey_report_purchase', report.id, ledgerOn);
+          await creditMoney(tx, report.profileId, reportSellerProceeds(check.price), 'survey_report_sale', `${report.id}:${profile.id}`, ledgerOn);
+          await tx.asteroidSurvey.upsert({
+            where: { profileId_asteroidId: { profileId: profile.id, asteroidId: rock.id } },
+            create: { profileId: profile.id, asteroidId: rock.id, surveyedAt: now, via: 'report', generation: report.generation },
+            update: { surveyedAt: now, via: 'report', generation: report.generation },
+          });
+          await tx.asteroidSurvey.updateMany({ where: { id: report.id }, data: { soldCount: { increment: 1 } } });
+        });
+      } catch (err) {
+        if (err instanceof InsufficientFundsError) return fundsError(check.price, profile.money, `the survey report on ${rock.name}`);
+        throw err;
+      }
+      logger.info('Survey report bought', { profileId: profile.id, reportId: report.id, price: check.price });
+      return NextResponse.json({
+        success: true, asteroidId: rock.id, price: check.price, intel: intelFromRow(row),
+        surveyedAtMs: now.getTime(), via: 'report',
+        market: await loadReportMarket(prisma, now, profile.id),
+      });
+    }
+
     // ── order ──────────────────────────────────────────────────────────────
     if (op !== 'order') return badRequest('Unknown op', 'unknown_op');
     const instanceId = parseInstanceId(body.instanceId);
@@ -241,7 +438,7 @@ export async function POST(request: NextRequest) {
     const shipInstanceId = parseInstanceId(body.shipInstanceId);
     if (!shipInstanceId) return badRequest('shipInstanceId is required', 'invalid_ship');
     const mode = body.mode as MiningOrderMode;
-    if (mode !== 'mine' && mode !== 'survey' && mode !== 'return') return badRequest('mode must be mine, survey or return', 'invalid_mode');
+    if (mode !== 'mine' && mode !== 'survey' && mode !== 'return' && mode !== 'refine') return badRequest('mode must be mine, survey, refine or return', 'invalid_mode');
     const thenActionRaw = body.thenAction;
     const thenAction: MiningThenAction | undefined = thenActionRaw === 'return_sell' || thenActionRaw === 'return_store' || thenActionRaw === 'hold' ? thenActionRaw : undefined;
     const originId = typeof body.originId === 'string' ? body.originId : '';
@@ -323,7 +520,31 @@ export async function POST(request: NextRequest) {
     let rockRow: Awaited<ReturnType<typeof loadAsteroidRow>> = null;
     let heldOrderId: string | null = null;
     let escortInstanceId: string | undefined;
-    if (mode === 'return') {
+    // Phase C: the corporation's own depot at the order's field pays part of
+    // the propellant bill. The units are DRAWN inside the transaction below;
+    // this is only the quote input.
+    let depot: Awaited<ReturnType<typeof findMyDepot>> = null;
+    let sweepTargets: string[] = [];
+    if (mode === 'refine' && !body.asteroidId) {
+      // Refine what the hull is already holding, in place at the field.
+      const held = orders.find(o => o.shipInstanceId === shipInstanceId && o.status === MINING_ORDER_HELD);
+      if (!held) return badRequest(MINING_PLAN_ERROR_TEXT.nothing_to_refine, 'nothing_to_refine');
+      if (held.refined) return badRequest(MINING_PLAN_ERROR_TEXT.nothing_to_refine, 'nothing_to_refine');
+      heldOrderId = held.id;
+      const parentId = ASTEROID_FIELD_MAP.get(held.fieldId)?.parentLocationId || originId;
+      depot = await findMyDepot(profile.id, held.fieldId);
+      const cover = thenAction && thenAction !== 'hold' ? await resolveCover(parentId) : { cover: 'none' as EscortCover };
+      if (cover instanceof NextResponse) return cover;
+      escortInstanceId = cover.escortInstanceId;
+      plan = planMiningOrder({
+        def, cargoCapacity, mode: 'refine', originId,
+        destinationId: destinationRaw, thenAction,
+        heldOre: { oreId: held.oreId, units: held.fillUnits, asteroidId: held.asteroidId, fieldId: held.fieldId },
+        hullDamagePct, fuelEfficiencyMult, hqLogistics, nowMs: now.getTime(),
+        depotStockUnits: depot?.stockUnits ?? 0, refineRecovery: MOBILE_REFINERY_RECOVERY,
+        escortCover: cover.cover, escortInstanceId: cover.escortInstanceId, frontier,
+      });
+    } else if (mode === 'return') {
       const held = orders.find(o => o.shipInstanceId === shipInstanceId && o.status === MINING_ORDER_HELD);
       if (!held) return badRequest(MINING_PLAN_ERROR_TEXT.nothing_held, 'nothing_held');
       heldOrderId = held.id;
@@ -331,11 +552,13 @@ export async function POST(request: NextRequest) {
       const cover = await resolveCover(parentId);
       if (cover instanceof NextResponse) return cover;
       escortInstanceId = cover.escortInstanceId;
+      depot = await findMyDepot(profile.id, held.fieldId);
       plan = planMiningOrder({
         def, cargoCapacity, mode: 'return', originId,
         destinationId: destinationRaw || 'earth_surface', thenAction,
-        heldOre: { oreId: held.oreId, units: held.fillUnits, asteroidId: held.asteroidId, fieldId: held.fieldId },
+        heldOre: { oreId: held.oreId, units: held.fillUnits, asteroidId: held.asteroidId, fieldId: held.fieldId, ...(held.refined ? { refined: true } : {}) },
         hullDamagePct, fuelEfficiencyMult, hqLogistics, nowMs: now.getTime(),
+        depotStockUnits: depot?.stockUnits ?? 0, refineRecovery: MOBILE_REFINERY_RECOVERY,
         escortCover: cover.cover, escortInstanceId: cover.escortInstanceId, frontier,
       });
     } else {
@@ -352,26 +575,32 @@ export async function POST(request: NextRequest) {
       }
       rockRow = await loadAsteroidRow(rock.id);
       if (!rockRow) return NextResponse.json({ error: 'The asteroid catalogue has not been seeded on this world yet.', code: 'catalogue_not_seeded' }, { status: 503 });
-      if (mode === 'mine' && (rockRow.exhaustedAt || rockRow.reserve <= 0)) return badRequest(MINING_PLAN_ERROR_TEXT.rock_exhausted, 'rock_exhausted');
+      if ((mode === 'mine' || mode === 'refine') && (rockRow.exhaustedAt || rockRow.reserve <= 0)) return badRequest(MINING_PLAN_ERROR_TEXT.rock_exhausted, 'rock_exhausted');
       const survey = await findSurvey(profile.id, rock.id);
       const surveyed = !!survey && surveyIsEffective(survey, rockRow.generation, now);
       const intel = surveyed ? intelFromRow(rockRow) : null;
       const fillUnits = Number.isFinite(Number(body.fillUnits)) ? Math.floor(Number(body.fillUnits)) : cargoCapacity;
       // Phase B: exclusivity (the holder mines it alone; anyone else is
       // refused) and the public activity count for the pressure quote.
-      const claim = mode === 'mine' ? await loadActiveClaim(rock.id) : null;
+      const claim = (mode === 'mine' || mode === 'refine') ? await loadActiveClaim(rock.id) : null;
       const claimedByOther = !!claim && claim.profileId !== profile.id;
       const claimed = !!claim && claim.profileId === profile.id;
-      if (mode === 'mine' && claimedByOther) return badRequest(MINING_PLAN_ERROR_TEXT.rock_claimed, 'rock_claimed');
+      if ((mode === 'mine' || mode === 'refine') && claimedByOther) return badRequest(MINING_PLAN_ERROR_TEXT.rock_claimed, 'rock_claimed');
       let sharedMiners = 1;
-      if (mode === 'mine' && !claimed) {
+      if ((mode === 'mine' || mode === 'refine') && !claimed) {
         try {
           const others = await prisma.miningOrder.findMany({ where: { asteroidId: rock.id, mode: 'mine', status: MINING_ORDER_PENDING, profileId: { not: profile.id } }, select: { profileId: true }, distinct: ['profileId'], take: 200 });
           sharedMiners = 1 + others.length;
         } catch { sharedMiners = 1; }
       }
+      depot = await findMyDepot(profile.id, field.id);
+      // A sweep hull (Survey Cruiser) reveals several rocks per pass; the
+      // SERVER picks which, from its own view of what is unsurveyed.
+      if (mode === 'survey' && (def.surveySweep ?? 1) > 1) {
+        sweepTargets = await pickSweepTargets(profile.id, field.id, rock.id, (def.surveySweep ?? 1) - 1, prisma, now);
+      }
       let cover: { cover: EscortCover; escortInstanceId?: string } = { cover: 'none' };
-      if (mode === 'mine' && thenAction !== 'hold') {
+      if ((mode === 'mine' || mode === 'refine') && thenAction !== 'hold') {
         const resolved = await resolveCover(field.parentLocationId);
         if (resolved instanceof NextResponse) return resolved;
         cover = resolved;
@@ -381,20 +610,37 @@ export async function POST(request: NextRequest) {
         def, cargoCapacity, mode, rock, intel,
         // An unsurveyed rock is still bounded by its true reserve — clamp
         // silently (the client learns the real fill from the response).
-        fillUnits: mode === 'mine' ? Math.min(fillUnits, Math.max(1, Math.floor(rockRow.reserve))) : 0,
+        fillUnits: (mode === 'mine' || mode === 'refine') ? Math.min(fillUnits, Math.max(1, Math.floor(rockRow.reserve))) : 0,
         thenAction, originId, destinationId: destinationRaw,
         hullDamagePct, fuelEfficiencyMult, hqLogistics, nowMs: now.getTime(),
+        depotStockUnits: depot?.stockUnits ?? 0, refineRecovery: MOBILE_REFINERY_RECOVERY, sweepTargets,
         claimed, claimedByOther, sharedMiners, escortCover: cover.cover, escortInstanceId: cover.escortInstanceId, frontier,
       });
       if (mode === 'survey' && surveyed) return badRequest('That rock is already surveyed.', 'already_surveyed');
     }
     if (!plan.ok) return badRequest(MINING_PLAN_ERROR_TEXT[plan.error], plan.error);
     const order = plan.order;
-    if (!Number.isFinite(profile.money) || profile.money < order.fuelCost) return fundsError(order.fuelCost, profile.money, `${shipView.name} fuel`);
+    // The cash bill is the fuel the depot did NOT cover, plus the refining
+    // opex. Quoted with the depot's stock; if the draw loses a race below the
+    // full fuel price is charged instead.
+    const fuelFull = plan.fuelBeforeDepot;
+    const opexDue = plan.refineOpex;
+    const quotedDepotUnits = plan.depotUnitsDrawn;
+    const quotedDepotCovered = plan.depotCovered;
+    const planOutputs = plan.outputs;
+    const planSummary = { transitOutSeconds: plan.transitOutSeconds, extractionSeconds: plan.extractionSeconds, refiningSeconds: plan.refiningSeconds, transitBackSeconds: plan.transitBackSeconds, expectedValue: plan.expectedValue };
+    if (!Number.isFinite(profile.money) || profile.money < order.fuelCost + opexDue) return fundsError(order.fuelCost + opexDue, profile.money, `${shipView.name} fuel`);
 
     let created: { id: string };
+    let depotDrawn = 0;
     try {
       created = await prisma.$transaction(async (tx) => {
+        // Phase C: draw the depot's propellant FIRST. A lost race (someone
+        // else's order emptied the tank) just means this order pays cash.
+        const wantDraw = depot ? quotedDepotUnits : 0;
+        const drew = wantDraw > 0 && depot ? await drawDepotFuel(tx, depot.id, wantDraw) : false;
+        depotDrawn = drew ? wantDraw : 0;
+        const fuelCharged = drew ? order.fuelCost : fuelFull;
         const row = await tx.miningOrder.create({
           data: {
             profileId: profile.id,
@@ -412,23 +658,46 @@ export async function POST(request: NextRequest) {
             arrivesAt: new Date(order.arrivesAtMs),
             miningEndsAt: new Date(order.miningEndsAtMs),
             completesAt: new Date(order.completesAtMs),
-            fuelPaid: order.fuelCost,
+            fuelPaid: fuelCharged,
             ratePerHour: order.ratePerHour,
             surveyed: order.surveyed,
             status: MINING_ORDER_PENDING,
             escortInstanceId: escortInstanceId ?? null,
             pressureShare: order.pressureShare ?? 1,
+            refined: !!order.refined,
+            refineEndsAt: order.refineEndsAtMs ? new Date(order.refineEndsAtMs) : null,
+            refineOpexPaid: opexDue,
+            depotId: drew && depot ? depot.id : null,
+            depotUnitsDrawn: depotDrawn,
           },
           select: { id: true },
         });
-        await debitMoney(tx, profile.id, order.fuelCost, 'mining_order_fuel', row.id, ledgerOn);
+        await debitMoney(tx, profile.id, fuelCharged, 'mining_order_fuel', row.id, ledgerOn);
+        // Refining opex: power, reagents and slag handling. Burned.
+        if (opexDue > 0) await debitMoney(tx, profile.id, opexDue, 'refining_opex', row.id, ledgerOn);
         if (order.mode === 'survey' && order.asteroidId) {
           const gen = rockRow?.generation ?? 0;
+          // A single-rock survey reveals on ARRIVAL (Phase A); a sweep works
+          // the field and reveals when the PASS ENDS — either way the reveal
+          // cannot be claimed before the hull has done the work.
+          const sweep = (order.sweepAsteroidIds || []).length > 1;
+          const stamp = new Date(sweep ? order.completesAtMs : order.arrivesAtMs);
           await tx.asteroidSurvey.upsert({
             where: { profileId_asteroidId: { profileId: profile.id, asteroidId: order.asteroidId } },
-            create: { profileId: profile.id, asteroidId: order.asteroidId, surveyedAt: new Date(order.arrivesAtMs), via: 'ship', generation: gen },
-            update: { surveyedAt: new Date(order.arrivesAtMs), via: 'ship', generation: gen },
+            create: { profileId: profile.id, asteroidId: order.asteroidId, surveyedAt: stamp, via: 'ship', generation: gen },
+            update: { surveyedAt: stamp, via: 'ship', generation: gen },
           });
+          const extra = (order.sweepAsteroidIds || []).filter(id => id !== order.asteroidId);
+          if (extra.length > 0) {
+            const gens = await tx.asteroid.findMany({ where: { id: { in: extra } }, select: { id: true, generation: true } });
+            for (const g of gens) {
+              await tx.asteroidSurvey.upsert({
+                where: { profileId_asteroidId: { profileId: profile.id, asteroidId: g.id } },
+                create: { profileId: profile.id, asteroidId: g.id, surveyedAt: stamp, via: 'ship', generation: g.generation },
+                update: { surveyedAt: stamp, via: 'ship', generation: g.generation },
+              });
+            }
+          }
         }
         if (heldOrderId) {
           const flipped = await tx.miningOrder.updateMany({ where: { id: heldOrderId, status: MINING_ORDER_HELD }, data: { status: MINING_ORDER_RETURNED } });
@@ -442,7 +711,7 @@ export async function POST(request: NextRequest) {
       throw err;
     }
 
-    logger.info('Mining order placed', { profileId: profile.id, orderId: created.id, instanceId, shipInstanceId, mode, asteroidId: order.asteroidId, fillUnits: order.fillUnits, fuel: order.fuelCost });
+    logger.info('Mining order placed', { profileId: profile.id, orderId: created.id, instanceId, shipInstanceId, mode, asteroidId: order.asteroidId, fillUnits: order.fillUnits, fuel: order.fuelCost, refined: !!order.refined, depotDrawn });
     return NextResponse.json({
       success: true,
       instanceId,
@@ -450,10 +719,16 @@ export async function POST(request: NextRequest) {
       // A survey order returns the reveal now; the client applies it on
       // arrival (the survey row is stamped with the arrival time).
       intel: order.mode === 'survey' && rockRow ? intelFromRow(rockRow) : undefined,
-      transitOutSeconds: plan.transitOutSeconds,
-      extractionSeconds: plan.extractionSeconds,
-      transitBackSeconds: plan.transitBackSeconds,
-      expectedValue: plan.expectedValue,
+      transitOutSeconds: planSummary.transitOutSeconds,
+      extractionSeconds: planSummary.extractionSeconds,
+      refiningSeconds: planSummary.refiningSeconds,
+      transitBackSeconds: planSummary.transitBackSeconds,
+      expectedValue: planSummary.expectedValue,
+      outputs: planOutputs,
+      refineOpex: opexDue,
+      depotCovered: depotDrawn > 0 ? quotedDepotCovered : 0,
+      depotUnitsDrawn: depotDrawn,
+      depots: (await loadMyDepots(profile.id)).map(depotRecordFromRow),
     });
   } catch (error) {
     logger.error('Asset mining error', { error: String(error) });
@@ -470,16 +745,25 @@ export async function GET() {
     const profile = loaded.profile;
     let settled = 0;
     try { settled = await completeDueMiningOrders(prisma, profile.id); } catch { /* best-effort */ }
-    const [orders, intel, probes, block] = await Promise.all([
+    const [orders, intel, probes, block, depots, publicDepots, reports, reportMarket] = await Promise.all([
       loadLiveOrders(profile.id).catch(() => []),
       loadSurveyedIntel(profile.id).catch(() => ({})),
       countProbes(profile.id).catch(() => 0),
       loadMiningBlock(profile.id).catch(() => null),
+      // Phase C: the corporation's depots + reports, and the public register.
+      loadMyDepots(profile.id).catch(() => []),
+      loadPublicDepots().catch(() => []),
+      loadMyReports(profile.id).catch(() => []),
+      loadReportMarket(prisma, new Date(), profile.id).catch(() => []),
     ]);
     return NextResponse.json({
       settled,
       probes,
       intel,
+      depots: depots.map(depotRecordFromRow),
+      publicDepots,
+      reports,
+      reportMarket,
       // Phase B: claims + notices (the same block the sync delivers).
       claims: block?.claims ?? [],
       notices: block?.notices ?? [],
@@ -490,6 +774,7 @@ export async function GET() {
         startedAtMs: o.startedAt.getTime(), arrivesAtMs: o.arrivesAt.getTime(), miningEndsAtMs: o.miningEndsAt.getTime(), completesAtMs: o.completesAt.getTime(),
         fuelCost: o.fuelPaid, ratePerHour: o.ratePerHour, surveyed: o.surveyed,
         escortInstanceId: o.escortInstanceId, pressureShare: o.pressureShare,
+        refined: o.refined, refineEndsAtMs: o.refineEndsAt ? o.refineEndsAt.getTime() : undefined,
       })),
     }, { headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {

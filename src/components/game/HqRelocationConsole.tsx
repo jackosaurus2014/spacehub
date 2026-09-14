@@ -8,6 +8,15 @@
 // "Move back to Earth". Reachable from the Command hub's "Headquarters"
 // entry (hubs.ts → sub-view 'dashboard:hq' scrolls here and focuses it).
 //
+// CC-4: the interstellar rung's gate is real — a COMPLETED interstellar
+// expedition (a server-recorded one) alongside the colony charter — so the
+// row renders it like any other gate, and every row now carries the
+// `windowPreview` sentence from headquarters.ts: what the player will
+// actually be looking at once they arrive. That matters most at the far end
+// of the ladder, where the plates are still rendering and the Bridge falls
+// back to the Earth window; the console says what is coming instead of
+// leaving a stand-in unexplained.
+//
 // CC-3: the ladder now runs to the interstellar rung. Mars and outward sell
 // their seats at a sealed-bid AUCTION, so those rows show the reserve, the
 // minimum qualifying bid, a countdown and a Bid control instead of a
@@ -40,6 +49,7 @@ import {
   buildHqLadder, checkHqRelocationRequest, hqProjectProgress, hqRequirementLines, hqRequirementViewFromState,
   postedSeatPrice, startHqProject, type HqRelocationQuote, type HqRequirementCheck, type ServerHeadquartersBlock,
 } from '@/lib/game/hq-relocation';
+import { resolveHqManifest } from '@/lib/game/hq-manifest';
 import { hqMinimumBid } from '@/lib/game/hq-seat-auctions';
 import { getTierDef } from '@/lib/game/corporation-tiers';
 import { formatMoney, formatCountdown } from '@/lib/game/formulas';
@@ -108,6 +118,12 @@ interface Row {
   auctions: AuctionRow[];
   upkeep: number;
   bonuses: string[];
+  /** CC-4: what the window shows at this seat (headquarters.ts), and
+   *  whether its plates are still rendering — the Bridge stands the Earth
+   *  window in until they land, and the player deserves to know that is
+   *  what they are looking at. */
+  windowPreview: string;
+  platesPending: boolean;
   /** Sort keys for the numeric columns. */
   seatFree: number;
   cost: number;
@@ -202,6 +218,8 @@ export default function HqRelocationConsole({ state, onHeadquartersUpdate, onLoc
         auctions: server?.auctions ?? [],
         upkeep: HQ_UPKEEP_MONTHLY[row.stage.id],
         bonuses: describeHqBonuses(getHqBonuses(row.stage.id)),
+        windowPreview: row.stage.windowPreview,
+        platesPending: resolveHqManifest(row.stage.id)?.fallback ?? true,
         seatFree: seats ? seats.free : Number.POSITIVE_INFINITY,
         // An auctioned seat is never bought at the posted price — the row's
         // "Move" figure is the project alone, with the reserve shown beside
@@ -315,6 +333,21 @@ export default function HqRelocationConsole({ state, onHeadquartersUpdate, onLoc
             <span className={r.current ? 'text-cyan-200' : ''}>{r.stage}</span>
           </span>
           <span className="text-[10px] text-[var(--ink-3)]">Tier {r.tier} {getTierDef(r.tier).name}{r.comingSoon ? ' · coming soon' : ''}</span>
+          <HoloTip
+            content={{
+              title: `${r.stage} — the window`,
+              icon: 'dashboard',
+              body: (
+                <span>
+                  {r.windowPreview}
+                  {r.platesPending ? ' The plates for this stage are still being rendered; until they land the Bridge stands the Earth window in and says so.' : ''}
+                </span>
+              ),
+              source: 'headquarters.ts windowPreview · design §1',
+            }}
+          >
+            <span className="text-[10px]">The window</span>
+          </HoloTip>
         </span>
       ),
     },
@@ -494,6 +527,13 @@ export default function HqRelocationConsole({ state, onHeadquartersUpdate, onLoc
               <dt className="text-[var(--ink-3)]">You gain</dt><dd>{pendingRow.bonuses.join(' · ') || '—'}</dd>
               <dt className="text-[var(--ink-3)]">You lose</dt><dd>{describeHqBonuses(getHqBonuses(currentStage.id)).join(' · ') || '—'}</dd>
               <dt className="text-[var(--ink-3)]">Cash</dt><dd className={`font-mono ${state.money < pendingTotal ? 'text-red-300' : ''}`}>{formatMoney(state.money)}</dd>
+              <dt className="text-[var(--ink-3)]">The window</dt>
+              <dd className="col-span-1 sm:col-span-3">
+                {pendingRow.windowPreview}
+                {pendingRow.platesPending && (
+                  <span className="text-[var(--ink-3)]"> Plates for this stage are still rendering — the Bridge stands the Earth window in, labelled, until they land.</span>
+                )}
+              </dd>
             </dl>
             <div className="mt-3 flex flex-wrap gap-2">
               <button

@@ -128,3 +128,102 @@ Jay approved the design on 2026-09-12 with these rulings. Where they differ from
 **Deploy.** `prisma db push` adds `AsteroidClaim`, `MiningOrder.escortInstanceId / shakedownUnits / shakedownRepelled / pressureShare / claimId`, `Asteroid.rubbleUntil / spinUpUntil / generation`, `AsteroidSurvey.generation` — all additive with defaults; no backfill script is needed (existing surveys default to generation 0 = the seeded rocks' generation). `ASTEROID_SEED_SALT` must stay set on Railway: the respawn roll reuses it.
 
 **Phase C picks up.** Ore intermediates + refinery ratios, the Refinery Barge, Propellant Depot Ship with per-field slots, Survey Cruiser + sellable survey reports, modules; the map affordance (field badges, claim rings, escort glyphs) is still open; respawn with NEW catalogue ids once the map can show them; claim TRANSFER via binding contracts (Phase D); server-side ship positions (stationed cover currently reads the persisted client position).
+
+## 12. Phase C as built (2026-09-13)
+
+**Refining** (`ore-refining.ts`, `mining-orders.ts` mode `refine`,
+`server-mining.ts`). Founder ruling 1 closed: ore is hauled and refined.
+Four recipes, one per spectral class, authored at full recovery and applied
+at `MOBILE_REFINERY_RECOVERY` 0.82 aboard a barge (the loss factor;
+`FIXED_REFINERY_RECOVERY` 0.95 is reserved for a fixed refinery nobody has
+built yet). C → water ice + ammonia + organics; S → steel ingots +
+aluminium alloy; M → steel + platinum-group + gold; X → exotic materials +
+rare earth. Every output is a resource the market already trades, so
+`resources.ts` needed no change at all. A `refine` order is the mining state
+machine with one more phase — `transit_out → mining → refining → returning
+→ complete` (`refineEndsAt`) — and the cargo that flies home is PRODUCT:
+the manifest is the pure function `refineOutputs(oreId, fillUnits,
+recovery)`, recomputed by the server at settlement, never a client claim.
+The batch a hull may take is `capacity ÷ product mass per ore unit` capped
+by `REFINE_MAX_BATCH_HOURS` (12): a 400-unit hold works 2,771 units of
+metallic ore in one run instead of 400. A refining hull also processes a
+parcel it is ALREADY holding (`mode: 'refine'` with no rock), which is the
+"stationed at a field" half of the design's barge. Opex is 6% of the ore's
+base price per unit processed, burned (`refining_opex`). Balance:
+**+$24.2M (1.54x) and a third of the trips** against hauling the same rock
+home over 12 months (docs/BALANCE.md Pass 15).
+
+**Propellant Depot Ship** (`propellant-depots.ts`, `PropellantDepot`
+rows). Deployed to a field it holds one of that field's finite slots — 2
+per field, 3 in the Frontier — with `(fieldId, slotIndex)` unique, the same
+database-settles-the-race shape `AsteroidClaim.activeKey` uses. A stocked
+depot pays `DEPOT_COVER_SHARE` (60%) of the propellant bill of every order
+its owner flies out of that field, at `DEPOT_FUEL_VALUE_PER_UNIT` ($250K of
+burn displaced per unit in the 5,000-unit tank). Restock for cash at
+rocket-fuel spot x the field's delivery multiplier (1.2 cislunar → 2.8
+Kuiper, so cash restocking past the belt costs more than it saves) or pour
+in locally refined volatiles (water ice 0.8, ammonia 0.5 propellant units
+per unit) — which is precisely what C-type refining at the same field
+produces. Units are drawn ATOMICALLY inside the order transaction; a lost
+race just means that order pays cash. Recalling frees the slot and loses
+the tank.
+
+**Survey Cruiser and survey reports** (`survey-reports.ts`, three columns on
+`AsteroidSurvey`). The cruiser (T4, `hyperspectral` — the doc's
+`deep_space_sensors` does not exist in the tree) surveys without probes and
+sweeps `surveySweep` = 6 rocks per pass, 5 real minutes a rock, revealing
+when the PASS ENDS. Its product is intelligence: any completed survey can be
+listed for sale. **Chosen shape: a direct listing, not a market instrument**
+— per-rock intel is not fungible, so there is nothing for an order book to
+match; a listing is one nullable price column on a row the game already
+writes, which is much the smaller change. A listing publishes only the
+rock's public catalogue entry, the seller's name, the price and the age of
+the intel; grade, reserve and risk stay hidden until someone pays. Buying
+writes the buyer their own survey row at the seller's generation (identical
+intel) and moves money seller ← buyer minus an 8% broker cut that is burned.
+The seller keeps their survey and may sell it again.
+
+**Modules: deliberately NOT shipped.** §5's fit-over-hull list
+(`ice-extractor`, `magnetic-rake`, …) would change extraction yield, and
+module fitting is **client-owned condition today** — the assets route says
+so in as many words ("module bonuses are client-owned condition") and
+computes cargo capacity from the hull alone for exactly that reason. A
+yield-affecting module would therefore either be a forgeable claim or a
+quote the server refuses to honour. Modules wait for a server-registered
+fitting table, which belongs with Phase D's other registry work.
+
+**Server authority.** `refining_output` is the only path that creates
+refined product for a synced profile; the completion pass recomputes the
+manifest from the order row, settles extraction pressure and the shakedown
+on the PRODUCT, decrements the rock by the ORE worked, and ledgers under
+new reasons (`refining_output`, `refining_sale`, `refining_opex`,
+`depot_restock`, `depot_feedstock`, `survey_report_purchase`,
+`survey_report_sale`). The assets-complete cron stays the single place work
+completes. A forged fill or manifest on a server-authoritative order credits
+nothing (`mining-phase-c.test.ts`), and the completion pass itself is
+covered against an in-memory DB (`mining-phase-c-server.test.ts`).
+
+**UI.** `MiningPanel.tsx` gains a **Mine & refine** mode in the order form
+(plant time, recovery, opex, product manifest and depot coverage in the
+quote), a **Refine here** action on a hull holding raw ore, a **Refining &
+Depots** console (the recipe table, per-field slot register, tank level,
+cash/feedstock restocking, deploy and recall) and a **Survey Reports**
+console (your surveys with their listing state; the open market with Buy).
+The Phase C consoles read and write `/api/space-tycoon/assets/mining`
+directly and re-read after every write — the claim-feed pattern — because a
+slot, a tank level and a listing are server state with no client mirror;
+mining ORDERS (refine included) still go through page.tsx server-first.
+
+**Deploy.** `prisma db push` adds the `PropellantDepot` table,
+`AsteroidSurvey.listedPrice / listedAt / soldCount`, and
+`MiningOrder.refined / refineEndsAt / refineOpexPaid / depotId /
+depotUnitsDrawn` — all additive with defaults, no backfill.
+
+**Phase D picks up.** Standing orders; the Belt Mothership; TRANSFER of a
+held parcel between hulls at a field (the miners-stay / haulers-cycle
+pattern the Hauler was built for, and the reason scenario 2 still does not
+beat two returning miners); claim transfer via binding contracts; quarterly
+corporate mining share; the Salvage Tender for derelicts; ship MODULES once
+fitting is server-registered; a fixed refinery consuming stored ore at
+`FIXED_REFINERY_RECOVERY`; and the map affordances still open from Phase B
+(field badges, claim rings, escort and depot glyphs).

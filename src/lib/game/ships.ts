@@ -92,6 +92,19 @@ export interface ShipDefinition {
    *  to cut NPC shakedown odds — npc-shakedown.ts. Never a weapon against
    *  a player: there is no field, order or op that points it at one. */
   security?: boolean;
+  /** Mining Phase C (docs/SPACE_MINING_DESIGN_2026-09-12.md §8 row C): ore
+   *  units per REAL HOUR this hull can REFINE on station (ore-refining.ts).
+   *  Absent = the hull cannot take a 'refine' order. A refining hull turns
+   *  ore into product at the field, so its hold carries the concentrate
+   *  instead of the rock. */
+  refineOrePerHour?: number;
+  /** Phase C: propellant units this hull holds when deployed to a field as a
+   *  depot (propellant-depots.ts). Absent/0 = not a depot ship. */
+  depotCapacity?: number;
+  /** Phase C: how many rocks ONE survey order sweeps (the target rock plus
+   *  the next unsurveyed rocks in the field, nearest first). Absent = 1 —
+   *  the Prospector Barge and Starfarer survey one rock at a time. */
+  surveySweep?: number;
 }
 
 // ─── Mining Orders (Phase A, design doc §4) ──────────────────────────────────
@@ -104,9 +117,13 @@ export interface ShipDefinition {
 // Ore reaches inventory only through the completion path (server ledger row
 // for a synced profile; the local reducer for local-only play).
 
-export type MiningOrderMode = 'mine' | 'survey' | 'return';
+// Phase C adds one mode and one phase: 'refine' mines (or processes what is
+// already aboard) and runs the ore through the hull's plant before the leg
+// home, so the cargo that flies is PRODUCT, not rock.
+//   transit_out → mining → refining → returning → complete   (mode 'refine')
+export type MiningOrderMode = 'mine' | 'survey' | 'return' | 'refine';
 export type MiningThenAction = 'return_sell' | 'return_store' | 'hold';
-export type MiningOrderPhase = 'transit_out' | 'mining' | 'returning' | 'complete';
+export type MiningOrderPhase = 'transit_out' | 'mining' | 'refining' | 'returning' | 'complete';
 
 export interface MiningOrder {
   /** Client-generated instance id (asset-route-shared parseInstanceId shape). */
@@ -156,14 +173,40 @@ export interface MiningOrder {
   expectedUnits?: number;
   /** npc-shakedown.ts odds on the return leg as quoted. */
   shakedownOdds?: number;
+  // ── Mining Phase C (2026-09-13) ──
+  /** 'refine': when the plant finishes and the leg home begins. Between
+   *  miningEndsAtMs and this the order is in the 'refining' phase. */
+  refineEndsAtMs?: number;
+  /** true when the cargo aboard is refined PRODUCT (ore-refining.ts
+   *  refineOutputs of oreId x fillUnits), not raw ore. Set by 'refine'
+   *  orders and carried by the 'return' order that brings a held parcel
+   *  home, so the fuel formula and the credit path both know what flies. */
+  refined?: boolean;
+  /** The product manifest the quote expects to land, for the console. The
+   *  server recomputes it from (oreId, fillUnits, recovery) — it is a pure
+   *  function, never a client claim. */
+  outputs?: Record<string, number>;
+  /** Refining opex burned at creation (ore-refining.ts refineOpex). */
+  refineOpex?: number;
+  /** Propellant drawn from the corporation's depot at the field, and the
+   *  dollars of the fuel bill it covered (propellant-depots.ts). */
+  depotUnitsDrawn?: number;
+  depotCovered?: number;
+  /** Rocks a sweep survey reveals in one pass (Survey Cruiser). */
+  sweepAsteroidIds?: string[];
 }
 
-/** Ore sitting in a hull after a 'hold' order (no inventory has it yet). */
+/** Ore — or, after a Phase C refine run, PRODUCT — sitting in a hull after a
+ *  'hold' order (no inventory has it yet). `oreId` and `units` always
+ *  describe the ORE: the product manifest is the pure function
+ *  refineOutputs(oreId, units) so nothing has to be stored twice. */
 export interface HeldOre {
   oreId: string;
   units: number;
   asteroidId: string | null;
   fieldId: string;
+  /** Phase C: the hold carries refined product made from those ore units. */
+  refined?: boolean;
 }
 
 /** Row 6: a hull's flight crew. Ships draw on pilots and engineers; miners,
@@ -421,6 +464,41 @@ export const SHIPS: ShipDefinition[] = [
     survey: true,
     stats: { surveyRange: 0.5, surveyAccuracy: 0.8, warpFactor: 0.6 },
   },
+  // ─── Mining Phase C (docs/SPACE_MINING_DESIGN_2026-09-12.md §5, §8 row C) ──
+  // The Refinery Barge. Role stays 'mining' rather than the doc's new
+  // "processing" class: the role enum drives ROLE_PROFILE stats, crew split
+  // and the cargo-weight rules, and a refining hull is a mining hull that
+  // keeps going after the rock is in the hopper. Nothing about a new role id
+  // would change a number.
+  {
+    id: 'refinery_barge', name: 'Refinery Barge', icon: '🏭', role: 'mining',
+    description: 'A mobile ore plant: carbonyl columns, a solar-thermal smelter and a slag chute, wrapped around a 400-unit hold.',
+    tooltip: 'WHY BUILD: The slag never has to fly home. A Refinery Barge takes a REFINE order on a rock — it extracts, runs the ore through its own plant, and comes home with the concentrate. 100 units of metallic ore become ~14 units of steel, platinum-group and gold worth about 1.5x the ore (after the 18% a mobile plant cannot recover), so one hold carries what twenty holds of rock would. Fewer trips, far more value per trip, and a refining opex on every batch. It also refines ore it is already holding at a field. The answer to "why would I ever haul rock".',
+    cargoCapacity: 400, miningRate: 6,
+    miningTargets: ['iron', 'aluminum', 'titanium'],
+    baseCost: 420_000_000,
+    resourceCost: { titanium: 70, iron: 90, aluminum: 60, rare_earth: 10 },
+    requiredResearch: ['zero_g_refining'], buildTimeSeconds: 1_080, tier: 3,
+    maintenancePerMonth: 1_200_000,
+    oreExtractionPerHour: 140,
+    refineOrePerHour: 1_200,
+    stats: { warpFactor: 0.6, sublightSpeed: 1_500, crewRequired: 8, crewCapacity: 14, moduleSlots: 4, hardpointTypes: ['drone', 'cargo', 'utility'] },
+  },
+  // The Propellant Depot Ship. Role 'tanker' (the doc's "tanker (new
+  // class)") — it is a tanker that stops moving: deployed to a field it
+  // holds one of the field's finite slots and pays the field side of every
+  // run its owner flies out of there (propellant-depots.ts).
+  {
+    id: 'propellant_depot_ship', name: 'Propellant Depot Ship', icon: '🛢️', role: 'tanker',
+    description: 'A 5,000-unit propellant farm with a cracking plant, parked in an asteroid field. Refuels its corporation\'s hulls on station.',
+    tooltip: 'WHY BUILD: Every mining run pays to have propellant where the rock is, on every single trip. A depot hauls it out once, in bulk, and covers 60% of the fuel bill of every order your hulls fly out of that field — $250K of burn per unit in the tank. Restock it for cash (cheap in cislunar space, a LOSS past Neptune) or pour in water ice and ammonia your Refinery Barge cracked at the field. Slots per field are finite (2, three in the Frontier): the first corporation to place one owns that field\'s economics.',
+    cargoCapacity: 0, baseCost: 340_000_000,
+    resourceCost: { titanium: 50, aluminum: 90, iron: 70 },
+    requiredResearch: ['orbital_refueling'], buildTimeSeconds: 900, tier: 3,
+    maintenancePerMonth: 700_000,
+    depotCapacity: 5_000,
+    stats: { warpFactor: 0.5, sublightSpeed: 1_400, fuelCapacity: 6_000, crewRequired: 4, moduleSlots: 3, hardpointTypes: ['cargo', 'utility', 'shield'] },
+  },
   {
     id: 'mining_drone', name: 'Mining Drone', icon: '⛏️', role: 'mining',
     description: 'Automated mining vessel. Extracts iron and aluminum. Cheap and reliable.',
@@ -479,6 +557,28 @@ export const SHIPS: ShipDefinition[] = [
     resourceCost: { rare_earth: 5, aluminum: 10 },
     requiredResearch: ['high_res_optical'], buildTimeSeconds: 180, tier: 1,
     maintenancePerMonth: 0,
+  },
+
+  // Mining Phase C: the Survey Cruiser. Reusable long-range sensor ship —
+  // unlimited surveys (founder ruling 2, 2026-09-12: "ships with a survey
+  // capability; fuel to move, unlimited surveys"), and one order sweeps six
+  // rocks of a field instead of one. Its output is INTELLIGENCE: every rock
+  // it reveals is a survey the corporation may keep private or publish for
+  // sale (survey-reports.ts). The doc's `deep_space_sensors` gate does not
+  // exist in the tree; Hyperspectral Sensors ("200+ spectral bands for
+  // mineral identification. Enables remote mining prospecting") is the same
+  // capability under the name the tree actually uses.
+  {
+    id: 'survey_cruiser', name: 'Survey Cruiser', icon: '🔭', role: 'survey',
+    description: 'Reusable deep-space sensor ship: hyperspectral array, gravimeter boom and a data lab. Surveys six rocks a pass, forever.',
+    tooltip: 'WHY BUILD: Probes are $6M each and gone. A Survey Cruiser surveys for the price of the fuel to get there, sweeps SIX rocks of a field in one order, and reaches every field including the Kuiper Fringe. What it produces is a sellable asset: each completed survey can be listed as a paid report, so a cruiser pays for itself twice — once by finding your own high-grade rocks and once by selling the ones you are not going to work.',
+    cargoCapacity: 0, baseCost: 450_000_000,
+    resourceCost: { titanium: 60, rare_earth: 25, aluminum: 40 },
+    requiredResearch: ['hyperspectral'], buildTimeSeconds: 1_200, tier: 4,
+    maintenancePerMonth: 900_000,
+    survey: true,
+    surveySweep: 6,
+    stats: { surveyRange: 6, surveyAccuracy: 0.9, warpFactor: 1.8, sublightSpeed: 4_500, crewRequired: 5, moduleSlots: 4, hardpointTypes: ['sensor', 'sensor', 'engine'] },
   },
 
   // ─── INTERSTELLAR (Wave 10 — expedition-capable hulls) ────────────────────

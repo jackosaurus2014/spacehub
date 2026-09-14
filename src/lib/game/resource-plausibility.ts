@@ -46,8 +46,20 @@ import { SERVICE_MAP } from './services';
 import { MINING_PRODUCTION, RESOURCE_MAP } from './resources';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier } from './upgrades';
 import { getMarkRevenueMultiplier } from './mark-upgrades'; // D4: persisted markLevel on the buildings row
-import { getResearchBonuses } from './research-tree';
+import { getResearchBonuses, getResearchBucketCap, RESEARCH_CAP_MAX_TIER, RESEARCH_BUCKET_MAGNITUDE_SCALE } from './research-tree';
 import { getWorkforceBonuses, getStaffingEfficiency, STAFFING_FLOOR } from './workforce';
+// 2026-09-13 gross tightening (docs/SECURITY_AUDIT_2026-09.md "Monthly gross
+// — verified terms"): the persisted row already knows the corporation's
+// tier, its era eligibility, its commander roster, its legacy reach and
+// which buildings are mothballed. Those terms stop being assumed at cap.
+import { CORPORATION_TIERS, getTierBonuses, tierFromProfileScalars } from './corporation-tiers';
+import { ERA_MIN_CORPORATION_TIER } from './corporate-eras';
+import {
+  COMMANDER_DEFS, RARITY_MAGNITUDE, MAX_LEVEL, LEVEL_MAGNITUDE_BONUS_PER_LEVEL, RETIREMENT_SERVICE_MS,
+  type CommanderDefinition,
+} from './commanders';
+import { LEGACY_MILESTONES, STRETCH_LEGACIES, LEGACY_CATEGORY_CAPS } from './legacy-system';
+import { isBuildingOperational, REACTIVATION_SPINUP_MONTHS } from './mothball';
 import { getMiningRevenueScale } from './mining-pricing';
 import { SUBSIDIARY_DEFS } from './subsidiaries';
 import { frontierRevenueMultiplierUpperBound } from './frontier';
@@ -221,14 +233,48 @@ const CLIENT_MULT_BY_KIND: Partial<Record<FlowKind, number>> = {
 // a ceiling that nets costs could clip an honest player whose client had not
 // run the sinks yet).
 //
-// Server-known, evaluated for real: service definitions, the linked
-// building's upgrade level, station-bonus buildings at the location,
-// completed research (serviceRevenueBonus), workforce head-counts
-// (serviceRevenue), the service instance's own multiplier (capped), and
-// mining rigs' nameplate output valued at the resource's band-maximum price.
-// Client-only, capped: legacy, tier, reputation, eras, doctrine, commanders,
-// random events, morale, wave-B stack, demand scarcity, returning-commander
-// boost, megastructure revenue multiplier.
+// ─── 2026-09-13: the gross reads the row, not the cap table ─────────────────
+// The allowance rail in ledger-reconcile.ts is derived from this number, so
+// "every multiplier at its cap" (~1,821x nameplate) was handing every profile
+// ~3.4x more allowance than the flat rail it replaced. Each of the terms
+// below now reads what the persisted GameProfile actually proves; only the
+// ones the row genuinely cannot answer stay at a documented maximum.
+//
+// SERVER-VERIFIED (evaluated from the row):
+//   * service definitions, the linked building's upgrade + Mark level,
+//     station-bonus buildings at the location  (as before)
+//   * completed research (serviceRevenueBonus) — now at the row's OWN
+//     corporation tier, because Row 8 grows the aggregate bucket cap
+//     +15%/tier (the old flat 0.50 clamp UNDER-reported a tier-2+ corp)
+//   * workforce head-counts (serviceRevenue) — with trainingLevel/fatigue at
+//     their most generous values, since neither is persisted
+//   * corporation tier — `tierFromProfileScalars` on the ledger-backed
+//     totalEarned, +TIER_CEILING_SLACK rungs
+//   * corporate era — gated: an era cannot be chartered below tier 3
+//   * commanders — the sanitized roster in `workforceData._commanders`, each
+//     at MAX_LEVEL, with the engine's own per-class 0.88^i stacking
+//   * megastructure revenue multiplier — only the definitions whose
+//     `minMoney` gate totalEarned has cleared (this was the single largest
+//     term in the all-caps product, ~10.7x)
+//   * legacy revenue — the soft cap evaluated against totalEarned
+//     (`stretch_revenue`) and profile age (`stretch_leader_legacy`)
+//   * mothball status — a service whose own building is mothballed earns
+//     nothing until a REACTIVATION_SPINUP_MONTHS spin-up completes
+//   * headquarters seat (CC-2/CC-3) and the Frontier doubling (Pass 10)
+//   * mining_output rigs: tier / research / megastructure terms of the §0c
+//     mining chain, on top of the nameplate-at-band-max-price valuation
+//
+// STILL AN ALLOWANCE (no server-side evidence exists — see
+// `multiplierTerms.allowance` on the report):
+//   reputation (1.40), corporate doctrine (1.03), random-event effects
+//   (2.00), crew morale (1.15), the engine-capped wave-B stack (2.00),
+//   demand scarcity (1.25), the returning-commander boost (1.30), the
+//   megastructure PASSIVE income and subsidiary income allowances (gated on
+//   totalEarned but not otherwise checkable), and the mining chain's
+//   workforce / reputation / commander / survey-probe / wave-B terms.
+// World-event bonuses (server-delivered, clampWorldEventBonuses) touch only
+// research speed and contract payouts, never service revenue, so they are
+// deliberately absent from this chain.
 //
 // Allowances for income that is not a service at all are GATED on persisted
 // totalEarned so a fresh profile cannot claim them: megastructure passive
@@ -240,8 +286,15 @@ const CLIENT_MULT_BY_KIND: Partial<Record<FlowKind, number>> = {
 
 /** workforce.ts:172 — `serviceRevenue` capped at +50%. */
 export const MAX_WORKFORCE_SERVICE_REVENUE_MULT = 1.5;
-/** research-tree.ts:951 — `serviceRevenueBonus` capped at +50%. */
-export const MAX_RESEARCH_SERVICE_REVENUE_MULT = 1.5;
+/** research-tree.ts getResearchBucketCap('revenue', tier) — the aggregate
+ *  research revenue bucket is 0.50 at tier 1 and GROWS +15% of base per tier
+ *  (Row 8), so the real ceiling at tier 7 is +95%, not +50%. Before
+ *  2026-09-13 this constant was 1.5 and the gross clamped the term there —
+ *  an UNDER-bound for any tier-2+ corporation, i.e. a latent "reject honest
+ *  income" bug of exactly the class this module exists to avoid. It is now
+ *  the top-of-ladder value and only used as the fallback; the live term is
+ *  `serverResearchServiceRevenueMult`, evaluated at the row's own tier. */
+export const MAX_RESEARCH_SERVICE_REVENUE_MULT = 1 + getResearchBucketCap('revenue', RESEARCH_CAP_MAX_TIER);
 /** legacy-system.ts:550 — revenue category cap 5.0 => x6. */
 export const MAX_LEGACY_REVENUE_MULT = 6.0;
 /** corporation-tiers.ts:170 — top tier `revenueBonus: 0.20`. */
@@ -252,10 +305,112 @@ export const MAX_REPUTATION_REVENUE_MULT = 1.40;
 export const MAX_ERA_REVENUE_MULT = 1.10;
 /** corporate-doctrine.ts:245 — Proprietary disclosure +3%. */
 export const MAX_DOCTRINE_REVENUE_MULT = 1.03;
-/** commanders.ts — class sums stack with diminishing returns and traits are
- *  clamped; no single documented cap, so 2.0 is an ASSUMED bound (same
- *  posture as MAX_COMMANDER_MINING_MULT). */
-export const MAX_COMMANDER_REVENUE_MULT = 2.0;
+// ─── Commanders: derived from the registry, then read from the row ──────────
+// commanders.ts is fully deterministic here: a hired commander's class
+// decides which multiplier it feeds, its rarity + level decide the magnitude
+// (`effectiveMagnitude` = RARITY_MAGNITUDE + (level-1) x 0.01, level <= 5),
+// the i-th commander of a class contributes x 0.88^i (`stackingContribution`)
+// and the trait pack is clamped at TRAIT_BONUS_CAP. The roster itself is
+// capped by `getHireCap` = 2 + corporationTier (<= 9) and duplicates are
+// refused (`canHire`: "Already hired").
+//
+// The ROW carries the roster: sync/route.ts stashes the sanitized commander
+// ids in `workforceData._commanders` (registry-checked, deduped, capped at
+// SYNC_MAX_COMMANDERS = 30 — well above the in-game hire cap, so it never
+// truncates an honest roster). So this term is now MEASURED, not assumed.
+
+/** commanders.ts TRAIT_BONUS_CAP — not exported there; cited here. */
+const COMMANDER_TRAIT_BONUS_CAP = 0.15;
+/** commanders.ts stackingContribution — 0.88^i for the i-th of a class. */
+const COMMANDER_STACKING_BASE = 0.88;
+/** commanders.ts computeCommanderBonuses — the classes that feed
+ *  `revenueMultiplier`. Every other class feeds build / research / mining. */
+const COMMANDER_REVENUE_CLASSES = new Set(['diplomat', 'magnate', 'commander']);
+/** commanders.ts computeCommanderBonuses — the class that feeds
+ *  `miningMultiplier`. */
+const COMMANDER_MINING_CLASSES = new Set(['logistician']);
+/** The most a single commander of this definition can ever contribute:
+ *  its rarity magnitude at MAX_LEVEL. */
+const commanderMaxMagnitude = (def: CommanderDefinition): number =>
+  (RARITY_MAGNITUDE[def.rarity] || 0) + (MAX_LEVEL - 1) * LEVEL_MAGNITUDE_BONUS_PER_LEVEL;
+const magnitudesFor = (classes: Set<string>): number[] => COMMANDER_DEFS
+  .filter(d => classes.has(d.class))
+  .map(commanderMaxMagnitude)
+  .sort((a, b) => b - a);
+/** Revenue-class definitions, largest max-magnitude first. */
+const COMMANDER_REVENUE_MAGNITUDES: number[] = magnitudesFor(COMMANDER_REVENUE_CLASSES);
+const COMMANDER_MINING_MAGNITUDES: number[] = magnitudesFor(COMMANDER_MINING_CLASSES);
+/** commanders.ts getHireCap — `2 + corporationTier`. */
+const commanderHireCap = (tier: number): number => 2 + Math.max(1, Math.floor(tier || 1));
+
+/**
+ * Upper bound on `commanderBonuses.revenueMultiplier` for a roster the
+ * server has NOT seen, at a given corporation tier: the `hireCap` largest
+ * revenue-class magnitudes summed WITHOUT the 0.88^i stacking decay (so it
+ * dominates every real class arrangement), plus the trait cap.
+ */
+function maxCommanderMultForTier(magnitudes: number[], tier: number): number {
+  const slots = Math.max(0, Math.min(magnitudes.length, commanderHireCap(tier)));
+  let sum = 0;
+  for (let i = 0; i < slots; i++) sum += magnitudes[i];
+  return 1 + sum + COMMANDER_TRAIT_BONUS_CAP;
+}
+export function maxCommanderRevenueMultForTier(tier: number): number {
+  return maxCommanderMultForTier(COMMANDER_REVENUE_MAGNITUDES, tier);
+}
+
+/** The registry-wide bound (top tier, best roster). Before 2026-09-13 this
+ *  was a flat ASSUMED 2.0, which the definitions do not actually support —
+ *  six legendary `commander`-class hires alone reach +107% before traits. */
+export const MAX_COMMANDER_REVENUE_MULT = maxCommanderRevenueMultForTier(
+  CORPORATION_TIERS.reduce((m, t) => Math.max(m, t.tier), 1),
+);
+
+/**
+ * The revenue multiplier a KNOWN roster can reach: each commander at
+ * MAX_LEVEL, the engine's own per-class 0.88^i stacking, the trait cap, plus
+ * one extra best-in-registry commander of head-room (the player may hire one
+ * more between syncs — the roster is one sync stale by construction).
+ * `null` ids (no stash on the row) fall back to the tier bound above.
+ */
+function serverCommanderMult(
+  ids: string[] | null | undefined, tier: number, classes: Set<string>, magnitudes: number[],
+): number {
+  const tierBound = maxCommanderMultForTier(magnitudes, tier);
+  if (!Array.isArray(ids)) return tierBound;
+  const byClass = new Map<string, number[]>();
+  for (const id of ids) {
+    const def = COMMANDER_DEFS.find(d => d.id === id);
+    if (!def || !classes.has(def.class)) continue;
+    byClass.set(def.class, [...(byClass.get(def.class) || []), commanderMaxMagnitude(def)]);
+  }
+  let sum = 0;
+  byClass.forEach(mags => {
+    mags.sort((a, b) => b - a);
+    for (let i = 0; i < mags.length; i++) sum += mags[i] * Math.pow(COMMANDER_STACKING_BASE, i);
+  });
+  // One un-synced hire of headroom, undiscounted.
+  sum += magnitudes[0] || 0;
+  return Math.min(tierBound, 1 + sum + COMMANDER_TRAIT_BONUS_CAP);
+}
+
+export function serverCommanderRevenueMult(ids: string[] | null | undefined, tier: number): number {
+  return serverCommanderMult(ids, tier, COMMANDER_REVENUE_CLASSES, COMMANDER_REVENUE_MAGNITUDES);
+}
+
+/** The mining half — `logistician` hires feed `miningMultiplier`. */
+export function serverCommanderMiningMult(ids: string[] | null | undefined, tier: number): number {
+  return serverCommanderMult(ids, tier, COMMANDER_MINING_CLASSES, COMMANDER_MINING_MAGNITUDES);
+}
+
+/** Read the sanitized commander roster the sync stashed on the row
+ *  (`workforceData._commanders`). `null` when the row does not carry one. */
+export function readStashedCommanderIds(workforceData: unknown): string[] | null {
+  if (!workforceData || typeof workforceData !== 'object' || Array.isArray(workforceData)) return null;
+  const raw = (workforceData as Record<string, unknown>)._commanders;
+  if (!Array.isArray(raw)) return null;
+  return raw.filter((x): x is string => typeof x === 'string');
+}
 /** random-events.ts — active effects MULTIPLY (1.3 x 1.2 x 1.15 ≈ 1.8 if
  *  every positive event overlaps); 2.0 is the documented allowance. */
 export const MAX_EVENT_REVENUE_MULT = 2.0;
@@ -282,7 +437,10 @@ export const MAX_MEGASTRUCTURE_REVENUE_MULT: number = MEGASTRUCTURES.reduce((pro
   return prod * best;
 }, 1);
 
-/** Product of every client-only term in the §1 service revenue chain. */
+/** Product of every client-only term in the §1 service revenue chain, with
+ *  EVERY term at its documented maximum. This is the "nothing known about
+ *  this profile" bound — the fallback each verified term below degrades to,
+ *  and the number the 2026-09-13 audit quotes as the theoretical ceiling. */
 export const MAX_SERVICE_REVENUE_CLIENT_MULT =
   MAX_LEGACY_REVENUE_MULT
   * MAX_TIER_REVENUE_MULT
@@ -296,6 +454,232 @@ export const MAX_SERVICE_REVENUE_CLIENT_MULT =
   * MAX_DEMAND_SCARCITY_MULT
   * MAX_RETURNING_COMMANDER_MULT
   * MAX_MEGASTRUCTURE_REVENUE_MULT;
+
+// ─── Verified terms (2026-09-13): read the row, don't assume the cap ────────
+// docs/SECURITY_AUDIT_2026-09.md "Monthly gross — verified terms". The
+// allowance rail in ledger-reconcile.ts is now derived from this gross, so a
+// gross that assumes every multiplier is maxed hands every profile ~1,821x
+// its nameplate of allowance. Each helper below replaces one such assumption
+// with what the persisted GameProfile actually proves, and each degrades to
+// its old cap when the row cannot answer. Every one of them is an UPPER
+// bound on what the engine's own tick can pay for that state — that
+// direction is the whole contract (see the conservatism test in
+// __tests__/server-monthly-gross.test.ts).
+
+/** corporation-tiers.ts — the top rung of the ladder. */
+export const MAX_CORPORATION_TIER: number = CORPORATION_TIERS.reduce((m, t) => Math.max(m, t.tier), 1);
+
+/** Extra tiers granted beyond the one the persisted `totalEarned` proves.
+ *  The row is one sync stale, so a corporation can cross a tier gate inside
+ *  the window; the gates are 10x apart in totalEarned, so one rung of slack
+ *  covers any single window. Cheap insurance: adjacent tiers differ by <=5
+ *  percentage points of revenue bonus. */
+export const TIER_CEILING_SLACK = 1;
+
+/**
+ * The highest corporation tier this row could possibly be playing at.
+ * `tierFromProfileScalars` with ONLY the money leg supplied is already an
+ * upper bound (every count requirement reads as satisfied); +1 rung absorbs
+ * a promotion since the last sync. Never below the real tier.
+ */
+export function serverCorporationTierBound(totalEarned: number): number {
+  const earned = Number.isFinite(totalEarned) && totalEarned > 0 ? totalEarned : 0;
+  let tier: number;
+  try { tier = tierFromProfileScalars({ totalEarned: earned }); } catch { return MAX_CORPORATION_TIER; }
+  return Math.max(1, Math.min(MAX_CORPORATION_TIER, tier + TIER_CEILING_SLACK));
+}
+
+/** corporation-tiers.ts `bonuses.revenueBonus` at the row's own tier —
+ *  1.00 for a Startup, 1.20 only at the top rung (was: always 1.20). */
+export function serverTierRevenueMult(tier: number): number {
+  try { return 1 + Math.max(0, getTierBonuses(tier).revenueBonus || 0); }
+  catch { return MAX_TIER_REVENUE_MULT; }
+}
+
+/** corporation-tiers.ts `bonuses.miningBonus` at the row's own tier. */
+export function serverTierMiningMult(tier: number): number {
+  try { return 1 + Math.max(0, getTierBonuses(tier).miningBonus || 0); }
+  catch { return MAX_TIER_MINING_MULT; }
+}
+
+/** corporate-eras.ts canCharterEra — an era cannot be chartered below
+ *  ERA_MIN_CORPORATION_TIER (3), so a Startup's era term is exactly 1.0. */
+export function serverEraRevenueMult(tier: number): number {
+  return tier < ERA_MIN_CORPORATION_TIER ? 1 : MAX_ERA_REVENUE_MULT;
+}
+
+/** research-tree.ts: how much the repeatable programs alone can add to the
+ *  `revenue` bucket (maxLevel x per-level magnitude x the Row-8 bucket
+ *  scale). Repeatable LEVELS are client-only state, so this is the one
+ *  research term that stays an allowance — derived from the definitions, so
+ *  it is 0 when no repeatable feeds the bucket and self-updates if one is
+ *  added. Today: one program (deep_space_network_expansion), ~0.6 points. */
+export const MAX_REPEATABLE_RESEARCH_BY_BUCKET: Record<string, number> = (() => {
+  const out: Record<string, number> = {};
+  for (const def of RESEARCH) {
+    const rep = (def as { repeatable?: { maxLevel: number; effectPerLevel: { type: string; magnitude: number }[] } }).repeatable;
+    if (!rep || !(rep.maxLevel > 0)) continue;
+    for (const eff of rep.effectPerLevel || []) {
+      const scale = (RESEARCH_BUCKET_MAGNITUDE_SCALE as Record<string, number>)[eff.type] ?? 1;
+      out[eff.type] = (out[eff.type] || 0) + Math.max(0, eff.magnitude) * scale * rep.maxLevel;
+    }
+  }
+  return out;
+})();
+/** @deprecated Use MAX_REPEATABLE_RESEARCH_BY_BUCKET.revenue. */
+export const MAX_REPEATABLE_RESEARCH_REVENUE: number = MAX_REPEATABLE_RESEARCH_BY_BUCKET.revenue || 0;
+
+/**
+ * The research service-revenue term for THIS row: the engine's own
+ * `getResearchBonuses` over the persisted completed-research list, evaluated
+ * at the row's tier (Row 8 grows the bucket cap +15%/tier) plus the
+ * repeatable allowance, re-clamped at that same bucket cap.
+ */
+export function serverResearchServiceRevenueMult(completedResearch: string[] | null | undefined, tier: number): number {
+  const cap = getResearchBucketCap('revenue', tier);
+  try {
+    const base = getResearchBonuses(Array.isArray(completedResearch) ? completedResearch : [], undefined, tier).serviceRevenueBonus || 0;
+    return 1 + Math.min(cap, Math.max(0, base) + (MAX_REPEATABLE_RESEARCH_BY_BUCKET.revenue || 0));
+  } catch { return 1 + cap; }
+}
+
+/** Same, for the mining bucket (feeds the mining_output service valuation). */
+export function serverResearchMiningMult(completedResearch: string[] | null | undefined, tier: number): number {
+  const cap = getResearchBucketCap('mining', tier);
+  try {
+    const base = getResearchBonuses(Array.isArray(completedResearch) ? completedResearch : [], undefined, tier).miningOutputBonus || 0;
+    return 1 + Math.min(cap, Math.max(0, base) + (MAX_REPEATABLE_RESEARCH_BY_BUCKET.mining || 0));
+  } catch { return 1 + cap; }
+}
+
+/**
+ * personal-megastructures.ts: every definition gates on
+ * `prerequisites.minMoney` (>= $25B, up to $200B) and the bonus MULTIPLIES
+ * across owned structures — which is why the all-caps product is ~10.7x, the
+ * single largest term in MAX_SERVICE_REVENUE_CLIENT_MULT. `totalEarned` is
+ * server-persisted and monotonic, and is >= any balance the profile ever
+ * held, so a definition whose gate it has not reached CANNOT be owned. Same
+ * posture the passive-income allowance in the gross has used since day one.
+ */
+export function serverMegastructureRevenueMult(totalEarned: number): number {
+  const earned = Number.isFinite(totalEarned) && totalEarned > 0 ? totalEarned : 0;
+  let prod = 1;
+  for (const def of MEGASTRUCTURES) {
+    if (earned < (def.prerequisites?.minMoney || 0)) continue;
+    let best = 1;
+    for (const ph of def.phases || []) best = Math.max(best, ph.interimBonuses?.revenueMultiplier || 1);
+    best = Math.max(best, def.completionBonus?.revenueMultiplier || 1);
+    prod *= best;
+  }
+  return prod;
+}
+
+/** Same gate, for the mining half. */
+export function serverMegastructureMiningMult(totalEarned: number): number {
+  const earned = Number.isFinite(totalEarned) && totalEarned > 0 ? totalEarned : 0;
+  let prod = 1;
+  for (const def of MEGASTRUCTURES) {
+    if (earned < (def.prerequisites?.minMoney || 0)) continue;
+    let best = 1;
+    for (const ph of def.phases || []) best = Math.max(best, ph.interimBonuses?.miningMultiplier || 1);
+    best = Math.max(best, def.completionBonus?.miningMultiplier || 1);
+    prod *= best;
+  }
+  return prod;
+}
+
+// ─── Legacy: the soft cap, evaluated against what the row can reach ─────────
+// legacy-system.ts: `revenueMultiplier = 1 + cap x (1 - e^(-raw/100/cap))`
+// with cap 5.0, and `raw` is the sum of (a) the fixed milestones' revenue
+// bonusValues and (b) the revenue STRETCH families' logarithmic levels.
+// Taking the whole 5.0 (the old flat x6) ignores that both inputs are
+// bounded by things the server persists:
+//   * every fixed revenue milestone, all of them, is only ~55 points;
+//   * `stretch_revenue` levels are a pure function of totalEarned
+//     ($10B x 5^n) — server-persisted;
+//   * `stretch_leader_legacy` levels are 3 retired leaders each, and a
+//     retirement needs RETIREMENT_SERVICE_MS (60 REAL days) of continuous
+//     assignment, with at most `getHireCap` = 2 + tier commanders on the
+//     clock at once — so profile AGE (GameProfile.createdAt) bounds it.
+// A profile whose age the server does not know falls back to the flat cap.
+
+const LEGACY_REVENUE_CAP = LEGACY_CATEGORY_CAPS.revenue;
+
+/** legacy-system.ts getCategoryBonus — the convergent soft cap. */
+export function legacyRevenueMultFromPoints(points: number): number {
+  const raw = Number.isFinite(points) && points > 0 ? points : 0;
+  return 1 + LEGACY_REVENUE_CAP * (1 - Math.exp(-(raw / 100) / LEGACY_REVENUE_CAP));
+}
+
+/** legacy-system.ts getCategoryRaw — Σ basePercent x ln(1 + n/2), n = 1..level. */
+function stretchPoints(basePercent: number, level: number): number {
+  let total = 0;
+  for (let n = 1; n <= level; n++) total += basePercent * Math.log(1 + n * 0.5);
+  return total;
+}
+
+/** legacy-system.ts checkStretchProgress — the level a progress value buys. */
+function stretchLevelFor(getRequirement: (n: number) => number, progress: number): number {
+  let n = 0;
+  while (n < 1000 && progress >= getRequirement(n + 1)) n++;
+  return n;
+}
+
+/** Every fixed milestone in the revenue category, all assumed earned. */
+export const MAX_LEGACY_FIXED_REVENUE_POINTS: number = LEGACY_MILESTONES
+  .filter(m => m.bonusCategory === 'revenue')
+  .reduce((sum, m) => sum + Math.max(0, m.bonusValue || 0), 0);
+
+/**
+ * The revenue-legacy multiplier this row can reach.
+ * `profileAgeMs` is `now - GameProfile.createdAt`; omit it (or omit
+ * totalEarned) and the answer is the flat MAX_LEGACY_REVENUE_MULT.
+ */
+export function serverLegacyRevenueMult(totalEarned: number, profileAgeMs?: number, tier: number = MAX_CORPORATION_TIER): number {
+  if (!Number.isFinite(profileAgeMs as number) || (profileAgeMs as number) < 0) return MAX_LEGACY_REVENUE_MULT;
+  const earned = Number.isFinite(totalEarned) && totalEarned > 0 ? totalEarned : 0;
+  // Retirements the wall clock allows: hire-cap commanders can each finish a
+  // 60-day term per 60-day wave, and a retired leader's seat can be refilled.
+  const waves = Math.floor((profileAgeMs as number) / RETIREMENT_SERVICE_MS);
+  const maxRetiredLeaders = waves * commanderHireCap(tier);
+  let points = MAX_LEGACY_FIXED_REVENUE_POINTS;
+  for (const s of STRETCH_LEGACIES) {
+    if (s.bonusCategory !== 'revenue') continue;
+    let level: number;
+    if (s.id === 'stretch_revenue') level = stretchLevelFor(s.getRequirement, earned) + 1;
+    else if (s.id === 'stretch_leader_legacy') level = stretchLevelFor(s.getRequirement, maxRetiredLeaders) + 1;
+    // A revenue stretch family this function does not know how to bound must
+    // never be silently assumed away — fall back to the flat cap.
+    else return MAX_LEGACY_REVENUE_MULT;
+    points += stretchPoints(s.basePercent, level);
+  }
+  return Math.min(MAX_LEGACY_REVENUE_MULT, legacyRevenueMultFromPoints(points));
+}
+
+/** The mining half of the same soft cap stays at its documented maximum —
+ *  the mining milestones ride trackers (units mined, ships built) the server
+ *  does not persist. Declared here so the mining bound below reads plainly. */
+export const MAX_LEGACY_MINING_MULT_UNVERIFIED = MAX_LEGACY_MINING_MULT;
+
+/**
+ * mothball.ts: a service whose OWN linked building is not operational earns
+ * exactly zero this tick (game-engine.ts §1 `if (ownerBld &&
+ * !isBuildingOperational(ownerBld)) continue`). Reactivation is not instant
+ * — `reactivateBuilding` flips a mothballed building to 'reactivating' and
+ * the shared server clock only returns it to 'active' after
+ * REACTIVATION_SPINUP_MONTHS. So over a window of `elapsedMonths` a
+ * MOTHBALLED building can bill for at most (elapsedMonths - spin-up) of
+ * them, and the rate bound is that fraction. 'reactivating' /
+ * 'decommissioning' get no reduction (either can be operational again within
+ * the window), and an unknown window gets none either.
+ */
+export function mothballedRevenueFraction(status: string | undefined, elapsedMonths: number | undefined): number {
+  if (status !== 'mothballed') return 1;
+  if (elapsedMonths === undefined || !Number.isFinite(elapsedMonths)) return 1;
+  const m = Math.max(0, elapsedMonths);
+  if (m <= REACTIVATION_SPINUP_MONTHS) return 0;
+  return (m - REACTIVATION_SPINUP_MONTHS) / m;
+}
 
 /** subsidiaries.ts OPERATIONS_MULT[5] — the top operations level x9. */
 export const MAX_SUBSIDIARY_OPERATIONS_MULT = 9;
@@ -326,6 +710,19 @@ export interface ServerMonthlyGrossInputs {
    *  headquarters.ts). Absent = Earth (neutral launch term). Pass
    *  'unknown' to take the ladder's largest launch bonus as the bound. */
   hqStage?: HqStageId | 'unknown';
+  /** 2026-09-13: wall clock since `GameProfile.lastSyncAt`. Used ONLY to
+   *  bound the mothball term (a mothballed building needs a
+   *  REACTIVATION_SPINUP_MONTHS spin-up before it can bill again). Absent =
+   *  mothballed services are counted at their full rate. */
+  elapsedMs?: number;
+}
+
+/** The per-term breakdown of the non-definition multiplier applied to
+ *  service revenue. `verified` terms were read off the persisted row;
+ *  `allowance` terms are the ones the server still cannot check. */
+export interface GrossMultiplierTerms {
+  verified: Record<string, number>;
+  allowance: Record<string, number>;
 }
 
 export interface ServerMonthlyGrossReport {
@@ -341,6 +738,18 @@ export interface ServerMonthlyGrossReport {
    *  ceiling tests assert on; CC-3's colony / Mars / outer / science terms
    *  ride the same helper, per service. */
   hqLaunchRevenueMult: number;
+  /** 2026-09-13: the corporation tier the row proves (+TIER_CEILING_SLACK). */
+  serverTier: number;
+  /** 2026-09-13: Σ of the services' own nameplate revenue per game-month
+   *  (mining_output valued at band-max price), BEFORE any multiplier. The
+   *  denominator of the "multiple over nameplate" the audit reports. */
+  nameplate: number;
+  /** 2026-09-13: the product of every non-definition multiplier applied to
+   *  service revenue — `services / nameplate` for a single-service row. */
+  clientMultiplierBound: number;
+  /** 2026-09-13: what each of those terms was, and whether it was read off
+   *  the row or left as a bounded allowance. */
+  multiplierTerms: GrossMultiplierTerms;
 }
 
 const stationBonusAt = (state: GameState, locationId: string): number => {
@@ -360,16 +769,61 @@ const stationBonusAt = (state: GameState, locationId: string): number => {
 export function computeServerMonthlyGrossDetailed(state: GameState, inputs: ServerMonthlyGrossInputs = {}): ServerMonthlyGrossReport {
   const totalEarned = typeof inputs.totalEarned === 'number' && Number.isFinite(inputs.totalEarned) && inputs.totalEarned > 0
     ? inputs.totalEarned : 0;
+  const nowMs = inputs.nowMs ?? Date.now();
 
-  // Research (server-known list) — real.
-  let researchMult = MAX_RESEARCH_SERVICE_REVENUE_MULT;
-  try {
-    researchMult = 1 + Math.min(0.5, Math.max(0, getResearchBonuses(state.completedResearch || [], undefined).serviceRevenueBonus || 0));
-  } catch { researchMult = MAX_RESEARCH_SERVICE_REVENUE_MULT; }
+  // ── Terms the persisted row proves (2026-09-13) ───────────────────────────
+  // Corporation tier: `tierFromProfileScalars` on the ledger-backed
+  // totalEarned, plus one rung of slack for a promotion inside the window.
+  const serverTier = serverCorporationTierBound(totalEarned);
+  const tierMult = serverTierRevenueMult(serverTier);
+  // Eras cannot be chartered below tier 3 (corporate-eras.ts).
+  const eraMult = serverEraRevenueMult(serverTier);
+  // Commanders: the roster the sync stashed, at MAX_LEVEL, with the engine's
+  // own per-class stacking. No stash → the hire-cap bound for this tier.
+  const commanderIds = readStashedCommanderIds(inputs.workforceData);
+  const commanderMult = serverCommanderRevenueMult(commanderIds, serverTier);
+  // Megastructures: only the definitions whose minMoney gate totalEarned has
+  // actually cleared (the same gate the passive-income allowance uses).
+  const megastructureMult = serverMegastructureRevenueMult(totalEarned);
+  // Legacy: the soft cap evaluated against totalEarned (stretch_revenue) and
+  // profile age (stretch_leader_legacy), not taken whole.
+  const profileAgeMs = typeof inputs.createdAtMs === 'number' && Number.isFinite(inputs.createdAtMs)
+    ? Math.max(0, nowMs - inputs.createdAtMs)
+    : undefined;
+  const legacyMult = serverLegacyRevenueMult(totalEarned, profileAgeMs, serverTier);
+
+  /** Everything in the §1 chain the server still cannot check, each at its
+   *  documented maximum. Listed rather than folded so the audit can read
+   *  what remains unverified. */
+  const allowanceTerms: Record<string, number> = {
+    reputation: MAX_REPUTATION_REVENUE_MULT,     // state.reputation is client-only
+    doctrine: MAX_DOCTRINE_REVENUE_MULT,         // corporateDoctrine is client-only
+    randomEvents: MAX_EVENT_REVENUE_MULT,        // activeEffects are client-only
+    morale: MAX_MORALE_MULT,                     // workforce.morale drifts between syncs
+    waveB: MAX_WAVE_B_REVENUE_MULT,              // engine-capped 2.0 (spec/victory/alliance/...)
+    demandScarcity: MAX_DEMAND_SCARCITY_MULT,    // engine-capped 1.25
+    returningCommander: MAX_RETURNING_COMMANDER_MULT,
+  };
+  const verifiedTerms: Record<string, number> = {
+    legacy: legacyMult, tier: tierMult, era: eraMult,
+    commanders: commanderMult, megastructures: megastructureMult,
+  };
+  let clientMultiplierBound = 1;
+  for (const v of Object.values(verifiedTerms)) clientMultiplierBound *= v;
+  for (const v of Object.values(allowanceTerms)) clientMultiplierBound *= v;
+
+  // Research (server-known list) — real, at the row's OWN tier (Row 8 grows
+  // the aggregate revenue bucket +15%/tier, so clamping at the tier-1 0.50
+  // under-reported a tier-2+ corporation's research bonus).
+  const researchMult = serverResearchServiceRevenueMult(state.completedResearch || [], serverTier);
 
   // Workforce head-counts (persisted workforceData) — real when the shape is
-  // sane, the documented cap otherwise.
+  // sane, the documented cap otherwise. `trainingLevel`/`fatigue` are NOT
+  // persisted and scale the per-head bonus (workforce.ts `bonusScale`), so
+  // they are supplied at their most generous values: the ceiling must not
+  // under-report a fully-trained, rested crew.
   let workforceMult = MAX_WORKFORCE_SERVICE_REVENUE_MULT;
+  let workforceMiningMult = MAX_WORKFORCE_MINING_MULT;
   const wd = inputs.workforceData;
   if (wd && typeof wd === 'object' && !Array.isArray(wd)) {
     const w = wd as Record<string, unknown>;
@@ -378,10 +832,34 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
       const b = getWorkforceBonuses({
         engineers: num('engineers'), scientists: num('scientists'), miners: num('miners'), operators: num('operators'),
         pilots: num('pilots'), negotiators: num('negotiators'), securitys: num('securitys'), medics: num('medics'),
-      } as NonNullable<GameState['workforce']>);
-      workforceMult = 1 + Math.min(0.5, Math.max(0, b.serviceRevenue || 0));
-    } catch { workforceMult = MAX_WORKFORCE_SERVICE_REVENUE_MULT; }
+        trainingLevel: 1, fatigue: 0,
+      } as unknown as NonNullable<GameState['workforce']>);
+      workforceMult = 1 + Math.min(MAX_WORKFORCE_SERVICE_REVENUE_MULT - 1, Math.max(0, b.serviceRevenue || 0));
+      workforceMiningMult = 1 + Math.min(MAX_WORKFORCE_MINING_MULT - 1, Math.max(0, b.miningOutput || 0));
+    } catch { workforceMult = MAX_WORKFORCE_SERVICE_REVENUE_MULT; workforceMiningMult = MAX_WORKFORCE_MINING_MULT; }
   }
+
+  // Mining_output services carry their own multiplier chain (the §0c mining
+  // stack), so the same three verified terms apply there too. The rest of
+  // that chain stays at the documented caps — MAX_BUILDING_MINING_CLIENT_MULT
+  // is also the resource-ceiling constant and is deliberately not re-tuned
+  // from here (that clamp runs in shadow mode on its own evidence).
+  const miningClientMult = MAX_BUILDING_MINING_CLIENT_MULT
+    * (serverTierMiningMult(serverTier) / MAX_TIER_MINING_MULT)
+    * (serverResearchMiningMult(state.completedResearch || [], serverTier) / MAX_RESEARCH_MINING_MULT)
+    * (serverMegastructureMiningMult(totalEarned) / MAX_MEGASTRUCTURE_MINING_MULT)
+    // An era cannot be chartered below tier 3 (same gate as the revenue half).
+    * ((serverTier < ERA_MIN_CORPORATION_TIER ? 1 : MAX_ERA_MINING_MULT) / MAX_ERA_MINING_MULT)
+    // The logistician half of the stashed roster.
+    * (serverCommanderMiningMult(commanderIds, serverTier) / MAX_COMMANDER_MINING_MULT)
+    // Crew: the same persisted head-counts, at the most generous training.
+    * (workforceMiningMult / MAX_WORKFORCE_MINING_MULT);
+
+  // The window the mothball term is measured against (see
+  // mothballedRevenueFraction). Absent → mothballed services bill in full.
+  const elapsedMonthsForMothball = typeof inputs.elapsedMs === 'number' && Number.isFinite(inputs.elapsedMs)
+    ? elapsedGameMonths(inputs.elapsedMs)
+    : undefined;
 
   // Pass 10: Frontier service-revenue doubling, bounded from createdAt (see
   // frontier.ts). Without this term every new corporation's doubled income
@@ -397,10 +875,24 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
   const hqLaunchRevenueMult = hqServiceRevenueMult(hqBonuses, { definitionId: '', locationId: '', type: 'launch_payload' }, frontierRevenueMult);
 
   let services = 0;
+  let nameplate = 0;
   for (const svc of state.activeServices || []) {
     if (!svc || typeof svc.definitionId !== 'string') continue;
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
+    // Wave M2 / 2026-09-13: the engine pays this service NOTHING while its
+    // own linked building is not operational (game-engine.ts §1). A
+    // mothballed building needs REACTIVATION_SPINUP_MONTHS on the shared
+    // server clock before it can bill again, so over a window shorter than
+    // that the service is provably worth zero; over a longer one it is
+    // pro-rated. Unknown window (or no owner building) → billed in full.
+    const ownerBld = Array.isArray(svc.linkedBuildingIds) && svc.linkedBuildingIds.length > 0
+      ? (state.buildings || []).find(b => b && svc.linkedBuildingIds.includes(b.instanceId))
+      : undefined;
+    const operabilityFraction = ownerBld && !isBuildingOperational(ownerBld)
+      ? mothballedRevenueFraction((ownerBld as { status?: string }).status, elapsedMonthsForMothball)
+      : 1;
+    if (operabilityFraction <= 0) continue;
     // Ceiling = the BEST-refitted eligible building at the location (D4:
     // markLevel is validated 1..3 by sync-validation.ts and persisted on the
     // buildings row, so the Mark multiplier here is real, not the neutral 1.0).
@@ -414,12 +906,18 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
       if (boost > upgradeBoost) upgradeBoost = boost;
     }
     if (!sawLinked) upgradeBoost = getUpgradeRevenueMultiplier(0) * getMarkRevenueMultiplier(null);
+    // A service instance's own multiplier is not carried on the persisted
+    // row (sync-validation.ts SyncService keeps definitionId / locationId /
+    // linkedBuildingIds only), so it reads 1 — and is floored at 1 so a
+    // future row that does carry it can never NARROW the ceiling.
     const rawInst = typeof svc.revenueMultiplier === 'number' && Number.isFinite(svc.revenueMultiplier) ? svc.revenueMultiplier : 1;
-    const instMult = Math.min(MAX_SERVICE_INSTANCE_MULT, Math.max(0, rawInst));
+    const instMult = Math.min(MAX_SERVICE_INSTANCE_MULT, Math.max(1, rawInst));
     let base = def.revenuePerMonth || 0;
     if (def.type === 'mining_output') {
       // Price-linked mining (mining-pricing.ts): nameplate units x band-max
-      // price x scale, with every client-only mining multiplier at its cap.
+      // price x scale, with the mining multiplier chain bounded by
+      // `miningClientMult` (tier / research / megastructure read off the row,
+      // the rest at their documented caps).
       let valued = 0;
       for (const { resource, amountPerMonth } of MINING_PRODUCTION[svc.definitionId] || []) {
         const rd = RESOURCE_MAP.get(resource as never) as { maxPrice?: number; baseMarketPrice?: number } | undefined;
@@ -428,10 +926,11 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
       }
       let scale = 1;
       try { scale = getMiningRevenueScale(svc.definitionId); } catch { scale = 1; }
-      base = Math.max(base, valued * scale * MAX_BUILDING_MINING_CLIENT_MULT);
+      base = Math.max(base, valued * scale * miningClientMult);
     }
-    services += base * instMult * upgradeBoost * researchMult * workforceMult
-      * (1 + stationBonusAt(state, svc.locationId)) * MAX_SERVICE_REVENUE_CLIENT_MULT
+    nameplate += base;
+    services += base * operabilityFraction * instMult * upgradeBoost * researchMult * workforceMult
+      * (1 + stationBonusAt(state, svc.locationId)) * clientMultiplierBound
       // CC-2/CC-3: the identical per-service HQ term the tick applied.
       * hqServiceRevenueMult(hqBonuses, { definitionId: svc.definitionId, locationId: svc.locationId, type: def.type }, frontierRevenueMult);
   }
@@ -459,6 +958,10 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
     services: Math.round(services), megastructurePassive: Math.round(megastructurePassive), subsidiaries: Math.round(subsidiaries),
     frontierRevenueMult,
     hqLaunchRevenueMult,
+    serverTier,
+    nameplate: Math.round(nameplate),
+    clientMultiplierBound,
+    multiplierTerms: { verified: verifiedTerms, allowance: allowanceTerms },
   };
 }
 

@@ -46,16 +46,18 @@ import { MAX_EVENT_LOG, STARTING_YEAR } from './constants';
 // payouts and trim transit hazard damage — knowledge de-risks the frontier.
 import { getExpeditionScienceBonuses } from './science-missions';
 // CC-3 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md): the deep-space and
-// interstellar headquarters pay +15% on survey data brought home. THE one
-// site this term is applied.
-import { getHqBonusesForState } from './headquarters';
+// interstellar headquarters pay +15% on survey data brought home. CC-4 moved
+// the term itself into headquarters.ts hqExpeditionReturnMult — THE one site,
+// shared with the server's headroom credit (server-expeditions.ts) so the
+// sync ceiling can never come out below what this tick paid.
+import { getHqBonusesForState, hqExpeditionReturnMult } from './headquarters';
 // Construction Purposes wave: deep-space support buildings trim transit
 // hazard damage (expeditionSupport — see processExpeditionTick).
 import { getGlobalCapabilityBonus } from './building-capabilities';
 // AAA Round 1 E3.3: completed cooperative mega-projects discount launch
 // spending — the consumer that turns the Space Elevator's reward from a
 // label into a payoff.
-import { applyLaunchCostReduction } from './mega-projects';
+import { getLaunchCostMultiplier } from './mega-projects';
 
 // ─── Tuning constants ────────────────────────────────────────────────────────
 
@@ -276,6 +278,85 @@ export interface ExpeditionCostQuote {
   totalMoneyCost: number;
 }
 
+/** CC-4: everything a cost quote needs, and nothing that only the client
+ *  has. The route (/api/space-tycoon/expeditions) builds this from
+ *  PERSISTED facts — the profile's exotic_fuel column, the ship definition
+ *  from the ServerAsset registry, the world's completed mega-projects — and
+ *  planExpedition builds it from GameState, so a launch is quoted at the
+ *  same price on both sides of the wire. */
+export interface ExpeditionCostInputs {
+  system: InterstellarSystem;
+  /** ships.ts baseCost of the committed hull. */
+  shipBaseCost: number;
+  isColonyShip: boolean;
+  /** Units of exotic_fuel the corporation already holds at the home pool. */
+  fuelInInventory: number;
+  insured: boolean;
+  extraShielding: boolean;
+  /** mega-projects.ts getLaunchCostMultiplier (1 = no Space Elevator). */
+  launchCostMult?: number;
+}
+
+export interface ExpeditionSchedule {
+  outboundMonths: number;
+  exploreMonths: number;
+  /** Explorer round trip; colony arks are one-way (no return leg). */
+  totalPlannedMonths: number;
+}
+
+/** Transit / survey months for a destination and hull kind. */
+export function quoteExpeditionSchedule(system: InterstellarSystem, isColonyShip: boolean): ExpeditionSchedule {
+  const outboundMonths = Math.ceil(system.distanceLy * GAME_MONTHS_PER_LY);
+  const exploreMonths = EXPLORE_DURATION_MONTHS;
+  return {
+    outboundMonths,
+    exploreMonths,
+    totalPlannedMonths: isColonyShip ? outboundMonths + exploreMonths : outboundMonths * 2 + exploreMonths,
+  };
+}
+
+/** THE expedition cost quote — one definition, two callers (planExpedition
+ *  on the client, the launch route on the server). Pure. */
+export function quoteExpeditionCosts(inputs: ExpeditionCostInputs): ExpeditionCostQuote & ExpeditionSchedule {
+  const schedule = quoteExpeditionSchedule(inputs.system, inputs.isColonyShip);
+  const fuelUnitsRequired = inputs.system.jumpFuelRequired * (inputs.isColonyShip ? 1 : 2);
+  const held = Number.isFinite(inputs.fuelInInventory) && inputs.fuelInInventory > 0 ? inputs.fuelInInventory : 0;
+  const fuelFromInventory = Math.min(held, fuelUnitsRequired);
+  const fuelUnitsPurchased = fuelUnitsRequired - fuelFromInventory;
+  const fuelSpot = RESOURCE_MAP.get('exotic_fuel')?.baseMarketPrice || 5_000_000;
+  const fuelPurchaseCost = Math.round(fuelUnitsPurchased * fuelSpot * FUEL_PROCUREMENT_PREMIUM);
+
+  const suppliesCost = schedule.totalPlannedMonths * SUPPLIES_COST_PER_MONTH;
+  const shieldingCost = inputs.extraShielding ? Math.round(inputs.shipBaseCost * EXTRA_SHIELDING_COST_RATE) : 0;
+
+  // Insurance basis covers everything at risk: hull replacement + consumables
+  // + fuel actually spent (inventory fuel is valued at spot — it is real
+  // opportunity cost even when not purchased).
+  const insuranceBasis = inputs.shipBaseCost + suppliesCost + Math.round(fuelUnitsRequired * fuelSpot) + shieldingCost;
+  const insurancePremium = inputs.insured ? Math.round(insuranceBasis * INSURANCE_PREMIUM_RATE) : 0;
+
+  // E3.3: an interstellar departure is the single largest "put mass into
+  // space" transaction in the game, so a completed Space Elevator discounts
+  // it. Identity (x1) on every world until someone finishes the project.
+  const mult = typeof inputs.launchCostMult === 'number' && Number.isFinite(inputs.launchCostMult) && inputs.launchCostMult > 0
+    ? Math.min(1, inputs.launchCostMult) : 1;
+  const preDiscount = fuelPurchaseCost + suppliesCost + shieldingCost + insurancePremium;
+  const totalMoneyCost = mult === 1 ? preDiscount : Math.round(preDiscount * mult);
+
+  return {
+    ...schedule,
+    fuelUnitsRequired,
+    fuelFromInventory,
+    fuelUnitsPurchased,
+    fuelPurchaseCost,
+    suppliesCost,
+    shieldingCost,
+    insuranceBasis,
+    insurancePremium,
+    totalMoneyCost,
+  };
+}
+
 export interface ExpeditionPlan {
   ok: true;
   system: InterstellarSystem;
@@ -340,40 +421,18 @@ export function planExpedition(
     return { ok: false, reason: 'insufficient_crew', detail: `Requires ${crewRequired} crew from your workforce.` };
   }
 
-  const outboundMonths = Math.ceil(system.distanceLy * GAME_MONTHS_PER_LY);
-  const exploreMonths = EXPLORE_DURATION_MONTHS;
-  // Colony arks are a one-way commitment (they become the colony's core);
-  // explorers plan a full round trip — and buy fuel for both jumps.
-  const totalPlannedMonths = isColonyShip
-    ? outboundMonths + exploreMonths
-    : outboundMonths * 2 + exploreMonths;
-
-  const fuelUnitsRequired = system.jumpFuelRequired * (isColonyShip ? 1 : 2);
-  const fuelInInventory = state.resources?.exotic_fuel || 0;
-  const fuelFromInventory = Math.min(fuelInInventory, fuelUnitsRequired);
-  const fuelUnitsPurchased = fuelUnitsRequired - fuelFromInventory;
-  const fuelSpot = RESOURCE_MAP.get('exotic_fuel')?.baseMarketPrice || 5_000_000;
-  const fuelPurchaseCost = Math.round(fuelUnitsPurchased * fuelSpot * FUEL_PROCUREMENT_PREMIUM);
-
-  const suppliesCost = totalPlannedMonths * SUPPLIES_COST_PER_MONTH;
-  const shieldingCost = req.extraShielding ? Math.round(shipDef.baseCost * EXTRA_SHIELDING_COST_RATE) : 0;
-
-  // Insurance basis covers everything at risk: hull replacement + consumables
-  // + fuel actually spent (inventory fuel is valued at spot — it is real
-  // opportunity cost even when not purchased).
-  const insuranceBasis = shipDef.baseCost + suppliesCost + Math.round(fuelUnitsRequired * fuelSpot) + shieldingCost;
-  const insurancePremium = req.insured ? Math.round(insuranceBasis * INSURANCE_PREMIUM_RATE) : 0;
-
-  // E3.3: an interstellar departure is the single largest "put mass into
-  // space" transaction in the game, so a completed Space Elevator discounts
-  // it. Identity (x1) on every save until a server finishes the project —
-  // see mega-projects.ts::getLaunchCostMultiplier.
-  const totalMoneyCost = applyLaunchCostReduction(
-    fuelPurchaseCost + suppliesCost + shieldingCost + insurancePremium,
-    state,
-  );
-  if (state.money < totalMoneyCost) {
-    return { ok: false, reason: 'insufficient_funds', detail: `Launch requires ${formatMoney(totalMoneyCost)}.` };
+  // CC-4: one quote definition, shared with the launch route.
+  const { outboundMonths, exploreMonths, totalPlannedMonths, ...costs } = quoteExpeditionCosts({
+    system,
+    shipBaseCost: shipDef.baseCost,
+    isColonyShip,
+    fuelInInventory: state.resources?.exotic_fuel || 0,
+    insured: req.insured,
+    extraShielding: req.extraShielding,
+    launchCostMult: getLaunchCostMultiplier(state),
+  });
+  if (state.money < costs.totalMoneyCost) {
+    return { ok: false, reason: 'insufficient_funds', detail: `Launch requires ${formatMoney(costs.totalMoneyCost)}.` };
   }
 
   return {
@@ -386,17 +445,7 @@ export function planExpedition(
     exploreMonths,
     totalPlannedMonths,
     crewRequired,
-    costs: {
-      fuelUnitsRequired,
-      fuelFromInventory,
-      fuelUnitsPurchased,
-      fuelPurchaseCost,
-      suppliesCost,
-      shieldingCost,
-      insuranceBasis,
-      insurancePremium,
-      totalMoneyCost,
-    },
+    costs,
   };
 }
 
@@ -412,21 +461,38 @@ export interface LaunchResult {
   expedition: ExpeditionState;
 }
 
+/** CC-4: what a SERVER-backed launch hands the pure function. The route
+ *  (/api/space-tycoon/expeditions) validated the requirements against
+ *  persisted facts and already debited the launch bill through the
+ *  One-Wallet ledger, so the client must NOT debit it a second time — the
+ *  row comes back as an ordinary pending ledger delta on the next sync, the
+ *  same contract the Mining-Order fuel bill uses. The seed and the row id
+ *  come from the server too, so both sides roll the identical survey
+ *  outcome. */
+export interface ServerBackedLaunchOpts {
+  /** The route already debited money + ledgered it. */
+  serverCharged?: boolean;
+  /** prisma Expedition.id, stamped on the client record. */
+  serverId?: string;
+}
+
 export function launchExpedition(
   state: GameState,
   req: ExpeditionPlanRequest,
   now: number = Date.now(),
-  /** Deterministic seed override for tests; defaults to a random seed. */
+  /** Deterministic seed override for tests; the SERVER's seed in play. */
   seedOverride?: number,
+  opts: ServerBackedLaunchOpts = {},
 ): LaunchResult | ExpeditionPlanError {
   const plan = planExpedition(state, req);
   if (!plan.ok) return plan;
 
   const { system, costs } = plan;
 
-  // Deduct money.
-  const money = state.money - costs.totalMoneyCost;
-  const totalSpent = state.totalSpent + costs.totalMoneyCost;
+  // Deduct money — unless the server already did (CC-4: the launch route
+  // debits and ledgers; double-debiting here would bill the player twice).
+  const money = opts.serverCharged ? state.money : state.money - costs.totalMoneyCost;
+  const totalSpent = opts.serverCharged ? state.totalSpent : state.totalSpent + costs.totalMoneyCost;
 
   // Consume inventory fuel. Row 13 note (location-aware inventory): expedition
   // supplies stay on the HOME pool by design — interstellar missions stage
@@ -468,6 +534,7 @@ export function launchExpedition(
 
   const expedition: ExpeditionState = {
     id: generateId(),
+    ...(opts.serverId ? { serverId: opts.serverId } : {}),
     targetSystemId: system.id,
     shipInstanceId: plan.shipInstanceId,
     shipDefinitionId: plan.shipDefinitionId,
@@ -511,6 +578,22 @@ export function launchExpedition(
 }
 
 // ─── Arrival outcome (deterministic from expedition seed) ────────────────────
+
+/** CC-4: the science-mission survey bonus is capped at +30%
+ *  (science-missions.ts getExpeditionScienceBonuses). The server's headroom
+ *  credit cannot see a profile's science programs, so it takes this cap as
+ *  the upper bound — a test asserts the two never drift. */
+export const EXPEDITION_SURVEY_SCIENCE_MULT_CAP = 1.30;
+
+/**
+ * CC-4: the arrival outcome, from the expedition's SEED and the system
+ * alone. Exported because the server rolls the identical outcome from the
+ * seed it issued at launch (server-expeditions.ts), which is what makes the
+ * survey payout a figure both sides agree on rather than a client claim.
+ */
+export function rollExpeditionOutcome(seed: number, system: InterstellarSystem): ExpeditionOutcome {
+  return rollOutcome({ seed } as ExpeditionState, system);
+}
 
 function rollOutcome(exp: ExpeditionState, system: InterstellarSystem): ExpeditionOutcome {
   const rng = mulberry32(exp.seed ^ 0x9e3779b9);
@@ -841,10 +924,12 @@ export function processExpeditionTick(state: GameState, now: number = Date.now()
   const currentMonth = getTotalGameMonths(state.gameDate);
   const events: GameEvent[] = [];
   const reports: GameReport[] = [];
-  // CC-3: the seated headquarters' expedition-return term (1.0 anywhere but
-  // the deep-space / interstellar seats). Not a tick-income term, so it does
-  // not enter the server's monthly-gross ceiling — see BALANCE.md Pass 13.
-  const hqExpeditionMult = getHqBonusesForState(state).expeditionReturnMult;
+  // CC-3/CC-4: the seated headquarters' expedition-return term (1.0 anywhere
+  // but the deep-space / interstellar seats). Not tick income, so it never
+  // enters the monthly-gross ceiling; the SERVER mirrors it as a one-shot
+  // headroom credit against its own Expedition row instead
+  // (server-expeditions.ts creditDueExpeditionReturns, BALANCE.md Pass 16).
+  const hqExpeditionMult = hqExpeditionReturnMult(getHqBonusesForState(state));
 
   let money = state.money;
   let totalEarned = state.totalEarned;
@@ -1382,4 +1467,86 @@ export function getExpeditionProgress(state: GameState, expeditionId: string): E
     progressPct: Math.min(1, exp.monthsElapsed / Math.max(1, totalMonths)),
     monthsRemaining: Math.max(0, totalMonths - exp.monthsElapsed),
   };
+}
+
+// ─── CC-4: adopting the server's expedition records ─────────────────────────
+// docs/COMMAND_CENTER_DESIGN_2026-09-13.md CC-4. Expeditions are now created
+// by /api/space-tycoon/expeditions, clocked by the assets-complete cron and
+// counted by the interstellar HQ gate. The client keeps the rich half of the
+// model (hull integrity, hazard log, crew pools, resource samples) — none of
+// it gates anything and none of it is money — but where the two overlap the
+// SERVER's record wins, because its figures are what the sync's money
+// ceiling was computed from.
+
+/** The fields of a server Expedition row the client cares about. */
+export interface ServerExpeditionBlock {
+  id: string;
+  clientId?: string | null;
+  targetSystemId: string;
+  status: string;
+  seed: number;
+  surveyPayout?: number | null;
+  colonySuitability?: number | null;
+  arrivesAtMs?: number | null;
+  returnsAtMs?: number | null;
+}
+
+/** Terminal SUCCESS statuses on the server row — what the interstellar HQ
+ *  gate counts. A lost expedition is terminal but never a success. */
+export const SERVER_EXPEDITION_SUCCESS_STATUSES: readonly string[] = ['complete', 'colonized'];
+
+/**
+ * Fold a batch of server rows into the save: stamp `serverId` on the record
+ * the row was created for, adopt the server's survey payout and colony
+ * suitability (both are rolled from the seed the SERVER issued, so they
+ * normally match exactly — when they do not, the server's figure is the one
+ * the money ceiling used), and mark an expedition the server recorded as
+ * lost. Never invents an expedition the client does not have: a row with no
+ * local counterpart is ignored (the client save is the richer model and a
+ * half-built stand-in would be worse than nothing). Returns the same state
+ * reference when nothing changed.
+ */
+export function adoptServerExpeditions(
+  state: GameState,
+  rows: readonly ServerExpeditionBlock[] | null | undefined,
+): GameState {
+  if (!rows || rows.length === 0 || !(state.expeditions?.length)) return state;
+  const byClientId = new Map<string, ServerExpeditionBlock>();
+  const byServerId = new Map<string, ServerExpeditionBlock>();
+  for (const r of rows) {
+    if (!r || typeof r.id !== 'string') continue;
+    byServerId.set(r.id, r);
+    if (typeof r.clientId === 'string' && r.clientId) byClientId.set(r.clientId, r);
+  }
+  let changed = false;
+  const next = state.expeditions.map(exp => {
+    const row = (exp.serverId ? byServerId.get(exp.serverId) : undefined) ?? byClientId.get(exp.id);
+    if (!row) return exp;
+    let e = exp;
+    const set = <K extends keyof ExpeditionState>(key: K, value: ExpeditionState[K]) => {
+      if (e[key] === value) return;
+      e = { ...e, [key]: value };
+      changed = true;
+    };
+    set('serverId', row.id);
+    // Terminal loss recorded server-side (an expedition the owner reported
+    // lost from another device). Never the reverse: the server cannot
+    // resurrect a mission the local tick has already written off.
+    if (row.status === 'lost' && e.phase !== 'lost') {
+      e = { ...e, phase: 'lost' as ExpeditionPhase };
+      changed = true;
+    }
+    const payout = typeof row.surveyPayout === 'number' && Number.isFinite(row.surveyPayout) && row.surveyPayout > 0 ? Math.round(row.surveyPayout) : null;
+    if (payout !== null && e.outcome && Math.round(e.outcome.surveyDataPayout) !== payout) {
+      e = { ...e, outcome: { ...e.outcome, surveyDataPayout: payout } };
+      changed = true;
+    }
+    const suit = typeof row.colonySuitability === 'number' && Number.isFinite(row.colonySuitability) && row.colonySuitability > 0 ? row.colonySuitability : null;
+    if (suit !== null && e.outcome && e.outcome.colonySuitability !== suit) {
+      e = { ...e, outcome: { ...e.outcome, colonySuitability: suit } };
+      changed = true;
+    }
+    return e;
+  });
+  return changed ? { ...state, expeditions: next } : state;
 }

@@ -207,6 +207,7 @@ model GameProfile {
   asteroidSurveys    AsteroidSurvey[]
   miningOrders       MiningOrder[]
   asteroidClaims     AsteroidClaim[]
+  propellantDepots   PropellantDepot[]
   economicSnapshots  EconomicSnapshot[]
 
   // Cloud save (2026-09-09): the player's full client GameState, pushed with
@@ -581,10 +582,19 @@ model AsteroidSurvey {
   /// generation than the Asteroid row's is stale (the slot was re-charted
   /// after exhaustion) and the rock reads as unsurveyed again.
   generation Int         @default(0)
+  /// Mining Phase C (2026-09-13, survey-reports.ts): a survey the owner has
+  /// PUBLISHED for sale. `listedPrice` null = private (the default; nothing
+  /// about the rock is public). Buying a report writes the BUYER their own
+  /// row (via 'report') at this row's generation — identical intel — and
+  /// bumps `soldCount` here. The listing never reveals grade/reserve/risk.
+  listedPrice Int?
+  listedAt    DateTime?
+  soldCount   Int        @default(0)
   createdAt  DateTime    @default(now())
 
   @@unique([profileId, asteroidId])
   @@index([asteroidId])
+  @@index([listedPrice])
 }
 
 /// A Mining Order (design doc §4): the server's copy of the schedule the
@@ -631,6 +641,17 @@ model MiningOrder {
   shakedownRepelled Boolean     @default(false)
   pressureShare     Float       @default(1)
   claimId           String?
+  /// Mining Phase C (2026-09-13): mode 'refine' runs the hull's plant after
+  /// extraction (refineEndsAt), so what flies home is PRODUCT — the manifest
+  /// is the pure function ore-refining.ts refineOutputs(oreId, fillUnits,
+  /// recovery) and is never stored twice. `refined` also rides on the
+  /// 'return' order that brings a held parcel home. depotId/depotUnitsDrawn
+  /// record the propellant a field depot paid for this order.
+  refined           Boolean     @default(false)
+  refineEndsAt      DateTime?
+  refineOpexPaid    Float       @default(0)
+  depotId           String?
+  depotUnitsDrawn   Float       @default(0)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
@@ -639,6 +660,34 @@ model MiningOrder {
   @@index([status, completesAt])
   @@index([shipInstanceId])
   @@index([asteroidId, status])
+}
+
+/// Mining Phase C (docs/SPACE_MINING_DESIGN_2026-09-12.md §5 "Propellant Depot
+/// Ship", propellant-depots.ts): a depot hull parked in an asteroid field,
+/// holding one of that field's FINITE slots. `activeKey` is
+/// "<fieldId>:<slotIndex>" while the depot is active and NULL once recalled,
+/// so the unique index is the one-holder-per-slot guarantee under a race —
+/// the same shape AsteroidClaim.activeKey uses for rocks. `stockUnits` moves
+/// only through the route (atomic guarded updates): drawn when an order is
+/// quoted, topped up on a restock. Recalling loses whatever is in the tank.
+model PropellantDepot {
+  id             String      @id @default(cuid())
+  profileId      String
+  profile        GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  fieldId        String
+  slotIndex      Int
+  activeKey      String?     @unique
+  shipInstanceId String
+  stockUnits     Float       @default(0)
+  capacity       Float       @default(0)
+  status         String      @default("active")
+  deployedAt     DateTime
+  recalledAt     DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([profileId, status])
+  @@index([fieldId, status])
 }
 
 model MarketResource {
@@ -8407,4 +8456,78 @@ model LaunchLiveEntry {
   createdAt DateTime @default(now())
 
   @@index([eventId, createdAt])
+}
+
+// ─── Space Tycoon CC-4: Interstellar expeditions (server record) ─────────────
+// docs/COMMAND_CENTER_DESIGN_2026-09-13.md §3 (the tier-7 rung: "Completed
+// interstellar expedition + colony charter"). Until CC-4 an expedition
+// existed only inside the client save, which meant two things the game could
+// not afford: the interstellar HQ rung had to stand on a PROXY gate
+// (hq-relocation.ts HQ_STAGE_REQUIREMENTS), and the $8-17B survey payout a
+// returning expedition pays had no server-side counterpart, so the sync's
+// money ceiling rejected it.
+//
+// This row is the server's authority over an expedition's CLOCK and its
+// PAYOUT CEILING — the two things a gate or a bonus depends on. Everything
+// richer (hull integrity, the hazard log, crew pools, resource samples,
+// colony growth) stays in the client save: none of it gates anything and
+// none of it is money.
+//
+// Lifecycle — created by POST /api/space-tycoon/expeditions (requirements
+// validated from the ServerAsset registry, costs debited through the
+// One-Wallet ledger as 'expedition_launch'), advanced on the clock by the
+// assets-complete cron (server-expeditions.ts advanceDueExpeditions:
+// outbound → exploring at arrivesAt, → returning, → complete at returnsAt),
+// and downgraded to 'lost' / 'colonized' only by the owning client
+// reporting a WORSE-or-lateral outcome it alone can compute. The server
+// never accepts a claim of completion ahead of its own clock.
+//
+// Plain profileId strings, no GameProfile relation — purely additive, the
+// same posture as HqSeat / HqRelocation / MiningOrder.
+model Expedition {
+  id        String @id @default(cuid())
+  profileId String
+  // The client save's ExpeditionState.id, so the client can adopt the row
+  // it created without a second identity.
+  clientId  String?
+
+  targetSystemId   String
+  shipInstanceId   String
+  shipDefinitionId String
+  // A Colony Ark is a one-way commitment: it has no returnsAt.
+  colonyShip       Boolean @default(false)
+
+  // outbound, exploring, returning, complete, colonized, lost
+  status String @default("outbound")
+
+  // The RNG seed is issued by the SERVER at launch and echoed to the client,
+  // so the survey outcome both sides roll (expeditions.ts
+  // rollExpeditionOutcome) is identical and neither can invent a better one.
+  seed           Int
+  outboundMonths Int
+  exploreMonths  Int
+
+  departedAt DateTime  @default(now())
+  arrivesAt  DateTime
+  returnsAt  DateTime?
+  completedAt DateTime?
+
+  // What the launch actually cost (ledgered), and what the survey is worth
+  // before the science / HQ multipliers — stamped at arrival from `seed`.
+  launchCost        Float @default(0)
+  surveyPayout      Float @default(0)
+  colonySuitability Float @default(0)
+
+  // Set when the sync has already lifted the money ceiling for this return
+  // (server-expeditions.ts creditDueExpeditionReturns). One credit, ever.
+  creditedAt DateTime?
+  ledgerSeq  Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId, status])
+  @@index([status, arrivesAt])
+  @@index([status, returnsAt])
+  @@unique([profileId, clientId])
 }

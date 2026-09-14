@@ -65,8 +65,9 @@ describe('CC-3 ladder — requirements', () => {
     // docked" is an interstellar-capable hull.
     expect(HQ_STAGE_REQUIREMENTS.deep_space_hq.ship?.definitionIds).toEqual(['starfarer_explorer', 'colony_ark']);
     expect(HQ_STAGE_REQUIREMENTS.deep_space_hq.research).toBeUndefined();
-    // Interstellar: the colony CHARTER half of the design sentence, which is
-    // server-verifiable, standing in for the expedition half, which is not.
+    // Interstellar: the colony CHARTER half of the design sentence. CC-4
+    // added the other half for real (HqExpeditionRequirement) — see
+    // hq-cc4.test.ts; both halves are asserted there.
     expect(HQ_STAGE_REQUIREMENTS.interstellar_hq.research?.researchIds).toEqual(['interstellar_colonization']);
     expect(HQ_STAGE_REQUIREMENTS.interstellar_hq.ship?.definitionIds).toEqual(['colony_ark']);
   });
@@ -97,7 +98,8 @@ describe('CC-3 ladder — requirements', () => {
     const check = evaluateHqRequirementsFrom({ tier: 1, buildings: [], research: [], ships: [] }, 'interstellar_hq');
     const labels = hqRequirementLines(check).map(l => l.label);
     expect(labels[0]).toBe('tier 7');
-    expect(labels.length).toBe(4); // tier + station + research + hull
+    // CC-4 added the completed-expedition gate as a fifth line.
+    expect(labels.length).toBe(5); // tier + station + research + hull + expedition
     expect(hqRequirementLines(check).every(l => !l.met)).toBe(true);
   });
 });

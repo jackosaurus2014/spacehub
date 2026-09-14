@@ -263,7 +263,18 @@ export function getHqManifest(stage: HqStageId): HqManifest | null {
 
 /** Where a stage's plates are published. Earth's directory predates the
  *  stage ids; every other stage uses its own id, which is what
- *  art/blender/ writes. */
+ *  art/blender/ writes.
+ *
+ *  CC-4 note on the INTERSTELLAR rung: its plates do not exist yet and are
+ *  not this workstream's to make. Nothing special is needed for that —
+ *  `/game/hq/interstellar_hq/manifest.json` 404s, the runtime lookup
+ *  negative-caches it, and resolveHqManifest falls back to the Earth plate
+ *  with `fallback: true`. What CC-4 added is the WORDS around that
+ *  fallback: BridgeStage now names what the window will show once the art
+ *  lands (headquarters.ts `windowPreview`) instead of only saying it is
+ *  missing, and the Headquarters console carries the same sentence on every
+ *  ladder row. The day the directory deploys, the stage picks its own
+ *  plates up with no code change here. */
 const PLATE_DIR: Partial<Record<HqStageId, string>> = { earth_ops: '/game/hq/earth/' };
 
 export function hqPlateBaseUrl(stage: HqStageId): string {

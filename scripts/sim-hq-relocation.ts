@@ -12,7 +12,10 @@
 //   - SATURNIAN     → Saturn HQ   (+10% outer extraction, +12% science)
 //   - KUIPER        → Deep space  (+15% outer extraction; its expedition
 //                                  term is not on the service ledger)
-//   - OUTER COLONY  → Interstellar(+15% colony-surface)
+//   - OUTER COLONY  → Interstellar(+15% colony-surface; its +15% expedition
+//                                  term is measured separately at the end —
+//                                  CC-4, now that the rung's gate is a real
+//                                  completed-expedition record)
 // Target (the founder's rule, "where is my business", never a free win): a
 // corporation whose business MATCHES the seat and moves EARLY clears the
 // move inside the 24-month window; a late move does not. Every stay/move
@@ -21,7 +24,15 @@
 // Deterministic (no Date.now-dependent economics; Frontier off).
 
 import { newWorld, newPlayer, runWorld, makeBuilding, fm, type SimPlayer } from './sim-harness';
-import { HQ_RELOCATION, HQ_UPKEEP_MONTHLY, HQ_SEAT_COUNTS, getHqBonuses, hqSeatIsAuctioned, type HqStageId } from '../src/lib/game/headquarters';
+import {
+  HQ_RELOCATION, HQ_UPKEEP_MONTHLY, HQ_SEAT_COUNTS, getHqBonuses, hqExpeditionReturnMult,
+  hqSeatIsAuctioned, type HqStageId,
+} from '../src/lib/game/headquarters';
+import {
+  EXPLORE_DURATION_MONTHS, GAME_MONTHS_PER_LY, SURVEY_DATA_PAYOUT_PER_LY,
+  rollExpeditionOutcome,
+} from '../src/lib/game/expeditions';
+import { INTERSTELLAR_SYSTEM_MAP } from '../src/lib/game/interstellar';
 import { postedSeatPrice, quoteHqRelocation } from '../src/lib/game/hq-relocation';
 import { quoteLeg } from '../src/lib/game/mining-orders';
 import { SHIP_MAP } from '../src/lib/game/ships';
@@ -218,13 +229,45 @@ if (hull && rock) {
   console.log(`\nLunar HQ on the Mining-Order loop (not in the table above): ${hull.name} → ${rock.name} (Inner Belt, +${rock.deltaVExtra} m/s) round trip from Luna: fuel ${fm(earthBill)} on Earth terms vs ${fm(lunaBill)} seated on Luna (−${((1 - lunaBill / earthBill) * 100).toFixed(1)}%). Upkeep ${fm(HQ_UPKEEP_MONTHLY.lunar_hq)}/mo pays back at ≈ ${(HQ_UPKEEP_MONTHLY.lunar_hq / Math.max(1, earthBill - lunaBill)).toFixed(1)} belt round trips a month.`);
 }
 
-// The deep-space and interstellar seats also pay +15% on the survey data an
-// interstellar expedition brings home (expeditions.ts). Not on the service
-// ledger, so it is quoted here rather than folded into the table.
+// ─── CC-4: the interstellar rung's OTHER half ────────────────────────────────
+// The table above measures the interstellar seat on the service ledger alone
+// (+15% colony-surface revenue). That was all CC-3 could measure, because
+// the seat's second term — +15% on the survey data an expedition brings home
+// — had no server record behind it and no real gate in front of it. CC-4
+// gave expeditions both (prisma Expedition + server-expeditions.ts), so the
+// rung can finally be priced whole: a tier-7 corporation that qualifies for
+// the seat is BY DEFINITION one that has completed an interstellar
+// expedition, and a corporation that has done it once does it again.
+//
+// The expedition loop is a CAMPAIGN loop, not a monthly one: a Proxima round
+// trip is 4.24 ly x 30 game-months/ly x 2 + 12 = ~266 game-months, so a
+// 24-month window sees at most a fraction of one return. What follows is
+// therefore reported as a RATE (per game-month of mission) alongside the
+// per-return figure, which is the honest way to compare a campaign payout
+// against a monthly seat rent.
 {
-  const SURVEY_PAYOUT_PER_LY = 2_000_000_000;
-  const proximaLy = 4.24;
-  const mid = SURVEY_PAYOUT_PER_LY * proximaLy; // mid-band roll (0.75-1.25)
-  const bonus = getHqBonuses('deep_space_hq').expeditionReturnMult - 1;
-  console.log(`\nDeep-space / interstellar seats on the expedition loop: a mid-band Proxima Centauri survey pays ${fm(mid)}; the seat adds ${fm(mid * bonus)} (+${(bonus * 100).toFixed(0)}%). At ${fm(HQ_UPKEEP_MONTHLY.deep_space_hq)}/mo that is ${(mid * bonus / HQ_UPKEEP_MONTHLY.deep_space_hq).toFixed(0)} months of rent per expedition returned.`);
+  const seats: HqStageId[] = ['deep_space_hq', 'interstellar_hq'];
+  console.log('\n## CC-4 — the expedition-return term (not on the service ledger)\n');
+  console.log('| seat | system | round trip | survey (seed roll) | seat adds | per game-month | rent/mo | months of rent per return |');
+  console.log('| --- | --- | --- | --- | --- | --- | --- | --- |');
+  for (const stage of seats) {
+    const mult = hqExpeditionReturnMult(getHqBonuses(stage));
+    for (const systemId of ['proxima_centauri', 'sirius']) {
+      const system = INTERSTELLAR_SYSTEM_MAP.get(systemId);
+      if (!system) continue;
+      const outbound = Math.ceil(system.distanceLy * GAME_MONTHS_PER_LY);
+      const roundTrip = outbound * 2 + EXPLORE_DURATION_MONTHS;
+      // A deterministic mid-seed roll rather than the band's midpoint, so the
+      // figure is one the game can actually produce.
+      const survey = rollExpeditionOutcome(0x5eed_c0de, system).surveyDataPayout;
+      const adds = survey * (mult - 1);
+      const rent = HQ_UPKEEP_MONTHLY[stage];
+      console.log(`| ${stage} | ${system.name} | ${roundTrip} mo | ${fm(survey)} | ${fm(adds)} | ${fm(adds / roundTrip)} | ${fm(rent)} | ${(adds / rent).toFixed(1)} |`);
+    }
+  }
+  const mid = SURVEY_DATA_PAYOUT_PER_LY * 4.24;
+  console.log(`\nBand check: survey data is ${fm(SURVEY_DATA_PAYOUT_PER_LY)}/ly x 0.75-1.25, so Proxima pays ${fm(mid * 0.75)}-${fm(mid * 1.25)} before the science cap (+30%) and the seat term.`);
+  console.log('The SERVER credits exactly survey x 1.30 x the seat term as one-shot money-ceiling headroom');
+  console.log('(server-expeditions.ts creditDueExpeditionReturns) — the same helper the client tick multiplies by,');
+  console.log('so a return can never be rejected as implausible income.');
 }

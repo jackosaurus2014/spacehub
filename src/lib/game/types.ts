@@ -1944,6 +1944,13 @@ export interface ExpeditionOutcome {
 
 export interface ExpeditionState {
   id: string;
+  /** CC-4: prisma Expedition.id once the launch went through the server
+   *  route (/api/space-tycoon/expeditions). Absent on an anonymous /
+   *  offline launch and on every pre-CC-4 save — the client tick works the
+   *  same either way; the id is what lets the server's record be adopted
+   *  (expeditions.ts adoptServerExpeditions) and what the interstellar HQ
+   *  gate is actually counted from, server-side. */
+  serverId?: string;
   targetSystemId: string;          // key into INTERSTELLAR_SYSTEMS
   shipInstanceId: string;          // committed ship (status 'expedition' while away)
   shipDefinitionId: string;

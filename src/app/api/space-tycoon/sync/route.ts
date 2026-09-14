@@ -56,8 +56,14 @@ import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle
 // and hands the client the server's headquarters block. The column
 // GameProfile.hqLocationId is written ONLY by that completion pass — the
 // client's claim is no longer mirrored.
-import { hqStageForLocationId } from '@/lib/game/headquarters';
+import { DEFAULT_HQ_STAGE, hqStageForLocationId } from '@/lib/game/headquarters';
 import { completeDueHqRelocations, loadHeadquartersBlock } from '@/lib/game/hq-relocation-server';
+// CC-4: interstellar expeditions carry a server record now. Advance their
+// clock for this profile before the ceiling is computed, then credit the
+// ceiling for any return the server itself recorded (BALANCE.md Pass 16).
+import {
+  advanceDueExpeditions, creditDueExpeditionReturns, type ExpeditionHeadroomCredit,
+} from '@/lib/game/server-expeditions';
 // Mining Phase B (2026-09-13): the sync hands the client the server's mining
 // block — claims, live surveyed intel, notices (asteroid-claims.ts
 // adoptServerMining). Best-effort like the headquarters block.
@@ -309,6 +315,12 @@ export async function POST(request: Request) {
     // and de-duplicated (reconciledMoney + syncedAtMs key).
     let timedEventCredit: TimedEventCreditResult | null = null;
     let deliveryCredit: DeliveryCreditResult | null = null;
+    // CC-4: the one-shot headroom for interstellar expeditions the SERVER's
+    // own records say came home since the last sync (server-expeditions.ts).
+    // Never null — an empty credit is the neutral value.
+    let expeditionCredit: ExpeditionHeadroomCredit = {
+      headroomCredit: 0, creditedNow: [], deferred: [], hqStage: DEFAULT_HQ_STAGE, hqExpeditionMult: 1,
+    };
     let moneyClampInfo: { wasClamped: boolean; rejectedExcess: number; ceiling: number; headroom: number } | null = null;
 
     try {
@@ -356,6 +368,10 @@ export async function POST(request: Request) {
             hqStageForCeiling = hqStageForLocationId(moved?.hqLocationId).id;
           }
         } catch { /* table may lag — Earth default */ }
+        // CC-4: settle the expedition clock BEFORE the credit below reads it,
+        // so a mission that came home while the player was offline is a
+        // server fact by the time its payout is priced.
+        try { await advanceDueExpeditions(prisma, existingProfile.id, new Date()); } catch { /* table may lag */ }
         try {
           serverMonthlyGross = computeServerMonthlyGross(
             buildServerFlowState({
@@ -369,7 +385,11 @@ export async function POST(request: Request) {
               // Pass 10: the Frontier revenue doubling is bounded from createdAt.
               createdAtMs: existingProfile.createdAt instanceof Date ? existingProfile.createdAt.getTime() : undefined,
               // CC-2 (Pass 11): the seated HQ's launch-revenue bonus.
-              hqStage: hqStageForCeiling },
+              hqStage: hqStageForCeiling,
+              // 2026-09-13: bounds the mothball term — a mothballed building
+              // cannot bill again until its reactivation spin-up completes,
+              // so a window shorter than that prices it at zero.
+              elapsedMs },
           );
         } catch (grossError) {
           logger.error('Server monthly gross computation failed — zero headroom this sync', { error: String(grossError) });
@@ -472,7 +492,32 @@ export async function POST(request: Request) {
             });
           } catch { /* audit log is best-effort */ }
         }
-        const totalOneShotCredit = contractCredit.headroomCredit + timedEventCredit.headroomCredit + deliveryCredit.headroomCredit;
+        // CC-4 (docs/BALANCE.md Pass 16): an interstellar expedition comes
+        // home with $8-17B of survey data, a one-shot payout the monthly
+        // gross above models not at all — so it used to be rejected
+        // outright. The credit is driven ENTIRELY by the server's own
+        // Expedition rows (server-expeditions.ts creditDueExpeditionReturns:
+        // the survey figure this server stamped at arrival, x the +30%
+        // science cap, x the seated seat's expeditionReturnMult from the
+        // same headquarters.ts helper the client tick calls). The client
+        // supplies neither the ids nor the amounts, so a forged claim gains
+        // nothing, and each return lifts the ceiling exactly once.
+        try {
+          expeditionCredit = await creditDueExpeditionReturns(
+            prisma, existingProfile.id, hqStageForCeiling, new Date(),
+          );
+          if (expeditionCredit.creditedNow.length > 0) {
+            logger.info('Sync credited interstellar expedition returns', {
+              profileId: existingProfile.id, credited: expeditionCredit.creditedNow.length,
+              headroom: expeditionCredit.headroomCredit, hqStage: expeditionCredit.hqStage,
+              hqExpeditionMult: expeditionCredit.hqExpeditionMult, deferred: expeditionCredit.deferred.length,
+            });
+          }
+        } catch (err) {
+          logger.warn('Expedition headroom credit failed — no expedition headroom this sync', { error: String(err) });
+        }
+        const totalOneShotCredit = contractCredit.headroomCredit + timedEventCredit.headroomCredit
+          + deliveryCredit.headroomCredit + expeditionCredit.headroomCredit;
         const clamp = clampPlausibleMoney(
           clientMoney, existingProfile.money, elapsedMs, serverMonthlyGross, totalOneShotCredit,
         );
@@ -487,6 +532,7 @@ export async function POST(request: Request) {
             contractCredit: contractCredit.headroomCredit, contractsCredited: contractCredit.creditedNow,
             timedEventCredit: timedEventCredit.headroomCredit, timedEventsCredited: timedEventCredit.creditedNow,
             deliveryCredit: deliveryCredit.headroomCredit, deliveriesCredited: deliveryCredit.creditedNow,
+            expeditionCredit: expeditionCredit.headroomCredit, expeditionsCredited: expeditionCredit.creditedNow,
           });
           try {
             await prisma.marketAuditLog.create({

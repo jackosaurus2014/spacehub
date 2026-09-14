@@ -119,11 +119,11 @@ describe('founder rulings (2026-09-12)', () => {
 });
 
 describe('ship roster (Phase A)', () => {
-  it('enumerates the roster: the fourteen originals plus the Prospector Barge, the Hauler and (Phase B) the Escort Cutter', () => {
+  it('enumerates the roster: the fourteen originals, Phase A (Prospector Barge, Hauler), Phase B (Escort Cutter) and Phase C (Refinery Barge, Propellant Depot Ship, Survey Cruiser)', () => {
     expect(SHIPS.map(s => s.id).sort()).toEqual([
       'asteroid_miner', 'cargo_shuttle', 'colony_ark', 'deep_space_miner', 'escort_cutter', 'fleet_tender', 'freighter', 'fuel_tanker',
-      'hauler', 'heavy_transport', 'mining_drone', 'ore_harvester', 'prospector_barge', 'prospector_drone',
-      'servicer_tug', 'starfarer_explorer', 'survey_probe',
+      'hauler', 'heavy_transport', 'mining_drone', 'ore_harvester', 'propellant_depot_ship', 'prospector_barge', 'prospector_drone',
+      'refinery_barge', 'servicer_tug', 'starfarer_explorer', 'survey_cruiser', 'survey_probe',
     ]);
     expect(SHIP_MAP.size).toBe(SHIPS.length);
   });
@@ -141,6 +141,19 @@ describe('ship roster (Phase A)', () => {
     const b = SHIP_MAP.get('prospector_barge')!;
     expect(b).toMatchObject({ role: 'mining', tier: 2, survey: true, cargoCapacity: 200, requiredResearch: ['resource_prospecting'] });
     expect(b.oreExtractionPerHour).toBe(50);
+  });
+  it('Phase C hulls: the plant, the depot and the sweep sensor', () => {
+    const plant = SHIP_MAP.get('refinery_barge')!;
+    expect(plant).toMatchObject({ role: 'mining', tier: 3, cargoCapacity: 400, requiredResearch: ['zero_g_refining'] });
+    expect(plant.refineOrePerHour).toBeGreaterThan(plant.oreExtractionPerHour!);
+    const depot = SHIP_MAP.get('propellant_depot_ship')!;
+    expect(depot).toMatchObject({ role: 'tanker', tier: 3, cargoCapacity: 0, requiredResearch: ['orbital_refueling'] });
+    expect(depot.depotCapacity).toBe(5_000);
+    const cruiser = SHIP_MAP.get('survey_cruiser')!;
+    expect(cruiser).toMatchObject({ role: 'survey', tier: 4, survey: true, cargoCapacity: 0, requiredResearch: ['hyperspectral'] });
+    expect(cruiser.surveySweep).toBe(6);
+    // A sweep hull reaches every field, including the Kuiper Fringe.
+    expect(getFieldsForShipTier(cruiser.tier).map(f => f.id)).toContain('field_kuiper');
   });
   it('Hauler: T2 transport, 800-unit hold, no extraction gear', () => {
     const h = SHIP_MAP.get('hauler')!;

@@ -27,6 +27,8 @@ import {
   loadHqSeatPoolSummary,
   loadPendingHqRelocation,
 } from '@/lib/game/hq-relocation-server';
+// CC-4: the interstellar rung's expedition gate is a SERVER count.
+import { advanceDueExpeditions, countCompletedExpeditions } from '@/lib/game/server-expeditions';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,8 +63,11 @@ export async function POST(request: NextRequest) {
     const real = await prisma.gameProfile.findFirst({ where: { id: profile.id, ...notQaProfile }, select: { id: true } });
     if (!real) return NextResponse.json({ error: 'QA accounts cannot relocate a headquarters.', code: 'qa_profile' }, { status: 403 });
 
-    // Settle anything already due so "in progress" is a live fact.
+    // Settle anything already due so "in progress" is a live fact — and the
+    // expedition clock too, so a mission that came home while the player was
+    // away counts toward the interstellar gate on this very request.
     await completeDueHqRelocations(prisma, profile.id);
+    await advanceDueExpeditions(prisma, profile.id);
     const pending = await loadPendingHqRelocation(profile.id);
     if (pending) return NextResponse.json({ error: 'A relocation is already under way — one project at a time.', code: 'in_progress' }, { status: 409 });
 
@@ -89,6 +94,10 @@ export async function POST(request: NextRequest) {
       // from the registry, never from the client's claim.
       research: rowsOfKind(registry.rows, ASSET_KIND_RESEARCH).filter(r => r.status === 'complete').map(r => r.definitionId),
       ships: rowsOfKind(registry.rows, ASSET_KIND_SHIP).filter(r => LIVE_SHIP_STATUSES.includes(r.status)).map(r => r.definitionId),
+      // CC-4: the completed-expedition half of the interstellar gate, from
+      // the server's own Expedition rows. A forged client claim gains
+      // nothing — the client's count is never read here.
+      expeditionsCompleted: await countCompletedExpeditions(profile.id, prisma),
     };
     // CC-3: Mars and outward are AUCTION stages — the seat must already be
     // won (or still held from a previous stay) before the charter is filed.
@@ -101,7 +110,7 @@ export async function POST(request: NextRequest) {
       { heldSeatAtTarget: !!heldSeat },
     );
     if (!check.ok) {
-      const status = check.error === 'in_progress' ? 409 : check.error === 'seat_auction' ? 409 : 400;
+      const status = check.error === 'in_progress' || check.error === 'seat_auction' ? 409 : 400;
       return NextResponse.json({ error: check.message, code: check.error, check: check.check ?? null }, { status });
     }
     const quote = check.quote;

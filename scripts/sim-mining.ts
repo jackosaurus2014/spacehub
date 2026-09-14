@@ -18,10 +18,26 @@
 //   npx tsx scripts/sim-mining.ts
 
 import { GAME_MONTH_MS, OUTPUT_SELL_MULT, fm, mdTable } from './sim-harness';
-import { ASTEROID_FIELD_MAP, generateFieldRocks, rollAsteroidIntel, oreForRock, type AsteroidRock, LOCAL_INTEL_SALT, SURVEY_PROBE_COST } from '../src/lib/game/asteroids';
+import { ASTEROID_FIELD_MAP, ROCKS_PER_FIELD, generateFieldRocks, rollAsteroidIntel, oreForRock, type AsteroidRock, LOCAL_INTEL_SALT, SURVEY_PROBE_COST } from '../src/lib/game/asteroids';
 import { planMiningOrder, MINING_SALE_BROKER_FEE } from '../src/lib/game/mining-orders';
 import { claimStakeFee, claimUpkeepPerMonth, CLAIM_CAP_BY_TIER } from '../src/lib/game/asteroid-claims';
 import { rockPressureShare } from '../src/lib/game/rock-pressure';
+// Mining Phase C (2026-09-13, docs/BALANCE.md Pass 15).
+import {
+  MOBILE_REFINERY_RECOVERY,
+  REFINERY_RECIPES,
+  maxOreBatchForHold,
+  recipeValueRatio,
+  refineOutputs,
+  refinedMassPerOreUnit,
+} from '../src/lib/game/ore-refining';
+import {
+  DEPOT_COVER_SHARE,
+  DEPOT_FUEL_VALUE_PER_UNIT,
+  depotRestockPricePerUnit,
+  depotSlotsForFieldId,
+} from '../src/lib/game/propellant-depots';
+import { reportPriceBounds, reportSellerProceeds } from '../src/lib/game/survey-reports';
 import { shakedownOdds, SHAKEDOWN_TAKE_SHARE, type EscortCover } from '../src/lib/game/npc-shakedown';
 import { SHIP_MAP } from '../src/lib/game/ships';
 import { RESOURCE_MAP, MINING_PRODUCTION, RESOURCE_ORIGINS } from '../src/lib/game/resources';
@@ -50,9 +66,17 @@ interface MinerSim {
    *  scarcity level and this miner's own landed units push it back down —
    *  the first-mover windfall AND its decay in one run. */
   priceMode?: 'base' | 'opening';
+  /** Pass 15 (Phase C): 'refine' runs the hull's plant at the field and
+   *  sells PRODUCT; 'mine' hauls the rock home. */
+  mode?: 'mine' | 'refine';
+  /** Pass 15: propellant in the corporation's depot at the field (assumed
+   *  kept topped up), and what a unit of it costs delivered there. */
+  depotStockUnits?: number;
 }
 
-interface MonthLine { month: number; trips: number; units: number; revenue: number; fuel: number; maintenance: number; probes: number; claim: number; net: number; cumulative: number; price: number }
+interface MonthLine { month: number; trips: number; units: number; revenue: number; fuel: number; maintenance: number; probes: number; claim: number; net: number; cumulative: number; price: number;
+  /** Pass 15: ore processed, refining opex, and the propellant a depot paid. */
+  oreProcessed: number; opex: number; depotCovered: number; depotCost: number }
 
 /** Run one miner for MONTHS months: back-to-back orders, each quoted by the
  *  real planner. Cash-positive = monthly net (revenue − fuel − maintenance −
@@ -62,37 +86,69 @@ function simulateMiner(m: MinerSim, months: number = MONTHS): { lines: MonthLine
   const intel = m.surveyed ? rollAsteroidIntel(m.rock, LOCAL_INTEL_SALT) : null;
   const oreDef = RESOURCE_MAP.get(oreForRock(m.rock))!;
   const basePrice = oreDef.baseMarketPrice;
-  // Pass 14: the market's live supply for this ore. In 'opening' mode it
-  // starts at the world's opening stock and every landed unit adds to it,
-  // so the price this miner receives falls trip by trip — the windfall
-  // decaying on its own output, which is the gate this scenario exists for.
-  let marketSupply = m.priceMode === 'opening' ? oreDef.startingSupply : oreDef.baselineSupply;
-  const priceNow = () => m.priceMode === 'opening'
-    ? getFundamentalPrice(basePrice, marketSupply, oreDef.baselineSupply, oreDef.minPrice, oreDef.maxPrice)
-    : basePrice;
+  const refining = m.mode === 'refine';
+  // Pass 14: the market's live supply for every slug this miner sells into.
+  // In 'opening' mode it starts at the world's opening stock and every landed
+  // unit adds to it, so the price falls trip by trip — the windfall decaying
+  // on the miner's own output, which is the gate scenario 6 exists for.
+  // Pass 15: a REFINING run sells several products, each with its own curve.
+  const supply: Record<string, number> = {};
+  const priceOf = (slug: string): number => {
+    const d = RESOURCE_MAP.get(slug as keyof typeof RESOURCE_MAP extends never ? never : string as never) as unknown as typeof oreDef | undefined;
+    const def2 = d ?? RESOURCE_MAP.get(slug as never) as unknown as typeof oreDef | undefined;
+    const r = def2!;
+    if (m.priceMode !== 'opening') return r.baseMarketPrice;
+    if (supply[slug] === undefined) supply[slug] = r.startingSupply;
+    return getFundamentalPrice(r.baseMarketPrice, supply[slug], r.baselineSupply, r.minPrice, r.maxPrice);
+  };
+  const addSupply = (slug: string, qty: number) => {
+    if (m.priceMode !== 'opening') return;
+    const r = RESOURCE_MAP.get(slug as never) as unknown as typeof oreDef;
+    if (supply[slug] === undefined) supply[slug] = r.startingSupply;
+    supply[slug] += qty;
+  };
   // Back-to-back orders on a continuous clock; each trip is booked in the
   // month it COMPLETES (fuel is paid at departure, booked with the trip).
-  const trips: { completesAt: number; units: number; fuel: number; revenue: number; price: number }[] = [];
+  const trips: { completesAt: number; units: number; fuel: number; revenue: number; price: number; oreProcessed: number; opex: number; depotCovered: number; depotCost: number }[] = [];
   let clock = 0;
   let reserve = intel?.reserve ?? Number.MAX_SAFE_INTEGER;
   let origin = m.originId;
   const horizon = months * GAME_MONTH_MS;
   const claimFee = m.claimed && intel ? claimStakeFee(m.rock, intel) : 0;
   const upkeep = m.claimed ? claimUpkeepPerMonth(claimFee) : 0;
+  const depotPerUnit = m.depotStockUnits ? depotRestockPricePerUnit(m.fieldId) : 0;
   while (clock < horizon && reserve > 0) {
     const plan = planMiningOrder({
-      def, cargoCapacity: def.cargoCapacity, mode: 'mine', rock: m.rock, intel: intel ? { ...intel, reserve } : null, thenAction: m.thenAction, originId: origin, nowMs: clock,
+      def, cargoCapacity: def.cargoCapacity, mode: refining ? 'refine' : 'mine', rock: m.rock, intel: intel ? { ...intel, reserve } : null, thenAction: m.thenAction, originId: origin, nowMs: clock,
       claimed: !!m.claimed, sharedMiners: m.sharedMiners ?? 1, escortCover: m.escortCover ?? 'none', frontier: false,
+      depotStockUnits: m.depotStockUnits ?? 0, refineRecovery: MOBILE_REFINERY_RECOVERY,
     });
     if (!plan.ok) break;
     const o = plan.order;
     // Phase B: the EXPECTED units landed (pressure share, then the expected
     // shakedown toll) price the trip; the rock loses what was extracted.
     const extracted = Math.max(1, Math.round(o.fillUnits * plan.pressureShare));
-    const price = priceNow();
-    const revenue = Math.round(plan.expectedUnits * price * (m.thenAction === 'return_sell' ? (1 - MINING_SALE_BROKER_FEE) : OUTPUT_SELL_MULT));
-    trips.push({ completesAt: o.completesAtMs, units: plan.expectedUnits, fuel: o.fuelCost, revenue, price });
-    marketSupply += plan.expectedUnits;
+    const sellMult = m.thenAction === 'return_sell' ? (1 - MINING_SALE_BROKER_FEE) : OUTPUT_SELL_MULT;
+    let revenue = 0;
+    let price = 0;
+    if (refining) {
+      for (const [slug, qty] of Object.entries(plan.outputs)) {
+        revenue += qty * priceOf(slug) * sellMult;
+        addSupply(slug, qty);
+      }
+      revenue = Math.round(revenue);
+      // "$/ore unit processed" is the comparable price line for a refine run.
+      price = Math.round(revenue / Math.max(1, o.fillUnits));
+    } else {
+      price = priceOf(oreDef.id);
+      revenue = Math.round(plan.expectedUnits * price * sellMult);
+      addSupply(oreDef.id, plan.expectedUnits);
+    }
+    trips.push({
+      completesAt: o.completesAtMs, units: plan.expectedUnits, fuel: o.fuelCost, revenue, price,
+      oreProcessed: refining ? o.fillUnits : 0, opex: plan.refineOpex,
+      depotCovered: plan.depotCovered, depotCost: Math.round(plan.depotUnitsDrawn * depotPerUnit),
+    });
     reserve -= extracted;
     clock = o.completesAtMs;
     origin = o.destinationId; // hold: stays at the field (no outbound next time)
@@ -106,11 +162,15 @@ function simulateMiner(m: MinerSim, months: number = MONTHS): { lines: MonthLine
     const revenue = inMonth.reduce((s, t) => s + t.revenue, 0);
     const fuel = inMonth.reduce((s, t) => s + t.fuel, 0);
     const units = inMonth.reduce((s, t) => s + t.units, 0);
+    const oreProcessed = inMonth.reduce((s, t) => s + t.oreProcessed, 0);
+    const opex = inMonth.reduce((s, t) => s + t.opex, 0);
+    const depotCovered = inMonth.reduce((s, t) => s + t.depotCovered, 0);
+    const depotCost = inMonth.reduce((s, t) => s + t.depotCost, 0);
     const maintenance = def.maintenancePerMonth;
-    const net = revenue - fuel - maintenance - probes - claim;
+    const net = revenue - fuel - maintenance - probes - claim - opex - depotCost;
     cumulative += net;
     const price = inMonth.length > 0 ? Math.round(inMonth.reduce((s, t) => s + t.price, 0) / inMonth.length) : 0;
-    lines.push({ month, trips: inMonth.length, units, revenue, fuel, maintenance, probes, claim, net, cumulative, price });
+    lines.push({ month, trips: inMonth.length, units, revenue, fuel, maintenance, probes, claim, net, cumulative, price, oreProcessed, opex, depotCovered, depotCost });
   }
   return { lines, capex: def.baseCost };
 }
@@ -281,6 +341,117 @@ function main() {
   );
   console.log(`GATE (opening prices, avg months 2-6): best ship gross/capex is ${(openBest / bestBld).toFixed(2)}x the BASE-priced building benchmark and ${(openBest / bestBldOpen).toFixed(2)}x the same benchmark priced at opening scarcity (limit ~1.5x) -> ${openBest / bestBld <= 1.5 && openBest / bestBldOpen <= 1.5 ? 'OK' : 'OVER'}\n`);
 
+  // ── Scenario 7 (Phase C): refine at the field vs haul the rock home ──────
+  console.log('## 7. Phase C — refine at the field vs haul raw ore home\n');
+  console.log(mdTable(['Ore', 'Recipe', 'Products per 100 ore (full recovery)', 'Product mass/ore unit (barge)', 'Value ratio (full)', 'Value ratio (barge 0.82)'],
+    REFINERY_RECIPES.map(r => {
+      const per100 = refineOutputs(r.oreId, 100, 1);
+      return [
+        RESOURCE_MAP.get(r.oreId)!.name, r.name,
+        Object.entries(per100).map(([slug, qty]) => `${qty} ${RESOURCE_MAP.get(slug as never)!.name}`).join(', '),
+        refinedMassPerOreUnit(r.oreId).toFixed(3),
+        `${recipeValueRatio(r.oreId, 1).toFixed(2)}x`,
+        `${recipeValueRatio(r.oreId, MOBILE_REFINERY_RECOVERY).toFixed(2)}x`,
+      ];
+    })));
+
+  const barge = SHIP_MAP.get('refinery_barge')!;
+  console.log(`\nRefinery Barge: ${fm(barge.baseCost)} capex, ${fm(barge.maintenancePerMonth)}/mo, ${barge.cargoCapacity}-unit hold, ${barge.oreExtractionPerHour} ore/h extraction, ${barge.refineOrePerHour} ore/h plant.`);
+  console.log(`Hold maths on ${rockM.name} (M-type): raw it carries ${barge.cargoCapacity} units of ore; refining, its hold takes the concentrate of ${maxOreBatchForHold('ore_metallic', barge.cargoCapacity).toLocaleString()} ore units (x${(maxOreBatchForHold('ore_metallic', barge.cargoCapacity) / barge.cargoCapacity).toFixed(1)} the ore per trip).\n`);
+
+  // A refine cycle is ~12 real hours, so scenarios 7-8 run a 12-month
+  // horizon: a 6-month window would truncate the last run and flatter the
+  // short raw cycle for a reason that has nothing to do with the economics.
+  const MONTHS_C = 12;
+  const last = (r: ReturnType<typeof simulateMiner>) => r.lines[r.lines.length - 1];
+  const s7rows: (string | number)[][] = [];
+  const s7: Array<[string, ReturnType<typeof simulateMiner>]> = [];
+  for (const [name, mode] of [['Haul raw ore home', 'mine'], ['Refine at the field', 'refine']] as const) {
+    const r = simulateMiner({ name, defId: 'refinery_barge', fieldId: 'field_inner_belt', rock: rockM, surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface', mode }, MONTHS_C);
+    s7.push([name, r]);
+    const t = (k: keyof MonthLine) => r.lines.reduce((sum, l) => sum + (l[k] as number), 0);
+    s7rows.push([name, t('trips'), t('oreProcessed') || t('units'), t('units'), fm(t('revenue')), fm(t('fuel')), fm(t('opex')), fm(last(r).cumulative)]);
+  }
+  console.log(mdTable([`Cycle (Refinery Barge, Inner Belt M rock, sell at Ceres, ${MONTHS_C} months)`, 'Trips', 'Ore worked', 'Units sold', 'Revenue', 'Fuel', 'Refining opex', `Net/${MONTHS_C}mo`], s7rows));
+  const rawNet = last(s7[0][1]).cumulative;
+  const refNet = last(s7[1][1]).cumulative;
+  console.log(`\nGATE: refining at the field ${refNet > rawNet ? 'BEATS' : 'does NOT beat'} hauling the rock home by ${fm(refNet - rawNet)} over ${MONTHS_C} months (${(refNet / Math.max(1, rawNet)).toFixed(2)}x) -> ${refNet > rawNet ? 'the design intent holds' : 'CHECK'}`);
+  const rawTrips = s7[0][1].lines.reduce((sum, l) => sum + l.trips, 0);
+  const refTrips = s7[1][1].lines.reduce((sum, l) => sum + l.trips, 0);
+  console.log(`Trips home over ${MONTHS_C} months: ${rawTrips} raw vs ${refTrips} refined — the concentrate is why the lane empties.\n`);
+
+  // The same comparison at OPENING scarcity (Pass 14): C/M/X products carry
+  // the premium their ore does; S-type products are fabricated goods and do not.
+  const s7open: (string | number)[][] = [];
+  for (const [cls, fieldId, rock] of [['C', 'field_near_earth', rockC], ['M', 'field_inner_belt', rockM]] as const) {
+    const raw = simulateMiner({ name: 'raw', defId: 'refinery_barge', fieldId, rock, surveyed: true, thenAction: 'return_sell', originId: fieldId === 'field_near_earth' ? 'leo' : 'ceres_surface', mode: 'mine', priceMode: 'opening' }, MONTHS_C);
+    const ref = simulateMiner({ name: 'ref', defId: 'refinery_barge', fieldId, rock, surveyed: true, thenAction: 'return_sell', originId: fieldId === 'field_near_earth' ? 'leo' : 'ceres_surface', mode: 'refine', priceMode: 'opening' }, MONTHS_C);
+    s7open.push([`${cls}-type @ opening scarcity`, fm(last(raw).cumulative), fm(last(ref).cumulative), last(ref).cumulative > last(raw).cumulative ? 'refine wins' : 'RAW wins']);
+  }
+  const sRaw = simulateMiner({ name: 'raw', defId: 'refinery_barge', fieldId: 'field_inner_belt', rock: pickRock('field_inner_belt', 'S', 0), surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface', mode: 'mine', priceMode: 'opening' }, MONTHS_C);
+  const sRef = simulateMiner({ name: 'ref', defId: 'refinery_barge', fieldId: 'field_inner_belt', rock: pickRock('field_inner_belt', 'S', 0), surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface', mode: 'refine', priceMode: 'opening' }, MONTHS_C);
+  s7open.push(['S-type @ opening scarcity', fm(last(sRaw).cumulative), fm(last(sRef).cumulative), last(sRef).cumulative > last(sRaw).cumulative ? 'refine wins' : 'RAW wins (documented: silicate refines to fabricated goods, which carry no opening premium)']);
+  console.log(mdTable(['Case', 'Haul raw net/6mo', 'Refine net/6mo', 'Verdict'], s7open));
+  console.log('');
+
+  // ── Scenario 8 (Phase C): a depot-supported cycle vs returning for fuel ──
+  console.log('## 8. Phase C — Propellant Depot Ship: the field side of the fuel bill\n');
+  const depotShip = SHIP_MAP.get('propellant_depot_ship')!;
+  console.log(mdTable(['Field', 'Slots', 'Cash restock $/unit', 'Burn displaced $/unit', 'Margin per unit'],
+    ['field_near_earth', 'field_inner_belt', 'field_ceres', 'field_trojans', 'field_kuiper'].map(id => {
+      const perUnit = depotRestockPricePerUnit(id);
+      return [ASTEROID_FIELD_MAP.get(id)!.name, depotSlotsForFieldId(id), fm(perUnit), fm(DEPOT_FUEL_VALUE_PER_UNIT), `${fm(DEPOT_FUEL_VALUE_PER_UNIT - perUnit)}${DEPOT_FUEL_VALUE_PER_UNIT - perUnit > 0 ? '' : '  (refine locally or do without)'}`];
+    })));
+  console.log(`\nDepot ship ${fm(depotShip.baseCost)} capex, ${fm(depotShip.maintenancePerMonth)}/mo, ${depotShip.depotCapacity!.toLocaleString()}-unit tank; it covers ${DEPOT_COVER_SHARE * 100}% of each order's propellant bill out of that field.\n`);
+  const s8rows: (string | number)[][] = [];
+  for (const [label, fieldId, rock, home] of [['Inner Belt (M)', 'field_inner_belt', rockM, 'ceres_surface'], ['Near-Earth (C)', 'field_near_earth', rockC, 'leo']] as const) {
+    const noDepot = simulateMiner({ name: 'n', defId: 'refinery_barge', fieldId, rock, surveyed: true, thenAction: 'return_sell', originId: home, mode: 'refine' }, MONTHS_C);
+    const withDepot = simulateMiner({ name: 'd', defId: 'refinery_barge', fieldId, rock, surveyed: true, thenAction: 'return_sell', originId: home, mode: 'refine', depotStockUnits: 5_000 }, MONTHS_C);
+    const covered = withDepot.lines.reduce((sum, l) => sum + l.depotCovered, 0);
+    const cost = withDepot.lines.reduce((sum, l) => sum + l.depotCost, 0);
+    const upkeep6 = MONTHS_C * depotShip.maintenancePerMonth;
+    const delta = last(withDepot).cumulative - last(noDepot).cumulative - upkeep6;
+    s8rows.push([label, fm(noDepot.lines.reduce((sum, l) => sum + l.fuel, 0)), fm(withDepot.lines.reduce((sum, l) => sum + l.fuel, 0)), fm(covered), fm(cost), fm(upkeep6), fm(delta), delta > 0 ? 'pays for one hull' : 'fleet-scale only']);
+  }
+  console.log(mdTable([`Field (one Refinery Barge, ${MONTHS_C} months)`, 'Cash fuel, no depot', 'Cash fuel, depot', 'Depot covered', 'Restock cost', 'Depot upkeep', 'Net delta (excl. capex)', 'Verdict'], s8rows));
+  const dvSaved = DEPOT_COVER_SHARE * 100;
+  console.log(`\nDelta-v the depot removes from the corporate ledger: ${dvSaved}% of every run's propellant out of the field — for a Prospector Barge cycling an Inner Belt rock from Ceres that is the whole outbound leg plus the rock's surcharge (~${(getRouteDeltaV('ceres_surface', 'asteroid_belt') + rockM.deltaVExtra).toLocaleString()} m/s of the round trip).\n`);
+
+  // ── Scenario 9 (Phase C): the Survey Cruiser's payback, with report sales ──
+  console.log('## 9. Phase C — Survey Cruiser payback (fuel, sweeps and report sales)\n');
+  const cruiser = SHIP_MAP.get('survey_cruiser')!;
+  const sweep = cruiser.surveySweep ?? 1;
+  const bounds = reportPriceBounds(rockM, intelM);
+  const sweepSeconds = sweep * 300;
+  const passesPerMonth = Math.floor(GAME_MONTH_MS / 1000 / sweepSeconds);
+  // Capped by what is actually left to survey: a field is ROCKS_PER_FIELD rocks.
+  const rocksPerMonth = Math.min(passesPerMonth * sweep, ROCKS_PER_FIELD);
+  const fuelPerPass = Math.max(10_000, Math.round(rockM.deltaVExtra * 20 * cruiser.tier));
+  const rows9: (string | number)[][] = [];
+  for (const salesPerMonth of [0, 2, 4, 8]) {
+    const revenue = salesPerMonth * reportSellerProceeds(bounds.suggested);
+    const cost = cruiser.maintenancePerMonth + passesPerMonth * fuelPerPass;
+    const net = revenue - cost;
+    rows9.push([salesPerMonth, fm(bounds.suggested), fm(revenue), fm(cost), fm(net), net > 0 ? `${Math.ceil(cruiser.baseCost / net)} months to payback` : 'never on reports alone']);
+  }
+  console.log(mdTable(['Reports sold / month', 'Suggested price (Inner Belt M rock)', 'Seller proceeds', 'Upkeep + survey fuel', 'Net / month', 'Capex payback'], rows9));
+  console.log(`\nCruiser ${fm(cruiser.baseCost)} capex, ${fm(cruiser.maintenancePerMonth)}/mo, sweeps ${sweep} rocks per pass (${sweepSeconds / 60} min), ~${passesPerMonth} passes = ${rocksPerMonth} rocks per game-month — a whole ${ROCKS_PER_FIELD}-rock field in about ${(ROCKS_PER_FIELD / Math.max(1, rocksPerMonth)).toFixed(1)} game-months.`);
+  console.log(`Report price band on that rock: ${fm(bounds.min)} - ${fm(bounds.max)} (suggested ${fm(bounds.suggested)}); the broker burns ${fm(bounds.suggested - reportSellerProceeds(bounds.suggested))} of each sale.`);
+  console.log(`Probe equivalence: revealing ${rocksPerMonth} rocks with probes costs ${fm(rocksPerMonth * SURVEY_PROBE_COST)} a month, so the cruiser repays its hull in ${(cruiser.baseCost / Math.max(1, rocksPerMonth * SURVEY_PROBE_COST - cruiser.maintenancePerMonth)).toFixed(1)} months on survey cost alone — report sales are upside, not the case for the hull.\n`);
+
+  // ── Gate re-run: nothing in Phase C beats the building benchmark by >1.5x ──
+  const refineNE = simulateMiner({ name: 'r', defId: 'refinery_barge', fieldId: 'field_near_earth', rock: rockC, surveyed: true, thenAction: 'return_sell', originId: 'leo', mode: 'refine' });
+  const refineIB = simulateMiner({ name: 'r', defId: 'refinery_barge', fieldId: 'field_inner_belt', rock: rockM, surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface', mode: 'refine' });
+  const refineIBopen = simulateMiner({ name: 'r', defId: 'refinery_barge', fieldId: 'field_inner_belt', rock: rockM, surveyed: true, thenAction: 'return_sell', originId: 'ceres_surface', mode: 'refine', priceMode: 'opening' });
+  const phaseCbest = Math.max(avg(refineNE, 'revenue') / refineNE.capex, avg(refineIB, 'revenue') / refineIB.capex);
+  const phaseCbestOpen = openAvg(refineIBopen) / refineIBopen.capex;
+  console.log('## Phase C capital-efficiency gate\n');
+  console.log(mdTable(['Asset', 'Capex', 'Gross / month (avg m2-6)', 'Net / month', 'Gross / capex', 'x Basic Lunar Extractor'],
+    [['Refinery Barge · Near-Earth C (refined)', refineNE], ['Refinery Barge · Inner Belt M (refined)', refineIB]].map(([name, r]) => {
+      const rr = r as ReturnType<typeof simulateMiner>;
+      return [name as string, fm(rr.capex), fm(avg(rr, 'revenue')), fm(avg(rr, 'net')), `${((avg(rr, 'revenue') / rr.capex) * 100).toFixed(2)}%`, `${((avg(rr, 'revenue') / rr.capex) / bestBld).toFixed(2)}x`];
+    })));
+  console.log(`\nGATE: best Phase C ship gross/capex is ${(phaseCbest / bestBld).toFixed(2)}x the Basic Lunar Extractor at base prices and ${(phaseCbestOpen / bestBld).toFixed(2)}x at opening scarcity (limit ~1.5x) -> ${phaseCbest / bestBld <= 1.5 && phaseCbestOpen / bestBld <= 1.5 ? 'OK' : 'OVER'}\n`);
 }
 
 main();

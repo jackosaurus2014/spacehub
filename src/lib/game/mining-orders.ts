@@ -40,6 +40,20 @@ import { markClaimWorked } from './asteroid-claims';
 import { isInFrontier } from './frontier';
 import { expectedShakedownLoss, orderHasReturnLeg, settleShakedown, shakedownOdds, type EscortCover } from './npc-shakedown';
 import { applyRockPressure, rockPressureShare } from './rock-pressure';
+// Mining Phase C (2026-09-13): refining at the field, depot-covered fuel.
+import {
+  MOBILE_REFINERY_RECOVERY,
+  applyProductLoss,
+  isRefinableOre,
+  maxOreBatchForHold,
+  maxOreBatchForTime,
+  productValue,
+  refineOpex,
+  refineOutputs,
+  refineSeconds,
+  refinedUnitTotal,
+} from './ore-refining';
+import { depotCoverage } from './propellant-depots';
 import { REAL_MS_PER_GAME_MONTH } from './server-time';
 import { FREIGHT_CARGO_FUEL_RATE, FREIGHT_MIN_FUEL_COST, creditArrivalCargo, getRouteDeltaV } from './cargo-logistics';
 // CC-2 (Pass 11): the Lunar HQ's logistics terms — −12% fuel per leg and
@@ -78,6 +92,14 @@ export const MINING_SALE_BROKER_FEE = 0.03;
 
 /** Real seconds of extra transit per m/s of a rock's delta-v surcharge. */
 export const TRANSIT_SECONDS_PER_DELTA_V = 0.1;
+
+/** Mining Phase C: real seconds a SWEEP hull (Survey Cruiser) spends on each
+ *  rock of a pass. A sweep is unlimited but not instant — six rocks is half a
+ *  real hour of the hull's time, and the reveal lands when the pass ENDS, so
+ *  nothing can be claimed before the work is done. A single-rock survey
+ *  (Prospector Barge, Starfarer) is unchanged from Phase A: the reveal is the
+ *  arrival. */
+export const SURVEY_SWEEP_SECONDS_PER_ROCK = 300;
 
 /** Hull damage penalty on extraction — the same curve the legacy ship-mining
  *  path applies (game-engine.ts: max(0.25, 1 − 0.75 × damage)). */
@@ -119,7 +141,10 @@ export interface LegCost { deltaV: number; seconds: number; fuel: number }
  *  cheaper burn, not a faster one. */
 export interface LegLogistics { fuelMult?: number; deltaVMult?: number }
 
-/** One leg between a location and a rock. `loadedUnits` is the ore aboard. */
+/** One leg between a location and a rock. `loadedUnits` is the cargo aboard;
+ *  `loadWeight` is what a unit of it weighs against the freight fuel term —
+ *  ORE_LOAD_WEIGHT for loose rock (Phase A), 1 for refined PRODUCT (Phase C:
+ *  a concentrate is dense, and there is far less of it). */
 export function quoteLeg(
   fromLocationId: string,
   toLocationId: string,
@@ -128,13 +153,14 @@ export function quoteLeg(
   loadedUnits: number,
   fuelEfficiencyMult: number = 1,
   logistics: LegLogistics = {},
+  loadWeight: number = ORE_LOAD_WEIGHT,
 ): LegCost {
   const laneDv = getRouteDeltaV(fromLocationId, toLocationId);
   const dvMult = typeof logistics.deltaVMult === 'number' && Number.isFinite(logistics.deltaVMult) ? Math.max(0.5, Math.min(1, logistics.deltaVMult)) : 1;
   const fuelMult = typeof logistics.fuelMult === 'number' && Number.isFinite(logistics.fuelMult) ? Math.max(0.5, Math.min(1, logistics.fuelMult)) : 1;
   const deltaV = laneDv + Math.max(0, rockDeltaVExtra) * dvMult;
   const seconds = Math.round((fromLocationId === toLocationId ? 0 : getTravelTime(fromLocationId, toLocationId)) + rockDeltaVExtra * TRANSIT_SECONDS_PER_DELTA_V);
-  const raw = deltaV * (MINING_HULL_FUEL_RATE * Math.max(1, hullTier) + FREIGHT_CARGO_FUEL_RATE * ORE_LOAD_WEIGHT * Math.max(0, loadedUnits));
+  const raw = deltaV * (MINING_HULL_FUEL_RATE * Math.max(1, hullTier) + FREIGHT_CARGO_FUEL_RATE * Math.max(0, loadWeight) * Math.max(0, loadedUnits));
   const fuel = Math.max(FREIGHT_MIN_FUEL_COST, Math.round(raw * Math.max(0.5, Math.min(1, fuelEfficiencyMult)) * fuelMult));
   return { deltaV, seconds, fuel };
 }
@@ -160,7 +186,11 @@ export type MiningPlanError =
   | 'rock_exhausted'
   | 'rock_claimed'
   | 'standing_off'
-  | 'escort_invalid';
+  | 'escort_invalid'
+  // Mining Phase C
+  | 'ship_cannot_refine'
+  | 'ore_not_refinable'
+  | 'nothing_to_refine';
 
 export interface MiningPlanInput {
   def: ShipDefinition;
@@ -202,6 +232,19 @@ export interface MiningPlanInput {
    *  hqMiningLogisticsForState on the client, …ForLocationId on the
    *  server). Absent = neutral. */
   hqLogistics?: HqMiningLogistics | null;
+  // ── Mining Phase C ──
+  /** Propellant in the corporation's OWN depot at this order's field
+   *  (propellant-depots.ts). The caller passes it only when a depot of
+   *  theirs holds a slot there; the planner then bills the cash remainder
+   *  and reports what the depot drew. The server draws the units atomically
+   *  — an inflated figure here buys nothing. */
+  depotStockUnits?: number;
+  /** Recovery of the refining plant doing the work (default: the mobile
+   *  barge's MOBILE_REFINERY_RECOVERY). */
+  refineRecovery?: number;
+  /** A sweep survey's extra targets (Survey Cruiser). The server picks them
+   *  from its own view of what is unsurveyed; the client mirrors. */
+  sweepTargets?: string[];
   nowMs: number;
 }
 
@@ -223,6 +266,19 @@ export interface MiningPlan {
   expectedUnits: number;
   /** Phase B: the rock's live events as the quote saw them. */
   rockEvents: { rubble: boolean; spinUp: boolean };
+  // ── Mining Phase C ──
+  /** 'refine': seconds the plant runs after extraction. */
+  refiningSeconds: number;
+  /** 'refine'/'return' of a refined parcel: the product manifest expected to
+   *  land, after pressure and the expected shakedown. */
+  outputs: Record<string, number>;
+  /** Refining opex burned at creation (separate from the fuel bill). */
+  refineOpex: number;
+  /** Depot coverage applied to this order's fuel bill. */
+  depotCovered: number;
+  depotUnitsDrawn: number;
+  /** The fuel bill BEFORE the depot covered its share (for the console). */
+  fuelBeforeDepot: number;
 }
 
 export type MiningPlanResult = MiningPlan | { ok: false; error: MiningPlanError; detail?: string };
@@ -239,6 +295,9 @@ export const MINING_PLAN_ERROR_TEXT: Readonly<Record<MiningPlanError, string>> =
   rock_claimed: 'That rock is under another corporation\'s claim until it lapses.',
   standing_off: 'You stood off this rock until its event settles.',
   escort_invalid: 'That escort is not an idle security hull at the departure point or the field.',
+  ship_cannot_refine: 'This hull has no refining plant — build a Refinery Barge.',
+  ore_not_refinable: 'There is no refinery recipe for that material.',
+  nothing_to_refine: 'Nothing to refine: target a rock, or hold ore at the field first.',
 };
 
 /**
@@ -258,12 +317,19 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
     const parent = field?.parentLocationId || originId;
     const destinationId = input.destinationId || 'earth_surface';
     const rock = held.asteroidId ? getAsteroid(held.asteroidId) : undefined;
-    const back = quoteLeg(parent, destinationId, rock?.deltaVExtra ?? 0, tier, held.units, eff, legLogisticsFor(input.hqLogistics, field?.parentLocationId));
+    // Phase C: a refined parcel flies as PRODUCT — fewer units, full weight.
+    const recovery = input.refineRecovery ?? MOBILE_REFINERY_RECOVERY;
+    const products = held.refined ? refineOutputs(held.oreId, held.units, recovery) : {};
+    const cargoUnits = held.refined ? refinedUnitTotal(products) : held.units;
+    const back = quoteLeg(parent, destinationId, rock?.deltaVExtra ?? 0, tier, cargoUnits, eff, legLogisticsFor(input.hqLogistics, field?.parentLocationId), held.refined ? 1 : ORE_LOAD_WEIGHT);
+    const depot = depotCoverage(back.fuel, input.depotStockUnits ?? 0);
     const thenAction: MiningThenAction = input.thenAction === 'return_sell' ? 'return_sell' : 'return_store';
     const price = RESOURCE_MAP.get(held.oreId as ResourceId)?.baseMarketPrice ?? 0;
     const cover: EscortCover = input.escortCover ?? 'none';
     const odds = shakedownOdds(parent, cover, !!input.frontier);
-    const loss = expectedShakedownLoss(parent, cover, !!input.frontier, held.units);
+    const loss = expectedShakedownLoss(parent, cover, !!input.frontier, cargoUnits);
+    const landedUnits = Math.max(0, Math.round(cargoUnits - loss));
+    const landedProducts = held.refined ? applyProductLoss(products, cargoUnits > 0 ? loss / cargoUnits : 0).outputs : {};
     return {
       ok: true,
       order: {
@@ -271,14 +337,71 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
         oreId: held.oreId, fillUnits: held.units, thenAction,
         originId: parent, destinationId,
         startedAtMs: nowMs, arrivesAtMs: nowMs, miningEndsAtMs: nowMs, completesAtMs: nowMs + back.seconds * 1000,
-        fuelCost: back.fuel, ratePerHour: 0, surveyed: true,
-        pressureShare: 1, expectedUnits: Math.max(0, Math.round(held.units - loss)), shakedownOdds: odds,
+        fuelCost: depot.cashFuel, ratePerHour: 0, surveyed: true,
+        pressureShare: 1, expectedUnits: landedUnits, shakedownOdds: odds,
+        ...(held.refined ? { refined: true, outputs: landedProducts } : {}),
+        ...(depot.covered > 0 ? { depotCovered: depot.covered, depotUnitsDrawn: depot.unitsDrawn } : {}),
         ...(cover === 'assigned' && input.escortInstanceId ? { escortInstanceId: input.escortInstanceId } : {}),
       },
       transitOutSeconds: 0, extractionSeconds: 0, transitBackSeconds: back.seconds, deltaVOut: back.deltaV,
-      expectedValue: Math.round(held.units * price),
-      pressureShare: 1, shakedownOdds: odds, expectedShakedownLoss: loss, expectedUnits: Math.max(0, Math.round(held.units - loss)),
+      expectedValue: held.refined ? productValue(landedProducts) : Math.round(landedUnits * price),
+      pressureShare: 1, shakedownOdds: odds, expectedShakedownLoss: loss, expectedUnits: landedUnits,
       rockEvents: { rubble: false, spinUp: false },
+      refiningSeconds: 0, outputs: landedProducts, refineOpex: 0,
+      depotCovered: depot.covered, depotUnitsDrawn: depot.unitsDrawn, fuelBeforeDepot: back.fuel,
+    };
+  }
+
+  // -- Phase C: refine ore ALREADY ABOARD, in place at the field ----------
+  // No rock, no extraction: the plant runs on the hold the ship is already
+  // holding (a previous 'hold' order). This is the "stationed at a field"
+  // half of the design's Refinery Barge.
+  if (mode === 'refine' && !input.rock) {
+    const held = input.heldOre;
+    if (!held || held.units <= 0 || held.refined) return { ok: false, error: 'nothing_to_refine' };
+    if (!def.refineOrePerHour) return { ok: false, error: 'ship_cannot_refine' };
+    if (!isRefinableOre(held.oreId)) return { ok: false, error: 'ore_not_refinable' };
+    const field = ASTEROID_FIELD_MAP.get(held.fieldId);
+    const parent = field?.parentLocationId || originId;
+    const recovery = input.refineRecovery ?? MOBILE_REFINERY_RECOVERY;
+    const rockHere = held.asteroidId ? getAsteroid(held.asteroidId) : undefined;
+    const legs = legLogisticsFor(input.hqLogistics, parent);
+    const oreUnits = Math.min(held.units, maxOreBatchForHold(held.oreId, input.cargoCapacity, recovery), maxOreBatchForTime(0, def.refineOrePerHour));
+    if (!(oreUnits >= 1)) return { ok: false, error: 'invalid_fill' };
+    const products = refineOutputs(held.oreId, oreUnits, recovery);
+    const productUnits = refinedUnitTotal(products);
+    const plantSeconds = refineSeconds(oreUnits, def.refineOrePerHour);
+    const thenAction: MiningThenAction = input.thenAction ?? 'hold';
+    const destinationId = thenAction === 'hold' ? parent : (input.destinationId || 'earth_surface');
+    const back = thenAction === 'hold' ? null : quoteLeg(parent, destinationId, rockHere?.deltaVExtra ?? 0, tier, productUnits, eff, legs, 1);
+    const rawFuel = back?.fuel ?? 0;
+    const depot = depotCoverage(rawFuel, input.depotStockUnits ?? 0);
+    const cover: EscortCover = thenAction === 'hold' ? 'none' : (input.escortCover ?? 'none');
+    const odds = thenAction === 'hold' ? 0 : shakedownOdds(parent, cover, !!input.frontier);
+    const loss = thenAction === 'hold' ? 0 : expectedShakedownLoss(parent, cover, !!input.frontier, productUnits);
+    const landed = thenAction === 'hold' ? products : applyProductLoss(products, productUnits > 0 ? loss / productUnits : 0).outputs;
+    const opex = refineOpex(held.oreId, oreUnits);
+    const refineEndsAtMs = nowMs + plantSeconds * 1000;
+    return {
+      ok: true,
+      order: {
+        mode: 'refine', asteroidId: held.asteroidId, fieldId: held.fieldId, parentLocationId: parent,
+        oreId: held.oreId, fillUnits: oreUnits, thenAction,
+        originId: parent, destinationId,
+        startedAtMs: nowMs, arrivesAtMs: nowMs, miningEndsAtMs: nowMs,
+        refineEndsAtMs, completesAtMs: refineEndsAtMs + (back ? back.seconds * 1000 : 0),
+        fuelCost: depot.cashFuel, ratePerHour: def.refineOrePerHour, surveyed: true,
+        refined: true, outputs: landed, refineOpex: opex,
+        pressureShare: 1, expectedUnits: refinedUnitTotal(landed), shakedownOdds: odds,
+        ...(depot.covered > 0 ? { depotCovered: depot.covered, depotUnitsDrawn: depot.unitsDrawn } : {}),
+        ...(cover === 'assigned' && input.escortInstanceId ? { escortInstanceId: input.escortInstanceId } : {}),
+      },
+      transitOutSeconds: 0, extractionSeconds: 0, transitBackSeconds: back?.seconds ?? 0, deltaVOut: back?.deltaV ?? 0,
+      expectedValue: productValue(landed),
+      pressureShare: 1, shakedownOdds: odds, expectedShakedownLoss: loss, expectedUnits: refinedUnitTotal(landed),
+      rockEvents: { rubble: false, spinUp: false },
+      refiningSeconds: plantSeconds, outputs: landed, refineOpex: opex,
+      depotCovered: depot.covered, depotUnitsDrawn: depot.unitsDrawn, fuelBeforeDepot: rawFuel,
     };
   }
 
@@ -294,24 +417,42 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
 
   if (mode === 'survey') {
     if (!def.survey) return { ok: false, error: 'ship_cannot_survey' };
+    // Phase C: a sweep hull (Survey Cruiser) reveals `surveySweep` rocks of
+    // the field in one pass -- the target plus the extra ids the caller
+    // resolved. One order, one fuel bill, one arrival.
+    const sweepCap = Math.max(1, Math.floor(def.surveySweep ?? 1));
+    const sweepIds = sweepCap > 1
+      ? [rock.id, ...(input.sweepTargets || []).filter(id => id !== rock.id)].slice(0, sweepCap)
+      : [rock.id];
+    const surveyDepot = depotCoverage(out.fuel, input.depotStockUnits ?? 0);
+    const sweepSeconds = sweepIds.length > 1 ? sweepIds.length * SURVEY_SWEEP_SECONDS_PER_ROCK : 0;
+    const arrivesAt = nowMs + out.seconds * 1000;
     return {
       ok: true,
       order: {
         mode: 'survey', asteroidId: rock.id, fieldId: field.id, parentLocationId: parent,
         oreId, fillUnits: 0, thenAction: 'hold',
         originId, destinationId: parent,
-        startedAtMs: nowMs, arrivesAtMs: nowMs + out.seconds * 1000, miningEndsAtMs: nowMs + out.seconds * 1000,
-        completesAtMs: nowMs + out.seconds * 1000,
-        fuelCost: out.fuel, ratePerHour: 0, surveyed: !!input.intel,
+        startedAtMs: nowMs, arrivesAtMs: arrivesAt, miningEndsAtMs: arrivesAt,
+        completesAtMs: arrivesAt + sweepSeconds * 1000,
+        fuelCost: surveyDepot.cashFuel, ratePerHour: 0, surveyed: !!input.intel,
+        ...(sweepIds.length > 1 ? { sweepAsteroidIds: sweepIds } : {}),
+        ...(surveyDepot.covered > 0 ? { depotCovered: surveyDepot.covered, depotUnitsDrawn: surveyDepot.unitsDrawn } : {}),
       },
-      transitOutSeconds: out.seconds, extractionSeconds: 0, transitBackSeconds: 0, deltaVOut: out.deltaV,
+      transitOutSeconds: out.seconds, extractionSeconds: sweepSeconds, transitBackSeconds: 0, deltaVOut: out.deltaV,
       expectedValue: 0,
       pressureShare: 1, shakedownOdds: 0, expectedShakedownLoss: 0, expectedUnits: 0, rockEvents: { rubble: false, spinUp: false },
+      refiningSeconds: 0, outputs: {}, refineOpex: 0,
+      depotCovered: surveyDepot.covered, depotUnitsDrawn: surveyDepot.unitsDrawn, fuelBeforeDepot: out.fuel,
     };
   }
 
-  // mode === 'mine'
+  // mode === 'mine' | 'refine' (with a rock: extract, then run the plant)
+  const refining = mode === 'refine';
   if (!def.oreExtractionPerHour) return { ok: false, error: 'ship_cannot_mine' };
+  if (refining && !def.refineOrePerHour) return { ok: false, error: 'ship_cannot_refine' };
+  if (refining && !isRefinableOre(oreId)) return { ok: false, error: 'ore_not_refinable' };
+  const recovery = input.refineRecovery ?? MOBILE_REFINERY_RECOVERY;
   const intel = input.intel ?? null;
   if (intel && intel.reserve <= 0) return { ok: false, error: 'rock_exhausted' };
   // Phase B: exclusivity (server-verified; the client mirrors the feed) and
@@ -319,48 +460,72 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
   if (input.claimedByOther && !input.claimed) return { ok: false, error: 'rock_claimed' };
   if (typeof input.standOffUntilMs === 'number' && input.standOffUntilMs > nowMs) return { ok: false, error: 'standing_off' };
   const capacity = Math.max(0, Math.floor(input.cargoCapacity));
-  let fill = Math.floor(input.fillUnits ?? capacity);
-  fill = Math.min(fill, capacity);
-  if (intel) fill = Math.min(fill, Math.floor(intel.reserve));
-  if (!(fill >= 1)) return { ok: false, error: 'invalid_fill' };
-  // The rate is quoted with the rock's events as they stand NOW — the same
+  // Phase C: a refining hull's hold carries the CONCENTRATE, so the batch it
+  // can take is capacity / product mass per ore unit -- the whole economic
+  // case for refining at the field (ore-refining.ts maxOreBatchForHold).
+  // The rate is quoted with the rock's events as they stand NOW -- the same
   // instant the server quotes at (a rubble/spin-up ending mid-extraction is
   // the player's upside/downside, not re-quoted).
   const rate = computeExtractionRate(def, field, intel as (AsteroidIntel & RockEventState) | null, input.hullDamagePct, nowMs);
   if (rate <= 0) return { ok: false, error: 'ship_cannot_mine' };
+  const batchCap = refining
+    ? Math.min(maxOreBatchForHold(oreId, capacity, recovery), maxOreBatchForTime(rate, def.refineOrePerHour || 1))
+    : capacity;
+  let fill = Math.floor(input.fillUnits ?? batchCap);
+  fill = Math.min(fill, batchCap);
+  if (intel) fill = Math.min(fill, Math.floor(intel.reserve));
+  if (!(fill >= 1)) return { ok: false, error: 'invalid_fill' };
   const extractionSeconds = Math.ceil((fill / rate) * 3600);
+  const plantSeconds = refining ? refineSeconds(fill, def.refineOrePerHour || 1) : 0;
   const thenAction: MiningThenAction = input.thenAction ?? 'return_store';
   const destinationId = thenAction === 'hold' ? parent : (input.destinationId || originId);
-  const back = thenAction === 'hold' ? null : quoteLeg(parent, destinationId, rock.deltaVExtra, tier, fill, eff, legs);
-  const arrivesAtMs = nowMs + out.seconds * 1000;
-  const miningEndsAtMs = arrivesAtMs + extractionSeconds * 1000;
-  const completesAtMs = miningEndsAtMs + (back ? back.seconds * 1000 : 0);
-  const price = RESOURCE_MAP.get(oreId)?.baseMarketPrice ?? 0;
   // Phase B: shared-rock pressure and the shakedown on the way home.
   const claimed = !!input.claimed;
   const sharedMiners = claimed ? 1 : Math.max(1, Math.floor(input.sharedMiners ?? 1));
   const share = rockPressureShare(sharedMiners, claimed);
-  const landedBeforeToll = applyRockPressure(fill, share);
+  const oreLanded = applyRockPressure(fill, share);
+  const products = refining ? refineOutputs(oreId, oreLanded, recovery) : {};
+  const cargoUnits = refining ? refinedUnitTotal(products) : oreLanded;
+  // Phase B invariant: pressure costs UNITS, never time or fuel. The leg home
+  // is therefore quoted on the QUOTED fill (and, refining, on the product that
+  // fill would make), not on what pressure will leave aboard.
+  const quotedCargo = refining ? refinedUnitTotal(refineOutputs(oreId, fill, recovery)) : fill;
+  const back = thenAction === 'hold' ? null : quoteLeg(parent, destinationId, rock.deltaVExtra, tier, quotedCargo, eff, legs, refining ? 1 : ORE_LOAD_WEIGHT);
+  const rawFuel = out.fuel + (back?.fuel ?? 0);
+  const depot = depotCoverage(rawFuel, input.depotStockUnits ?? 0);
+  const arrivesAtMs = nowMs + out.seconds * 1000;
+  const miningEndsAtMs = arrivesAtMs + extractionSeconds * 1000;
+  const refineEndsAtMs = miningEndsAtMs + plantSeconds * 1000;
+  const completesAtMs = refineEndsAtMs + (back ? back.seconds * 1000 : 0);
+  const price = RESOURCE_MAP.get(oreId)?.baseMarketPrice ?? 0;
   const cover: EscortCover = thenAction === 'hold' ? 'none' : (input.escortCover ?? 'none');
   const odds = thenAction === 'hold' ? 0 : shakedownOdds(parent, cover, !!input.frontier);
-  const loss = thenAction === 'hold' ? 0 : expectedShakedownLoss(parent, cover, !!input.frontier, landedBeforeToll);
-  const expectedUnits = Math.max(0, Math.round(landedBeforeToll - loss));
+  const loss = thenAction === 'hold' ? 0 : expectedShakedownLoss(parent, cover, !!input.frontier, cargoUnits);
+  const landedProducts = refining
+    ? (thenAction === 'hold' ? products : applyProductLoss(products, cargoUnits > 0 ? loss / cargoUnits : 0).outputs)
+    : {};
+  const expectedUnits = refining ? refinedUnitTotal(landedProducts) : Math.max(0, Math.round(cargoUnits - loss));
+  const opex = refining ? refineOpex(oreId, fill) : 0;
   const ev = rockEventMults(intel as RockEventState | null, nowMs);
   return {
     ok: true,
     order: {
-      mode: 'mine', asteroidId: rock.id, fieldId: field.id, parentLocationId: parent,
+      mode: refining ? 'refine' : 'mine', asteroidId: rock.id, fieldId: field.id, parentLocationId: parent,
       oreId, fillUnits: fill, thenAction,
       originId, destinationId,
       startedAtMs: nowMs, arrivesAtMs, miningEndsAtMs, completesAtMs,
-      fuelCost: out.fuel + (back?.fuel ?? 0), ratePerHour: rate, surveyed: !!intel,
+      ...(refining ? { refineEndsAtMs, refined: true, outputs: landedProducts, refineOpex: opex } : {}),
+      fuelCost: depot.cashFuel, ratePerHour: rate, surveyed: !!intel,
       claimed, sharedMiners, pressureShare: share, expectedUnits, shakedownOdds: odds,
+      ...(depot.covered > 0 ? { depotCovered: depot.covered, depotUnitsDrawn: depot.unitsDrawn } : {}),
       ...(cover === 'assigned' && input.escortInstanceId ? { escortInstanceId: input.escortInstanceId } : {}),
     },
     transitOutSeconds: out.seconds, extractionSeconds, transitBackSeconds: back?.seconds ?? 0, deltaVOut: out.deltaV,
-    expectedValue: Math.round(expectedUnits * price),
+    expectedValue: refining ? productValue(landedProducts) : Math.round(expectedUnits * price),
     pressureShare: share, shakedownOdds: odds, expectedShakedownLoss: loss, expectedUnits,
     rockEvents: { rubble: ev.rubble, spinUp: ev.spinUp },
+    refiningSeconds: plantSeconds, outputs: landedProducts, refineOpex: opex,
+    depotCovered: depot.covered, depotUnitsDrawn: depot.unitsDrawn, fuelBeforeDepot: rawFuel,
   };
 }
 
@@ -370,8 +535,12 @@ export function miningOrderPhase(order: MiningOrder, nowMs: number): MiningOrder
   if (nowMs >= order.completesAtMs) return 'complete';
   if (order.mode === 'return') return 'returning';
   if (nowMs < order.arrivesAtMs) return 'transit_out';
-  if (order.mode === 'survey') return 'complete';
+  // Phase C: a SWEEP survey works the field for a while after arrival; a
+  // single-rock survey completes on arrival as it did in Phase A.
+  if (order.mode === 'survey') return nowMs < order.completesAtMs ? 'mining' : 'complete';
   if (nowMs < order.miningEndsAtMs) return 'mining';
+  // Phase C: the plant runs between miningEndsAtMs and refineEndsAtMs.
+  if (order.mode === 'refine' && typeof order.refineEndsAtMs === 'number' && nowMs < order.refineEndsAtMs) return 'refining';
   return 'returning';
 }
 
@@ -391,16 +560,22 @@ export function describeMiningOrder(order: MiningOrder, nowMs: number): MiningOr
   const pct = Math.max(0, Math.min(100, ((nowMs - order.startedAtMs) / total) * 100));
   const etaSeconds = Math.max(0, (order.completesAtMs - nowMs) / 1000);
   let unitsSoFar = 0;
-  if (order.mode === 'mine') {
+  if (order.mode === 'mine' || order.mode === 'refine') {
     if (phase === 'mining') {
       const span = Math.max(1, order.miningEndsAtMs - order.arrivesAtMs);
       unitsSoFar = Math.floor(order.fillUnits * Math.min(1, (nowMs - order.arrivesAtMs) / span));
-    } else if (phase === 'returning' || phase === 'complete') unitsSoFar = order.fillUnits;
+    } else if (phase === 'refining' || phase === 'returning' || phase === 'complete') unitsSoFar = order.fillUnits;
   } else if (order.mode === 'return') unitsSoFar = order.fillUnits;
   const parentName = LOCATION_MAP.get(order.parentLocationId)?.name || order.parentLocationId;
   const destName = LOCATION_MAP.get(order.destinationId)?.name || order.destinationId;
+  let refinedSoFar = 0;
+  if (phase === 'refining' && typeof order.refineEndsAtMs === 'number') {
+    const span = Math.max(1, order.refineEndsAtMs - order.miningEndsAtMs);
+    refinedSoFar = Math.floor(order.fillUnits * Math.min(1, (nowMs - order.miningEndsAtMs) / span));
+  }
   const label = phase === 'transit_out' ? `Outbound → ${parentName}`
-    : phase === 'mining' ? `Mining · ${unitsSoFar}/${order.fillUnits}`
+    : phase === 'mining' ? (order.mode === 'survey' ? `Surveying · ${(order.sweepAsteroidIds || []).length || 1} rocks` : `Mining · ${unitsSoFar}/${order.fillUnits}`)
+    : phase === 'refining' ? `Refining · ${refinedSoFar}/${order.fillUnits} ore`
     : phase === 'returning' ? `Returning → ${destName}`
     : order.mode === 'survey' ? 'Survey complete' : 'Complete';
   return { phase, label, pct, etaSeconds, unitsSoFar };
@@ -429,6 +604,7 @@ export function advanceMiningOrders(state: GameState, nowMs: number = Date.now()
   const asteroidIntel = { ...(state.asteroidIntel || {}) };
   let money = state.money;
   let totalEarned = state.totalEarned;
+  let totalSpent = state.totalSpent;
   const events: GameState['eventLog'] = [];
   let changed = false;
   // Phase B: escorts freed by completed orders; shakedown lines for the
@@ -448,9 +624,16 @@ export function advanceMiningOrders(state: GameState, nowMs: number = Date.now()
       return { ...ship, status: 'in_transit', route: { from: order.originId, to: order.parentLocationId, departedAtMs: order.startedAtMs, arrivalAtMs: order.arrivesAtMs, cargo: {} }, miningOperation: undefined };
     }
     if (phase === 'mining') {
-      if (ship.status === 'mining' && ship.currentLocation === order.parentLocationId && !ship.route) return ship;
+      const working = order.mode === 'survey' ? 'surveying' as const : 'mining' as const;
+      if (ship.status === working && ship.currentLocation === order.parentLocationId && !ship.route) return ship;
       changed = true;
-      return { ...ship, status: 'mining', currentLocation: order.parentLocationId, route: undefined, miningOperation: undefined };
+      return { ...ship, status: working, currentLocation: order.parentLocationId, route: undefined, miningOperation: undefined };
+    }
+    if (phase === 'refining') {
+      // Phase C: the plant runs on station at the field.
+      if (ship.status === 'refining' && ship.currentLocation === order.parentLocationId && !ship.route) return ship;
+      changed = true;
+      return { ...ship, status: 'refining', currentLocation: order.parentLocationId, route: undefined, miningOperation: undefined };
     }
     if (phase === 'returning') {
       if (ship.status === 'in_transit' && ship.route?.to === order.destinationId) return ship;
@@ -464,7 +647,7 @@ export function advanceMiningOrders(state: GameState, nowMs: number = Date.now()
     const rockName = order.asteroidId ? (getAsteroid(order.asteroidId)?.name || order.asteroidId) : 'held cargo';
     const oreName = RESOURCE_MAP.get(order.oreId as ResourceId)?.name || order.oreId;
     let base: Ship = { ...ship, miningOrder: undefined, route: undefined, miningOperation: undefined, status: 'idle', currentLocation: order.destinationId };
-    if (order.mode === 'mine' && order.asteroidId) {
+    if ((order.mode === 'mine' || order.mode === 'refine') && order.asteroidId) {
       workedRocks.push({ asteroidId: order.asteroidId, atMs: order.completesAtMs });
       const rec = asteroidIntel[order.asteroidId];
       // Rubble wear: hull condition is client-owned (hazards.ts precedent) —
@@ -487,8 +670,10 @@ export function advanceMiningOrders(state: GameState, nowMs: number = Date.now()
     }
     if (order.mode === 'survey') {
       if (!order.serverAuthoritative && order.asteroidId) {
-        const rock = getAsteroid(order.asteroidId);
-        if (rock) asteroidIntel[rock.id] = { ...rollAsteroidIntel(rock, LOCAL_INTEL_SALT), surveyedAtMs: nowMs, via: 'ship' };
+        for (const id of (order.sweepAsteroidIds && order.sweepAsteroidIds.length > 0 ? order.sweepAsteroidIds : [order.asteroidId])) {
+          const rock = getAsteroid(id);
+          if (rock) asteroidIntel[rock.id] = { ...rollAsteroidIntel(rock, LOCAL_INTEL_SALT), surveyedAtMs: nowMs, via: 'ship' };
+        }
       } else if (order.asteroidId && order.intel) {
         asteroidIntel[order.asteroidId] = { ...order.intel, surveyedAtMs: nowMs, via: 'ship' };
       }
@@ -496,17 +681,33 @@ export function advanceMiningOrders(state: GameState, nowMs: number = Date.now()
       return base;
     }
     if (order.thenAction === 'hold') {
-      const heldUnits = order.mode === 'mine' ? applyRockPressure(order.fillUnits, order.pressureShare ?? 1) : order.fillUnits;
-      const held: HeldOre = { oreId: order.oreId, units: heldUnits, asteroidId: order.asteroidId, fieldId: order.fieldId };
-      events.push({ id: generateId(), date: state.gameDate, type: 'milestone', title: `⛏️ ${ship.name} holding ${heldUnits} ${oreName}`, description: `Hold full at ${rockName}${heldUnits < order.fillUnits ? ` (${order.fillUnits} quoted — shared-rock pressure)` : ''}. Issue a Return order to bring it home, or leave it for a hauler (Phase D).` });
+      const heldUnits = (order.mode === 'mine' || order.mode === 'refine') ? applyRockPressure(order.fillUnits, order.pressureShare ?? 1) : order.fillUnits;
+      const held: HeldOre = { oreId: order.oreId, units: heldUnits, asteroidId: order.asteroidId, fieldId: order.fieldId, ...(order.refined ? { refined: true } : {}) };
+      // Phase C: a refine run that holds parks the CONCENTRATE at the field;
+      // the opex was real work and is paid either way (local-only play).
+      if (order.refined && !order.serverAuthoritative && order.refineOpex) {
+        money -= order.refineOpex;
+        totalSpent += order.refineOpex;
+      }
+      const productLine = order.refined ? describeProducts(refineOutputs(order.oreId, heldUnits, MOBILE_REFINERY_RECOVERY)) : '';
+      events.push({ id: generateId(), date: state.gameDate, type: 'milestone', title: order.refined ? `🏭 ${ship.name} holding refined product` : `⛏️ ${ship.name} holding ${heldUnits} ${oreName}`, description: order.refined ? `${heldUnits} ${oreName} processed at ${rockName} → ${productLine}. Issue a Return order to bring it home.` : `Hold full at ${rockName}${heldUnits < order.fillUnits ? ` (${order.fillUnits} quoted — shared-rock pressure)` : ''}. Issue a Return order to bring it home, or leave it for a hauler (Phase D).` });
       return { ...base, heldOre: held };
     }
     if (!order.serverAuthoritative) {
       // Phase B: pressure share, then the NPC shakedown on the lane home.
-      const aboard = order.mode === 'mine' ? applyRockPressure(order.fillUnits, order.pressureShare ?? 1) : order.fillUnits;
+      // Phase C: a refined run carries PRODUCT — the toll and the credit are
+      // taken on the manifest, not on the rock it came from.
+      const oreAboard = (order.mode === 'mine' || order.mode === 'refine') ? applyRockPressure(order.fillUnits, order.pressureShare ?? 1) : order.fillUnits;
+      const products = order.refined ? refineOutputs(order.oreId, oreAboard, MOBILE_REFINERY_RECOVERY) : {};
+      const aboard = order.refined ? refinedUnitTotal(products) : oreAboard;
+      if (order.refined && order.refineOpex) {
+        money -= order.refineOpex;
+        totalSpent += order.refineOpex;
+      }
       const cover: EscortCover = order.escortInstanceId ? 'assigned' : 'none';
       const toll = orderHasReturnLeg(order.mode, order.thenAction) ? settleShakedown(order.id, order.parentLocationId, cover, frontier, aboard) : null;
       const landed = toll ? toll.unitsLanded : aboard;
+      const landedProducts = order.refined ? applyProductLoss(products, aboard > 0 ? (aboard - landed) / aboard : 0).outputs : {};
       if (toll?.hit || toll?.repelled) {
         const parentName = LOCATION_MAP.get(order.parentLocationId)?.name || order.parentLocationId;
         const summary = toll.hit
@@ -515,18 +716,24 @@ export function advanceMiningOrders(state: GameState, nowMs: number = Date.now()
         hazardLines.push({ id: `shakedown-${order.id}`, type: 'pirate_raid', severity: toll.hit ? 'major' : 'minor', locationId: order.parentLocationId, occurredAtMs: order.completesAtMs, affectedShipInstanceId: ship.instanceId, targetName: ship.name, damagePct: 0, mitigatedPct: toll.hit ? 0 : 1, destroyed: false, insurancePayout: 0, summary });
         events.push({ id: generateId(), date: state.gameDate, type: 'random_event', title: toll.hit ? `🏴‍☠️ Shakedown — ${ship.name}` : `🛡️ Shakedown repelled — ${ship.name}`, description: summary });
       }
+      const cargoName = order.refined ? describeProducts(landedProducts) : `${landed} ${oreName}`;
       if (order.thenAction === 'return_sell') {
-        const price = getSpotPrice(state.marketSnapshot, order.oreId, RESOURCE_MAP.get(order.oreId as ResourceId)?.baseMarketPrice ?? 0) || 0;
-        const proceeds = Math.round(landed * price * (1 - MINING_SALE_BROKER_FEE));
+        const proceeds = order.refined
+          ? Math.round(Object.entries(landedProducts).reduce((sum, [slug, qty]) => sum + qty * (getSpotPrice(state.marketSnapshot, slug, RESOURCE_MAP.get(slug as ResourceId)?.baseMarketPrice ?? 0) || 0), 0) * (1 - MINING_SALE_BROKER_FEE))
+          : Math.round(landed * (getSpotPrice(state.marketSnapshot, order.oreId, RESOURCE_MAP.get(order.oreId as ResourceId)?.baseMarketPrice ?? 0) || 0) * (1 - MINING_SALE_BROKER_FEE));
         money += proceeds;
         totalEarned += proceeds;
-        events.push({ id: generateId(), date: state.gameDate, type: 'milestone', title: `💰 ${ship.name} sold ${landed} ${oreName}`, description: `$${(proceeds / 1_000_000).toFixed(2)}M at spot (−3% broker) on arrival at ${LOCATION_MAP.get(order.destinationId)?.name || order.destinationId}.` });
+        events.push({ id: generateId(), date: state.gameDate, type: 'milestone', title: `💰 ${ship.name} sold ${cargoName}`, description: `$${(proceeds / 1_000_000).toFixed(2)}M at spot (−3% broker) on arrival at ${LOCATION_MAP.get(order.destinationId)?.name || order.destinationId}.` });
       } else {
-        if (landed > 0) creditArrivalCargo(resources, locationInventories, order.destinationId, { [order.oreId]: landed });
-        events.push({ id: generateId(), date: state.gameDate, type: 'milestone', title: `📦 ${ship.name} unloaded ${landed} ${oreName}`, description: `Ore stored at ${LOCATION_MAP.get(order.destinationId)?.name || order.destinationId}.` });
+        if (order.refined) {
+          if (refinedUnitTotal(landedProducts) > 0) creditArrivalCargo(resources, locationInventories, order.destinationId, landedProducts);
+        } else if (landed > 0) {
+          creditArrivalCargo(resources, locationInventories, order.destinationId, { [order.oreId]: landed });
+        }
+        events.push({ id: generateId(), date: state.gameDate, type: 'milestone', title: `📦 ${ship.name} unloaded ${cargoName}`, description: `${order.refined ? 'Product' : 'Ore'} stored at ${LOCATION_MAP.get(order.destinationId)?.name || order.destinationId}.` });
       }
     } else {
-      events.push({ id: generateId(), date: state.gameDate, type: 'milestone', title: `📦 ${ship.name} back with ${order.fillUnits} ${oreName}`, description: `${order.thenAction === 'return_sell' ? 'Sale proceeds' : 'The ore'} clear through the corporate registry on the next sync.` });
+      events.push({ id: generateId(), date: state.gameDate, type: 'milestone', title: order.refined ? `🏭 ${ship.name} back with refined product` : `📦 ${ship.name} back with ${order.fillUnits} ${oreName}`, description: `${order.thenAction === 'return_sell' ? 'Sale proceeds' : order.refined ? 'The product' : 'The ore'} clear through the corporate registry on the next sync.` });
     }
     return { ...base, heldOre: order.mode === 'return' ? undefined : base.heldOre };
   });
@@ -542,11 +749,21 @@ export function advanceMiningOrders(state: GameState, nowMs: number = Date.now()
     asteroidIntel,
     money,
     totalEarned,
+    totalSpent,
     eventLog: events.length > 0 ? [...events, ...(state.eventLog || [])].slice(0, MAX_EVENT_LOG) : state.eventLog,
     ...(hazardLines.length > 0 ? { recentHazards: [...hazardLines, ...(state.recentHazards || [])].slice(0, 50) } : {}),
   };
   for (const w of workedRocks) out = markClaimWorked(out, w.asteroidId, w.atMs);
   return out;
+}
+
+/** "12 Lunar Water Ice, 20 Ammonia" — one line for an event-log entry. */
+export function describeProducts(outputs: Record<string, number>): string {
+  const parts = Object.entries(outputs)
+    .filter(([, qty]) => qty > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([slug, qty]) => `${qty} ${RESOURCE_MAP.get(slug as ResourceId)?.name || slug}`);
+  return parts.length > 0 ? parts.join(', ') : 'nothing';
 }
 
 // ─── Helpers the UI and handlers share ───────────────────────────────────────

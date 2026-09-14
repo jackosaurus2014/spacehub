@@ -145,6 +145,12 @@ export const SHIP_ASSETS: Record<string, string> = {
   // SHIP_ART_BACKLOG below carries the Gemini briefs.
   prospector_barge: `${BASE}/ship-ore-harvester.webp`,
   hauler: `${BASE}/ship-heavy-transport.webp`,
+  // Mining Phase C (2026-09-13): the Refinery Barge, the Propellant Depot
+  // Ship and the Survey Cruiser. Same posture — explicit borrowed renders,
+  // briefs in SHIP_ART_BACKLOG for the next art batch.
+  refinery_barge: `${BASE}/ship-mining-m.webp`,
+  propellant_depot_ship: `${BASE}/ship-fuel-tanker.webp`,
+  survey_cruiser: `${BASE}/ship-starfarer-explorer.webp`,
   // Interstellar hulls (Wave 10) — these previously borrowed other hulls' art
   // (ship-scout-angle2 / ship-transport-l). Wave A6 gave them dedicated
   // renders: the Starfarer's warp-coil rings and the Ark's rotating habitat
@@ -177,6 +183,18 @@ export const SHIP_ART_BACKLOG: Record<string, { borrows: string; brief: string }
   hauler: {
     borrows: 'heavy_transport',
     brief: 'Hauler: ore tug — an oversized open bulk hold on a skeletal low-thrust frame, small engine cluster, no crew module to speak of; top-down plan view, cyan logistics accent.',
+  },
+  refinery_barge: {
+    borrows: 'asteroid_miner',
+    brief: 'Refinery Barge: a mobile ore plant — carbonyl separation columns and a solar-thermal smelter stacked amidships, a slag chute venting aft, ore hopper forward, concentrate bins along the spine; top-down plan view, amber industrial accent.',
+  },
+  propellant_depot_ship: {
+    borrows: 'fuel_tanker',
+    brief: 'Propellant Depot Ship: a parked propellant farm — four fat spherical cryo tanks in a square frame, a cracking plant and radiator fins between them, docking booms fore and aft for hulls to come alongside; top-down plan view, cyan logistics accent.',
+  },
+  survey_cruiser: {
+    borrows: 'starfarer_explorer',
+    brief: 'Survey Cruiser: a long-range sensor ship — a hyperspectral array disc forward, a gravimeter boom trailing aft, no cargo bay at all, slim fast hull; top-down plan view, cyan sensor accent.',
   },
 };
 

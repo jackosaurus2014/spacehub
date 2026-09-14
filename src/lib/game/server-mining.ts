@@ -58,6 +58,26 @@ import {
 import { FRONTIER_DURATION_MS } from './frontier';
 import { orderHasReturnLeg, settleShakedown, type EscortCover } from './npc-shakedown';
 import { applyRockPressure, rockPressureShare } from './rock-pressure';
+// Mining Phase C (2026-09-13): refining, propellant depots, survey reports.
+import {
+  MOBILE_REFINERY_RECOVERY,
+  applyProductLoss,
+  refineOutputs,
+  refinedUnitTotal,
+} from './ore-refining';
+import {
+  DEPOT_FEEDSTOCK_YIELD,
+  depotRestockPricePerUnit,
+  feedstockPropellant,
+  type DepotRecord,
+  type PublicDepotView,
+} from './propellant-depots';
+import {
+  listingFromRow,
+  reportSellerProceeds,
+  type OwnedSurveyReport,
+  type SurveyReportListing,
+} from './survey-reports';
 import { REAL_MS_PER_GAME_MONTH } from './server-time';
 import { SHIP_MAP } from './ships';
 import { LOCATION_MAP } from './solar-system';
@@ -191,6 +211,13 @@ export interface MiningOrderRowLite {
   shakedownRepelled: boolean;
   pressureShare: number;
   claimId: string | null;
+  /** Phase C: the cargo is refined PRODUCT (ore-refining.ts), when the plant
+   *  finished, the opex burned and the depot that paid part of the fuel. */
+  refined: boolean;
+  refineEndsAt: Date | null;
+  refineOpexPaid: number;
+  depotId: string | null;
+  depotUnitsDrawn: number;
 }
 
 export const ORDER_SELECT = {
@@ -199,6 +226,7 @@ export const ORDER_SELECT = {
   miningEndsAt: true, completesAt: true, fuelPaid: true, ratePerHour: true, surveyed: true, status: true,
   unitsCredited: true, saleProceeds: true,
   escortInstanceId: true, shakedownUnits: true, shakedownRepelled: true, pressureShare: true, claimId: true,
+  refined: true, refineEndsAt: true, refineOpexPaid: true, depotId: true, depotUnitsDrawn: true,
 } as const;
 
 /** The profile's live orders (pending or held) — one per ship at most. */
@@ -329,9 +357,10 @@ export async function completeDueMiningOrders(db: Db = prisma, profileId?: strin
   let settled = 0;
   for (const o of due) {
     try {
-      const isHold = o.mode === 'mine' && o.thenAction === 'hold';
+      const works = o.mode === 'mine' || o.mode === 'refine';
+      const isHold = works && o.thenAction === 'hold';
       const nextStatus = isHold ? MINING_ORDER_HELD : MINING_ORDER_COMPLETE;
-      const credits = (o.mode === 'mine' && !isHold) || o.mode === 'return';
+      const credits = (works && !isHold) || o.mode === 'return';
       const sells = credits && o.thenAction === 'return_sell';
       const rock = o.asteroidId ? await loadAsteroidRow(o.asteroidId, db) : null;
       const claim = o.asteroidId ? await loadActiveClaim(o.asteroidId, db) : null;
@@ -339,15 +368,20 @@ export async function completeDueMiningOrders(db: Db = prisma, profileId?: strin
 
       // (1) pressure
       let share = 1;
-      if (o.mode === 'mine' && o.asteroidId && !mine) {
+      if (works && o.asteroidId && !mine) {
         const others = await countOtherMinersInWindow(db, o.asteroidId, o.profileId, o.arrivesAt, o.miningEndsAt);
         share = rockPressureShare(1 + others, false);
       }
-      const extracted = o.mode === 'mine' ? applyRockPressure(o.fillUnits, share) : o.fillUnits;
+      const extracted = works ? applyRockPressure(o.fillUnits, share) : o.fillUnits;
+      // Phase C: a refined run flies PRODUCT. The manifest is a pure function
+      // of (oreId, ore units, recovery) — never a client claim — and the toll
+      // and the credit are both taken on it.
+      const products = o.refined ? refineOutputs(o.oreId, extracted, MOBILE_REFINERY_RECOVERY) : {};
+      const cargoUnits = o.refined ? refinedUnitTotal(products) : extracted;
 
       // (2) shakedown on the lane home
       let toll: ReturnType<typeof settleShakedown> | null = null;
-      if (credits && orderHasReturnLeg(o.mode, o.thenAction) && extracted > 0) {
+      if (credits && orderHasReturnLeg(o.mode, o.thenAction) && cargoUnits > 0) {
         const parent = rock ? (ASTEROID_FIELD_MAP.get(rock.fieldId)?.parentLocationId ?? o.originId) : (ASTEROID_FIELD_MAP.get(o.fieldId)?.parentLocationId ?? o.originId);
         const frontier = await profileInFrontier(db, o.profileId, now);
         let cover: EscortCover = o.escortInstanceId ? 'assigned' : 'none';
@@ -355,11 +389,23 @@ export async function completeDueMiningOrders(db: Db = prisma, profileId?: strin
           const live = await loadLiveOrders(o.profileId, db);
           if (await hasStationedEscortAt(db, o.profileId, parent, live)) cover = 'stationed';
         }
-        toll = settleShakedown(o.id, parent, cover, frontier, extracted);
+        toll = settleShakedown(o.id, parent, cover, frontier, cargoUnits);
       }
-      const landed = toll ? toll.unitsLanded : extracted;
-      const spot = sells ? await loadOreSpotPrice(o.oreId, db) : 0;
-      const proceeds = sells ? Math.round(landed * spot * (1 - MINING_SALE_BROKER_FEE)) : 0;
+      const landed = toll ? toll.unitsLanded : cargoUnits;
+      const landedProducts = o.refined
+        ? applyProductLoss(products, cargoUnits > 0 ? (cargoUnits - landed) / cargoUnits : 0).outputs
+        : {};
+      let proceeds = 0;
+      if (sells) {
+        if (o.refined) {
+          for (const [slug, qty] of Object.entries(landedProducts)) {
+            proceeds += qty * await loadOreSpotPrice(slug, db);
+          }
+          proceeds = Math.round(proceeds * (1 - MINING_SALE_BROKER_FEE));
+        } else {
+          proceeds = Math.round(landed * (await loadOreSpotPrice(o.oreId, db)) * (1 - MINING_SALE_BROKER_FEE));
+        }
+      }
       const client = db as PrismaClient;
       const run = async (tx: Db): Promise<boolean> => {
         const flipped = await tx.miningOrder.updateMany({
@@ -380,13 +426,21 @@ export async function completeDueMiningOrders(db: Db = prisma, profileId?: strin
         if (credits && landed > 0) {
           if (sells) {
             await tx.gameProfile.update({ where: { id: o.profileId }, data: { money: { increment: proceeds }, totalEarned: { increment: proceeds } } });
-            if (ledgerOn) await recordLedger(tx, { profileId: o.profileId, moneyDelta: proceeds, reason: 'mining_order_sale', refId: o.id });
+            if (ledgerOn) await recordLedger(tx, { profileId: o.profileId, moneyDelta: proceeds, reason: o.refined ? 'refining_sale' : 'mining_order_sale', refId: o.id });
           } else if (ledgerOn) {
-            await recordLedger(tx, { profileId: o.profileId, resourceSlug: o.oreId, resourceDelta: landed, reason: 'mining_order_ore', refId: o.id });
+            if (o.refined) {
+              // Phase C: refining_output is the ONLY path that creates refined
+              // product from ore on a synced profile.
+              for (const [slug, qty] of Object.entries(landedProducts)) {
+                if (qty > 0) await recordLedger(tx, { profileId: o.profileId, resourceSlug: slug, resourceDelta: qty, reason: 'refining_output', refId: o.id });
+              }
+            } else {
+              await recordLedger(tx, { profileId: o.profileId, resourceSlug: o.oreId, resourceDelta: landed, reason: 'mining_order_ore', refId: o.id });
+            }
           }
         }
         // (3) depletion + exhaustion
-        if (o.mode === 'mine' && o.asteroidId && extracted > 0) {
+        if (works && o.asteroidId && extracted > 0) {
           await tx.asteroid.updateMany({ where: { id: o.asteroidId, reserve: { gte: extracted } }, data: { reserve: { decrement: extracted } } });
           await tx.asteroid.updateMany({ where: { id: o.asteroidId, reserve: { lt: extracted } }, data: { reserve: 0 } });
           const exhausted = await tx.asteroid.updateMany({ where: { id: o.asteroidId, reserve: { lte: 0 }, exhaustedAt: null }, data: { exhaustedAt: now } });
@@ -395,11 +449,11 @@ export async function completeDueMiningOrders(db: Db = prisma, profileId?: strin
           }
         }
         // (4) the holder's claim is worked
-        if (o.mode === 'mine' && mine && claim && o.completesAt.getTime() > claim.lastWorkedAt.getTime()) {
+        if (works && mine && claim && o.completesAt.getTime() > claim.lastWorkedAt.getTime()) {
           await tx.asteroidClaim.updateMany({ where: { id: claim.id, status: CLAIM_ACTIVE }, data: { lastWorkedAt: o.completesAt, expiresAt: new Date(claimExpiresAt(o.completesAt.getTime())) } });
         }
         // (5) rock events
-        if (o.mode === 'mine' && rock) {
+        if (works && rock) {
           const current = { rubbleUntilMs: rock.rubbleUntil?.getTime(), spinUpUntilMs: rock.spinUpUntil?.getTime() };
           const rolled = rollRockEvents(rock.risk, o.id, o.completesAt.getTime(), current, REAL_MS_PER_GAME_MONTH);
           if (rolled.rubbleUntilMs !== current.rubbleUntilMs || rolled.spinUpUntilMs !== current.spinUpUntilMs) {
@@ -746,3 +800,301 @@ export async function loadPublicClaimFeed(db: Db = prisma, now: Date = new Date(
 
 /** Test/route hook: drop the feed cache. */
 export function resetClaimFeedCache(): void { feedCache = null; }
+
+// ─── Phase C: propellant depots (propellant-depots.ts) ──────────────────────
+//
+// A PropellantDepot row IS the slot: (fieldId, slotIndex) is unique, so the
+// race for a field's finite slots is settled by the database, exactly the way
+// AsteroidClaim.activeKey settles the race for a rock. Stock moves only here:
+// the route draws units atomically when it quotes an order (a forged stock
+// figure on the client buys nothing) and tops them up on a restock.
+
+export const DEPOT_ACTIVE = 'active';
+export const DEPOT_RECALLED = 'recalled';
+
+export interface DepotRowLite {
+  id: string;
+  profileId: string;
+  fieldId: string;
+  slotIndex: number;
+  shipInstanceId: string;
+  stockUnits: number;
+  capacity: number;
+  status: string;
+  deployedAt: Date;
+}
+
+const DEPOT_SELECT = {
+  id: true, profileId: true, fieldId: true, slotIndex: true, shipInstanceId: true,
+  stockUnits: true, capacity: true, status: true, deployedAt: true,
+} as const;
+
+export function depotRecordFromRow(row: DepotRowLite): DepotRecord {
+  return {
+    id: row.id, fieldId: row.fieldId, slotIndex: row.slotIndex, shipInstanceId: row.shipInstanceId,
+    stockUnits: Math.max(0, Math.round(row.stockUnits * 100) / 100), capacity: row.capacity,
+    deployedAtMs: row.deployedAt.getTime(),
+  };
+}
+
+export async function loadMyDepots(profileId: string, db: Db = prisma): Promise<DepotRowLite[]> {
+  try {
+    return await db.propellantDepot.findMany({ where: { profileId, status: DEPOT_ACTIVE }, select: DEPOT_SELECT, take: 50 });
+  } catch {
+    return [];
+  }
+}
+
+/** This corporation's active depot at one field, if any. */
+export async function findMyDepot(profileId: string, fieldId: string, db: Db = prisma): Promise<DepotRowLite | null> {
+  try {
+    return await db.propellantDepot.findFirst({ where: { profileId, fieldId, status: DEPOT_ACTIVE }, select: DEPOT_SELECT });
+  } catch {
+    return null;
+  }
+}
+
+/** Slot indices already held at a field (by anyone). */
+export async function loadFieldDepotSlots(fieldId: string, db: Db = prisma): Promise<number[]> {
+  try {
+    const rows = await db.propellantDepot.findMany({ where: { fieldId, status: DEPOT_ACTIVE }, select: { slotIndex: true }, take: 50 });
+    return rows.map(r => r.slotIndex);
+  } catch {
+    return [];
+  }
+}
+
+export async function createDepotRow(tx: Db, profileId: string, fieldId: string, slotIndex: number, shipInstanceId: string, capacity: number, now: Date): Promise<DepotRowLite> {
+  return tx.propellantDepot.create({
+    data: {
+      profileId, fieldId, slotIndex, activeKey: `${fieldId}:${slotIndex}`, shipInstanceId,
+      stockUnits: 0, capacity: Math.max(0, Math.floor(capacity)), status: DEPOT_ACTIVE, deployedAt: now,
+    },
+    select: DEPOT_SELECT,
+  });
+}
+
+/** Release the slot (status-guarded). The propellant left in the tank is lost
+ *  with it — recalling a depot is not a refund. */
+export async function recallDepotRow(db: Db, depotId: string, now: Date): Promise<boolean> {
+  try {
+    const r = await db.propellantDepot.updateMany({
+      where: { id: depotId, status: DEPOT_ACTIVE },
+      data: { status: DEPOT_RECALLED, activeKey: null, stockUnits: 0, recalledAt: now },
+    });
+    return r.count === 1;
+  } catch {
+    return false;
+  }
+}
+
+/** Atomic draw. Returns false when the tank moved under us — the caller then
+ *  quotes the order at full cash price rather than crediting a discount that
+ *  was never funded. */
+export async function drawDepotFuel(tx: Db, depotId: string, units: number): Promise<boolean> {
+  const u = Math.max(0, Math.round(units * 1000) / 1000);
+  if (u <= 0) return true;
+  const r = await tx.propellantDepot.updateMany({
+    where: { id: depotId, status: DEPOT_ACTIVE, stockUnits: { gte: u } },
+    data: { stockUnits: { decrement: u } },
+  });
+  return r.count === 1;
+}
+
+/** Atomic top-up, capped at the tank. Returns the units actually loaded. */
+export async function addDepotStock(tx: Db, depot: DepotRowLite, units: number): Promise<number> {
+  const room = Math.max(0, depot.capacity - depot.stockUnits);
+  const load = Math.min(room, Math.max(0, Math.round(units * 1000) / 1000));
+  if (load <= 0) return 0;
+  const r = await tx.propellantDepot.updateMany({
+    where: { id: depot.id, status: DEPOT_ACTIVE, stockUnits: { lte: depot.capacity - load } },
+    data: { stockUnits: { increment: load } },
+  });
+  return r.count === 1 ? load : 0;
+}
+
+/** The public depot register: who holds which slot at which field. Stock
+ *  levels are never public (propellant-depots.ts PublicDepotView). */
+export async function loadPublicDepots(db: Db = prisma): Promise<PublicDepotView[]> {
+  try {
+    const rows = await db.propellantDepot.findMany({
+      where: { status: DEPOT_ACTIVE },
+      select: { fieldId: true, slotIndex: true, deployedAt: true, profile: { select: { companyName: true } } },
+      take: 200,
+    });
+    return rows.map(r => ({
+      fieldId: r.fieldId, slotIndex: r.slotIndex,
+      holderName: r.profile?.companyName || 'A corporation',
+      deployedAtMs: r.deployedAt.getTime(),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+/** Cash cost of `units` of propellant delivered to a field, at the live
+ *  rocket-fuel spot (the market row, not the client's figure). */
+export async function depotRestockCost(fieldId: string, units: number, db: Db = prisma): Promise<{ perUnit: number; total: number }> {
+  const spot = await loadOreSpotPrice('rocket_fuel', db);
+  const perUnit = depotRestockPricePerUnit(fieldId, spot);
+  return { perUnit, total: Math.round(perUnit * Math.max(0, units)) };
+}
+
+/** Propellant units a feedstock delivery yields (server-side check that the
+ *  slug is one the depot actually cracks). */
+export function depotFeedstockUnits(slug: string, qty: number): number {
+  return DEPOT_FEEDSTOCK_YIELD[slug] ? feedstockPropellant(slug, qty) : 0;
+}
+
+// ─── Phase C: survey reports (survey-reports.ts) ────────────────────────────
+//
+// A report is the corporation's own AsteroidSurvey row with a price on it.
+// Listing writes three columns; buying writes the BUYER a survey row of their
+// own at the seller's generation, moves the money seller <- buyer minus the
+// burned broker cut, and bumps the seller's soldCount. Nothing about the rock
+// is revealed by the listing itself.
+
+export interface SurveyReportRow {
+  id: string;
+  profileId: string;
+  asteroidId: string;
+  surveyedAt: Date;
+  generation: number;
+  listedPrice: number | null;
+  listedAt: Date | null;
+  soldCount: number;
+}
+
+const REPORT_SELECT = {
+  id: true, profileId: true, asteroidId: true, surveyedAt: true, generation: true,
+  listedPrice: true, listedAt: true, soldCount: true,
+} as const;
+
+export async function findReportById(id: string, db: Db = prisma): Promise<SurveyReportRow | null> {
+  try {
+    return await db.asteroidSurvey.findUnique({ where: { id }, select: REPORT_SELECT });
+  } catch {
+    return null;
+  }
+}
+
+/** Put a price on one of the corporation's own surveys. */
+export async function listReportRow(db: Db, profileId: string, asteroidId: string, price: number, now: Date): Promise<boolean> {
+  try {
+    const r = await db.asteroidSurvey.updateMany({
+      where: { profileId, asteroidId },
+      data: { listedPrice: Math.round(price), listedAt: now },
+    });
+    return r.count === 1;
+  } catch {
+    return false;
+  }
+}
+
+export async function unlistReportRow(db: Db, profileId: string, asteroidId: string): Promise<boolean> {
+  try {
+    const r = await db.asteroidSurvey.updateMany({ where: { profileId, asteroidId }, data: { listedPrice: null, listedAt: null } });
+    return r.count === 1;
+  } catch {
+    return false;
+  }
+}
+
+/** The corporation's own surveys with their listing state. */
+export async function loadMyReports(profileId: string, db: Db = prisma, now: Date = new Date()): Promise<OwnedSurveyReport[]> {
+  try {
+    const rows = await db.asteroidSurvey.findMany({
+      where: { profileId, surveyedAt: { lte: now } },
+      select: { ...REPORT_SELECT, asteroid: { select: { fieldId: true, generation: true, exhaustedAt: true } } },
+      orderBy: { surveyedAt: 'desc' },
+      take: 300,
+    });
+    return rows
+      .filter(r => surveyIsEffective(r, r.asteroid.generation, now) && !r.asteroid.exhaustedAt)
+      .map(r => ({
+        id: r.id,
+        asteroidId: r.asteroidId,
+        rockName: getAsteroid(r.asteroidId)?.name || r.asteroidId,
+        fieldId: r.asteroid.fieldId,
+        price: r.listedPrice ?? null,
+        listedAtMs: r.listedAt ? r.listedAt.getTime() : null,
+        soldCount: r.soldCount,
+        surveyedAtMs: r.surveyedAt.getTime(),
+        earned: reportSellerProceeds(r.listedPrice ?? 0) * r.soldCount,
+      }));
+  } catch {
+    return [];
+  }
+}
+
+/** Every live listing. Rows the viewer already holds an effective survey of
+ *  are filtered out by the caller (there is nothing left to buy). */
+export async function loadReportMarket(db: Db = prisma, now: Date = new Date(), viewerProfileId?: string): Promise<SurveyReportListing[]> {
+  try {
+    const rows = await db.asteroidSurvey.findMany({
+      where: { listedPrice: { not: null }, surveyedAt: { lte: now } },
+      select: {
+        ...REPORT_SELECT,
+        profile: { select: { companyName: true } },
+        asteroid: { select: { fieldId: true, generation: true, exhaustedAt: true } },
+      },
+      orderBy: { listedAt: 'desc' },
+      take: 200,
+    });
+    return rows
+      .filter(r => surveyIsEffective(r, r.asteroid.generation, now) && !r.asteroid.exhaustedAt)
+      .map(r => listingFromRow({
+        id: r.id, asteroidId: r.asteroidId, fieldId: r.asteroid.fieldId,
+        listedPrice: r.listedPrice, listedAt: r.listedAt, surveyedAt: r.surveyedAt, soldCount: r.soldCount,
+        sellerName: r.profile?.companyName, mine: !!viewerProfileId && r.profileId === viewerProfileId,
+      }));
+  } catch {
+    return [];
+  }
+}
+
+// ─── Phase C: sweep surveys (Survey Cruiser) ────────────────────────────────
+
+/**
+ * The extra rocks a sweep reveals: the nearest UNSURVEYED, unexhausted rocks
+ * of the same field, ordered by how close their delta-v surcharge is to the
+ * target's (the cruiser works outward from where it parked). Server-picked —
+ * the client only mirrors the count.
+ */
+export async function pickSweepTargets(
+  profileId: string,
+  fieldId: string,
+  fromAsteroidId: string,
+  count: number,
+  db: Db = prisma,
+  now: Date = new Date(),
+): Promise<string[]> {
+  const want = Math.max(0, Math.floor(count));
+  if (want <= 0) return [];
+  try {
+    const target = getAsteroid(fromAsteroidId);
+    const rows = await db.asteroid.findMany({
+      where: { fieldId, exhaustedAt: null },
+      select: { id: true, deltaVExtra: true, generation: true },
+      take: 200,
+    });
+    const surveys = await db.asteroidSurvey.findMany({
+      where: { profileId, asteroidId: { in: rows.map(r => r.id) } },
+      select: { asteroidId: true, surveyedAt: true, generation: true },
+      take: 200,
+    });
+    const seen = new Map(surveys.map(sv => [sv.asteroidId, sv]));
+    const base = target?.deltaVExtra ?? 0;
+    return rows
+      .filter(r => r.id !== fromAsteroidId)
+      .filter(r => {
+        const sv = seen.get(r.id);
+        return !sv || !surveyIsEffective(sv, r.generation, now);
+      })
+      .sort((a, b) => Math.abs(a.deltaVExtra - base) - Math.abs(b.deltaVExtra - base))
+      .slice(0, want)
+      .map(r => r.id);
+  } catch {
+    return [];
+  }
+}

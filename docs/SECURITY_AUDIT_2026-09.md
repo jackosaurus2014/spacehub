@@ -682,19 +682,13 @@ unbounded ceiling. The first sync of a profile is untouched (C-1's
 server-derived kit). **Never set `MONEY_ALLOWANCE_GROSS_MULT` below
 `MONEY_HEADROOM_MULT`** — that re-creates exactly this bug.
 
-**Known trade-off (follow-up).** The flat rail was also, by accident, the
-only thing tightening `computeServerMonthlyGrossDetailed`, which is a
-*theoretical maximum* — it takes every client-only multiplier at its
-documented cap (`MAX_SERVICE_REVENUE_CLIENT_MULT` ≈ **1,821x** nameplate).
-A 14-service row nameplated at $28M/game-month therefore reports a verified
-gross of ~$76.7B and is now allowed ~$461M per 65 s sync where the flat rail
-allowed $32.5M — about 3.4x looser for mid-size profiles. That is the price
-of not clamping large corporations, and it is the right side of the trade
-(the clamp's contract is "never clip an honest client"); the way to tighten
-it is to make the gross itself less theoretical — several terms in that stack
-(tier, era, legacy, commander roster) are partially server-known and could be
-read from the persisted row instead of taken at cap. That work belongs in
-`resource-plausibility.ts`, not in the rail. Not scheduled; tracked here.
+**Known trade-off — CLOSED 2026-09-13** (see "C-2 follow-up 4" below). The
+flat rail was also, by accident, the only thing tightening
+`computeServerMonthlyGrossDetailed`, which was a *theoretical maximum* — it
+took every client-only multiplier at its documented cap
+(`MAX_SERVICE_REVENUE_CLIENT_MULT` ≈ **1,821x** nameplate), so replacing the
+rail loosened mid-size profiles ~3.4x. The gross now reads the persisted row
+instead.
 
 **Elapsed-time limits, re-checked.** The 5 s minimum is unchanged and still
 below the 10 s `SYNC_MIN_INTERVAL_MS` cadence gate, so it never clips an
@@ -709,6 +703,83 @@ Tests: `ledger-reconcile.test.ts` ("money ceiling scales with the
 corporation" — $10M / $1B / $50B per game-month banked across a realistic
 60 s/30 s/5 min cadence, unclamped; 100x claims rejected at every size),
 `clock-unification.test.ts`.
+
+### C-2 follow-up 4 — the monthly gross reads the row, not the cap table (2026-09-13)
+
+**Was.** `computeServerMonthlyGrossDetailed` (resource-plausibility.ts) was a
+*theoretical* maximum: every server-known term evaluated for real, and every
+client-only multiplier taken at its documented cap. Their product,
+`MAX_SERVICE_REVENUE_CLIENT_MULT`, is ≈**1,821x** nameplate. That was
+tolerable while a flat $500/ms rail was the binding term — and stopped being
+tolerable the moment C-2 follow-up 3 derived the rail from this same number.
+Every corporation was handed an allowance sized by what its state could earn
+*if every multiplier in the game were simultaneously maxed*.
+
+**Now.** Each term is read from the persisted `GameProfile` where the row can
+prove it, and left at a documented allowance only where it genuinely cannot:
+
+| term | before | now |
+|---|---|---|
+| corporation tier | cap 1.20 | `tierFromProfileScalars(totalEarned)` + 1 rung of slack (`TIER_CEILING_SLACK`); tier gates are 10x apart in totalEarned |
+| corporate era | cap 1.10 | 1.00 below `ERA_MIN_CORPORATION_TIER` (3) — an era cannot be chartered there |
+| commanders | ASSUMED 2.00 (**not** an upper bound: six legendary hires clear it) | the sanitized `workforceData._commanders` roster at MAX_LEVEL with the engine's own 0.88^i per-class stacking + trait cap + one un-synced hire; no stash → the tier's `getHireCap` bound |
+| megastructure revenue | cap ≈10.7x (the largest single term) | only definitions whose `prerequisites.minMoney` (≥$25B) `totalEarned` has cleared |
+| legacy revenue | cap 6.00 | the engine's own soft cap evaluated against `totalEarned` (`stretch_revenue`) and profile age (`stretch_leader_legacy`: a retirement needs 60 real days of continuous assignment, at most `getHireCap` at a time) |
+| research service revenue | clamped at +50% | `getResearchBucketCap('revenue', tier)` — Row 8 grows it +15%/tier, so the old clamp **under-reported** any tier-2+ corporation (a latent reject-honest-income bug) |
+| crew | head-counts real, `trainingLevel` defaulted to 0.5 | head-counts real with `trainingLevel: 1, fatigue: 0` — the most generous `bonusScale`, so a trained crew is never under-reported |
+| mothball | ignored | a service whose own building is `mothballed` is worth 0 over a window shorter than `REACTIVATION_SPINUP_MONTHS`, pro-rated over a longer one |
+| service instance multiplier | `min(2, raw)` (raw is never persisted → 0-risk of under-report) | `min(2, max(1, raw))` |
+| mining_output chain | all caps | tier / research / megastructure / era / logistician-commander / crew terms read from the row |
+
+Still an allowance, and named as such on the report's
+`multiplierTerms.allowance`: reputation (1.40), doctrine (1.03),
+random-event effects (2.00), morale (1.15), the engine-capped wave-B stack
+(2.00), demand scarcity (1.25), the returning-commander boost (1.30), plus
+the megastructure-passive and subsidiary income allowances (gated on
+`totalEarned` but not otherwise checkable).
+
+**Measured (same fixtures, 65 s sync window):**
+
+| profile | nameplate $/game-month | multiple over nameplate | 65 s headroom |
+|---|---|---|---|
+| fresh solo, 1 launch pad, 3 d, $0 earned | $5.0M | 4,916x → **113x** | $149.0M → **$4.5M** (33x) |
+| 14 services, 90 d, $2B earned | $95.5M | 2,827x → **82x** | $1.63B → **$49.2M** (33x) |
+| …same, 2 commanders on the row | $95.5M | 2,827x → **57x** | $1.63B → **$34.8M** (47x) |
+| 14 services, 1 y, $20B earned (tier 4) | $202.5M | 3,196x → **133x** | $3.90B → **$166.1M** (24x) |
+| 14 services, 2 y, $600B earned (tier 6) | $202.5M | 3,196x → **2,660x** | $3.94B → **$3.28B** (1.2x) |
+| 6 mining rigs, 90 d, $2B earned | $573.5M | 43.5M x → **22,206x** | $150.3T → **$76.7B** (1,960x) |
+
+The whale row barely moves, and should not: a $600B-earned corporation
+genuinely can own the gated megastructures and sit at the top of the legacy
+curve. The tightening is concentrated exactly where the players are.
+
+**The ceiling formula is unchanged.** `plausibleIncomeHeadroom` /
+`plausibleAllowanceRatePerMs` in ledger-reconcile.ts were not touched — only
+their input got honest. `MONEY_ALLOWANCE_GROSS_MULT > MONEY_HEADROOM_MULT`
+still holds.
+
+**Conservatism is the contract, and it is tested.**
+`__tests__/server-monthly-gross.test.ts` builds five real `GameState`s
+(frontier solo, veteran 14-service, powered asteroid miner, an adversarial
+"every client multiplier at once" tier-7 row with $100T earned and every
+megastructure complete, and a fully mothballed operation), derives the
+persisted row from each exactly as sync/route.ts writes it, and asserts the
+estimate is ≥ what `processTick` actually pays that state over a game month —
+for every sync window the clamp can see (unknown, 10 s, 65 s, 6 h, 30 d).
+Observed margins: 68x / 84x / 7,450x / 18x. The adversarial row is the one
+that matters: 18x of head-room over a state with every multiplier live. The
+`money-clamp-quiet` content-accuracy check therefore cannot start firing on
+legitimate play — nothing in this change lowers the estimate below the
+engine, and the two terms that were previously *under*-bounds (research at
+tier 2+, the commander stack) were widened.
+
+**Deliberately left loose.** The mining_output valuation (nameplate units ×
+the resource's *band-maximum* price × the mining chain) is still ~22,000x
+nameplate. The band-max price is the dominant factor and `getServiceDemandMultiplier`-style
+live prices are not available to this function; `MAX_BUILDING_MINING_CLIENT_MULT`
+is also the resource-ceiling constant (shadow mode, see
+`RESOURCE_CLAMP_FALSE_POSITIVE_AUDIT.md`) and was not re-tuned from here.
+Next tightening for a mining-heavy world.
 
 ### C-3 — Orbital-slot lease transfer debited a non-consenting buyer (fixed)
 

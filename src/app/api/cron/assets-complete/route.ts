@@ -11,6 +11,11 @@ import { completeDueMiningOrders, chargeClaimUpkeep, expireDueClaims, respawnExh
 import {
   chargeHqSeatUpkeep, completeDueHqRelocations, renewHqSeatLeases, resolveDueHqSeatAuctions,
 } from '@/lib/game/hq-relocation-server';
+// CC-4: the same pass advances interstellar expeditions on the world clock
+// (outbound -> exploring -> returning -> complete). Their completion is what
+// the interstellar HQ gate counts and what the sync's expedition headroom
+// credit is priced from, so it must never depend on a client being awake.
+import { advanceDueExpeditions } from '@/lib/game/server-expeditions';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,9 +48,10 @@ export async function POST(request: NextRequest) {
     // outward (winner burned, losers refunded in full).
     const hqUpkeep = await chargeHqSeatUpkeep(prisma);
     const hqAuctions = await resolveDueHqSeatAuctions(prisma);
+    const expeditions = await advanceDueExpeditions(prisma);
     const durationMs = Date.now() - startedAt;
-    logger.info('assets-complete cron completed', { completed, miningSettled, claimsExpired, claimUpkeep, rocksRespawned, hqRelocated, hqSeats, hqUpkeep, hqAuctions, durationMs });
-    return NextResponse.json({ success: true, completed, miningSettled, claimsExpired, claimUpkeep, rocksRespawned, hqRelocated, hqSeats, hqUpkeep, hqAuctions, durationMs });
+    logger.info('assets-complete cron completed', { completed, miningSettled, claimsExpired, claimUpkeep, rocksRespawned, hqRelocated, hqSeats, hqUpkeep, hqAuctions, expeditions, durationMs });
+    return NextResponse.json({ success: true, completed, miningSettled, claimsExpired, claimUpkeep, rocksRespawned, hqRelocated, hqSeats, hqUpkeep, hqAuctions, expeditions, durationMs });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     logger.error('assets-complete cron failed', { error: msg });

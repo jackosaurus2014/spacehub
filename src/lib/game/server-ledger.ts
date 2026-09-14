@@ -137,6 +137,27 @@ export type LedgerReason =
   // matching credit; releasing a claim refunds nothing).
   | 'claim_stake_fee'
   | 'claim_upkeep'
+  // Mining Phase C (2026-09-13, ore-refining.ts / propellant-depots.ts /
+  // survey-reports.ts — all written by server-mining.ts and the mining
+  // route). `refining_output` is the ONLY path that turns ore into refined
+  // product for a synced profile: the manifest is a pure function of the
+  // order's (oreId, fillUnits, recovery), so nothing here can be claimed by
+  // a client. `refining_sale` is a refined run's 'return & sell' proceeds,
+  // kept separate from mining_order_sale so raw and refined revenue are
+  // legible in the P&L. BURNED sinks (no matching credit anywhere):
+  // `refining_opex` (power, reagents, slag handling), `depot_restock` (the
+  // delivery of propellant to a field) and the broker's cut of a report sale
+  // — which is the GAP between survey_report_purchase and
+  // survey_report_sale, the one player-to-player transfer in this group.
+  // `depot_feedstock` is the resource leg when a depot is filled with
+  // locally refined volatiles instead of cash.
+  | 'refining_output'
+  | 'refining_sale'
+  | 'refining_opex'
+  | 'depot_restock'
+  | 'depot_feedstock'
+  | 'survey_report_sale'
+  | 'survey_report_purchase'
   // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md): the Accord
   // Stabilization Assessment. BURNED — the pool is a sink, not an escrow, so
   // there is nothing to refund and nothing to exploit by pledging and
@@ -223,6 +244,14 @@ export type LedgerReason =
   | 'hq_seat_upkeep'
   | 'hq_seat_bid_escrow'
   | 'hq_seat_bid_refund'
+  // CC-4: the interstellar expedition launch bill (procured exotic fuel,
+  // consumables, hardened provisioning, insurance premium), debited by
+  // /api/space-tycoon/expeditions beside the Expedition row it creates.
+  // BURNED — it buys a mission, not an asset. NOT client-applied: the
+  // client skips its own debit for a server-backed launch and adopts this
+  // row as an ordinary pending delta, the same contract mining_order_fuel
+  // uses (expeditions.ts ServerBackedLaunchOpts).
+  | 'expedition_launch'
   | 'ship_build'
   | 'ship_build_resources'
   | 'ship_scrap_recovery'

@@ -4589,3 +4589,300 @@ prices that moved overnight.
   Pre-existing; unchanged here.
 - **Ore baselines moved.** Ore is one day old and barely traded, so the ×4
   regrade is cheap now and would not be in a month.
+
+---
+
+## Pass 16 — interstellar headquarters (2026-09-13)
+
+CC-4, the last phase of the Command Center system
+(`docs/COMMAND_CENTER_DESIGN_2026-09-13.md`). Two things were open when CC-3
+shipped, and both were economic, not cosmetic.
+
+### 1. The interstellar rung was gated on a proxy
+
+Design §3 asks for "Completed interstellar expedition + colony charter".
+CC-3 could only implement the charter half (the `interstellar_colonization`
+research plus a Colony Ark hull), because expeditions lived entirely in the
+client save: there was no row to count, so "completed an expedition" would
+have been the client's word for it.
+
+CC-4 gives expeditions a server record (prisma `Expedition`,
+`src/lib/game/server-expeditions.ts`, created by
+`POST /api/space-tycoon/expeditions` and advanced on the world clock by the
+assets-complete cron). The gate is now the design's actual sentence — a
+terminal-success expedition row **and** the charter — and both halves are
+server facts. Balance effect: the tier-7 seat costs a real campaign
+commitment (a $25B-$80B hull, ~266 game-months of mission for Proxima,
+$13B of consumables) before its $2.4B project and $1.5B reserve are even
+quotable. The rung stopped being reachable by anyone who merely parked a
+Colony Ark in a hangar.
+
+### 2. `expeditionReturnMult` had no server mirror
+
+Every other HQ term is mirrored inside `computeServerMonthlyGrossDetailed`
+through `headquarters.ts hqServiceRevenueMult`, because every other HQ term
+lands on tick income. The expedition term does not: it lands on a one-shot
+payout when a mission comes home, which the monthly-gross ceiling models not
+at all. A returning Proxima explorer pays **$6.4B-$10.6B** of survey data
+(×1.30 science cap, ×1.15 seat term → up to **$15.8B**) inside a single sync
+window — and was being clamped away as implausible income. That is the same
+failure that rejected real money twice the week CC-2 shipped.
+
+The fix is symmetrical with the contract / timed-event / delivery credits:
+`server-expeditions.ts creditDueExpeditionReturns` lifts the money ceiling
+once per return, by exactly
+
+    surveyPayout × EXPEDITION_SURVEY_SCIENCE_MULT_CAP (1.30) × hqExpeditionReturnMult(seat)
+
+where `surveyPayout` is the figure **this server** stamped at arrival, rolled
+from a seed **this server** issued at launch, and `hqExpeditionReturnMult` is
+the single helper in `headquarters.ts` that the client tick also multiplies
+by. The client supplies neither the ids nor the amounts, so a forged claim
+gains nothing; `Expedition.creditedAt` makes each return credit exactly once;
+and at most `MAX_EXPEDITION_CREDITS_PER_SYNC` (5) settle per sync.
+
+### The interstellar rung, measured whole
+
+`scripts/sim-hq-relocation.ts` now prices both halves. Service ledger, 24
+game-months, outer-colony conglomerate (7 settled surfaces, $30B start):
+
+| move at | seated from | cash stay | cash move | Δ cash | net/mo stay | net/mo move | outlay | payback |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 19 | $41.35B | $38.01B | **−$3.34B (−8.1%)** | $408.7M | $506.0M | $3.90B | 40 mo |
+| 6 | 24 | $41.35B | $37.52B | −$3.83B (−9.3%) | $408.7M | $412.6M | $3.90B | — |
+| 12 | 30 | $41.35B | $37.49B | −$3.85B (−9.3%) | $408.7M | $412.6M | $3.90B | — |
+
+Read that honestly: **the interstellar seat does not pay back inside 24
+months, and it is not supposed to.** The project alone is 18 game-months, so
+even the earliest mover is seated for five of the twenty-four; the +$97.3M
+per month it gains once seated recovers the $3.90B outlay at month ~40. This
+is the deepest rung on a campaign ladder and behaves like one — the same
+shape as the deep-space rung (24 mo payback on a much larger revenue base),
+one tier further out.
+
+The expedition term is a campaign payout, so it is reported as a rate rather
+than folded into a monthly table:
+
+| seat | system | round trip | survey (seed roll) | seat adds | per game-month | rent/mo | months of rent per return |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| deep_space_hq | Proxima Centauri | 268 mo | $10.45B | $1.57B | $5.9M | $50.0M | 31.4 |
+| deep_space_hq | Sirius A/B | 528 mo | $21.20B | $3.18B | $6.0M | $50.0M | 63.6 |
+| interstellar_hq | Proxima Centauri | 268 mo | $10.45B | $1.57B | $5.9M | $20.0M | 78.4 |
+| interstellar_hq | Sirius A/B | 528 mo | $21.20B | $3.18B | $6.0M | $20.0M | 159.0 |
+
+So the expedition term is worth ~$5.9M per game-month of mission at either
+seat — about 12% of the deep-space rent and 30% of the interstellar rent.
+Material, never decisive: it does not rescue an unprofitable seat and it does
+not make the move mandatory, which is the ±10-15% band working as intended.
+
+### Numbers unchanged
+
+No constant moved in this pass. `HQ_RELOCATION.interstellar_hq`
+($2.4B / 18 mo), `HQ_SEAT_BASE_PRICE.interstellar_hq` ($1.5B reserve),
+`HQ_UPKEEP_MONTHLY.interstellar_hq` ($20M/mo), `HQ_SEAT_COUNTS` (2) and the
+`interstellar_hq` bonus profile (+15% colony-surface, +15% expedition) are
+exactly as Pass 13 set them. The rung got a real gate and a real server
+mirror, not a reprice.
+
+### New money movement
+
+- `expedition_launch` — the launch bill (procured exotic fuel at the 1.25×
+  broker premium, $50M/game-month of consumables, optional hardened
+  provisioning at 10% of hull, optional 8% insurance premium), now debited by
+  the server and BURNED. It was always charged; CC-4 moved the payer of
+  record from the client to the wallet, so it is a ledger row rather than a
+  local subtraction. No change to the amount, and the Space Elevator's launch
+  discount is applied server-side from the world's completed `MegaProject`
+  rows rather than from a client claim.
+
+### Watch
+
+- **Resource samples still have no ceiling counterpart.** A return also
+  delivers 20-60 units each of the destination's sample-worthy resources
+  (`SAMPLE_WORTHY_RESOURCES`). `RESOURCE_CLAMP_MODE` is not `enforce`, so
+  nothing rejects them today, and the audit in
+  `docs/RESOURCE_CLAMP_FALSE_POSITIVE_AUDIT.md` should gain expedition
+  samples as an eleventh legitimate inflow path before that flag is ever
+  reconsidered.
+- **Colony arks never reach a server terminal status on their own.** An ark
+  holds station indefinitely by design, so its row stays `exploring` until
+  the owner commits it to a colony and the client reports `colonized` (only
+  accepted after the server's own arrival clock has passed). A player who
+  sends an ark and never founds the colony never opens the interstellar rung
+  — correct, but worth watching for confusion in the console copy.
+
+## Pass 15 — mining Phase C (2026-09-13)
+
+### What shipped (row C of `docs/SPACE_MINING_DESIGN_2026-09-12.md` §8)
+
+The other half of founder ruling 1 (§9): **ore is a real intermediate that
+must be hauled and refined**. Phase A made ore; Phase C turns it into
+product at the field. With it: the **Refinery Barge**, the **Propellant
+Depot Ship** with finite per-field slots, the **Survey Cruiser** and
+**survey reports as sellable intelligence**.
+
+Files: `ore-refining.ts`, `propellant-depots.ts`, `survey-reports.ts` (new,
+pure), `mining-orders.ts` (mode `refine`, depot-covered fuel, sweep surveys),
+`server-mining.ts` (refined settlement, depot rows, report rows, sweep
+targets), `/api/space-tycoon/assets/mining` (ops `deploy_depot`,
+`stock_depot`, `recall_depot`, `list_report`, `unlist_report`, `buy_report`,
+and `order` with `mode: 'refine'`), `ships.ts` (three hulls + the
+`refineOrePerHour` / `depotCapacity` / `surveySweep` fields),
+`MiningPanel.tsx`, `prisma/schema.prisma`, `scripts/sim-mining.ts`
+scenarios 7-9.
+
+### Refining ratios, loss and timing
+
+Ratios are authored at FULL recovery; a mobile plant recovers
+`MOBILE_REFINERY_RECOVERY` = **0.82** of them (the loss factor: 18% slag,
+boil-off and what a centrifuge in freefall cannot separate). A fixed
+refinery would recover 0.95 — the constant exists so the two can never
+drift, but no fixed refinery consumes ore yet.
+
+| Ore | Process | Per 100 ore (full recovery) | Product mass per ore unit (barge) | Value ratio full | Value ratio at 0.82 |
+| --- | --- | --- | --- | --- | --- |
+| Carbonaceous (C) | Volatile cracking | 12 lunar water ice, 20 ammonia, 2 organic compounds | 0.279 | 1.83x | 1.71x |
+| Silicate (S) | Silicate smelting | 18 steel ingots, 5 aluminium alloy | 0.189 | 1.86x | 1.53x |
+| Metallic (M) | Carbonyl separation | 15 steel ingots, 1.6 platinum group, 1 gold | 0.144 | 2.05x | 1.40x |
+| Exotic (X) | Exotic matrix separation | 5.5 exotic materials, 8 rare earth, 0.6 refined rare-earth oxides | 0.116 | 2.01x | 1.63x |
+
+Every output is a resource the market **already** trades —
+`resources.ts` is untouched by Phase C.
+
+| Constant | Value | Meaning |
+| --- | --- | --- |
+| `MOBILE_REFINERY_RECOVERY` | 0.82 | the loss factor aboard a barge |
+| `FIXED_REFINERY_RECOVERY` | 0.95 | reserved for a fixed refinery (not shipped) |
+| `REFINE_OPEX_SHARE` | 0.06 | power/reagents/slag, as a share of the ORE's base price per unit processed. BURNED (`refining_opex`) — it scales with what is processed, never with what it sells for |
+| `refineOrePerHour` | 1,200 (Refinery Barge) | plant throughput; extraction (140/h) is the bottleneck, not the plant |
+| `REFINE_MAX_BATCH_HOURS` | 12 | no single order ties a hull up longer — refining lives on the daily loop, not the campaign loop |
+
+**The hold is the point.** A refining hull's batch cap is `capacity ÷
+product mass per ore unit` (and the 12-hour clamp): a 400-unit hold that
+carries 400 units of metallic ore carries the concentrate of **2,771** ore
+units instead — 6.9x the ore per trip home.
+
+### The gate: refine at the field vs haul the rock home
+
+One Refinery Barge, Inner Belt M rock, selling at Ceres, 12 months (a
+6-month window truncates the ~12-hour refine cycle and would flatter the
+short raw cycle for a reason that has nothing to do with the economics):
+
+| Cycle | Trips home | Ore worked | Units sold | Revenue | Fuel | Refining opex | Net |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Haul raw ore home | 21 | 7,865 | 7,865 | $76.3M | $10.8M | — | $45.1M |
+| **Refine at the field** | **6** | **8,108** | **1,135** | **$101.2M** | **$6.7M** | $4.9M | **$69.3M** |
+
+**+$24.2M (1.54x) and a third of the trips.** The design's stated intent
+holds: refine near the field, haul the product.
+
+At Pass-14 **opening scarcity** the same comparison holds for C and M — both
+recipes' outputs are belt-, lunar- and outer-origin goods that carry the same
+3x band-capped premium their ore does (C: $241.0M refined vs $47.2M raw; M:
+$152.8M vs $36.3M). **S-type is the documented exception**: silicate refines
+to fabricated goods (flat 1.0x on the NPC curve), so on a fresh world raw
+silicate ore is worth more than the steel it makes ($50.5M raw vs $32.7M
+refined). That is a real market signal and is left in on purpose — silicate
+refines to structural metal Earth already has, and the case for refining it
+arrives as the ore market fills.
+
+### Propellant depots
+
+A depot pays the FIELD SIDE of every run its owner flies out of that field.
+
+| Constant | Value |
+| --- | --- |
+| `DEPOT_SLOTS_PER_FIELD` | 2 (3 in the Frontier field, so a newcomer is never locked out of the only field they can reach) |
+| `DEPOT_FUEL_VALUE_PER_UNIT` | $250K of propellant bill displaced per unit in the tank |
+| `DEPOT_COVER_SHARE` | 0.60 of one order's fuel bill |
+| tank | 5,000 units (Propellant Depot Ship, $340M, $700K/mo) |
+| feedstock | rocket fuel 1.0, water ice 0.8, Martian water 0.8, methane 0.7, ammonia 0.5 propellant units per unit |
+
+Cash restocking is priced at rocket-fuel spot x the field's delivery
+multiplier, and that is the whole geography of the decision:
+
+| Field | Slots | Cash $/unit | Burn displaced | Margin |
+| --- | --- | --- | --- | --- |
+| Near-Earth Cluster | 3 | $144K | $250K | +$106K |
+| Inner Belt | 2 | $192K | $250K | +$58K |
+| Ceres Approaches | 2 | $192K | $250K | +$58K |
+| Jupiter Trojans | 2 | $252K | $250K | −$2K |
+| Kuiper Fringe | 2 | $336K | $250K | −$86K |
+
+Past the belt, cash restocking costs more than the burn it displaces —
+**you crack local volatiles or you do without**, which is exactly the loop
+C-type refining feeds (its water ice and ammonia are depot feedstock).
+
+Twelve months, one Refinery Barge: at the Inner Belt a depot moves the cash
+fuel bill $6.7M → $2.7M (covering $4.0M for $3.1M of restock) and still
+loses $7.5M against $8.4M of upkeep — **a fleet-scale asset, not a
+single-hull one**. On the Near-Earth Cluster, where the delivery multiplier
+is lowest and the traffic heaviest, it covers $28.3M for $16.3M and clears
++$3.6M against upkeep before capex. Recalling a depot loses the tank.
+
+### Survey reports
+
+| Constant | Value |
+| --- | --- |
+| `REPORT_PRICE_MIN` | $250K |
+| ceiling | min($50M, 8% of the rock's in-ground base value), never below $1M |
+| suggested | 2% of in-ground base value — two thirds of the claim fee on the same rock, so knowing costs less than owning |
+| `REPORT_BROKER_FEE` | 8%, BURNED (the gap between `survey_report_purchase` and `survey_report_sale`) |
+
+A listing publishes the rock's **catalogue entry only** (name, field, class,
+delta-v surcharge), the seller's corporation name, the price and how old the
+intel is. Grade, reserve and risk stay hidden until someone pays. Buying
+writes the buyer their own `AsteroidSurvey` row at the seller's generation —
+identical intel, because you bought the survey, not a summary of it.
+
+**Survey Cruiser payback** ($450M, $900K/mo, tier 4, `hyperspectral`): it
+sweeps 6 rocks per 30-minute pass, ~40 rocks a game-month (a whole field),
+for the fuel to get there. Revealing 40 rocks with probes would cost $240M a
+month, so the hull repays itself in **1.9 months on survey cost alone**;
+report sales are upside, not the case for the hull. At the suggested $1.7M
+price for a median Inner Belt M rock, 2 sales a month clear $1.6M/month net
+and 8 clear $10.9M.
+
+### Gates
+
+| Gate | Result |
+| --- | --- |
+| Solo barge cash-positive by month 3 (Phase A) | **+$859K**, unchanged |
+| Blind barge still negative | unchanged |
+| Best ship gross ÷ capex ≤ 1.5x the Basic Lunar Extractor | Phase A/B **0.65x**; Phase C **0.92x** at base prices, **1.35x** at opening scarcity |
+| Claim pays only when contested (Pass 12) | unchanged |
+| One escort does not pay for one miner (Pass 12) | unchanged |
+| Refine-at-field beats haul-raw | **1.54x** over 12 months |
+
+Scenario 2 (the three-ship hold + Hauler cycle) still does not beat two
+returning miners, and Phase C does not change that: the Phase C answer to
+"why would I ever haul rock" is the Refinery Barge, which replaces the raw
+haul rather than feeding it. Transferring a miner's held ore to a separate
+refinery or hauler hull is Phase D.
+
+### Ledger reasons added
+
+`refining_output` (+ resources — the ONLY path that turns ore into product
+for a synced profile), `refining_sale` (+ money, kept separate from
+`mining_order_sale` so raw and refined revenue are legible), `refining_opex`
+(− money, burned), `depot_restock` (− money, burned), `depot_feedstock`
+(− resources), `survey_report_purchase` (− money, buyer) and
+`survey_report_sale` (+ money, seller). The broker's cut is the gap between
+the last two.
+
+### Risks / watch
+
+- **The S-type inversion is intentional but unexplained in-game.** The
+  Mining console shows the recipe and the prices; it does not say "do not
+  bother refining silicate on a fresh world". If new players burn a
+  Refinery Barge's month on S-type rocks, the fix is a console hint, not a
+  ratio change.
+- **Depot margins are geography, not tuning.** If `rocket_fuel` spot moves
+  (it is a fabricated good with no NPC curve, so only player/NPC industry
+  moves it), the Trojans and Kuiper margins move with it. Watch the first
+  quarterly report for a field where cash restocking has quietly become
+  free money.
+- **A refine order is a 12-hour commitment.** That is the longest single
+  order in the game outside construction. If telemetry shows players
+  abandoning sessions mid-batch, lower `REFINE_MAX_BATCH_HOURS` rather than
+  the throughput.

@@ -279,7 +279,14 @@ describe('Pass 10 — the server sync ceiling mirrors the Frontier doubling', ()
     expect(frontier.frontierRevenueMult).toBe(2);
     expect(veteran.frontierRevenueMult).toBe(1);
     expect(unknown.frontierRevenueMult).toBe(1);
-    expect(frontier.services).toBeCloseTo(veteran.services * 2, -1);
+    // 2026-09-13 (docs/SECURITY_AUDIT_2026-09.md "Monthly gross — verified
+    // terms"): the gross now also reads profile AGE — the legacy
+    // stretch-family bound counts how many 60-day commander terms could
+    // possibly have retired. These two rows are 400 days apart on purpose,
+    // so that term is divided back out to isolate the Frontier doubling.
+    const legacyAdj = frontier.multiplierTerms.verified.legacy / veteran.multiplierTerms.verified.legacy;
+    expect(legacyAdj).toBeLessThan(1); // the older row legitimately reaches further
+    expect(frontier.services).toBeCloseTo(veteran.services * 2 * legacyAdj, -1);
     expect(frontier.gross).toBeGreaterThan(veteran.gross);
 
     // The client's doubled income over a full game-month sits UNDER the

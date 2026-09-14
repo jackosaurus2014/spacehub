@@ -196,8 +196,10 @@ import ModulesPanel from '@/components/game/ModulesPanel';
 import AnomaliesPanel from '@/components/game/AnomaliesPanel';
 import InterstellarPanel from '@/components/game/InterstellarPanel';
 import {
+  adoptServerExpeditions,
   launchExpedition,
   type ExpeditionPlanRequest,
+  type ServerExpeditionBlock,
 } from '@/lib/game/expeditions';
 // Row 12 (signal lag): colony founding/expansion, trade-route setup and
 // suspension, and expedition recalls no longer execute on click — they are
@@ -2644,10 +2646,22 @@ export default function SpaceTycoonPage() {
   // perform the actual state mutation once the caller has confirmed a valid
   // plan, following the same setState(prev => ...) pattern as every other
   // engine-wired action on this page.
-  const handleLaunchExpedition = useCallback((req: ExpeditionPlanRequest) => {
+  // CC-4 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md): an expedition is a
+  // SERVER record now — the route validates the jump prerequisites, the
+  // hull and the crew against persisted facts, debits the launch bill
+  // through the One-Wallet ledger and issues the RNG seed, so the survey
+  // payout both sides roll is the same figure and the sync's money ceiling
+  // can credit the return instead of rejecting it. The client applies the
+  // launch locally WITHOUT its own money debit (the ledger row arrives as a
+  // pending delta) and stamps the server's id and seed on the record.
+  // Anonymous / offline play falls back to a purely local launch, exactly
+  // as the Headquarters console falls back for relocations.
+  const applyExpeditionLaunch = useCallback((req: ExpeditionPlanRequest, server: { seed: number; serverId: string } | null) => {
     setState(prev => {
       if (!prev) return prev;
-      const result = launchExpedition(prev, req);
+      const result = server
+        ? launchExpedition(prev, req, Date.now(), server.seed, { serverCharged: true, serverId: server.serverId })
+        : launchExpedition(prev, req);
       if (!result.ok) { playSound('error'); return prev; }
       playSound('milestone');
       mapPing({ kind: 'system', id: req.targetSystemId }, 'warp'); // Wave V7 — warp-jump flash in GalacticMapView
@@ -2655,6 +2669,53 @@ export default function SpaceTycoonPage() {
       return result.state;
     });
   }, []);
+
+  const handleLaunchExpedition = useCallback((req: ExpeditionPlanRequest) => {
+    void (async () => {
+      let server: { seed: number; serverId: string } | null = null;
+      try {
+        const res = await fetch('/api/space-tycoon/expeditions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'launch', ...req }),
+        });
+        if (res.status === 401 || res.status === 404) {
+          server = null; // anonymous / no profile → local launch
+        } else {
+          const data = await res.json().catch(() => null) as { error?: string; seed?: number; expedition?: ServerExpeditionBlock } | null;
+          if (!res.ok || !data?.expedition || typeof data.seed !== 'number') {
+            playSound('error');
+            toast.warning(typeof data?.error === 'string' ? data.error : `Mission control refused the launch (HTTP ${res.status}).`, 'Expedition');
+            return;
+          }
+          server = { seed: data.seed, serverId: data.expedition.id };
+        }
+      } catch {
+        server = null; // offline → local launch
+      }
+      applyExpeditionLaunch(req, server);
+    })();
+  }, [applyExpeditionLaunch]);
+
+  // CC-4: adopt the server's expedition records — its clock and its survey
+  // figures are what the money ceiling was computed from, so where the two
+  // overlap the server wins (expeditions.ts adoptServerExpeditions). Runs
+  // once the save is loaded and whenever an expedition count changes.
+  const expeditionCount = state?.expeditions?.length ?? 0;
+  useEffect(() => {
+    if (expeditionCount === 0) return;
+    let alive = true;
+    void (async () => {
+      try {
+        const res = await fetch('/api/space-tycoon/expeditions', { headers: { Accept: 'application/json' } });
+        if (!res.ok) return;
+        const data = await res.json().catch(() => null) as { expeditions?: ServerExpeditionBlock[] } | null;
+        if (!alive || !data?.expeditions?.length) return;
+        setState(prev => (prev ? adoptServerExpeditions(prev, data.expeditions) : prev));
+      } catch { /* offline — the client record stands */ }
+    })();
+    return () => { alive = false; };
+  }, [expeditionCount]);
 
   // Row 12 (docs/GAME_DESIGN_REVIEW_2026-09.md §2, signal lag): every order
   // below is aimed at an asset in ANOTHER star system, so it is TRANSMITTED,

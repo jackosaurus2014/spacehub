@@ -62,10 +62,23 @@ export interface HqShipRequirement {
   label: string;
 }
 
+/** CC-4: an EXPEDITION gate — the corporation must have brought at least
+ *  `minCompleted` interstellar expeditions to a terminal success (returned
+ *  to Sol with its survey, or committed its ark to founding a colony). The
+ *  count is a SERVER fact: prisma Expedition rows created by
+ *  /api/space-tycoon/expeditions and advanced by the assets-complete cron
+ *  (server-expeditions.ts). The client's own count stands in only while
+ *  signed out — the relocate route never reads it. */
+export interface HqExpeditionRequirement {
+  minCompleted: number;
+  label: string;
+}
+
 export interface HqStageRequirement {
   building: HqBuildingRequirement | null;
   research?: HqResearchRequirement;
   ship?: HqShipRequirement;
+  expedition?: HqExpeditionRequirement;
 }
 
 /**
@@ -81,14 +94,17 @@ export interface HqStageRequirement {
  *    ships that can leave the heliosphere, they cost $25B/$80B, and a
  *    ServerAsset `ship` row proves ownership. That is the gate.
  *  - Interstellar, "completed interstellar expedition + colony charter":
- *    expeditions and interstellar colonies live only in the CLIENT save
- *    (types.ts ExpeditionState / InterstellarColonyState — no table, no
- *    column), so a completion signal would be the client's word for it. The
- *    nearest real, server-verifiable pair is the CHARTER half of the same
- *    sentence: the `interstellar_colonization` research complete (which
- *    itself requires `jump_drive`) and a Colony Ark built — the ship that
- *    exists for no other purpose than founding one. When the expedition
- *    system gains a server record (CC-4), swap this gate for it.
+ *    CC-3 had to stand this on a PROXY — expeditions lived only in the
+ *    client save, so a completion signal would have been the client's word
+ *    for it, and the gate settled for the charter half alone (the
+ *    `interstellar_colonization` research plus a Colony Ark hull).
+ *    CC-4 retired that proxy. Expeditions now carry a server record
+ *    (prisma Expedition, created by /api/space-tycoon/expeditions and
+ *    advanced on the clock by the assets-complete cron), so the gate is the
+ *    design's actual sentence: a genuinely COMPLETED interstellar
+ *    expedition AND the colony charter. Both halves are server facts; a
+ *    client that invents an expedition gains nothing, because the row it
+ *    would have to forge is created and clocked by the server.
  */
 export const HQ_STAGE_REQUIREMENTS: Readonly<Record<HqStageId, HqStageRequirement>> = {
   earth_ops: { building: null },
@@ -105,6 +121,7 @@ export const HQ_STAGE_REQUIREMENTS: Readonly<Record<HqStageId, HqStageRequiremen
     building: { category: 'space_station', locations: ['outer_system'], label: 'Deep Space Outpost' },
     research: { researchIds: ['interstellar_colonization'], label: 'Interstellar Colonization charted' },
     ship: { definitionIds: ['colony_ark'], label: 'A Colony Ark built (the colony charter)' },
+    expedition: { minCompleted: 1, label: 'An interstellar expedition completed (returned or colonized)' },
   },
 };
 
@@ -118,6 +135,10 @@ export interface HqRequirementView {
   research?: readonly string[];
   /** CC-3: ship definition ids the corporation owns (built or building). */
   ships?: readonly string[];
+  /** CC-4: interstellar expeditions this corporation has brought to a
+   *  terminal SUCCESS. Server-counted (Expedition rows with a terminal
+   *  status); the client's own tally stands in offline. */
+  expeditionsCompleted?: number;
 }
 
 /** One named gate on the ladder row, in the player's words. */
@@ -132,13 +153,23 @@ export interface HqRequirementCheck {
   /** CC-3 gates (null when the stage has none). */
   research: HqRequirementLine | null;
   ship: HqRequirementLine | null;
+  /** CC-4: the completed-expedition gate (interstellar only today). */
+  expedition: HqRequirementLine | null;
   /** A seat in a finite pool must be held or claimed (server fact). */
   seatNeeded: boolean;
   /** CC-3: that seat must be WON at auction rather than claimed. */
   seatAuctioned: boolean;
-  /** tier ∧ building ∧ research ∧ ship ∧ reachable — seat availability is
-   *  checked live against the pool, never here. */
+  /** tier ∧ building ∧ research ∧ ship ∧ expedition ∧ reachable — seat
+   *  availability is checked live against the pool, never here. */
   met: boolean;
+}
+
+/** CC-4: the client-side tally of terminally SUCCESSFUL expeditions —
+ *  returned to Sol ('completed') or committed to a colony ('colonizing').
+ *  A lost expedition never counts. Offline stand-in only: the server counts
+ *  its own Expedition rows. */
+export function countCompletedExpeditionsInState(state: Pick<GameState, 'expeditions'>): number {
+  return (state.expeditions || []).filter(e => e && (e.phase === 'completed' || e.phase === 'colonizing')).length;
 }
 
 export function hqRequirementViewFromState(state: GameState): HqRequirementView {
@@ -147,6 +178,7 @@ export function hqRequirementViewFromState(state: GameState): HqRequirementView 
     buildings: (state.buildings || []).map(b => ({ definitionId: b.definitionId, locationId: b.locationId, isComplete: !!b.isComplete })),
     research: state.completedResearch || [],
     ships: (state.ships || []).map(s => s.definitionId),
+    expeditionsCompleted: countCompletedExpeditionsInState(state),
   };
 }
 
@@ -168,6 +200,13 @@ export function hasHqRequiredShip(view: HqRequirementView, req: HqShipRequiremen
   return req.definitionIds.some(id => owned.has(id));
 }
 
+export function hasHqRequiredExpeditions(view: HqRequirementView, req: HqExpeditionRequirement | undefined): boolean {
+  if (!req) return true;
+  const have = typeof view.expeditionsCompleted === 'number' && Number.isFinite(view.expeditionsCompleted)
+    ? Math.floor(view.expeditionsCompleted) : 0;
+  return have >= req.minCompleted;
+}
+
 /** The player-facing name of a hull gate's cheapest satisfying hull — used
  *  when a requirement label needs to name the ship rather than the class. */
 export function hqShipRequirementNames(req: HqShipRequirement | undefined): string {
@@ -182,6 +221,7 @@ export function evaluateHqRequirementsFrom(view: HqRequirementView, stageId: HqS
   const buildingMet = hasHqRequiredBuilding(view, req.building);
   const researchMet = hasHqRequiredResearch(view, req.research);
   const shipMet = hasHqRequiredShip(view, req.ship);
+  const expeditionMet = hasHqRequiredExpeditions(view, req.expedition);
   const reachable = !stage.comingSoon;
   return {
     stage: stageId,
@@ -190,9 +230,10 @@ export function evaluateHqRequirementsFrom(view: HqRequirementView, stageId: HqS
     building: req.building ? { label: req.building.label, met: buildingMet } : null,
     research: req.research ? { label: req.research.label, met: researchMet } : null,
     ship: req.ship ? { label: req.ship.label, met: shipMet } : null,
+    expedition: req.expedition ? { label: req.expedition.label, met: expeditionMet } : null,
     seatNeeded: HQ_SEAT_COUNTS[stageId] > 0,
     seatAuctioned: hqSeatIsAuctioned(stageId),
-    met: reachable && tierMet && buildingMet && researchMet && shipMet,
+    met: reachable && tierMet && buildingMet && researchMet && shipMet && expeditionMet,
   };
 }
 
@@ -207,6 +248,7 @@ export function hqRequirementLines(check: HqRequirementCheck): HqRequirementLine
   if (check.building) out.push(check.building);
   if (check.research) out.push(check.research);
   if (check.ship) out.push(check.ship);
+  if (check.expedition) out.push(check.expedition);
   return out;
 }
 
@@ -259,7 +301,7 @@ export function quoteHqRelocation(fromStage: HqStageId, toStage: HqStageId): HqR
 
 export type HqRelocateError =
   | 'unknown_stage' | 'coming_soon' | 'same_stage' | 'in_progress'
-  | 'tier' | 'building' | 'research' | 'ship' | 'seat_auction';
+  | 'tier' | 'building' | 'research' | 'ship' | 'expedition' | 'seat_auction';
 
 export const HQ_RELOCATE_ERROR_TEXT: Readonly<Record<HqRelocateError, string>> = {
   unknown_stage: 'That is not a registered headquarters stage.',
@@ -270,6 +312,7 @@ export const HQ_RELOCATE_ERROR_TEXT: Readonly<Record<HqRelocateError, string>> =
   building: 'The required station at the destination is not complete.',
   research: 'The research this seat requires is not complete.',
   ship: 'The hull this seat requires is not in the fleet.',
+  expedition: 'No interstellar expedition has come home yet — the seat at another star is earned by going there first.',
   seat_auction: 'Seats at this stage are sold at auction — win one before filing the relocation charter.',
 };
 
@@ -300,6 +343,7 @@ export function checkHqRelocationRequest(
   if (check.building && !check.building.met) return { ok: false, error: 'building', message: `${HQ_RELOCATE_ERROR_TEXT.building} (${check.building.label}).`, check };
   if (check.research && !check.research.met) return { ok: false, error: 'research', message: `${HQ_RELOCATE_ERROR_TEXT.research} (${check.research.label}).`, check };
   if (check.ship && !check.ship.met) return { ok: false, error: 'ship', message: `${HQ_RELOCATE_ERROR_TEXT.ship} (${check.ship.label}).`, check };
+  if (check.expedition && !check.expedition.met) return { ok: false, error: 'expedition', message: `${HQ_RELOCATE_ERROR_TEXT.expedition} (${check.expedition.label}).`, check };
   if (check.seatAuctioned && !opts.heldSeatAtTarget) {
     return { ok: false, error: 'seat_auction', message: `${HQ_RELOCATE_ERROR_TEXT.seat_auction} (${getHqStage(toStage).shortLabel})`, check };
   }

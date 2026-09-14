@@ -17,6 +17,21 @@
 // client or the income it computes is rejected on sync. The pure relocation logic
 // (requirements, quotes, transitions) is hq-relocation.ts; server I/O is
 // hq-relocation-server.ts; the route is /api/space-tycoon/hq/relocate.
+// CC-4 (2026-09-13) closes the last two gaps CC-3 left open:
+//   1. expeditionReturnMult was the ONE bonus with no server mirror. It now
+//      has the same single-site treatment every other term has —
+//      hqExpeditionReturnMult() below, called by the client tick
+//      (expeditions.ts) and by the server's expedition headroom credit
+//      (server-expeditions.ts creditDueExpeditionReturns), so a returning
+//      expedition's legitimate payout is never rejected by the sync ceiling.
+//   2. the interstellar rung's gate stopped being a proxy: expeditions now
+//      carry a server record (prisma Expedition + server-expeditions.ts), so
+//      hq-relocation.ts gates the seat on a genuinely COMPLETED interstellar
+//      expedition alongside the colony charter, exactly as design §3 says.
+// Each stage also carries `windowPreview`: one sentence of what the window
+// will show once the corporation arrives (design §1's table), rendered by the
+// Headquarters console so a rung whose art has not landed still tells the
+// player what they are moving toward.
 //
 // The stage registry is the single source of truth for: the HQ chip on the
 // Bridge, the sync route's sanitizer (GameProfile.hqLocationId only ever
@@ -52,6 +67,11 @@ export interface HqStageDef {
   lore: string;
   /** What the move requires, in the player's words (design §3). */
   requirement: string;
+  /** One sentence of what the window shows at this seat (design §1 table).
+   *  Rendered by the Headquarters console and by the Bridge's fallback
+   *  overlay, so a stage whose plates have not been rendered yet still says
+   *  what the player will be looking at when they arrive. */
+  windowPreview: string;
   /** Plates rendered and a stage manifest published under public/game/hq/. */
   plates?: { dir: string };
   /** Listed on the ladder but not yet reachable. CC-3 opens the whole
@@ -75,6 +95,7 @@ export const HQ_STAGES: readonly HqStageDef[] = [
     tier: 1,
     lore: 'A coastal launch complex licensed under the Accord of 2089. Every corporation starts here.',
     requirement: 'Default seat — free.',
+    windowPreview: "Your launch pad across the field, an ocean horizon and the world clock's day/night. Your own launches lift off; the pad lights when a build completes.",
     plates: { dir: '/game/hq/earth/' },
     clockOffsetHours: 0,
   },
@@ -86,6 +107,7 @@ export const HQ_STAGES: readonly HqStageDef[] = [
     tier: 2,
     lore: 'An anchorage rented from the Syndicate-run station registry. Earth fills the window; sunrise every ninety minutes.',
     requirement: 'Tier 2 · an Orbital Outpost in LEO · a leased LEO seat · a 2-month relocation project.',
+    windowPreview: "Earth's limb filling the window, the terminator sweeping past, your satellites as glints — sunrise every ninety minutes. Debris streaks during hazard events; aurora during solar storms.",
     plates: { dir: '/game/hq/orbital_deck/' },
     clockOffsetHours: 0,
   },
@@ -97,6 +119,7 @@ export const HQ_STAGES: readonly HqStageDef[] = [
     tier: 3,
     lore: 'A seat inside the Belt Rush-era infrastructure at the south pole. Colony lights on the crater rim.',
     requirement: 'Tier 3 · a Lunar Gateway or Lunar Habitat · a leased Lunar seat · a 4-month relocation project.',
+    windowPreview: 'The south-pole crater rim from the Gateway, colony lights along the ridge and your rigs working the regolith below. Earth hangs fixed above the horizon.',
     plates: { dir: '/game/hq/lunar_hq/' },
     clockOffsetHours: 0,
   },
@@ -108,6 +131,7 @@ export const HQ_STAGES: readonly HqStageDef[] = [
     tier: 4,
     lore: 'The relay station above Meridian. Dust storms roll across the window in season.',
     requirement: 'Tier 4 · a Mars orbital station or habitat · a Mars seat won at auction · a 6-month relocation project.',
+    windowPreview: 'Meridian from orbit: the relay trusses in the foreground, the surface colony a thread of lights below, and dust storms rolling across the disc in season.',
     clockOffsetHours: 0,
   },
   {
@@ -118,6 +142,7 @@ export const HQ_STAGES: readonly HqStageDef[] = [
     tier: 5,
     lore: 'Bordering Void Corsair space. Radiation glow on the horizon, pirate warnings in the window.',
     requirement: 'Tier 5 · a Jovian station · a Jovian seat won at auction · an 8-month relocation project. One of Jovian or Saturnian — never both.',
+    windowPreview: "Jupiter's cloud bands filling two thirds of the glass, Europa and Io crossing the face, and the radiation glow of the belt on the horizon. Void Corsair traffic warnings paint the window.",
     clockOffsetHours: 0,
   },
   {
@@ -128,6 +153,7 @@ export const HQ_STAGES: readonly HqStageDef[] = [
     tier: 5,
     lore: 'Ring shadow sweeps the deck twice a shift. The quietest seat in the system, and the furthest from help.',
     requirement: 'Tier 5 · a Kronos station at Saturn · a Saturnian seat won at auction · an 8-month relocation project. One of Jovian or Saturnian — never both.',
+    windowPreview: 'The ring plane edge-on, shadow sweeping the deck twice a shift, Titan hazing orange to starboard. The quietest window in the system.',
     clockOffsetHours: 0,
   },
   {
@@ -138,6 +164,7 @@ export const HQ_STAGES: readonly HqStageDef[] = [
     tier: 6,
     lore: 'A Kuiper station at the edge of the heliosphere. Expedition ships return through the haze.',
     requirement: 'Tier 6 · a Deep Space Outpost · an interstellar-capable hull docked · a deep-space seat won at auction · a 12-month relocation project.',
+    windowPreview: 'The heliopause haze, the Sun reduced to the brightest star in the field, and your expedition ships coming home through it — hours of light-lag behind their own telemetry.',
     clockOffsetHours: 0,
   },
   {
@@ -148,6 +175,7 @@ export const HQ_STAGES: readonly HqStageDef[] = [
     tier: 7,
     lore: "A new star's disc and an unfamiliar planet. The corporation writes its own chapter.",
     requirement: 'Tier 7 · Interstellar Colonization charted · a Colony Ark built · an interstellar seat won at auction · an 18-month relocation project.',
+    windowPreview: "A new star's disc and an unfamiliar planet, its bodies revealed one by one as your surveys chart them. No horizon you have ever seen before, and no authority in the window but yours.",
     clockOffsetHours: 0,
   },
 ];
@@ -302,7 +330,10 @@ export const HQ_SEAT_UPKEEP_GRACE_MONTHS = 2;
  *   - miningFuelMult, beltDeltaVMult → mining-orders.ts quoteLeg (client
  *                           preview, page handler and the server route all
  *                           call the same pure planner)
- *   - expeditionReturnMult→ expeditions.ts (survey-data payout on return)
+ *   - expeditionReturnMult→ hqExpeditionReturnMult below (CC-4), called by
+ *                           expeditions.ts (the tick pays the survey data
+ *                           out) AND by server-expeditions.ts (the server's
+ *                           one-shot headroom credit for that same payout)
  *   - EVERY service-revenue / service-cost term (launchRevenueMult,
  *     satelliteOpsCostMult, colonyThroughputMult, marsOpsMult,
  *     outerExtractionMult, scienceMult) → hqServiceRevenueMult /
@@ -443,6 +474,35 @@ export function hqServiceRevenueMult(bonuses: HqBonuses, svc: HqServiceContext, 
 /** The operating-cost side of the same contract (LEO's −10% satellite ops). */
 export function hqServiceCostMult(bonuses: HqBonuses, serviceId: string): number {
   return isHqSatelliteOpsService(serviceId) ? bonuses.satelliteOpsCostMult : 1;
+}
+
+/**
+ * CC-4: THE single site the expedition-return term is computed on — the
+ * counterpart of hqServiceRevenueMult for the one bonus that is NOT tick
+ * income. Callers:
+ *   - expeditions.ts processExpeditionTick (the client pays the survey data
+ *     out when an expedition comes home);
+ *   - server-expeditions.ts creditDueExpeditionReturns (the SERVER's
+ *     one-shot headroom credit for that same payout, from its own
+ *     Expedition rows — the sync ceiling would otherwise reject an $8-17B
+ *     return outright);
+ *   - scripts/sim-hq-relocation.ts (balance).
+ * Three callers, one definition. A term added anywhere else is the exact
+ * failure that rejected real income twice the week CC-2 shipped.
+ *
+ * Unlike the service terms there is no Frontier interaction to cap: the
+ * Frontier doubling applies to SERVICE revenue only, and a corporation
+ * inside its first month has neither an interstellar hull nor a seat that
+ * carries this term.
+ */
+export function hqExpeditionReturnMult(bonuses: HqBonuses): number {
+  const m = bonuses.expeditionReturnMult;
+  return Number.isFinite(m) && m > 0 ? m : 1;
+}
+
+/** The same term for a stage id (the server holds a stage, not a profile). */
+export function hqExpeditionReturnMultForStage(stage: HqStageId | string | null | undefined): number {
+  return hqExpeditionReturnMult(getHqBonuses(stage));
 }
 
 /** Solar-system locations whose asteroid fields count as "the belt" for

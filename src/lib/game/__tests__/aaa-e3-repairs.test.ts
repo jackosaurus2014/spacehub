@@ -275,7 +275,13 @@ describe('E3.3 — mega-project completion rewards are real', () => {
   it('the launch-cost consumer is wired into ship orders and expedition launches', () => {
     expect(sourceOf('src/app/space-tycoon/page.tsx')).toContain('applyLaunchCostReduction');
     expect(sourceOf('src/components/game/FleetPanel.tsx')).toContain('applyLaunchCostReduction');
-    expect(sourceOf('src/lib/game/expeditions.ts')).toContain('applyLaunchCostReduction');
+    // CC-4: the expedition bill is quoted by ONE pure function shared with
+    // the server launch route (expeditions.ts quoteExpeditionCosts), so the
+    // planner hands it the raw multiplier rather than applying the helper
+    // itself — and the route prices the same discount from the world's
+    // completed MegaProject rows instead of trusting a client claim.
+    expect(sourceOf('src/lib/game/expeditions.ts')).toContain('getLaunchCostMultiplier');
+    expect(sourceOf('src/app/api/space-tycoon/expeditions/route.ts')).toContain('getLaunchCostMultiplier');
   });
 
   it('is identity until a cooperative project completes, then discounts real money', () => {

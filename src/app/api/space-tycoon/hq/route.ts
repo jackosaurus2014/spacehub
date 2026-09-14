@@ -12,6 +12,8 @@ import { evaluateHqRequirementsFrom, quoteHqRelocation, type HqRequirementView }
 import {
   completeDueHqRelocations, loadHeadquartersBlock, loadHqAuctionSummaries, loadHqSeatPools, loadHqUpkeepView,
 } from '@/lib/game/hq-relocation-server';
+// CC-4: the interstellar rung's expedition gate is a SERVER count.
+import { advanceDueExpeditions, countCompletedExpeditions } from '@/lib/game/server-expeditions';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,6 +39,9 @@ export async function GET() {
     const profile = loaded.profile;
 
     await completeDueHqRelocations(prisma, profile.id);
+    // CC-4: settle the expedition clock first, so a mission that came home
+    // while the player was away opens the interstellar rung on this read.
+    await advanceDueExpeditions(prisma, profile.id);
     const now = new Date();
     const fresh = await prisma.gameProfile.findUnique({ where: { id: profile.id }, select: { hqLocationId: true, createdAt: true } });
     const from = hqStageForLocationId(fresh?.hqLocationId);
@@ -64,6 +69,10 @@ export async function GET() {
       buildings,
       research,
       ships,
+      // CC-4: Expedition rows with a terminal SUCCESS status — the real
+      // gate that replaced CC-3's proxy. A lagging table reads 0, so the
+      // rung stays shut; it never fails open.
+      expeditionsCompleted: await countCompletedExpeditions(profile.id, prisma),
     };
 
     const [headquarters, pools, auctions, upkeep] = await Promise.all([

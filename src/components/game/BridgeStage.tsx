@@ -17,6 +17,11 @@
 // "Mars Orbital HQ — window plates coming" overlay (hq-manifest.ts
 // resolveHqManifest) rather than a blank band.
 //
+// CC-4: a stage still waiting on its art (the interstellar rung today) says
+// what the window WILL show once the plates land — headquarters.ts
+// `windowPreview`, the same sentence the Headquarters console renders — so
+// the Earth stand-in reads as a promise rather than a defect.
+//
 // CC-3: a stage whose plates are published AFTER this build (the outer
 // rungs, still rendering) is picked up at runtime — the effect below asks
 // once for /game/hq/<stage>/manifest.json and redraws if it is there. So
@@ -108,7 +113,10 @@ export default function BridgeStage({ state }: { state: GameState }) {
 
   const variantForCopy = pickVariant(Object.keys(manifest.variants), localHour(Date.now(), stage.clockOffsetHours));
   const description = `Headquarters window: ${stage.label} ${VARIANT_WORDS[variantForCopy ?? ''] ?? ''}. `
-    + (fallback ? `Window plates for this stage are still being rendered; the Earth plate stands in. ` : '')
+    // CC-4: a stage with no plates yet says what it WILL show, not just that
+    // it is missing — the interstellar rung reaches players before its art
+    // does, and "the Earth plate stands in" on its own reads like a bug.
+    + (fallback ? `Window plates for this stage are still being rendered; the Earth plate stands in. When they land: ${stage.windowPreview} ` : '')
     + (events.weatherActive ? 'Weather over the complex. ' : '')
     + (events.vehicleOnPad ? 'A vehicle stands on the launch pad.' : 'The launch pad is clear.');
 
@@ -141,7 +149,10 @@ export default function BridgeStage({ state }: { state: GameState }) {
         </div>
         {fallback && (
           <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center" aria-hidden="true">
-            <span className="rounded-full border border-cyan-400/20 bg-black/60 px-3 py-1 font-hud text-[10px] uppercase tracking-[0.18em] text-cyan-300/80 backdrop-blur-sm">
+            <span
+              className="rounded-full border border-cyan-400/20 bg-black/60 px-3 py-1 font-hud text-[10px] uppercase tracking-[0.18em] text-cyan-300/80 backdrop-blur-sm"
+              title={stage.windowPreview}
+            >
               {stage.label} — window plates coming
             </span>
           </div>
