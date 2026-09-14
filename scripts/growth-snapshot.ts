@@ -5,17 +5,18 @@
  *
  * `/admin/analytics` renders the same numbers, but reading them needs an
  * admin browser session, which makes the standing Monday protocol ("if
- * Monday±, growth snapshot vs the 10k curve") awkward to run from a terminal.
+ * Monday±, growth snapshot vs the curve") awkward to run from a terminal.
  * This prints the same `getGrowthSnapshot()` payload plus the gap to the
- * goal curve and the implied weekly rate needed to reach 10,000 MAU by
- * 2026-11-12. Read-only; touches no table.
+ * goal curve and the implied weekly rate needed to reach the current goal.
+ * Read-only; touches no table.
  *
  * Prints `HEX <hex JSON>` — the ssh pipe mangles plain text.
  */
-import { getGrowthSnapshot } from '../src/lib/growth-metrics';
+import { getGrowthSnapshot, GROWTH_GOAL_TARGET, GROWTH_GOAL_DATE } from '../src/lib/growth-metrics';
 
-const GOAL_MAU = 10_000;
-const GOAL_DATE = new Date('2026-11-12T00:00:00Z');
+// Read from the curve rather than restated here, so a re-base moves both.
+const GOAL_MAU = GROWTH_GOAL_TARGET;
+const GOAL_DATE = new Date(`${GROWTH_GOAL_DATE}T00:00:00Z`);
 
 async function main() {
   const snap = await getGrowthSnapshot();

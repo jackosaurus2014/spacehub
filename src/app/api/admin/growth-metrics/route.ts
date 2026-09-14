@@ -10,7 +10,8 @@ import { logger } from '@/lib/logger';
 /**
  * GET /api/admin/growth-metrics
  * Returns GA4 MAU/WAU + Search Console clicks/impressions against the
- * 10k-MAU-by-2026-11-12 growth goal curve. Admin-only, never cached.
+ * 10k-MAU-by-2027-02-12 growth goal curve (re-based 2026-09-14 — see
+ * GROWTH_MILESTONES for why). Admin-only, never cached.
  */
 export async function GET() {
   try {

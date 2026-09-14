@@ -672,7 +672,7 @@ function GrowthMetricsCard({
         )}
       </div>
       <p className="text-star-400 text-xs mb-4">
-        GA4 active users + Search Console clicks, tracked against 10,000 MAU by Nov 12, 2026
+        GA4 active users + Search Console clicks, tracked against 10,000 MAU by Feb 12, 2027
       </p>
 
       {loading && (

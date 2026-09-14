@@ -1,6 +1,6 @@
 /**
  * Growth metrics — GA4 active users + Search Console clicks, tracked against
- * the 10k-MAU-by-2026-11-12 goal.
+ * the 10k-MAU-by-2027-02-12 goal (re-based 2026-09-14).
  *
  * Auth: no `googleapis` / `google-auth-library` dependency in package.json,
  * so this implements the OAuth2 service-account JWT-bearer flow by hand
@@ -240,6 +240,74 @@ function formatDate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
+export interface SearchConsoleRow {
+  keys: string[];
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
+export interface SearchConsoleFilter {
+  dimension: string;
+  operator: string;
+  expression: string;
+}
+
+/**
+ * Search Console API, with dimensions — the general form of
+ * fetchSearchClicks below. Used by scripts/search-ctr-audit.ts to find pages
+ * that rank but are not clicked, which is the cheapest traffic we can win
+ * because the impressions are already earned.
+ *
+ * `dimensions` are Search Console's own ('page', 'query', 'country',
+ * 'device', 'date'). Returns [] rather than throwing on an empty result, but
+ * DOES throw on a non-2xx — a caller that silently swallows an auth failure
+ * cannot tell "no data" from "no access", and we have been bitten by exactly
+ * that this week with the FCC feed.
+ */
+export async function fetchSearchConsoleRows(
+  dimensions: string[],
+  days = 28,
+  rowLimit = 500,
+  dimensionFilters: SearchConsoleFilter[] = [],
+): Promise<SearchConsoleRow[]> {
+  const token = await getAccessToken();
+  const end = new Date();
+  const start = new Date(end.getTime() - days * 24 * 60 * 60 * 1000);
+
+  const res = await fetch(
+    `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(SEARCH_CONSOLE_SITE)}/searchAnalytics/query`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        startDate: formatDate(start),
+        endDate: formatDate(end),
+        dimensions,
+        rowLimit,
+        ...(dimensionFilters.length > 0
+          ? { dimensionFilterGroups: [{ filters: dimensionFilters }] }
+          : {}),
+      }),
+    },
+  );
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`Search Console query failed (HTTP ${res.status}): ${body.slice(0, 200)}`);
+  }
+
+  const json = (await res.json()) as { rows?: SearchConsoleRow[] };
+  return (json.rows || []).map((r) => ({
+    keys: r.keys || [],
+    clicks: r.clicks || 0,
+    impressions: r.impressions || 0,
+    ctr: r.ctr || 0,
+    position: r.position || 0,
+  }));
+}
+
 /**
  * Search Console API: total clicks + impressions over the last 28 days,
  * no dimensions requested → a single aggregated row for the whole site.
@@ -292,10 +360,32 @@ export interface GrowthMilestone {
 
 export const GROWTH_GOAL_TARGET = 10_000;
 
+/**
+ * RE-BASED 2026-09-14. The original curve (3,000 by 2026-09-12; 6,000 by
+ * 2026-10-12; 10,000 by 2026-11-12) was set on 2026-08-13 from a base of
+ * 435 MAU and was never met: the Monday reading was 673 MAU against a curve
+ * target of 3,275, and holding the November date would have required 38.3%
+ * compounding weekly growth for eight weeks. A target nobody can hit stops
+ * being a target — every weekly reading says "behind" and none of them say
+ * anything useful about whether the week went well.
+ *
+ * What the same evidence actually shows is a HEALTHY trajectory: 435 → 673
+ * over 4.6 weeks is 10.0% a week, compounding. So the goal of 10,000 MAU is
+ * kept and the DATE moves to 2027-02-12, which needs 13.3% a week from the
+ * 2026-09-14 base — about a third faster than we are already managing, which
+ * is what the unposted launch materials and the search-CTR work are for.
+ * Milestones below sit on that 13.3% curve.
+ *
+ * Re-base this again when the base moves materially, and record the reason
+ * here rather than quietly editing the numbers.
+ */
+export const GROWTH_GOAL_DATE = '2027-02-12';
+
 export const GROWTH_MILESTONES: GrowthMilestone[] = [
-  { date: '2026-09-12', target: 3_000 },
-  { date: '2026-10-12', target: 6_000 },
-  { date: '2026-11-12', target: 10_000 },
+  { date: '2026-10-12', target: 1_100 },
+  { date: '2026-11-12', target: 1_950 },
+  { date: '2026-12-31', target: 4_600 },
+  { date: '2027-02-12', target: 10_000 },
 ];
 
 /**
