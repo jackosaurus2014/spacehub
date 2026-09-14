@@ -135,10 +135,13 @@ export function mapECFSFiling(raw: RawECFSFiling, searchTerm: string): SpectrumF
   const filer = raw.filers?.[0]?.name || 'Unknown filer';
   // ECFS carries no comment text on the filing row — the substance is the
   // proceeding it was filed into, plus the document that was attached. Build
-  // the title from those rather than from a field that does not exist.
+  // the title from those rather than from a field that does not exist. The
+  // filing TYPE is deliberately not prefixed here: the spectrum card renders
+  // it as its own badge, and a title reading "COMMENT — …" beside a
+  // "COMMENT" badge is the same word twice.
   const title = proceedingName
-    ? `${filingType} — ${proceedingName}`
-    : raw.documents?.[0]?.filename?.trim() || `FCC ECFS filing: ${searchTerm}`;
+    || raw.documents?.[0]?.filename?.trim()
+    || `FCC ECFS filing: ${searchTerm}`;
 
   return {
     filingId,

@@ -1232,8 +1232,8 @@ function SpectrumContent() {
                     </div>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 mb-3">
                       <span>Filer: <span className="text-white/90">{filing.filer}</span></span>
-                      {filing.proceedingName && (
-                        <span>Proceeding: <span className="text-white/90">{filing.proceedingName}</span></span>
+                      {filing.docket && (
+                        <span>Docket: <span className="text-white/90">{filing.docket}</span></span>
                       )}
                       <span>Bureau: <span className="text-white/90">{filing.bureau}</span></span>
                       {filing.filedDate && (

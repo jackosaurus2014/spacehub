@@ -77,8 +77,9 @@ export async function fetchFCCSpaceFilings(): Promise<FCCFiling[]> {
           const filingId = filing.id_submission || filing.confirmation_number || '';
           allFilings.push({
             // No comment text rides a filing row; the proceeding is the
-            // substance, and the docket number is `name`, not `id`.
-            title: proceedingName ? `${filingType} — ${proceedingName}` : `FCC Filing: ${term}`,
+            // substance, and the docket number is `name`, not `id`. The type
+            // is carried by its own field, so it is not repeated in the title.
+            title: proceedingName || filing.documents?.[0]?.filename?.trim() || `FCC Filing: ${term}`,
             filingId,
             proceedings: proc?.name || '',
             datePosted: filing.date_disseminated || filing.date_submission || '',

@@ -110,8 +110,10 @@ describe('mapECFSFiling', () => {
     const record = mapECFSFiling(FIXTURE_RAW_FILINGS[0], 'NGSO');
     expect(record).toMatchObject({
       filingId: '1082312345678',
-      // A filing row carries no comment text; the proceeding is the substance.
-      title: 'COMMENT — NGSO Spectrum Sharing',
+      // A filing row carries no comment text; the proceeding is the
+      // substance. The type is NOT prefixed — the card renders it as its own
+      // badge, so a prefixed title would print the same word twice.
+      title: 'NGSO Spectrum Sharing',
       // `name` is the docket number, `description` the proceeding title —
       // the reverse of what this mapper assumed before 2026-09-14.
       docket: 'RM-11868',
