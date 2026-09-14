@@ -228,6 +228,8 @@ import SourcingPanel from '@/components/game/SourcingPanel';
 import MiningPanel from '@/components/game/MiningPanel';
 import { getAsteroid, rollAsteroidIntel, ASTEROID_FIELD_MAP, LOCAL_INTEL_SALT, SURVEY_PROBE_COST, type AsteroidIntel } from '@/lib/game/asteroids';
 import { planMiningOrder, materializeOrder, canTakeMiningOrder, resolveEscortCover, MINING_PLAN_ERROR_TEXT, type MiningOrderRequest } from '@/lib/game/mining-orders';
+// Mining Phase D (2026-09-14): the hull's server-registered fit.
+import { activeFittingProfile, readFittingRecord } from '@/lib/game/ship-fittings';
 // Mining Phase B (2026-09-13): claims (server-first like orders) and the
 // sync's mining block (claims, live intel, notices → mail + Situation Log).
 import { adoptServerMining, stakeAsteroidClaimLocal, releaseAsteroidClaimLocal, STAKE_CLAIM_ERROR_TEXT, type AsteroidClaimRecord, type ServerMiningBlock } from '@/lib/game/asteroid-claims';
@@ -2490,8 +2492,14 @@ export default function SpaceTycoonPage() {
       : (ship.heldOre ? (ASTEROID_FIELD_MAP.get(ship.heldOre.fieldId)?.parentLocationId || ship.currentLocation) : ship.currentLocation);
     const escort = resolveEscortCover(cur, ship.currentLocation, parentId, req.escortInstanceId);
     if (escort.error) { reportAssetFailure({ message: MINING_PLAN_ERROR_TEXT[escort.error] }, 'Mining', () => playSound('error')); return; }
+    // Phase D: preview with the BARE hull plus the SERVER-REGISTERED fit —
+    // never getShipCargoCapacity, which folds in client-owned modules.ts bays
+    // the mining route has never honoured (that mismatch is what made the
+    // preview promise a hold the server then clamped away).
     const localPlan = planMiningOrder({
-      def, cargoCapacity: getShipCargoCapacity(cur, ship.instanceId), mode: req.mode, rock, intel,
+      def, cargoCapacity: def.cargoCapacity,
+      fitting: activeFittingProfile(readFittingRecord(cur.shipFittings, ship.instanceId), Date.now(), { rockClass: rock?.class ?? null }),
+      mode: req.mode, rock, intel,
       fillUnits: req.fillUnits, thenAction: req.thenAction, originId: ship.currentLocation, destinationId: req.destinationId,
       heldOre: ship.heldOre ?? null, hullDamagePct: ship.hullDamagePct, fuelEfficiencyMult: getFuelEfficiencyMultiplier(cur),
       hqLogistics: hqMiningLogisticsForState(cur), // CC-2: Lunar HQ logistics terms

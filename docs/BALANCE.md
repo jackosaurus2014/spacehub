@@ -4991,3 +4991,111 @@ fixture is provably strong enough to have caught the original defect.
   scope for this pass, but they are the thinnest asks remaining.
 - **No reward magnitude changed.** If the founder decides the payouts are too
   rich now that they must be earned, that edit is one field per template.
+
+
+## Pass 18 — mining Phase D: ship fittings (2026-09-14)
+
+Ship fittings (`ship-fittings.ts`) are the first thing in the game that changes
+a hull's simulated capability for money, so the pricing has to answer three
+questions at once: is a fit better value than another hull, is it better value
+than doing nothing, and can a player buy their way past the design's
+trade-offs.
+
+### Pricing rule: a share of the hull, not a flat number
+
+`fittingPrice = baseCost + hullShare x hull.baseCost`. A Focused Laser Cluster
+is $20M + 28% of the hull, so $70M on a $180M Prospector Barge and $300M on a
+$1B Deep Space Miner. A flat price would have been a rounding error on a
+flagship and a mortgage on a barge; anchoring to the hull keeps the ROI of a
+fit roughly constant across the whole roster and means the registry never needs
+a per-hull price table.
+
+The coefficients were set so a yield fitting costs about `hull x yield gain x
+1.6`. On a barge: +25% rate for $70M against a hull that costs $180M for 100%
+of that rate. A fit is therefore BETTER value per dollar than another hull —
+which is the point of a fit — and the slot budget, not the price, is what stops
+a player buying unlimited yield.
+
+### The three brakes on "bolt everything on"
+
+1. **Slot points.** The budget is the hull's own `moduleSlots` (mining/survey
+   3 + tier, else 2 + tier). Every strong fitting costs 2 of them. A Prospector
+   Barge has 5: a Bore Array (2) + Ore Hold (1) + Whipple Belt (1) + Ion Bank
+   (1) is a complete, legal, opinionated build, and it is the LAST one — there
+   is no room for a plant or a sensor on top.
+2. **One per group.** Six exclusive groups. You pick an ice extractor OR a
+   magnetic rake OR a bore array, never two, so the FIELD you intend to work is
+   a fitting decision.
+3. **Mass.** `FITTING_SLOT_FUEL_PENALTY` = 3% of the propellant bill per slot
+   point, on every leg forever. A fully fitted barge burns 1.15x. Sized against
+   the Phase A gate (a Near-Earth round trip is ~$1.5M against a ~$2.7M hold):
+   3%/point costs a maxed rig roughly a sixth of a laser's gain in propellant —
+   real friction, never a veto.
+
+Ongoing: `FITTING_UPKEEP_SHARE` = 0.3% of the fit's price per game-month. The
+Escort Cutter's own ratio is 0.23% ($600K on $260M); a bolted-on plant is
+harder to service than a hull, so a shade higher. On a $70M laser that is
+$210K/game-month against a ~$840K/game-month yield gain — a fit pays for its
+own upkeep four times over, which it must, or nobody would ever fit anything.
+
+### Yard economics
+
+- Labour 10% of hardware, plus a flat **$5M visit fee**. The flat fee is what
+  makes "one visit, fit everything" correct and slot-thrash wrong.
+- **Salvage 35%** of book on anything removed — below book by design
+  (a money sink, the same posture as `computeDecommissionRecovery`). A
+  strip-only visit on a 2-slot head still pays OUT, because 35% of a
+  $170M array clears the $5M fee comfortably; stripping is a real option, not a
+  punishment.
+- **900 s per slot point** plus the fitting's install hours. A 5-point refit is
+  ~2-3 real hours — the DAILY loop (`docs/SESSION_DESIGN.md`): long enough to
+  plan around, short enough to matter inside a session, and long enough that the
+  sync mirror is always current before the fit goes live.
+
+### Caps
+
+Stacked effects are clamped (`FITTING_CLAMPS`): rate 0.40-2.20, hold 0.50-2.00,
+plant 0.50-2.00, propellant 0.70-1.80, transit 0.75-1.30, shakedown odds
+0.25-1.00, rubble wear 0.50-1.80. Mobile refinery recovery is capped at
+**0.92**, deliberately below `FIXED_REFINERY_RECOVERY` (0.95) — a pod narrows
+the fixed refinery's advantage, it never erases it. The shakedown floor
+(`FITTING_HARDENING_FLOOR` 0.25) means no fit buys immunity from the Corsairs;
+armour and an escort stack, and the escort remains the larger term.
+
+### Measured
+
+`server-monthly-gross.test.ts` "margin report" on a maximally favourable belt
+cycle (grade 1.5 M-type, sell on return):
+
+| Fit | rate x | hold x | propellant x | $/game-month actually sold |
+|---|---|---|---|---|
+| bare | 1.00 | 1.00 | 1.00 | $12.8M |
+| Focused Laser Cluster | 1.25 | 1.00 | 1.03 | $15.9M |
+| Deep Bore Array | 1.60 | 0.90 | 1.06 | $20.2M |
+| Ore Compactor | 1.00 | 1.70 | 1.15 | $12.9M |
+| Bore Array + Ore Hold | 1.52 | 1.25 | 1.09 | $19.4M |
+
+Two things to read off it. First, **the Compactor is not a yield fitting** — a
+bigger hold buys fewer trips, not more units per hour, and on this cycle it is
+worth ~1% while costing 15% more propellant. That is correct and intended: the
+hold matters on long lanes and hold-then-haul patterns, not on a short belt
+cycle, and a player who fits it for yield has made a mistake the numbers will
+teach them. Second, the best single fit is +58% over bare for ~$175M on a $180M
+hull — better than a second barge (+100% for $180M plus $400K/mo upkeep and a
+second crew), which is the intended ordering: fits beat hulls at the margin,
+until the slots run out.
+
+### Risks / watch
+
+- **The Compactor and the Gravimetric Boom are the two fittings most likely to
+  read as traps.** Both are 2 slots and both pay off only in patterns the
+  current sim does not cover well (long-lane hauling; field-wide survey
+  sweeps). Re-check them against the next quarterly report before re-pricing.
+- **The per-class heads (ice extractor / magnetic rake) are the strongest
+  design idea here and the least tested in play.** They make a fit a bet on a
+  FIELD, and a player who works mixed fields is punished for specialising. If
+  telemetry shows nobody fits them, the class spreads (±50/±12) are the dials.
+- **Yield fittings raise the money ceiling's mining-fleet allowance.** That
+  term is 15.5x-15.9x above the real cycle, which is loose on purpose (it bounds
+  continuous extraction on the dearest reachable ore). Tightening it is only
+  safe once the `hold`+`return` pattern's real duty cycle is measured.

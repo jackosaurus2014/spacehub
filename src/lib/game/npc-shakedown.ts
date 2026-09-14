@@ -53,6 +53,17 @@ export const ESCORT_STATIONED_ODDS_MULT = 0.5;
 
 export type EscortCover = 'none' | 'stationed' | 'assigned';
 
+/** Mining Phase D (2026-09-14): the hull's OWN hardening, from its
+ *  server-registered fit (ship-fittings.ts FittingProfile.shakedownMult — a
+ *  Whipple belt is x0.75, a point-defence turret x0.50). It multiplies the
+ *  lane odds alongside the escort term, so armour and an escort stack the way
+ *  a player expects, and it is clamped here so a malformed profile can never
+ *  drive the odds to zero: FITTING_HARDENING_FLOOR is the hardest any fit can
+ *  make a hull. Like every other term in this module it points at NPC
+ *  piracy and at nothing else — there is no player-facing effect anywhere
+ *  (docs/POLICY.md "Security ships"). */
+export const FITTING_HARDENING_FLOOR = 0.25;
+
 /** Lane risk for a field parent (0 where the map has no piracy). */
 export function laneShakedownRisk(parentLocationId: string): number {
   const r = SHAKEDOWN_LANE_RISK[parentLocationId];
@@ -61,12 +72,20 @@ export function laneShakedownRisk(parentLocationId: string): number {
 
 /** The odds of a shakedown on ONE return leg. `frontier` = the profile is
  *  inside the Protected Frontier (shield → 0). */
-export function shakedownOdds(parentLocationId: string, cover: EscortCover, frontier: boolean): number {
+export function shakedownOdds(
+  parentLocationId: string,
+  cover: EscortCover,
+  frontier: boolean,
+  /** Phase D: the hull's fitted hardening. Default 1 = a bare hull, so every
+   *  pre-Phase-D caller is byte-identical. */
+  hardening: number = 1,
+): number {
   if (frontier) return 0;
   const base = laneShakedownRisk(parentLocationId);
   if (base <= 0) return 0;
   const mult = cover === 'assigned' ? ESCORT_ASSIGNED_ODDS_MULT : cover === 'stationed' ? ESCORT_STATIONED_ODDS_MULT : 1;
-  return Math.round(base * mult * 10_000) / 10_000;
+  const hard = Number.isFinite(hardening) ? Math.max(FITTING_HARDENING_FLOOR, Math.min(1, hardening)) : 1;
+  return Math.round(base * mult * hard * 10_000) / 10_000;
 }
 
 export interface ShakedownOutcome {
@@ -95,9 +114,15 @@ export function settleShakedown(
   cover: EscortCover,
   frontier: boolean,
   unitsAboard: number,
+  /** Phase D: the hardening the QUOTE used, read back off the MiningOrder row
+   *  (`fittingHardening`) so the settlement can never disagree with what the
+   *  player was shown. Default 1 = a bare hull / a pre-Phase-D row. */
+  hardening: number = 1,
 ): ShakedownOutcome {
   const units = Math.max(0, Math.floor(unitsAboard));
-  const odds = shakedownOdds(parentLocationId, cover, frontier);
+  const odds = shakedownOdds(parentLocationId, cover, frontier, hardening);
+  // "Repelled" is measured against a BARE, UNESCORTED hull, so a fit that
+  // turned a raid away reads as a repel exactly as an escort does.
   const uncoveredOdds = shakedownOdds(parentLocationId, 'none', frontier);
   const roll = mulberry32(hashString(`shakedown:${seedKey}`))();
   const hit = units > 0 && odds > 0 && roll < odds;
@@ -108,8 +133,8 @@ export function settleShakedown(
 
 /** Expected ore lost per return leg — the number the quote shows and the sim
  *  books (odds × take share × units). */
-export function expectedShakedownLoss(parentLocationId: string, cover: EscortCover, frontier: boolean, unitsAboard: number): number {
-  return Math.round(shakedownOdds(parentLocationId, cover, frontier) * SHAKEDOWN_TAKE_SHARE * Math.max(0, unitsAboard) * 100) / 100;
+export function expectedShakedownLoss(parentLocationId: string, cover: EscortCover, frontier: boolean, unitsAboard: number, hardening: number = 1): number {
+  return Math.round(shakedownOdds(parentLocationId, cover, frontier, hardening) * SHAKEDOWN_TAKE_SHARE * Math.max(0, unitsAboard) * 100) / 100;
 }
 
 /** Whether an order of this shape crosses a lane on the way home. */

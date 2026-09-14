@@ -38,6 +38,8 @@ import { MAX_EVENT_LOG } from './constants';
 import { generateId } from './formulas';
 import { RESOURCE_MAP } from './resources';
 import { REAL_MS_PER_GAME_MONTH } from './server-time';
+// Mining Phase D (2026-09-14): the fitting mirror rides in the same block.
+import { sanitizeFittingIds, slotsUsedBy, type ShipFittingRecord } from './ship-fittings';
 import { LOCATION_MAP } from './solar-system';
 import type { GameReport, GameState } from './types';
 
@@ -307,6 +309,12 @@ export interface ServerMiningBlock {
   /** The corporation's effective surveys with live rock state. */
   intel: Record<string, SurveyRecord>;
   notices: MiningNotice[];
+  /** Mining Phase D (2026-09-14): the corporation's registered ship fittings,
+   *  keyed by hull instance id (server-fittings.ts loadFittingBlock). SERVER
+   *  WINS outright — the client's map is a mirror it previews from, never a
+   *  claim. Absent (a lagging schema, or a sync written before Phase D)
+   *  leaves the client's map untouched rather than wiping it. */
+  fittings?: Record<string, ShipFittingRecord>;
 }
 
 const NOTICES_SEEN_CAP = 300;
@@ -357,6 +365,35 @@ export function adoptServerMining(state: GameState, block: ServerMiningBlock | n
       }
     }
     if (intelChanged) { out = { ...out, asteroidIntel: merged }; changed = true; }
+  }
+
+  // Phase D: the fitting mirror. Server wins outright — the whole map is
+  // replaced when the block carries one, so a strip performed in another
+  // session (or by the yard finishing) lands here too. Entries are re-read
+  // through the registry, so a definition retired from FITTINGS stops
+  // applying without a migration.
+  if (block.fittings && typeof block.fittings === 'object' && !Array.isArray(block.fittings)) {
+    const next: Record<string, ShipFittingRecord> = {};
+    for (const [shipInstanceId, rec] of Object.entries(block.fittings)) {
+      if (!rec || !Array.isArray(rec.ids) || typeof rec.readyAtMs !== 'number') continue;
+      const ids = sanitizeFittingIds(rec.ids);
+      if (ids.length === 0) continue;
+      next[shipInstanceId] = {
+        shipInstanceId,
+        ids,
+        slotsUsed: slotsUsedBy(ids),
+        readyAtMs: rec.readyAtMs,
+        yardLocationId: typeof rec.yardLocationId === 'string' ? rec.yardLocationId : '',
+        upkeepPerMonth: Number.isFinite(rec.upkeepPerMonth) ? Number(rec.upkeepPerMonth) : 0,
+      };
+    }
+    const cur = out.shipFittings || {};
+    const same = Object.keys(cur).length === Object.keys(next).length
+      && Object.values(next).every(f => {
+        const o = cur[f.shipInstanceId];
+        return o && o.readyAtMs === f.readyAtMs && o.ids.length === f.ids.length && o.ids.every(id => f.ids.includes(id));
+      });
+    if (!same) { out = { ...out, shipFittings: next }; changed = true; }
   }
 
   if (Array.isArray(block.notices) && block.notices.length > 0) {

@@ -894,6 +894,26 @@ export function migrateLoadedState(state: GameState): GameState | null {
       });
     }
 
+    // V43 — Mining Phase D (2026-09-14, docs/SPACE_MINING_DESIGN_2026-09-12.md
+    // §8 row D): server-registered ship fittings. Additive, no SAVE_VERSION
+    // bump (constants.ts note: the real ledger is these inline V-comments).
+    // An existing save has fitted nothing, so it reads as an empty map and
+    // every quote it makes is the bare-hull quote it made yesterday — the
+    // planner's fit term is neutral for an empty map by construction.
+    // A malformed/array block is REPLACED rather than trusted: this map is a
+    // server mirror, and the next sync refills it from the ShipFitting rows.
+    if (!state.shipFittings || typeof state.shipFittings !== 'object' || Array.isArray(state.shipFittings)) {
+      state.shipFittings = {};
+    } else {
+      // Drop any entry whose shape is not the record the server writes, so a
+      // hand-edited save cannot hand the preview a fit the server has no row
+      // for (the server would quote the bare hull and the two would disagree).
+      for (const [k, v] of Object.entries(state.shipFittings)) {
+        const rec = v as { ids?: unknown; readyAtMs?: unknown } | null;
+        if (!rec || !Array.isArray(rec.ids) || typeof rec.readyAtMs !== 'number') delete state.shipFittings[k];
+      }
+    }
+
     // CC-1 (docs/COMMAND_CENTER_DESIGN_2026-09-13.md §4 "State"): every
     // save has a headquarters. Additive, no version bump — a pre-CC-1 save
     // (or a malformed block) reads as the Earth Operations Center, moved in

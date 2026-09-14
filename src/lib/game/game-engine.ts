@@ -107,6 +107,8 @@ import { getGovernorBenefits, getStakeholderServiceBonus, getMultiZonePenalty, L
 import { consumeServerEffects, applyServerEffectsToState, clampAllianceBonuses, clampWorldEventBonuses, clampMentorshipBonuses, clampMegaProjectBonuses } from './server-effects';
 import { getReturningCommanderMultiplier } from './returning-commander';
 import { getShipMiningRateMultiplier, getShipTransitSpeedMultiplier } from './modules';
+// Mining Phase D (2026-09-14): fitted-module upkeep rides the fleet line.
+import { fittingIsReady, readFittingRecord } from './ship-fittings';
 // 4X Wave W14 (cargo-logistics.ts, audit C1): per-location inventory routing
 // — production at a remote location accrues into that location's local
 // stockpile once logistics is unlocked; arriving freight credits its
@@ -2336,6 +2338,19 @@ export function processFullTick(state: GameState): GameState {
             const maint = Math.round(shipDef.maintenancePerMonth * shipFraction);
             shipMoney -= maint;
             shipTotalSpent += maint;
+          }
+          // Mining Phase D (2026-09-14): a hull's server-registered FIT bills
+          // its own upkeep beside the hull's (ship-fittings.ts
+          // FITTING_UPKEEP_SHARE) — a bolted-on plant is an ongoing cost, not
+          // a one-off purchase, which is what makes stripping a fit a real
+          // decision. Client-applied like every other fleet upkeep line: the
+          // figure comes from the mirrored ShipFitting row, so a forged entry
+          // only ever costs the forger money.
+          const fitRec = readFittingRecord(newState.shipFittings, ship.instanceId);
+          if (fitRec && fittingIsReady(fitRec, now) && fitRec.upkeepPerMonth > 0) {
+            const fitMaint = Math.round(fitRec.upkeepPerMonth * shipFraction);
+            shipMoney -= fitMaint;
+            shipTotalSpent += fitMaint;
           }
         }
 

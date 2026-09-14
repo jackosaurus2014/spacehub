@@ -227,3 +227,139 @@ corporate mining share; the Salvage Tender for derelicts; ship MODULES once
 fitting is server-registered; a fixed refinery consuming stored ore at
 `FIXED_REFINERY_RECOVERY`; and the map affordances still open from Phase B
 (field badges, claim rings, escort and depot glyphs).
+
+
+## 13. Phase D as built (2026-09-14)
+
+**What this phase is.** Phase C deferred modules in as many words: "module
+fitting is client-owned condition today ... a yield-affecting module would
+therefore either be a forgeable claim or a quote the server refuses to honour.
+Modules wait for a server-registered fitting table, which belongs with Phase
+D's other registry work." Phase D is that table.
+
+**The registry** (`ship-fittings.ts`, pure). Thirteen fittings across six
+EXCLUSIVE groups — extraction (Focused Laser Cluster +25% rate; Deep Bore Array
++60% rate / −10% hold / +40% rubble wear, 2 slots; Volatile Ice Extractor
++50% on C-types and −12% on M/X; Magnetic Rake the mirror image), hold
+(Expanded Ore Hold +35% hold / −8% rate; Ore Compactor +70% hold / +8%
+propellant, 2 slots), plant (Auxiliary Refinery Pod +0.05 recovery / +25%
+throughput / −10% hold, 2 slots; Slag Recycler +0.03 recovery / −15%
+throughput), sensor (Wide-Field Survey Array +2 rocks a pass; Gravimetric Boom
++4 / +10% propellant, 2 slots), armour (Whipple Armour Belt −25% shakedown odds
+/ −35% rubble wear / −8% hold; Point-Defence Turret −50% odds / −5% rate, 2
+slots) and drive (High-Isp Ion Bank −20% propellant / +10% transit; Hall
+Thruster Cluster −20% transit / +18% propellant, 2 slots). Every one changes a
+quantity the simulation ALREADY computes. Prices are `baseCost + hullShare x
+the host hull's own baseCost`, so one table is honest on a $180M Prospector
+Barge and on a $1B Deep Space Miner without a per-hull price list.
+
+**The slot budget is the hull's own `moduleSlots`** (`ships.ts` ROLE_PROFILE:
+mining/survey 3 + tier, every other role 2 + tier, with per-hull overrides —
+the Refinery Barge's 4, the Hauler's 3). Read, not redefined: re-budgeting here
+would silently re-budget every hull in ModulesPanel too. Three things stop a fit
+being strictly additive: two-slot costs on every strong fitting, one-per-group
+exclusivity, and MASS — every slot point consumed adds
+`FITTING_SLOT_FUEL_PENALTY` (3%) to the propellant bill of every leg that hull
+ever flies. A five-point Prospector Barge therefore flies at 1.15x the burn of a
+bare one, forever, and bills `FITTING_UPKEEP_SHARE` (0.3% of the fit's price)
+every game-month on top.
+
+**Fitting is an economic action with a place and a clock.**
+`POST /api/space-tycoon/assets/fitting {op:'refit'|'strip'}` replaces a hull's
+whole fit in one visit. The bill is hardware + 10% yard labour + a flat $5M
+visit fee, minus 35% salvage on everything taken off (so a strip-heavy visit can
+pay OUT). A refit takes `FITTING_SECONDS_PER_SLOT` (900 s) per slot point plus
+the fitting's own install hours, and the hull refuses mining orders until
+`readyAt` — which is also what guarantees a fit can never change under an order
+in flight. It must happen at a REFIT YARD: a location where the corporation has
+a completed, operational `fabrication_facility` or a building with a
+`shipyardSlots` capability. Fitting is infrastructure, so a corporation that has
+pushed a fabrication plant to Ceres refits at the belt instead of flying a barge
+home for four game-months.
+
+**One code path, no second yield formula.** A fit becomes a `FittingProfile`
+(stacked, clamped) which `planMiningOrder` turns into an EFFECTIVE
+`ShipDefinition` — `oreExtractionPerHour`, `cargoCapacity`, `refineOrePerHour`,
+`surveySweep` — plus two leg terms on `LegLogistics`
+(`fittingFuelMult` / `fittingTransitMult`, two-sided and clamped in `quoteLeg`)
+and one lane term (`shakedownOdds(..., hardening)`, floored at
+`FITTING_HARDENING_FLOOR` 0.25 so no fit can buy immunity). Everything
+downstream — fill, extraction seconds, refine batch, product manifest, fuel,
+transit, expected units — falls out of the formulas that were already there.
+
+**Server authority.** `ShipFitting` rows are written ONLY by the fitting route,
+inside the transaction that debits the bill; `activeKey =
+"<profileId>:<shipInstanceId>"` is unique, so a double refit is settled by the
+database exactly as `AsteroidClaim.activeKey` and `PropellantDepot.activeKey`
+are. The mining route builds its quote from `loadFittingProfileFor` — it reads
+the ROW, never the request body (a guard test asserts the route source contains
+no `body.moduleIds`). Ledger reasons `ship_fitting` (burned) and
+`ship_fitting_salvage` are deliberately NOT in
+`CLIENT_APPLIED_LEDGER_REASONS`: the console does not debit locally, it adopts
+both as ordinary pending deltas — the `expedition_launch` contract, not the
+`mining_order_fuel` one that double-charged every player on 2026-09-14.
+
+**Frozen terms.** Two nullable columns on `MiningOrder`
+(`refineRecovery`, `fittingHardening`) record what the QUOTE used, and the
+completion pass reads them back rather than re-reading a fit that may have
+changed. NULL on every pre-Phase-D row reads as "no fitting" — baseline
+recovery, hardening 1 — so an order placed before this shipped settles
+byte-identically. A `return` order stamps the parcel's OWN recovery, not
+today's fit: stripping the pod after the concentrate is in the hold does not
+retroactively change what is in the hold.
+
+**A client bug fixed on the way.** The order preview quoted
+`getShipCargoCapacity` (FREIGHT capacity, including client-owned `modules.ts`
+bays) while the server quoted `def.cargoCapacity`. Both sides now scale the same
+bare hull by the same registered fit, so the fill the player is shown is the
+fill the registry will honour.
+
+**The money ceiling learned about modules.**
+`computeServerMonthlyGrossDetailed` gained a `miningFleet` term. It is needed
+because a mining order the route did not accept is LOCAL
+(`materializeOrder(plan, id, false)`), and `advanceMiningOrders` credits its
+sale proceeds straight into `state.money` with no ledger row — pure
+client-claimed growth against an estimate that carried NO asteroid-mining term
+at all before this phase. A fit multiplies exactly the quantities that income is
+made of, so the term reads the `ShipFitting` rows when the sync supplies them
+(tight) and the best legal fit each hull could carry when it does not (loose,
+never under-reporting). Hull damage, pressure, shakedowns, the broker fee,
+opex, propellant and transit all only REDUCE the figure, so leaving them out
+keeps the bound above the truth; the rubble yield bonus is the one term that
+adds and it is included. Ore is priced at the dearest class the hull's TIER can
+actually reach, and at the REFINED value of a unit where that is higher (Phase
+C's whole point). Measured margin on a maximally favourable belt cycle: **the
+estimate sits 15.5x-15.9x above what a fitted Prospector Barge actually sells
+per game-month**, and supplying the fitting rows tightens the term by **1.60x**
+against the unknown-fit branch.
+
+**`MAX_SHIP_MODULE_MINING_MULT` did NOT move**, on purpose. Fittings are a
+separate layer from `modules.ts` and do not touch the legacy parked-ship
+trickle that constant bounds — a guard test asserts `modules.ts` never imports
+the fitting layer, so if a later wave wires them together that constant must
+learn about them in the same commit.
+
+**UI.** `FittingConsole.tsx` (rendered from `MiningPanel`): hull picker, yard
+picker, a live slot meter, the full registry grouped by exclusive group with the
+price ON THIS HULL, the effect in plain English and the trade-off line, and a
+quote showing the bill (or the refund), the time in the yard and the ongoing
+upkeep. Every fitting is a real checkbox in a `<fieldset>` with a `<legend>`, no
+state is carried by colour alone, the refusal reason is words, and the layout is
+one column with 36-40px targets under 640px.
+
+**Save compatibility.** V43 in `save-load.ts`: `GameState.shipFittings` defaults
+to `{}` and a malformed block (or a malformed entry) is replaced rather than
+trusted, because the map is a SERVER MIRROR and the next sync refills it from
+the rows. No `SAVE_VERSION` bump (the constants.ts note: the real ledger is the
+inline V-comments).
+
+**Deploy.** `prisma db push` adds the `ShipFitting` table and
+`MiningOrder.refineRecovery / fittingHardening` — additive, nullable/defaulted,
+no backfill.
+
+**Still open from Phase D's original scope:** standing orders, the Belt
+Mothership, transfer of a held parcel between hulls at a field, claim transfer
+via binding contracts, quarterly corporate mining share, the Salvage Tender, a
+fixed refinery consuming stored ore at `FIXED_REFINERY_RECOVERY`, and the map
+affordances still open from Phase B (field badges, claim rings, escort and depot
+glyphs).

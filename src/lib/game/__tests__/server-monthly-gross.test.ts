@@ -61,6 +61,18 @@ import {
 import { MINING_PRODUCTION, RESOURCE_MAP } from '../resources';
 import { PRICE_BAND_HIGH } from '../price-band';
 import { MONEY_HEADROOM_MULT } from '../ledger-reconcile';
+// Mining Phase D (2026-09-14): the asteroid-mining fleet term.
+import {
+  MAX_FITTING_MINING_VALUE_MULT,
+  bestOreValueForTier,
+  oreUnitValueBound,
+  reachableOreIds,
+} from '../resource-plausibility';
+import { MAX_FITTING_CARGO_MULT, MAX_FITTING_ORE_RATE_MULT, fittingProfile, validateFit } from '../ship-fittings';
+import { planMiningOrder } from '../mining-orders';
+import { SHIP_MAP } from '../ships';
+import { ASTEROID_FIELD_MAP, LOCAL_INTEL_SALT, generateFieldRocks, rollAsteroidIntel } from '../asteroids';
+import { REAL_MS_PER_GAME_MONTH } from '../server-time';
 
 const DAY = 24 * 60 * 60 * 1000;
 const NOW = Date.now();
@@ -740,5 +752,153 @@ describe('server monthly gross — margin report', () => {
      
     console.log(JSON.stringify(rows, null, 2));
     for (const r of rows) expect(r.estimate).toBeGreaterThanOrEqual(r.engine);
+  });
+});
+
+// --- 5. Mining Phase D (2026-09-14): the asteroid-mining FLEET term ---------
+//
+// The obligation is the same one every term in this file carries, applied to a
+// path that had no term at all before Phase D. A mining order the route did
+// not accept is LOCAL (page.tsx materializeOrder(plan, id, false)), and
+// advanceMiningOrders credits its sale proceeds straight into `state.money`
+// with no ledger row -- so on the next sync those dollars are pure client
+// growth, measured against this estimate. A fit multiplies exactly the
+// quantities that income is made of, so the estimate has to know about fits or
+// it under-reports a fitted fleet by up to MAX_FITTING_MINING_VALUE_MULT and
+// the player watches honest money vanish.
+
+describe('mining fleet term - a fitted rig honest income is never rejected', () => {
+  const MINER = 'prospector_barge';
+  const barge = SHIP_MAP.get(MINER)!;
+  const beltRocks = generateFieldRocks(ASTEROID_FIELD_MAP.get('field_inner_belt')!, 2);
+
+  /** A profile whose whole fleet is `n` barges. */
+  function fleetState(n: number): GameState {
+    return baseState({
+      ships: Array.from({ length: n }, (_, i) => ({
+        instanceId: `mine-${i}`, definitionId: MINER, name: `Barge ${i}`,
+        status: 'idle', currentLocation: 'asteroid_belt', isBuilt: true,
+      })) as unknown as GameState['ships'],
+      totalEarned: 1_000_000_000,
+    });
+  }
+
+  function fleetGross(state: GameState, fittings?: Record<string, { ids: string[]; readyAtMs: number }>) {
+    const workforceData: Record<string, unknown> = { ...(state.workforce || {}) };
+    return computeServerMonthlyGrossDetailed(buildServerFlowState(persistedRowOf(state)), {
+      workforceData, totalEarned: state.totalEarned, createdAtMs: state.createdAt, nowMs: NOW,
+      elapsedMs: 30 * DAY, marketPrices: null, shipFittings: fittings ?? null,
+    });
+  }
+
+  it('a profile with no extraction hull gets no mining-fleet allowance at all', () => {
+    const r = fleetGross(fixtureMidSize());
+    expect(r.miningFleet).toBe(0);
+    expect(r.miningFleetFitSource).toBe('none');
+  });
+
+  it('the term scales with the fleet and is reported separately from services', () => {
+    const one = fleetGross(fleetState(1));
+    const three = fleetGross(fleetState(3));
+    expect(one.miningFleet).toBeGreaterThan(0);
+    expect(three.miningFleet / one.miningFleet).toBeCloseTo(3, 3);
+    expect(one.gross).toBeGreaterThanOrEqual(one.services + one.miningFleet);
+  });
+
+  it('SUPPLYING the ShipFitting rows TIGHTENS the estimate - that is the whole point', () => {
+    const state = fleetState(1);
+    const unknownFit = fleetGross(state);
+    const bareFit = fleetGross(state, { 'mine-0': { ids: [], readyAtMs: 0 } });
+    expect(unknownFit.miningFleetFitSource).toBe('best-fit');
+    expect(bareFit.miningFleetFitSource).toBe('registered');
+    expect(bareFit.miningFleet).toBeLessThan(unknownFit.miningFleet);
+  });
+
+  it('a REGISTERED cutting head raises the allowance, in step with the yield it buys', () => {
+    const state = fleetState(1);
+    const bare = fleetGross(state, { 'mine-0': { ids: [], readyAtMs: 0 } });
+    const fitted = fleetGross(state, { 'mine-0': { ids: ['fit_bore_array'], readyAtMs: 0 } });
+    const mult = fittingProfile(['fit_bore_array'], { bestClass: true }).oreRateMult;
+    expect(fitted.miningFleet / bare.miningFleet).toBeCloseTo(mult, 2);
+  });
+
+  it('CONSERVATISM: the allowance covers what a fitted rig actually sells in a game-month', () => {
+    // The real loop: plan the best order this rig can fly, price what it lands
+    // at the SAME per-unit valuation, and scale to a game-month by its own
+    // cycle time. The estimate must sit above it for every fit in the registry.
+    const rock = beltRocks.find(r => r.class === 'M')!;
+    const intel = { ...rollAsteroidIntel(rock, LOCAL_INTEL_SALT), grade: 1.5, reserve: 10_000_000 };
+    const state = fleetState(1);
+    const allResearch = RESEARCH.map(r => r.id);
+
+    for (const ids of [[], ['fit_laser_cluster'], ['fit_bore_array'], ['fit_ore_compactor'], ['fit_bore_array', 'fit_ore_hold']]) {
+      if (!validateFit(barge, ids, allResearch).ok) continue;
+      const fit = fittingProfile(ids, { rockClass: 'M' });
+      const p = planMiningOrder({
+        def: barge, cargoCapacity: barge.cargoCapacity, fitting: fit,
+        mode: 'mine', rock, intel, originId: 'asteroid_belt',
+        thenAction: 'return_sell', nowMs: NOW,
+      });
+      expect(p.ok).toBe(true);
+      if (!p.ok) continue;
+      const cycleMs = Math.max(1, p.order.completesAtMs - p.order.startedAtMs);
+      const perUnit = miningCeilingUnitPrice(p.order.oreId, null);
+      const perGameMonth = p.expectedUnits * perUnit * (REAL_MS_PER_GAME_MONTH / cycleMs);
+      const estimate = fleetGross(state, { 'mine-0': { ids, readyAtMs: 0 } }).miningFleet;
+      expect([ids.join('+'), estimate >= perGameMonth]).toEqual([ids.join('+'), true]);
+    }
+  });
+
+  it('the fitting bound is derived from the registry, so a new fitting cannot ship silently', () => {
+    expect(MAX_FITTING_MINING_VALUE_MULT).toBeCloseTo(MAX_FITTING_ORE_RATE_MULT * MAX_FITTING_CARGO_MULT, 6);
+    expect(MAX_FITTING_MINING_VALUE_MULT).toBeGreaterThan(1);
+    for (const ids of [['fit_bore_array'], ['fit_ore_compactor'], ['fit_bore_array', 'fit_ore_hold']]) {
+      const p = fittingProfile(ids, { bestClass: true });
+      expect(p.oreRateMult * p.cargoMult).toBeLessThanOrEqual(MAX_FITTING_MINING_VALUE_MULT + 1e-9);
+    }
+  });
+
+  it('a hull can only be valued at ore its TIER can reach', () => {
+    // A tier-1 drone is locked to the Frontier field, whose class mix has no
+    // X-types at all - it may never be priced as an exotic miner.
+    expect(reachableOreIds(1)).not.toContain('ore_exotic');
+    expect(reachableOreIds(2)).toContain('ore_exotic');
+    expect(bestOreValueForTier(1, null)).toBeLessThan(bestOreValueForTier(4, null));
+  });
+
+  // Diagnostic, kept as a test so a change that collapses the margin toward
+  // 1.0x (or blows it up) shows in CI output, exactly like the fixture margin
+  // report above.
+  it('margin report: estimate vs the cycle a fitted rig actually flies', () => {
+    const rock = beltRocks.find(r => r.class === 'M')!;
+    const intel = { ...rollAsteroidIntel(rock, LOCAL_INTEL_SALT), grade: 1.5, reserve: 10_000_000 };
+    const state = fleetState(1);
+    const rows = [[], ['fit_laser_cluster'], ['fit_bore_array'], ['fit_ore_compactor'], ['fit_bore_array', 'fit_ore_hold']].map(ids => {
+      const fit = fittingProfile(ids, { rockClass: 'M' });
+      const p = planMiningOrder({
+        def: barge, cargoCapacity: barge.cargoCapacity, fitting: fit,
+        mode: 'mine', rock, intel, originId: 'asteroid_belt', thenAction: 'return_sell', nowMs: NOW,
+      });
+      if (!p.ok) return { fit: ids.join('+') || 'bare', margin: Infinity };
+      const cycleMs = Math.max(1, p.order.completesAtMs - p.order.startedAtMs);
+      const actual = p.expectedUnits * miningCeilingUnitPrice(p.order.oreId, null) * (REAL_MS_PER_GAME_MONTH / cycleMs);
+      const estimate = fleetGross(state, { 'mine-0': { ids, readyAtMs: 0 } }).miningFleet;
+      return {
+        fit: ids.join('+') || 'bare',
+        oreRateMult: fit.oreRateMult, cargoMult: fit.cargoMult, fuelMult: fit.fuelMult,
+        actualPerGameMonth: Math.round(actual), estimate, margin: +(estimate / Math.max(1, actual)).toFixed(2),
+      };
+    });
+    const unregistered = fleetGross(state).miningFleet;
+    const bare = fleetGross(state, { 'mine-0': { ids: [], readyAtMs: 0 } }).miningFleet;
+
+    console.log(JSON.stringify({ rows, unregisteredOverBare: +(unregistered / bare).toFixed(2) }, null, 2));
+    for (const r of rows) expect(r.margin).toBeGreaterThanOrEqual(1);
+  });
+
+  it('the refined value of an ore unit is what bounds a Refinery Barge, not the raw rock', () => {
+    // Phase C: the concentrate is worth more than the rock, so a ceiling that
+    // only priced raw ore would under-report every refining hull.
+    expect(oreUnitValueBound('ore_metallic', null)).toBeGreaterThanOrEqual(miningCeilingUnitPrice('ore_metallic', null));
   });
 });

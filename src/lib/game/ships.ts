@@ -194,6 +194,17 @@ export interface MiningOrder {
   depotCovered?: number;
   /** Rocks a sweep survey reveals in one pass (Survey Cruiser). */
   sweepAsteroidIds?: string[];
+  // ── Mining Phase D (2026-09-14) ──
+  /** The two fitting-derived terms FROZEN at quote time (ship-fittings.ts).
+   *  The settlement reads them off the order rather than re-reading the fit,
+   *  so what the player was shown is what they get even if the hull is
+   *  refitted later. Absent = a bare hull: recovery MOBILE_REFINERY_RECOVERY,
+   *  hardening 1 — which is every pre-Phase-D order, unchanged. */
+  refineRecovery?: number;
+  fittingHardening?: number;
+  /** The fitting ids the quote used, for the console's "what flew" line.
+   *  Display only — no number is ever derived from this on settlement. */
+  fittingIds?: string[];
 }
 
 /** Ore — or, after a Phase C refine run, PRODUCT — sitting in a hull after a

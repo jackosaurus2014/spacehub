@@ -158,6 +158,19 @@ export type LedgerReason =
   | 'depot_feedstock'
   | 'survey_report_sale'
   | 'survey_report_purchase'
+  // Mining Phase D (2026-09-14, ship-fittings.ts / server-fittings.ts, written
+  // by /api/space-tycoon/assets/fitting). `ship_fitting` is the whole refit
+  // bill — hardware, yard labour and the flat visit fee — and is BURNED (no
+  // matching credit anywhere; BALANCE.md money sink). `ship_fitting_salvage`
+  // is the below-book credit for hardware taken OFF, the same posture as
+  // building_decommission_recovery, and it nets against the bill inside one
+  // transaction so a strip-heavy refit can pay out instead of in.
+  // NOT client-applied (they are deliberately absent from
+  // ledger-reconcile.ts CLIENT_APPLIED_LEDGER_REASONS): the console never
+  // debits locally on the 2xx, it adopts both as ordinary pending deltas —
+  // the `expedition_launch` contract, not the `mining_order_fuel` one.
+  | 'ship_fitting'
+  | 'ship_fitting_salvage'
   // AAA Program Round 2 (docs/AAA_PROGRAM_2026-08.md): the Accord
   // Stabilization Assessment. BURNED — the pool is a sink, not an escrow, so
   // there is nothing to refund and nothing to exploit by pledging and

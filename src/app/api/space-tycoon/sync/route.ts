@@ -68,6 +68,8 @@ import {
 // block — claims, live surveyed intel, notices (asteroid-claims.ts
 // adoptServerMining). Best-effort like the headquarters block.
 import { loadMiningBlock } from '@/lib/game/server-mining';
+// Mining Phase D (2026-09-14): the fitting rows the money ceiling reads.
+import { loadFittingBlock } from '@/lib/game/server-fittings';
 // Ship traffic Phase 2 (2026-09-14): ship movement is a server row now
 // (prisma ShipTransit). The sync lands legs whose arrival has passed,
 // back-fills a row for anything the persisted fleet says is in flight
@@ -406,6 +408,11 @@ export async function POST(request: Request) {
             return acc;
           }, {} as Record<string, number>)
           : null;
+        // Mining Phase D: read the fitting rows once, for the ceiling.
+        let fittingsForCeiling: Record<string, { ids?: unknown; readyAtMs?: unknown }> | null = null;
+        try {
+          fittingsForCeiling = await loadFittingBlock(existingProfile.id, prisma);
+        } catch { fittingsForCeiling = null; }
         try {
           serverMonthlyGross = computeServerMonthlyGross(
             buildServerFlowState({
@@ -426,7 +433,13 @@ export async function POST(request: Request) {
               elapsedMs,
               // 2026-09-14: live spot per resource slug for the mining_output
               // valuation (resource-plausibility.ts miningCeilingUnitPrice).
-              marketPrices: livePriceBySlug },
+              marketPrices: livePriceBySlug,
+              // 2026-09-14 (Mining Phase D): the profile's registered ship
+              // fittings, so the asteroid-mining fleet term is valued at the
+              // fits this corporation actually PAID for instead of at the best
+              // fit the registry allows. A failed read falls back to undefined,
+              // which is the looser (never under-reporting) branch.
+              shipFittings: fittingsForCeiling },
           );
         } catch (grossError) {
           logger.error('Server monthly gross computation failed — zero headroom this sync', { error: String(grossError) });

@@ -54,6 +54,10 @@ import {
   refinedUnitTotal,
 } from './ore-refining';
 import { depotCoverage } from './propellant-depots';
+// Mining Phase D (2026-09-14): server-registered ship fittings. The planner is
+// handed a FittingProfile and derives the EFFECTIVE hull from it — there is no
+// second yield formula anywhere, which is the whole point of doing it here.
+import { NEUTRAL_FITTING_PROFILE, effectiveShipDefinition, type FittingProfile } from './ship-fittings';
 import { REAL_MS_PER_GAME_MONTH } from './server-time';
 import { FREIGHT_CARGO_FUEL_RATE, FREIGHT_MIN_FUEL_COST, creditArrivalCargo, getRouteDeltaV } from './cargo-logistics';
 // CC-2 (Pass 11): the Lunar HQ's logistics terms — −12% fuel per leg and
@@ -138,8 +142,22 @@ export interface LegCost { deltaV: number; seconds: number; fuel: number }
 /** CC-2: per-leg logistics terms from the seated HQ. `deltaVMult` scales
  *  the ROCK's Δv surcharge only (the lane Δv is physics); `fuelMult`
  *  scales the whole fuel bill. Transit time is unchanged — the bonus is a
- *  cheaper burn, not a faster one. */
-export interface LegLogistics { fuelMult?: number; deltaVMult?: number }
+ *  cheaper burn, not a faster one.
+ *
+ *  Mining Phase D adds the two FITTING terms. They are separate fields, not
+ *  folded into the HQ's, because the HQ terms are discounts (clamped ≤ 1)
+ *  while a fit can make a hull thirstier or slower as well as cheaper or
+ *  faster — an Ore Compactor costs propellant, a Hall cluster buys speed with
+ *  propellant, an ion bank buys propellant with time. Both are clamped here so
+ *  a malformed profile can never produce a free leg. */
+export interface LegLogistics {
+  fuelMult?: number;
+  deltaVMult?: number;
+  /** ship-fittings.ts FittingProfile.fuelMult — clamped 0.6-2.0. */
+  fittingFuelMult?: number;
+  /** ship-fittings.ts FittingProfile.transitMult — clamped 0.7-1.4. */
+  fittingTransitMult?: number;
+}
 
 /** One leg between a location and a rock. `loadedUnits` is the cargo aboard;
  *  `loadWeight` is what a unit of it weighs against the freight fuel term —
@@ -158,19 +176,32 @@ export function quoteLeg(
   const laneDv = getRouteDeltaV(fromLocationId, toLocationId);
   const dvMult = typeof logistics.deltaVMult === 'number' && Number.isFinite(logistics.deltaVMult) ? Math.max(0.5, Math.min(1, logistics.deltaVMult)) : 1;
   const fuelMult = typeof logistics.fuelMult === 'number' && Number.isFinite(logistics.fuelMult) ? Math.max(0.5, Math.min(1, logistics.fuelMult)) : 1;
+  // Phase D: the fit's own terms. Two-sided (a fit can cost propellant or
+  // time), so these clamps straddle 1 rather than capping at it.
+  const fitFuel = typeof logistics.fittingFuelMult === 'number' && Number.isFinite(logistics.fittingFuelMult) ? Math.max(0.6, Math.min(2, logistics.fittingFuelMult)) : 1;
+  const fitTransit = typeof logistics.fittingTransitMult === 'number' && Number.isFinite(logistics.fittingTransitMult) ? Math.max(0.7, Math.min(1.4, logistics.fittingTransitMult)) : 1;
   const deltaV = laneDv + Math.max(0, rockDeltaVExtra) * dvMult;
-  const seconds = Math.round((fromLocationId === toLocationId ? 0 : getTravelTime(fromLocationId, toLocationId)) + rockDeltaVExtra * TRANSIT_SECONDS_PER_DELTA_V);
+  const rawSeconds = (fromLocationId === toLocationId ? 0 : getTravelTime(fromLocationId, toLocationId)) + rockDeltaVExtra * TRANSIT_SECONDS_PER_DELTA_V;
+  const seconds = Math.round(rawSeconds * fitTransit);
   const raw = deltaV * (MINING_HULL_FUEL_RATE * Math.max(1, hullTier) + FREIGHT_CARGO_FUEL_RATE * Math.max(0, loadWeight) * Math.max(0, loadedUnits));
-  const fuel = Math.max(FREIGHT_MIN_FUEL_COST, Math.round(raw * Math.max(0.5, Math.min(1, fuelEfficiencyMult)) * fuelMult));
+  const fuel = Math.max(FREIGHT_MIN_FUEL_COST, Math.round(raw * Math.max(0.5, Math.min(1, fuelEfficiencyMult)) * fuelMult * fitFuel));
   return { deltaV, seconds, fuel };
 }
 
 /** The leg terms for a field: the belt Δv term applies only to rocks in
- *  a belt field (HQ_BELT_LOCATIONS); the fuel term applies everywhere. */
-export function legLogisticsFor(hq: HqMiningLogistics | null | undefined, parentLocationId: string | null | undefined): LegLogistics {
-  if (!hq) return {};
+ *  a belt field (HQ_BELT_LOCATIONS); the fuel term applies everywhere.
+ *  Phase D: the hull's fit rides alongside, never folded in (see LegLogistics). */
+export function legLogisticsFor(
+  hq: HqMiningLogistics | null | undefined,
+  parentLocationId: string | null | undefined,
+  fitting?: FittingProfile | null,
+): LegLogistics {
+  const fit = fitting && fitting.ids.length > 0
+    ? { fittingFuelMult: fitting.fuelMult, fittingTransitMult: fitting.transitMult }
+    : {};
+  if (!hq) return fit;
   const belt = !!parentLocationId && HQ_BELT_LOCATIONS.includes(parentLocationId);
-  return { fuelMult: hq.fuelMult, deltaVMult: belt ? hq.beltDeltaVMult : 1 };
+  return { fuelMult: hq.fuelMult, deltaVMult: belt ? hq.beltDeltaVMult : 1, ...fit };
 }
 
 // ─── Planner ─────────────────────────────────────────────────────────────────
@@ -193,9 +224,18 @@ export type MiningPlanError =
   | 'nothing_to_refine';
 
 export interface MiningPlanInput {
+  /** The BARE hull definition. Phase D: the planner derives the effective
+   *  hull from `fitting` itself, so both sides are guaranteed to apply the
+   *  same terms in the same order. Never pass a pre-scaled definition. */
   def: ShipDefinition;
-  /** Hull + module capacity (cargo-logistics getShipCargoCapacity). */
+  /** The BARE hull's `cargoCapacity`. Scaled by the fit here — do NOT pass
+   *  cargo-logistics getShipCargoCapacity (that is the FREIGHT capacity, which
+   *  includes client-owned modules.ts bays the server does not honour). */
   cargoCapacity: number;
+  /** Mining Phase D: the hull's SERVER-REGISTERED fit (ship-fittings.ts).
+   *  Absent / neutral = a bare hull, which is exactly what every pre-Phase-D
+   *  caller and every unfitted hull produces. */
+  fitting?: FittingProfile | null;
   mode: MiningOrderMode;
   /** Required for 'mine' and 'survey'. */
   rock?: AsteroidRock | null;
@@ -306,7 +346,29 @@ export const MINING_PLAN_ERROR_TEXT: Readonly<Record<MiningPlanError, string>> =
  * local view. Identical inputs → identical schedule and fuel bill.
  */
 export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
-  const { def, mode, originId, nowMs } = input;
+  const { mode, originId, nowMs } = input;
+  // Phase D: the fit is applied ONCE, here, and every figure below is derived
+  // from the effective hull. `fit` is neutral for an unfitted hull and for
+  // every caller written before Phase D, so those quotes are unchanged.
+  const fit = input.fitting && input.fitting.ids.length > 0 ? input.fitting : NEUTRAL_FITTING_PROFILE;
+  const def = effectiveShipDefinition(input.def, fit);
+  const fittedCapacity = Math.max(0, Math.floor((input.cargoCapacity || 0) * fit.cargoMult));
+  // Frozen on every order this planner emits: the settlement reads these back
+  // rather than re-deriving them from a fit that may have changed since.
+  // NOTE the recovery is deliberately NOT in here. A 'return' order carries a
+  // parcel that was refined under the recovery ITS OWN order recorded, which
+  // may be neither this hull's current fit nor the mobile baseline — so each
+  // branch stamps the recovery it actually USED (`recoveryStamp`), and the
+  // survey branch stamps none at all.
+  const fitStamp: Pick<MiningOrder, 'fittingHardening' | 'fittingIds'> =
+    fit.ids.length > 0
+      ? { fittingHardening: fit.shakedownMult, fittingIds: [...fit.ids] }
+      : {};
+  /** The recovery a refined order was quoted at, when it differs from the
+   *  mobile plant's baseline. Absent = the baseline, which is how every
+   *  pre-Phase-D row reads. */
+  const recoveryStamp = (recovery: number): Pick<MiningOrder, 'refineRecovery'> =>
+    (Math.abs(recovery - MOBILE_REFINERY_RECOVERY) > 1e-9 ? { refineRecovery: recovery } : {});
   const eff = input.fuelEfficiencyMult ?? 1;
   const tier = def.tier;
 
@@ -318,16 +380,16 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
     const destinationId = input.destinationId || 'earth_surface';
     const rock = held.asteroidId ? getAsteroid(held.asteroidId) : undefined;
     // Phase C: a refined parcel flies as PRODUCT — fewer units, full weight.
-    const recovery = input.refineRecovery ?? MOBILE_REFINERY_RECOVERY;
+    const recovery = input.refineRecovery ?? fit.refineRecovery;
     const products = held.refined ? refineOutputs(held.oreId, held.units, recovery) : {};
     const cargoUnits = held.refined ? refinedUnitTotal(products) : held.units;
-    const back = quoteLeg(parent, destinationId, rock?.deltaVExtra ?? 0, tier, cargoUnits, eff, legLogisticsFor(input.hqLogistics, field?.parentLocationId), held.refined ? 1 : ORE_LOAD_WEIGHT);
+    const back = quoteLeg(parent, destinationId, rock?.deltaVExtra ?? 0, tier, cargoUnits, eff, legLogisticsFor(input.hqLogistics, field?.parentLocationId, fit), held.refined ? 1 : ORE_LOAD_WEIGHT);
     const depot = depotCoverage(back.fuel, input.depotStockUnits ?? 0);
     const thenAction: MiningThenAction = input.thenAction === 'return_sell' ? 'return_sell' : 'return_store';
     const price = RESOURCE_MAP.get(held.oreId as ResourceId)?.baseMarketPrice ?? 0;
     const cover: EscortCover = input.escortCover ?? 'none';
-    const odds = shakedownOdds(parent, cover, !!input.frontier);
-    const loss = expectedShakedownLoss(parent, cover, !!input.frontier, cargoUnits);
+    const odds = shakedownOdds(parent, cover, !!input.frontier, fit.shakedownMult);
+    const loss = expectedShakedownLoss(parent, cover, !!input.frontier, cargoUnits, fit.shakedownMult);
     const landedUnits = Math.max(0, Math.round(cargoUnits - loss));
     const landedProducts = held.refined ? applyProductLoss(products, cargoUnits > 0 ? loss / cargoUnits : 0).outputs : {};
     return {
@@ -338,6 +400,8 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
         originId: parent, destinationId,
         startedAtMs: nowMs, arrivesAtMs: nowMs, miningEndsAtMs: nowMs, completesAtMs: nowMs + back.seconds * 1000,
         fuelCost: depot.cashFuel, ratePerHour: 0, surveyed: true,
+        ...fitStamp,
+        ...(held.refined ? recoveryStamp(recovery) : {}),
         pressureShare: 1, expectedUnits: landedUnits, shakedownOdds: odds,
         ...(held.refined ? { refined: true, outputs: landedProducts } : {}),
         ...(depot.covered > 0 ? { depotCovered: depot.covered, depotUnitsDrawn: depot.unitsDrawn } : {}),
@@ -363,10 +427,10 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
     if (!isRefinableOre(held.oreId)) return { ok: false, error: 'ore_not_refinable' };
     const field = ASTEROID_FIELD_MAP.get(held.fieldId);
     const parent = field?.parentLocationId || originId;
-    const recovery = input.refineRecovery ?? MOBILE_REFINERY_RECOVERY;
+    const recovery = input.refineRecovery ?? fit.refineRecovery;
     const rockHere = held.asteroidId ? getAsteroid(held.asteroidId) : undefined;
-    const legs = legLogisticsFor(input.hqLogistics, parent);
-    const oreUnits = Math.min(held.units, maxOreBatchForHold(held.oreId, input.cargoCapacity, recovery), maxOreBatchForTime(0, def.refineOrePerHour));
+    const legs = legLogisticsFor(input.hqLogistics, parent, fit);
+    const oreUnits = Math.min(held.units, maxOreBatchForHold(held.oreId, fittedCapacity, recovery), maxOreBatchForTime(0, def.refineOrePerHour));
     if (!(oreUnits >= 1)) return { ok: false, error: 'invalid_fill' };
     const products = refineOutputs(held.oreId, oreUnits, recovery);
     const productUnits = refinedUnitTotal(products);
@@ -377,8 +441,8 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
     const rawFuel = back?.fuel ?? 0;
     const depot = depotCoverage(rawFuel, input.depotStockUnits ?? 0);
     const cover: EscortCover = thenAction === 'hold' ? 'none' : (input.escortCover ?? 'none');
-    const odds = thenAction === 'hold' ? 0 : shakedownOdds(parent, cover, !!input.frontier);
-    const loss = thenAction === 'hold' ? 0 : expectedShakedownLoss(parent, cover, !!input.frontier, productUnits);
+    const odds = thenAction === 'hold' ? 0 : shakedownOdds(parent, cover, !!input.frontier, fit.shakedownMult);
+    const loss = thenAction === 'hold' ? 0 : expectedShakedownLoss(parent, cover, !!input.frontier, productUnits, fit.shakedownMult);
     const landed = thenAction === 'hold' ? products : applyProductLoss(products, productUnits > 0 ? loss / productUnits : 0).outputs;
     const opex = refineOpex(held.oreId, oreUnits);
     const refineEndsAtMs = nowMs + plantSeconds * 1000;
@@ -391,6 +455,7 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
         startedAtMs: nowMs, arrivesAtMs: nowMs, miningEndsAtMs: nowMs,
         refineEndsAtMs, completesAtMs: refineEndsAtMs + (back ? back.seconds * 1000 : 0),
         fuelCost: depot.cashFuel, ratePerHour: def.refineOrePerHour, surveyed: true,
+        ...fitStamp, ...recoveryStamp(recovery),
         refined: true, outputs: landed, refineOpex: opex,
         pressureShare: 1, expectedUnits: refinedUnitTotal(landed), shakedownOdds: odds,
         ...(depot.covered > 0 ? { depotCovered: depot.covered, depotUnitsDrawn: depot.unitsDrawn } : {}),
@@ -411,7 +476,7 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
   if (!field) return { ok: false, error: 'unknown_rock' };
   if (!getFieldsForShipTier(tier).some(f => f.id === field.id)) return { ok: false, error: 'field_out_of_reach' };
   const parent = field.parentLocationId;
-  const legs = legLogisticsFor(input.hqLogistics, parent);
+  const legs = legLogisticsFor(input.hqLogistics, parent, fit);
   const out = quoteLeg(originId, parent, rock.deltaVExtra, tier, 0, eff, legs);
   const oreId = oreForRock(rock);
 
@@ -436,6 +501,7 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
         startedAtMs: nowMs, arrivesAtMs: arrivesAt, miningEndsAtMs: arrivesAt,
         completesAtMs: arrivesAt + sweepSeconds * 1000,
         fuelCost: surveyDepot.cashFuel, ratePerHour: 0, surveyed: !!input.intel,
+        ...fitStamp,
         ...(sweepIds.length > 1 ? { sweepAsteroidIds: sweepIds } : {}),
         ...(surveyDepot.covered > 0 ? { depotCovered: surveyDepot.covered, depotUnitsDrawn: surveyDepot.unitsDrawn } : {}),
       },
@@ -452,14 +518,14 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
   if (!def.oreExtractionPerHour) return { ok: false, error: 'ship_cannot_mine' };
   if (refining && !def.refineOrePerHour) return { ok: false, error: 'ship_cannot_refine' };
   if (refining && !isRefinableOre(oreId)) return { ok: false, error: 'ore_not_refinable' };
-  const recovery = input.refineRecovery ?? MOBILE_REFINERY_RECOVERY;
+  const recovery = input.refineRecovery ?? fit.refineRecovery;
   const intel = input.intel ?? null;
   if (intel && intel.reserve <= 0) return { ok: false, error: 'rock_exhausted' };
   // Phase B: exclusivity (server-verified; the client mirrors the feed) and
   // the player's own stand-off from an event card.
   if (input.claimedByOther && !input.claimed) return { ok: false, error: 'rock_claimed' };
   if (typeof input.standOffUntilMs === 'number' && input.standOffUntilMs > nowMs) return { ok: false, error: 'standing_off' };
-  const capacity = Math.max(0, Math.floor(input.cargoCapacity));
+  const capacity = fittedCapacity;
   // Phase C: a refining hull's hold carries the CONCENTRATE, so the batch it
   // can take is capacity / product mass per ore unit -- the whole economic
   // case for refining at the field (ore-refining.ts maxOreBatchForHold).
@@ -499,8 +565,8 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
   const completesAtMs = refineEndsAtMs + (back ? back.seconds * 1000 : 0);
   const price = RESOURCE_MAP.get(oreId)?.baseMarketPrice ?? 0;
   const cover: EscortCover = thenAction === 'hold' ? 'none' : (input.escortCover ?? 'none');
-  const odds = thenAction === 'hold' ? 0 : shakedownOdds(parent, cover, !!input.frontier);
-  const loss = thenAction === 'hold' ? 0 : expectedShakedownLoss(parent, cover, !!input.frontier, cargoUnits);
+  const odds = thenAction === 'hold' ? 0 : shakedownOdds(parent, cover, !!input.frontier, fit.shakedownMult);
+  const loss = thenAction === 'hold' ? 0 : expectedShakedownLoss(parent, cover, !!input.frontier, cargoUnits, fit.shakedownMult);
   const landedProducts = refining
     ? (thenAction === 'hold' ? products : applyProductLoss(products, cargoUnits > 0 ? loss / cargoUnits : 0).outputs)
     : {};
@@ -516,6 +582,7 @@ export function planMiningOrder(input: MiningPlanInput): MiningPlanResult {
       startedAtMs: nowMs, arrivesAtMs, miningEndsAtMs, completesAtMs,
       ...(refining ? { refineEndsAtMs, refined: true, outputs: landedProducts, refineOpex: opex } : {}),
       fuelCost: depot.cashFuel, ratePerHour: rate, surveyed: !!intel,
+      ...fitStamp, ...(refining ? recoveryStamp(recovery) : {}),
       claimed, sharedMiners, pressureShare: share, expectedUnits, shakedownOdds: odds,
       ...(depot.covered > 0 ? { depotCovered: depot.covered, depotUnitsDrawn: depot.unitsDrawn } : {}),
       ...(cover === 'assigned' && input.escortInstanceId ? { escortInstanceId: input.escortInstanceId } : {}),
@@ -689,7 +756,7 @@ export function advanceMiningOrders(state: GameState, nowMs: number = Date.now()
         money -= order.refineOpex;
         totalSpent += order.refineOpex;
       }
-      const productLine = order.refined ? describeProducts(refineOutputs(order.oreId, heldUnits, MOBILE_REFINERY_RECOVERY)) : '';
+      const productLine = order.refined ? describeProducts(refineOutputs(order.oreId, heldUnits, order.refineRecovery ?? MOBILE_REFINERY_RECOVERY)) : '';
       events.push({ id: generateId(), date: state.gameDate, type: 'milestone', title: order.refined ? `🏭 ${ship.name} holding refined product` : `⛏️ ${ship.name} holding ${heldUnits} ${oreName}`, description: order.refined ? `${heldUnits} ${oreName} processed at ${rockName} → ${productLine}. Issue a Return order to bring it home.` : `Hold full at ${rockName}${heldUnits < order.fillUnits ? ` (${order.fillUnits} quoted — shared-rock pressure)` : ''}. Issue a Return order to bring it home, or leave it for a hauler (Phase D).` });
       return { ...base, heldOre: held };
     }
@@ -698,14 +765,16 @@ export function advanceMiningOrders(state: GameState, nowMs: number = Date.now()
       // Phase C: a refined run carries PRODUCT — the toll and the credit are
       // taken on the manifest, not on the rock it came from.
       const oreAboard = (order.mode === 'mine' || order.mode === 'refine') ? applyRockPressure(order.fillUnits, order.pressureShare ?? 1) : order.fillUnits;
-      const products = order.refined ? refineOutputs(order.oreId, oreAboard, MOBILE_REFINERY_RECOVERY) : {};
+      const products = order.refined ? refineOutputs(order.oreId, oreAboard, order.refineRecovery ?? MOBILE_REFINERY_RECOVERY) : {};
       const aboard = order.refined ? refinedUnitTotal(products) : oreAboard;
       if (order.refined && order.refineOpex) {
         money -= order.refineOpex;
         totalSpent += order.refineOpex;
       }
       const cover: EscortCover = order.escortInstanceId ? 'assigned' : 'none';
-      const toll = orderHasReturnLeg(order.mode, order.thenAction) ? settleShakedown(order.id, order.parentLocationId, cover, frontier, aboard) : null;
+      // Phase D: the hardening the quote used is frozen on the order, so the
+      // local settlement and the server settlement roll the same odds.
+      const toll = orderHasReturnLeg(order.mode, order.thenAction) ? settleShakedown(order.id, order.parentLocationId, cover, frontier, aboard, order.fittingHardening ?? 1) : null;
       const landed = toll ? toll.unitsLanded : aboard;
       const landedProducts = order.refined ? applyProductLoss(products, aboard > 0 ? (aboard - landed) / aboard : 0).outputs : {};
       if (toll?.hit || toll?.repelled) {

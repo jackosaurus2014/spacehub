@@ -61,6 +61,16 @@ import {
 import { LEGACY_MILESTONES, STRETCH_LEGACIES, LEGACY_CATEGORY_CAPS } from './legacy-system';
 import { isBuildingOperational, REACTIVATION_SPINUP_MONTHS } from './mothball';
 import { getMiningRevenueScale } from './mining-pricing';
+// 2026-09-14 Mining Phase D (docs/SPACE_MINING_DESIGN_2026-09-12.md §8 row D):
+// the asteroid-mining fleet term and the fitting bounds it reads.
+import {
+  ORE_RESOURCE_BY_CLASS, RUBBLE_YIELD_MULT, getFieldsForShipTier, type AsteroidClass,
+} from './asteroids';
+import { refineOutputs } from './ore-refining';
+import {
+  FITTING_MAX_REFINERY_RECOVERY, bestFitFor, fittingProfile,
+  MAX_FITTING_CARGO_MULT, MAX_FITTING_ORE_RATE_MULT,
+} from './ship-fittings';
 // 2026-09-14 mining valuation (docs/SECURITY_AUDIT_2026-09.md "C-2 follow-up
 // 5"): the money path prices mined output at the anti-cornering BAND, and at
 // the live spot when the caller can supply one. Same band helper the client
@@ -177,7 +187,17 @@ export const MEGASTRUCTURE_PASSIVE_CEILING: Record<string, number> = (() => {
 
 /** modules.ts:198 — each fitted mining laser adds +30%; the slot count is
  *  bounded by the largest `moduleSlots` of any hull (a DERIVED stat —
- *  ships.ts getShipDerivedStats — not a definition field). Derived at load. */
+ *  ships.ts getShipDerivedStats — not a definition field). Derived at load.
+ *
+ *  2026-09-14 (Mining Phase D) — WHY THIS DID NOT MOVE. Phase D's fittings
+ *  (ship-fittings.ts) are a SEPARATE layer from modules.ts and deliberately do
+ *  NOT touch the legacy parked-ship trickle this constant bounds: a fitting
+ *  only ever reaches `planMiningOrder`, which is the Mining Order loop, whose
+ *  output is ledgered by the server. `getShipMiningRateMultiplier` still reads
+ *  modules.ts and nothing else, so this bound is still exact. That boundary is
+ *  enforced by a guard test (__tests__/ship-fittings.test.ts) — if a later wave
+ *  wires fittings into the trickle, this constant must learn about them in the
+ *  same commit. */
 export const MAX_SHIP_MODULE_MINING_MULT: number = (() => {
   let slots = 0;
   for (const def of Array.from(SHIP_MAP.values())) {
@@ -333,6 +353,144 @@ export function miningOutputNameplateValue(
   let scale = 1;
   try { scale = getMiningRevenueScale(definitionId); } catch { scale = 1; }
   return valued * scale;
+}
+
+// ─── 2026-09-14 (Mining Phase D): the ASTEROID MINING FLEET term ────────────
+//
+// WHY THE MONEY CEILING NEEDS THIS AT ALL. A synced profile's mining income is
+// ledger-mediated (`mining_order_sale` / `refining_sale`) and therefore exempt
+// from the clamp — it lands in `prevMoney`, not in the client's claim. But a
+// mining order is only server-authoritative when the ROUTE accepted it:
+// page.tsx materializes a LOCAL order (`materializeOrder(plan, id, false)`)
+// whenever the asset call comes back `local` — an anonymous session, a profile
+// that has not synced yet, a route that was unavailable — and
+// `advanceMiningOrders` then credits that order's sale proceeds straight into
+// `state.money` with no ledger row at all. On the next sync those dollars are
+// pure client-claimed growth, and before Phase D the estimate carried NO
+// asteroid-mining term whatsoever: they were rejected, and (because every
+// window re-clamps from the already-clamped row) they never came back. That is
+// the 2026-09-12 money-desync failure mode, waiting on a different path.
+//
+// AND WHY IT HAD TO LEARN ABOUT MODULES. A fit multiplies exactly the two
+// quantities this term is made of — extraction rate and hold size — by up to
+// MAX_FITTING_ORE_RATE_MULT and MAX_FITTING_CARGO_MULT. An estimate that
+// priced bare hulls would under-report a fitted fleet by that factor, which is
+// the "honest income rejected" failure this file exists to prevent. So:
+//   · `inputs.shipFittings` supplied (the sync reads the ShipFitting rows) →
+//     each hull is valued at ITS OWN registered fit. Tight.
+//   · not supplied → each hull is valued at the BEST legal fit its hardpoints,
+//     roles and slot budget allow (ship-fittings.ts bestFitFor, every research
+//     assumed complete). Loose, but never below the truth.
+// Adding a fitting to FITTINGS moves both bounds automatically — there is no
+// constant here to forget to update.
+//
+// EVERYTHING ELSE IN THE CHAIN ONLY REDUCES. Hull damage, shared-rock
+// extraction pressure, NPC shakedowns, the 3% broker fee, refining opex,
+// propellant and transit time all take units or dollars AWAY from this figure,
+// so leaving them out keeps the bound above the truth. The one term that adds
+// is the rubble event (yield x1.25), and it is included.
+
+/** Real hours in one game-month (server-time.ts REAL_MS_PER_GAME_MONTH). */
+const REAL_HOURS_PER_GAME_MONTH = REAL_MS_PER_GAME_MONTH / 3_600_000;
+
+/**
+ * The headline of "the ceiling learned about modules": the most a FIT alone
+ * can lift one hull's landed ore value, rate x hold, over the registry.
+ *
+ * The fleet term below uses only the RATE half, deliberately: it bounds a hull
+ * that extracts continuously on station, where a bigger hold buys trips and not
+ * units. The hold half matters to the RESOURCE ceiling (units accumulated per
+ * round trip), which rides the flow lens and measures ships for real. Both
+ * halves are derived from FITTINGS, so this number moves on its own when the
+ * registry grows — it is asserted in __tests__/server-monthly-gross.test.ts so
+ * a future fitting that pushes it cannot ship silently.
+ */
+export const MAX_FITTING_MINING_VALUE_MULT = MAX_FITTING_ORE_RATE_MULT * MAX_FITTING_CARGO_MULT;
+
+/** The largest grade any rock can roll (asteroids.ts rollAsteroidIntel clamps
+ *  to 0.3-1.5) times the rubble event's yield bonus. Spin-up only reduces. */
+export const MAX_ASTEROID_YIELD_TERM = 1.5 * RUBBLE_YIELD_MULT;
+
+/** The ore ids a hull of `tier` can actually reach: the spectral classes with
+ *  a NON-ZERO share in any field its tier may work. A hard reachability fact
+ *  (getFieldsForShipTier + the field's authored classMix), not a probability —
+ *  a tier-1 drone can never see an X-type, so it is never valued as one. */
+export function reachableOreIds(tier: number): string[] {
+  const out = new Set<string>();
+  for (const field of getFieldsForShipTier(tier)) {
+    for (const [cls, share] of Object.entries(field.classMix)) {
+      if (share > 0) out.add(ORE_RESOURCE_BY_CLASS[cls as AsteroidClass]);
+    }
+  }
+  return Array.from(out);
+}
+
+/**
+ * The most one landed unit of `oreId` can be worth: the ore sold raw at the
+ * ceiling's own per-unit price, or the REFINED concentrate that unit makes,
+ * whichever is larger. Refining at the best recovery a fit can reach
+ * (FITTING_MAX_REFINERY_RECOVERY) turns a unit of metallic ore into product
+ * worth more than the rock — Phase C's whole point — so a ceiling that only
+ * priced raw ore would under-report every Refinery Barge.
+ */
+export function oreUnitValueBound(oreId: string, marketPrices?: Record<string, number> | null): number {
+  const raw = miningCeilingUnitPrice(oreId, marketPrices?.[oreId]);
+  let refined = 0;
+  try {
+    // Per 100 ore units, so a trace output that rounds to zero on one unit is
+    // still counted; divide back down.
+    const per100 = refineOutputs(oreId, 100, FITTING_MAX_REFINERY_RECOVERY);
+    for (const [slug, qty] of Object.entries(per100)) {
+      refined += qty * miningCeilingUnitPrice(slug, marketPrices?.[slug]);
+    }
+    refined /= 100;
+  } catch { refined = 0; }
+  return Math.max(raw, refined);
+}
+
+/** The dearest ore a hull of `tier` can land, per unit. */
+export function bestOreValueForTier(tier: number, marketPrices?: Record<string, number> | null): number {
+  let best = 0;
+  for (const oreId of reachableOreIds(tier)) best = Math.max(best, oreUnitValueBound(oreId, marketPrices));
+  return best;
+}
+
+/**
+ * Theoretical-max $/game-month a profile's asteroid-mining FLEET can land,
+ * assuming every hull extracts continuously (the `hold` + `return` pattern
+ * makes that genuinely possible) at the best grade, in a rubble field, on the
+ * dearest ore its tier can reach, selling everything.
+ *
+ * `fittings` is the server's ShipFitting mirror keyed by hull instance id.
+ * Absent → every hull is valued at the best legal fit it could carry.
+ */
+export function miningFleetMonthlyGross(
+  ships: unknown,
+  marketPrices?: Record<string, number> | null,
+  fittings?: Record<string, { ids?: unknown; readyAtMs?: unknown }> | null,
+): number {
+  if (!Array.isArray(ships)) return 0;
+  let total = 0;
+  for (const raw of ships) {
+    const s = raw as { definitionId?: unknown; instanceId?: unknown; isBuilt?: unknown } | null;
+    if (!s || typeof s.definitionId !== 'string') continue;
+    if (s.isBuilt === false) continue;
+    const def = SHIP_MAP.get(s.definitionId);
+    if (!def || !def.oreExtractionPerHour) continue;
+    let oreMult: number;
+    if (fittings && typeof s.instanceId === 'string') {
+      const rec = fittings[s.instanceId];
+      const ids = Array.isArray(rec?.ids) ? (rec!.ids as unknown[]).filter((v): v is string => typeof v === 'string') : [];
+      // A fit still in the yard is not flying yet, but it WILL be before the
+      // next sync — count it, never discount it.
+      oreMult = ids.length > 0 ? fittingProfile(ids, { bestClass: true }).oreRateMult : 1;
+    } else {
+      oreMult = bestFitFor(def, p => p.oreRateMult);
+    }
+    const unitsPerMonth = def.oreExtractionPerHour * oreMult * MAX_ASTEROID_YIELD_TERM * REAL_HOURS_PER_GAME_MONTH;
+    total += unitsPerMonth * bestOreValueForTier(def.tier, marketPrices);
+  }
+  return Number.isFinite(total) && total > 0 ? total : 0;
 }
 
 const CLIENT_MULT_BY_KIND: Partial<Record<FlowKind, number>> = {
@@ -850,6 +1008,11 @@ export interface ServerMonthlyGrossInputs {
    *  `max(maxPrice, baseMarketPrice)`. This function stays pure — the sync
    *  route does the read. */
   marketPrices?: Record<string, number> | null;
+  /** 2026-09-14 (Mining Phase D): the profile's ShipFitting rows, keyed by
+   *  hull instance id (server-fittings.ts loadFittingBlock). Read ONLY by the
+   *  mining-fleet term. Absent → every mining hull is valued at the BEST legal
+   *  fit it could carry, which is looser but can never under-report. */
+  shipFittings?: Record<string, { ids?: unknown; readyAtMs?: unknown }> | null;
 }
 
 /** The per-term breakdown of the non-definition multiplier applied to
@@ -894,6 +1057,16 @@ export interface ServerMonthlyGrossReport {
    *  row-verified terms were divided back out of
    *  `MAX_MONEY_PATH_MINING_CLIENT_MULT`. 0 when the row owns no mining rig. */
   miningClientMultiplierBound: number;
+  /** 2026-09-14 (Mining Phase D): $/game-month the profile's asteroid-mining
+   *  FLEET could land and sell — the term that keeps a locally-settled mining
+   *  order (page.tsx materializeOrder(..., false)) from being rejected.
+   *  0 for a profile with no extraction hull. */
+  miningFleet: number;
+  /** How that term was priced: 'registered' = the ShipFitting rows were
+   *  supplied and each hull was valued at its own fit; 'best-fit' = they were
+   *  not, and every hull was valued at the best fit it could legally carry;
+   *  'none' = the row owns no extraction hull. */
+  miningFleetFitSource: 'registered' | 'best-fit' | 'none';
 }
 
 const stationBonusAt = (state: GameState, locationId: string): number => {
@@ -1105,7 +1278,17 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
   const slots = SUBSIDIARY_SLOTS_BY_TOTAL_EARNED.find(t => totalEarned >= t.minTotalEarned)?.slots || 0;
   const subsidiaries = slots * MAX_SUBSIDIARY_BASE_INCOME * MAX_SUBSIDIARY_OPERATIONS_MULT;
 
-  const gross = services + megastructurePassive + subsidiaries;
+  // Mining Phase D: the asteroid-mining fleet. Stands ALONE — asteroid ore
+  // sells at spot x units with none of the tier / commander / era / research
+  // multipliers the service chain carries, so folding it into
+  // `clientMultiplierBound` would inflate it by ~82x for nothing.
+  const miningHulls = (state.ships || []).filter(sh => {
+    const d = sh && typeof sh.definitionId === 'string' ? SHIP_MAP.get(sh.definitionId) : undefined;
+    return !!d?.oreExtractionPerHour && (sh as { isBuilt?: boolean })?.isBuilt !== false;
+  }).length;
+  const miningFleet = miningHulls === 0 ? 0 : miningFleetMonthlyGross(state.ships, inputs.marketPrices, inputs.shipFittings ?? null);
+
+  const gross = services + megastructurePassive + subsidiaries + miningFleet;
   return {
     gross: Number.isFinite(gross) && gross > 0 ? Math.round(gross) : 0,
     services: Math.round(services), megastructurePassive: Math.round(megastructurePassive), subsidiaries: Math.round(subsidiaries),
@@ -1117,6 +1300,8 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
     multiplierTerms: { verified: verifiedTerms, allowance: allowanceTerms },
     miningPriceSource: miningServiceCount === 0 ? 'none' : (livePriceCount > 0 ? 'live' : 'band-max'),
     miningClientMultiplierBound: miningServiceCount === 0 ? 0 : miningClientMult,
+    miningFleet: Math.round(miningFleet),
+    miningFleetFitSource: miningHulls === 0 ? 'none' : (inputs.shipFittings ? 'registered' : 'best-fit'),
   };
 }
 

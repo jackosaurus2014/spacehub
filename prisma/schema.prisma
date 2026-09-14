@@ -652,6 +652,13 @@ model MiningOrder {
   refineOpexPaid    Float       @default(0)
   depotId           String?
   depotUnitsDrawn   Float       @default(0)
+  /// Mining Phase D (2026-09-14): the two fitting-derived terms the SETTLEMENT
+  /// needs, frozen on the row at creation so completion never has to re-read a
+  /// fit that may have changed. NULL on every pre-Phase-D row, which is read as
+  /// "no fitting" — MOBILE_REFINERY_RECOVERY and hardening 1 — so an existing
+  /// order settles byte-identically to the way it would have before.
+  refineRecovery    Float?
+  fittingHardening  Float?
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
@@ -8591,5 +8598,60 @@ model ShipTransit {
 
   @@index([profileId, status])
   @@index([status, arrivesAt])
+  @@index([shipInstanceId])
+}
+
+/// Mining Phase D (docs/SPACE_MINING_DESIGN_2026-09-12.md §5 "Modules over new
+/// hulls", §8 row D): the SERVER-REGISTERED fitting table Phase C said modules
+/// had to wait for. One live row per hull; `activeKey` is
+/// "<profileId>:<shipInstanceId>" while the fit is live and NULL once stripped,
+/// so the unique index settles a double-refit race the way ShipTransit and
+/// PropellantDepot settle theirs. Purely additive and relation-free (plain
+/// `profileId` strings, status-guarded writers) — an existing profile with no
+/// row flies exactly the hull it flew yesterday.
+///
+/// `moduleIds` is a JSON array of ship-fittings.ts FittingDefinition ids. It is
+/// the ONLY thing that may change a Mining Order's yield, hold, plant, sweep,
+/// propellant bill or shakedown odds; the client's modules.ts inventory cannot.
+/// `readyAt` is when the yard finishes — the fit is inert until then and the
+/// hull refuses orders, which is also what stops a fit changing mid-order.
+model ShipFitting {
+  id        String  @id @default(cuid())
+  profileId String
+  /// "<profileId>:<shipInstanceId>" while active, NULL once stripped.
+  activeKey String? @unique
+  /// "<profileId>:<client refit instanceId>", kept for the life of the row.
+  /// Retry safety: a resubmitted refit collides here (P2002) instead of
+  /// charging the yard bill twice. Never cleared, unlike activeKey.
+  refitKey  String? @unique
+
+  shipInstanceId   String
+  shipDefinitionId String
+
+  /// string[] of FittingDefinition ids.
+  moduleIds Json @default("[]")
+  slotsUsed Int  @default(0)
+  /// Per game-month, mirrored to the client so its tick can bill it beside
+  /// the hull's own maintenancePerMonth (client-applied, like every other
+  /// fleet upkeep line — there is no server debit for it).
+  upkeepPerMonth Float @default(0)
+
+  /// Where the refit was done — a location with an operational fabrication
+  /// facility or shipyard-capable building of this profile's.
+  yardLocationId String
+
+  fittedAt   DateTime
+  readyAt    DateTime
+  strippedAt DateTime?
+
+  /// active | stripped
+  status String @default("active")
+  /// Net cash this fit has cost the profile across all its refits (audit).
+  paidMoney Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId, status])
   @@index([shipInstanceId])
 }

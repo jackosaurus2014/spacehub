@@ -20,6 +20,9 @@
 //      volatiles), and the public slot register.
 //   6. Survey Reports (Phase C) — the corporation's own surveys with their
 //      listing state, and the open market of other corporations' reports.
+//   7. Refit Yard (Phase D, FittingConsole.tsx) — the server-registered ship
+//      fittings that decide what a hull can actually do. Same self-reading
+//      console pattern: a fit is a ShipFitting row, not client condition.
 // Mining ORDERS (including 'refine') go through page.tsx (server-first).
 // The Phase C consoles below own their own reads and writes against
 // /api/space-tycoon/assets/mining — the same best-effort pattern the public
@@ -87,6 +90,10 @@ import { SHIP_MAP, type MiningOrderMode, type MiningThenAction } from '@/lib/gam
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { RESOURCE_MAP, type ResourceId } from '@/lib/game/resources';
 import { getFuelEfficiencyMultiplier, getShipCargoCapacity, isHomeLocation } from '@/lib/game/cargo-logistics';
+// Mining Phase D (2026-09-14): the server-registered fit the quote must use.
+import {
+  NEUTRAL_FITTING_PROFILE, activeFittingProfile, effectiveShipDefinition, readFittingRecord,
+} from '@/lib/game/ship-fittings';
 import { hqMiningLogisticsForState } from '@/lib/game/headquarters';
 import { formatCountdown, formatMoney } from '@/lib/game/formulas';
 import { ConsolePanel, StatReadout } from './chrome';
@@ -94,6 +101,8 @@ import DataTable, { type DataTableColumn } from '@/components/ui/DataTable';
 import StatusPip, { type PipState } from '@/components/ui/StatusPip';
 import GameIcon from './GameIcon';
 import HoloTip from './HoloTip';
+// Mining Phase D (2026-09-14): the Refit Yard.
+import FittingConsole from './FittingConsole';
 
 const OVERLINE = 'font-body text-[0.6875rem] font-medium uppercase leading-[1.4] tracking-[0.14em] text-[var(--ink-3)]';
 const BTN = 'min-h-[36px] px-3 py-1 rounded-[var(--radius-control)] border border-[var(--line-2)] bg-[var(--elev)] text-[11px] text-[var(--ink-2)] hover:text-[var(--ink)] disabled:opacity-40 disabled:cursor-not-allowed motion-safe:transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--ember)]';
@@ -254,7 +263,13 @@ export default function MiningPanel({ state, onPlaceOrder, onSurveyProbe, onBuyP
   const selectedDef = selectedShip ? SHIP_MAP.get(selectedShip.definitionId) : undefined;
   const reachable = selectedDef ? getFieldsForShipTier(selectedDef.tier) : [];
   const selectedRock = rockId ? getAsteroid(rockId) ?? null : null;
-  const capacity = selectedShip ? getShipCargoCapacity(state, selectedShip.instanceId) : 0;
+  // Phase D: the hold the QUOTE assumes is the bare hull's, scaled by the
+  // hull's SERVER-REGISTERED fit — never getShipCargoCapacity, which folds in
+  // client-owned modules.ts bays the mining registry has never honoured.
+  const selectedFit = selectedShip
+    ? activeFittingProfile(readFittingRecord(state.shipFittings, selectedShip.instanceId), nowMs, { rockClass: selectedRock?.class ?? null })
+    : NEUTRAL_FITTING_PROFILE;
+  const capacity = selectedShip && selectedDef ? Math.floor(selectedDef.cargoCapacity * selectedFit.cargoMult) : 0;
   const rockIntel = selectedRock ? intel[selectedRock.id] ?? null : null;
   const fillMax = Math.max(1, Math.min(capacity || 1, rockIntel ? Math.floor(rockIntel.reserve) : Number.MAX_SAFE_INTEGER));
   const fillUnits = fillInput === '' ? fillMax : Math.max(1, Math.min(fillMax, Math.floor(Number(fillInput) || 1)));
@@ -276,8 +291,11 @@ export default function MiningPanel({ state, onPlaceOrder, onSurveyProbe, onBuyP
   const plan = useMemo(() => {
     if (!selectedShip || !selectedDef) return null;
     return planMiningOrder({
-      def: selectedDef, cargoCapacity: capacity, mode, rock: selectedRock, intel: rockIntel,
-      depotStockUnits: myDepotAtField?.stockUnits ?? 0, refineRecovery: MOBILE_REFINERY_RECOVERY,
+      // Phase D: the BARE hull plus the registered fit — the planner scales
+      // the hold and the plant itself, exactly as the server does.
+      def: selectedDef, cargoCapacity: selectedDef.cargoCapacity, fitting: selectedFit,
+      mode, rock: selectedRock, intel: rockIntel,
+      depotStockUnits: myDepotAtField?.stockUnits ?? 0,
       fillUnits, thenAction, originId: selectedShip.currentLocation,
       heldOre: selectedShip.heldOre ?? null, hullDamagePct: selectedShip.hullDamagePct,
       fuelEfficiencyMult: getFuelEfficiencyMultiplier(state),
@@ -288,7 +306,7 @@ export default function MiningPanel({ state, onPlaceOrder, onSurveyProbe, onBuyP
       nowMs: Date.now(),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedShip, selectedDef, capacity, mode, selectedRock, rockIntel, fillUnits, thenAction, state.completedResearch, state.headquarters?.stage, rockClaimMine, rockClaimedByOther, sharedMiners, escortCover, escortId, frontier, myDepotAtField?.stockUnits]);
+  }, [selectedShip, selectedDef, capacity, selectedFit, mode, selectedRock, rockIntel, fillUnits, thenAction, state.completedResearch, state.headquarters?.stage, rockClaimMine, rockClaimedByOther, sharedMiners, escortCover, escortId, frontier, myDepotAtField?.stockUnits]);
 
   const canPlace = !!plan?.ok && !!selectedShip && canTakeMiningOrder(selectedShip) && (mode !== 'mine' || parentUnlocked) && (plan.ok ? state.money >= plan.order.fuelCost : false);
 
@@ -448,7 +466,16 @@ export default function MiningPanel({ state, onPlaceOrder, onSurveyProbe, onBuyP
                     <button type="button" onClick={() => setShipId(s.instanceId)} aria-pressed={shipId === s.instanceId} className="text-[13px] text-[var(--ink)] font-semibold underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ember)]">
                       {s.name}
                     </button>
-                    <span className="text-[11px] text-[var(--ink-3)]">{def.name} · {LOCATION_MAP.get(s.currentLocation)?.name || s.currentLocation} · hold {getShipCargoCapacity(state, s.instanceId)}{def.oreExtractionPerHour ? ` · ${def.oreExtractionPerHour} ore/h` : ''}{def.survey ? ' · sensor' : ''}{s.hullDamagePct ? ` · hull −${Math.round(s.hullDamagePct * 100)}%` : ''}</span>
+                    {(() => {
+                      // Phase D: the row shows the hull AS FITTED — the same
+                      // effective definition the quote and the server use.
+                      const rowFit = activeFittingProfile(readFittingRecord(state.shipFittings, s.instanceId), nowMs);
+                      const eff = effectiveShipDefinition(def, rowFit);
+                      const fitCount = rowFit.ids.length;
+                      return (
+                        <span className="text-[11px] text-[var(--ink-3)]">{def.name} · {LOCATION_MAP.get(s.currentLocation)?.name || s.currentLocation} · hold {eff.cargoCapacity}{eff.oreExtractionPerHour ? ` · ${eff.oreExtractionPerHour} ore/h` : ''}{eff.survey ? ` · sensor${(eff.surveySweep ?? 1) > 1 ? ` ×${eff.surveySweep}` : ''}` : ''}{fitCount > 0 ? ` · ${fitCount} fitted` : ''}{s.hullDamagePct ? ` · hull −${Math.round(s.hullDamagePct * 100)}%` : ''}</span>
+                      );
+                    })()}
                     <StatusPip state={pip} label={s.miningOrder ? 'On order' : s.heldOre ? 'Holding ore' : canTakeMiningOrder(s) ? 'Ready' : s.status} className="ml-auto" />
                   </div>
                   {prog && s.miningOrder && (
@@ -571,7 +598,7 @@ export default function MiningPanel({ state, onPlaceOrder, onSurveyProbe, onBuyP
               {(plan.order.mode === 'mine' || plan.order.mode === 'refine') && <div><dt className={OVERLINE}>Extraction</dt><dd className="text-[var(--ink)]">{fmtHours(plan.extractionSeconds)} @ {plan.order.ratePerHour}/h{plan.order.surveyed ? '' : ` (unsurveyed ×${UNSURVEYED_YIELD_MULT})`}{plan.rockEvents.rubble ? ' · rubble ×1.25' : ''}{plan.rockEvents.spinUp ? ' · spin-up ×0.6' : ''}</dd></div>}
               {plan.transitBackSeconds > 0 && <div><dt className={OVERLINE}>Return</dt><dd className="text-[var(--ink)]">{fmtHours(plan.transitBackSeconds)}</dd></div>}
               <div><dt className={OVERLINE}>Complete in</dt><dd className="text-[var(--ink)]">{formatCountdown((plan.order.completesAtMs - Date.now()) / 1000)}</dd></div>
-              {plan.refiningSeconds > 0 && <div><dt className={OVERLINE}>Refining</dt><dd className="text-[var(--ink)]">{fmtHours(plan.refiningSeconds)} @ {selectedDef?.refineOrePerHour}/h · recovery {Math.round(MOBILE_REFINERY_RECOVERY * 100)}% · opex {formatMoney(plan.refineOpex)}</dd></div>}
+              {plan.refiningSeconds > 0 && <div><dt className={OVERLINE}>Refining</dt><dd className="text-[var(--ink)]">{fmtHours(plan.refiningSeconds)} @ {selectedDef ? effectiveShipDefinition(selectedDef, selectedFit).refineOrePerHour : 0}/h · recovery {Math.round(selectedFit.refineRecovery * 100)}% · opex {formatMoney(plan.refineOpex)}</dd></div>}
               {plan.depotCovered > 0 && <div><dt className={OVERLINE}>Depot</dt><dd className="text-[var(--ink)]">−{formatMoney(plan.depotCovered)} fuel · {plan.depotUnitsDrawn.toFixed(1)} units drawn</dd></div>}
               {(plan.order.mode === 'mine' || plan.order.mode === 'refine') && <div><dt className={OVERLINE}>Rock share</dt><dd className="text-[var(--ink)]">{plan.order.claimed ? 'Exclusive (your claim)' : sharedMiners > 1 ? `${Math.round(plan.pressureShare * 100)}% · ${sharedMiners} corporations on it` : 'Open · you alone'}</dd></div>}
               {plan.order.mode !== 'survey' && plan.order.thenAction !== 'hold' && <div><dt className={OVERLINE}>Shakedown odds</dt><dd className="text-[var(--ink)]">{plan.shakedownOdds > 0 ? `${oddsPct(plan.shakedownOdds)} · −${Math.round(SHAKEDOWN_TAKE_SHARE * 100)}% of the hold on a hit` : 'None on this lane'}{escortCover === 'assigned' ? ' · escorted' : escortCover === 'stationed' ? ' · field patrolled' : ''}</dd></div>}
@@ -784,6 +811,9 @@ export default function MiningPanel({ state, onPlaceOrder, onSurveyProbe, onBuyP
           </div>
         </div>
       </ConsolePanel>
+
+      {/* ── Phase D: the Refit Yard ─────────────────────────────────────── */}
+      <FittingConsole state={state} />
     </div>
   );
 }

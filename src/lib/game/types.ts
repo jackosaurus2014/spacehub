@@ -1644,6 +1644,14 @@ export interface GameState {
   /** Mining notices (claim lapses, shakedowns, respawns) already posted as
    *  mail + Situation Log rows — dedupe across syncs. */
   miningNoticesSeen?: string[];
+  /** Mining Phase D (2026-09-14). [SAVE] additive, save-load.ts V43 defaults
+   *  it to {}. A MIRROR of the server's ShipFitting rows, keyed by hull
+   *  instance id — adopted from the sync's mining block and from every
+   *  /assets/fitting 2xx, never authored by the client. The client uses it to
+   *  preview quotes with the same numbers the server will use and to bill the
+   *  fit's upkeep beside hull maintenance; a forged entry buys nothing,
+   *  because the mining route re-reads the rows it wrote. */
+  shipFittings?: Record<string, import('./ship-fittings').ShipFittingRecord>;
 
   /** V32 — Wave E3 "The Consumption Engine" (docs/ECONOMY_PVP_2026-08.md
    *  §2.2/§E3, engine: consumption.ts). Additive. Tracks the world-month

@@ -34,6 +34,11 @@ import {
   reportPriceBounds,
   reportSellerProceeds,
 } from '@/lib/game/survey-reports';
+// Mining Phase D (2026-09-14): the server-registered fitting table. The quote
+// reads the ShipFitting ROW, never anything the client sent — that is the whole
+// reason Phase C deferred yield-affecting modules.
+import { hullIsInYard, loadFittingProfileFor } from '@/lib/game/server-fittings';
+import { NEUTRAL_FITTING_PROFILE, type FittingProfile } from '@/lib/game/ship-fittings';
 import { resolveSellableQuantity } from '@/lib/game/server-inventory';
 import { tierFromProfileScalars } from '@/lib/game/corporation-tiers';
 import { FRONTIER_DURATION_MS } from '@/lib/game/frontier';
@@ -485,9 +490,31 @@ export async function POST(request: NextRequest) {
       fuelEfficiencyMult = Math.max(0.5, 1 - (getResearchBonuses(registry.research.completed).fuelEfficiencyBonus || 0));
     } catch { fuelEfficiencyMult = 1; }
 
-    // Cargo capacity: hull only (module bonuses are client-owned condition;
-    // the client's preview can only be LARGER, which the min() below caps).
+    // Cargo capacity: the BARE hull. Phase D scales it inside the planner from
+    // the SERVER-REGISTERED fit below — the client's modules.ts inventory is
+    // still client-owned condition and is still never honoured here.
     const cargoCapacity = def.cargoCapacity;
+    // Phase D: the hull's fit. A hull still on the yard clock refuses orders,
+    // which is also what guarantees a fit can never change under an order in
+    // flight. The rock's spectral class selects the per-class extraction terms
+    // (ice extractor / magnetic rake) and is resolved per-branch below.
+    if (await hullIsInYard(profile.id, shipInstanceId, now)) {
+      return badRequest(`${shipView.name} is in the yard being refitted.`, 'ship_in_yard');
+    }
+    /** The rock's spectral class, for the per-class extraction terms. */
+    const rockClassOf = (asteroidId: string | null): 'C' | 'S' | 'M' | 'X' | null =>
+      (asteroidId ? getAsteroid(asteroidId)?.class ?? null : null);
+    /** A held parcel was refined under the recovery ITS order recorded — a
+     *  later refit must not retroactively change what is in the hold. */
+    const heldRecovery = (held: { refined: boolean; refineRecovery: number | null }): number =>
+      (held.refined && typeof held.refineRecovery === 'number' && held.refineRecovery > 0 ? held.refineRecovery : MOBILE_REFINERY_RECOVERY);
+    const fittingFor = async (rockClass: 'C' | 'S' | 'M' | 'X' | null): Promise<FittingProfile> => {
+      try {
+        return (await loadFittingProfileFor(profile.id, shipInstanceId, now, prisma, rockClass)).profile;
+      } catch {
+        return { ...NEUTRAL_FITTING_PROFILE };
+      }
+    };
     // CC-2: the seated HQ's logistics terms from the PERSISTED seat column
     // (never the client's claim) — the same pure planner the preview ran.
     const hqLogistics = hqMiningLogisticsForLocationId(profile.hqLocationId);
@@ -541,7 +568,10 @@ export async function POST(request: NextRequest) {
         destinationId: destinationRaw, thenAction,
         heldOre: { oreId: held.oreId, units: held.fillUnits, asteroidId: held.asteroidId, fieldId: held.fieldId },
         hullDamagePct, fuelEfficiencyMult, hqLogistics, nowMs: now.getTime(),
-        depotStockUnits: depot?.stockUnits ?? 0, refineRecovery: MOBILE_REFINERY_RECOVERY,
+        // Phase D: the plant's recovery is the FIT's (a refinery pod lifts it
+        // toward 0.92), so no explicit refineRecovery is passed here any more.
+        fitting: await fittingFor(rockClassOf(held.asteroidId)),
+        depotStockUnits: depot?.stockUnits ?? 0,
         escortCover: cover.cover, escortInstanceId: cover.escortInstanceId, frontier,
       });
     } else if (mode === 'return') {
@@ -558,7 +588,11 @@ export async function POST(request: NextRequest) {
         destinationId: destinationRaw || 'earth_surface', thenAction,
         heldOre: { oreId: held.oreId, units: held.fillUnits, asteroidId: held.asteroidId, fieldId: held.fieldId, ...(held.refined ? { refined: true } : {}) },
         hullDamagePct, fuelEfficiencyMult, hqLogistics, nowMs: now.getTime(),
-        depotStockUnits: depot?.stockUnits ?? 0, refineRecovery: MOBILE_REFINERY_RECOVERY,
+        // A 'return' carries a parcel refined under the recovery the ORIGINAL
+        // order recorded — read it off that row, never off today's fit.
+        fitting: await fittingFor(rockClassOf(held.asteroidId)),
+        refineRecovery: heldRecovery(held),
+        depotStockUnits: depot?.stockUnits ?? 0,
         escortCover: cover.cover, escortInstanceId: cover.escortInstanceId, frontier,
       });
     } else {
@@ -608,12 +642,13 @@ export async function POST(request: NextRequest) {
       }
       plan = planMiningOrder({
         def, cargoCapacity, mode, rock, intel,
+        fitting: await fittingFor(rock.class),
         // An unsurveyed rock is still bounded by its true reserve — clamp
         // silently (the client learns the real fill from the response).
         fillUnits: (mode === 'mine' || mode === 'refine') ? Math.min(fillUnits, Math.max(1, Math.floor(rockRow.reserve))) : 0,
         thenAction, originId, destinationId: destinationRaw,
         hullDamagePct, fuelEfficiencyMult, hqLogistics, nowMs: now.getTime(),
-        depotStockUnits: depot?.stockUnits ?? 0, refineRecovery: MOBILE_REFINERY_RECOVERY, sweepTargets,
+        depotStockUnits: depot?.stockUnits ?? 0, sweepTargets,
         claimed, claimedByOther, sharedMiners, escortCover: cover.cover, escortInstanceId: cover.escortInstanceId, frontier,
       });
       if (mode === 'survey' && surveyed) return badRequest('That rock is already surveyed.', 'already_surveyed');
@@ -669,6 +704,10 @@ export async function POST(request: NextRequest) {
             refineOpexPaid: opexDue,
             depotId: drew && depot ? depot.id : null,
             depotUnitsDrawn: depotDrawn,
+            // Phase D: freeze the two fitting-derived terms the SETTLEMENT
+            // needs. NULL for a bare hull, which reads as "no fitting".
+            refineRecovery: order.refineRecovery ?? null,
+            fittingHardening: order.fittingHardening ?? null,
           },
           select: { id: true },
         });

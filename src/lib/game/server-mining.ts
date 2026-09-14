@@ -79,6 +79,8 @@ import {
   type SurveyReportListing,
 } from './survey-reports';
 import { REAL_MS_PER_GAME_MONTH } from './server-time';
+// Mining Phase D (2026-09-14): the registered fits ride in the mining block.
+import { loadFittingBlock } from './server-fittings';
 import { SHIP_MAP } from './ships';
 import { LOCATION_MAP } from './solar-system';
 
@@ -218,6 +220,12 @@ export interface MiningOrderRowLite {
   refineOpexPaid: number;
   depotId: string | null;
   depotUnitsDrawn: number;
+  /** Phase D (2026-09-14): the two fitting-derived terms frozen on the row at
+   *  creation (ship-fittings.ts). NULL on every pre-Phase-D row and on a bare
+   *  hull, which the settlement reads as MOBILE_REFINERY_RECOVERY / 1 — so an
+   *  order placed before this shipped settles exactly as it always would. */
+  refineRecovery: number | null;
+  fittingHardening: number | null;
 }
 
 export const ORDER_SELECT = {
@@ -227,6 +235,7 @@ export const ORDER_SELECT = {
   unitsCredited: true, saleProceeds: true,
   escortInstanceId: true, shakedownUnits: true, shakedownRepelled: true, pressureShare: true, claimId: true,
   refined: true, refineEndsAt: true, refineOpexPaid: true, depotId: true, depotUnitsDrawn: true,
+  refineRecovery: true, fittingHardening: true,
 } as const;
 
 /** The profile's live orders (pending or held) — one per ship at most. */
@@ -376,7 +385,12 @@ export async function completeDueMiningOrders(db: Db = prisma, profileId?: strin
       // Phase C: a refined run flies PRODUCT. The manifest is a pure function
       // of (oreId, ore units, recovery) — never a client claim — and the toll
       // and the credit are both taken on it.
-      const products = o.refined ? refineOutputs(o.oreId, extracted, MOBILE_REFINERY_RECOVERY) : {};
+      // Phase D: the recovery the QUOTE used, frozen on the row. A pre-Phase-D
+      // row (or a bare hull) reads NULL and falls back to the mobile plant's
+      // baseline, so nothing about an existing order changes.
+      const recovery = typeof o.refineRecovery === 'number' && Number.isFinite(o.refineRecovery) && o.refineRecovery > 0
+        ? o.refineRecovery : MOBILE_REFINERY_RECOVERY;
+      const products = o.refined ? refineOutputs(o.oreId, extracted, recovery) : {};
       const cargoUnits = o.refined ? refinedUnitTotal(products) : extracted;
 
       // (2) shakedown on the lane home
@@ -389,7 +403,9 @@ export async function completeDueMiningOrders(db: Db = prisma, profileId?: strin
           const live = await loadLiveOrders(o.profileId, db);
           if (await hasStationedEscortAt(db, o.profileId, parent, live)) cover = 'stationed';
         }
-        toll = settleShakedown(o.id, parent, cover, frontier, cargoUnits);
+        const hardening = typeof o.fittingHardening === 'number' && Number.isFinite(o.fittingHardening) && o.fittingHardening > 0
+          ? o.fittingHardening : 1;
+        toll = settleShakedown(o.id, parent, cover, frontier, cargoUnits, hardening);
       }
       const landed = toll ? toll.unitsLanded : cargoUnits;
       const landedProducts = o.refined
@@ -698,7 +714,12 @@ function parentOf(fieldId: string): string {
  *  and re-charted rocks. Notice ids are stable so the client posts each
  *  once (asteroid-claims.ts adoptServerMining). */
 export async function loadMiningBlock(profileId: string, db: Db = prisma, now: Date = new Date()): Promise<ServerMiningBlock> {
-  const [claimRows, intel] = await Promise.all([loadMyClaims(profileId, db), loadSurveyedIntel(profileId, db, now)]);
+  const [claimRows, intel, fittings] = await Promise.all([
+    loadMyClaims(profileId, db),
+    loadSurveyedIntel(profileId, db, now),
+    // Phase D: the fitting mirror the client previews quotes from.
+    loadFittingBlock(profileId, db),
+  ]);
   const notices: MiningNotice[] = [];
   const since = new Date(now.getTime() - NOTICE_WINDOW_MS);
   try {
@@ -752,7 +773,7 @@ export async function loadMiningBlock(profileId: string, db: Db = prisma, now: D
       }
     }
   } catch { /* lagging schema */ }
-  return { claims: claimRows.map(claimRecordFromRow), intel, notices };
+  return { claims: claimRows.map(claimRecordFromRow), intel, notices, fittings };
 }
 
 // ─── Phase B: the public claim feed ─────────────────────────────────────────

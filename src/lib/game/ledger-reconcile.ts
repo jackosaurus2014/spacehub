@@ -121,6 +121,12 @@ export const CLIENT_APPLIED_LEDGER_REASONS = [
   // burn are NOT listed — the client cannot know when the cron resolved, so
   // those two arrive as ordinary pending deltas the client adopts.
   'hq_seat_bid_escrow',
+  // Mining Phase D (2026-09-14) deliberately adds NOTHING here. `ship_fitting`
+  // and `ship_fitting_salvage` are server-only movements: the fitting console
+  // posts the refit, reads the 2xx and re-reads the server view WITHOUT
+  // touching its own wallet, so both rows must come back as ordinary pending
+  // deltas for the client to adopt. Listing them would charge the refit twice
+  // — the exact defect mining_order_fuel shipped with on 2026-09-14.
 ] as const;
 /** Every reason the client's pending-delta query must exclude. */
 export const PENDING_EXCLUDED_LEDGER_REASONS = [
