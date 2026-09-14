@@ -68,6 +68,15 @@ import {
 // block — claims, live surveyed intel, notices (asteroid-claims.ts
 // adoptServerMining). Best-effort like the headquarters block.
 import { loadMiningBlock } from '@/lib/game/server-mining';
+// Ship traffic Phase 2 (2026-09-14): ship movement is a server row now
+// (prisma ShipTransit). The sync lands legs whose arrival has passed,
+// back-fills a row for anything the persisted fleet says is in flight
+// without one (the migration path for saves that predate the table), and
+// hands the owner its rows back for ship-transit.ts adoptServerTransits.
+// All three are best-effort — a lagging schema changes nothing.
+import {
+  advanceDueTransits, loadOwnTransits, reconcileShipTransits, transitBlock,
+} from '@/lib/game/server-ship-transit';
 // Money desync fix (2026-09-12): verifiable one-shot contract income widens
 // the money clamp's headroom, each CONTRACT_POOL id credited once per profile
 // (GameProfile.creditedContractIds).
@@ -305,6 +314,16 @@ export async function POST(request: Request) {
       hqLocationId?: string;
     } | null = null;
     let elapsedSinceLastSyncMs = 0;
+    // 2026-09-14 (docs/SECURITY_AUDIT_2026-09.md "C-2 follow-up 5"): the
+    // shared MarketResource rows, read ONCE per sync and used twice — the
+    // money ceiling's mining_output valuation (it used to price nameplate
+    // units at the resource's authored `maxPrice`, ~10x base, because "live
+    // prices are not available where the estimate is computed"; they are,
+    // this route has always read them) and the net worth / client
+    // `marketSnapshot` block further down. `null` = the read failed or has
+    // not run yet; both consumers fall back to their own documented default.
+    let marketRows:
+      { slug: string; currentPrice: number; basePrice: number; minPrice: number; maxPrice: number }[] | null = null;
     // Money desync fix: the contract credit computed for this sync (null
     // when no prior row / the reconciliation block threw before it ran —
     // then the persisted credited set is carried forward unchanged).
@@ -372,6 +391,21 @@ export async function POST(request: Request) {
         // so a mission that came home while the player was offline is a
         // server fact by the time its payout is priced.
         try { await advanceDueExpeditions(prisma, existingProfile.id, new Date()); } catch { /* table may lag */ }
+        // Live spot for the mining valuation. A failed read leaves
+        // `marketRows` null and the estimate falls back to the anti-cornering
+        // BAND maximum per resource — still 3.3x tighter than the authored
+        // `maxPrice` it replaced, and never an unbounded price.
+        try {
+          marketRows = await prisma.marketResource.findMany({
+            select: { slug: true, currentPrice: true, basePrice: true, minPrice: true, maxPrice: true },
+          });
+        } catch { marketRows = null; }
+        const livePriceBySlug: Record<string, number> | null = marketRows
+          ? marketRows.reduce((acc, r) => {
+            if (typeof r.currentPrice === 'number' && Number.isFinite(r.currentPrice) && r.currentPrice > 0) acc[r.slug] = r.currentPrice;
+            return acc;
+          }, {} as Record<string, number>)
+          : null;
         try {
           serverMonthlyGross = computeServerMonthlyGross(
             buildServerFlowState({
@@ -389,7 +423,10 @@ export async function POST(request: Request) {
               // 2026-09-13: bounds the mothball term — a mothballed building
               // cannot bill again until its reactivation spin-up completes,
               // so a window shorter than that prices it at zero.
-              elapsedMs },
+              elapsedMs,
+              // 2026-09-14: live spot per resource slug for the mining_output
+              // valuation (resource-plausibility.ts miningCeilingUnitPrice).
+              marketPrices: livePriceBySlug },
           );
         } catch (grossError) {
           logger.error('Server monthly gross computation failed — zero headroom this sync', { error: String(grossError) });
@@ -1009,7 +1046,11 @@ export async function POST(request: Request) {
     let resourceValue = 0;
     let marketSnapshot: { prices: Record<string, number>; base?: Record<string, number>; asOf: number } | null = null;
     try {
-      const marketResources = await prisma.marketResource.findMany({
+      // 2026-09-14: reuse the rows the money ceiling already read this sync
+      // (one query, and net worth is then priced off the SAME prices the
+      // ceiling used). Only re-read when that earlier read did not happen
+      // (first-ever sync) or failed.
+      const marketResources = marketRows ?? await prisma.marketResource.findMany({
         select: { slug: true, currentPrice: true, basePrice: true, minPrice: true, maxPrice: true },
       });
       const priceMap = new Map(marketResources.map(r => [r.slug, r.currentPrice]));
@@ -2488,6 +2529,19 @@ export async function POST(request: Request) {
     } catch (miningError) {
       logger.warn('Mining block unavailable this sync', { error: String(miningError) });
     }
+    // Ship traffic Phase 2: settle this profile's transit clock, then
+    // reconcile the fleet that was just persisted against the table — a hull
+    // in flight with no row gets one (arrival clamped against the catalogue
+    // travel time), a row whose hull is no longer on that leg is closed.
+    let transitsBlock: ReturnType<typeof transitBlock>[] | null = null;
+    try {
+      const transitNow = new Date();
+      await advanceDueTransits(prisma, profile.id, transitNow);
+      await reconcileShipTransits(prisma, profile.id, safeShips, transitNow);
+      transitsBlock = (await loadOwnTransits(profile.id, prisma, transitNow)).map(transitBlock);
+    } catch (transitError) {
+      logger.warn('Ship transit block unavailable this sync', { error: String(transitError) });
+    }
 
     return NextResponse.json({
       success: true,
@@ -2497,6 +2551,10 @@ export async function POST(request: Request) {
       headquarters: headquartersBlock,
       // Mining Phase B: claims, live intel, notices (adoptServerMining).
       mining: miningBlock,
+      // Ship traffic Phase 2: the server's own view of this fleet's legs —
+      // adopted by ship-transit.ts adoptServerTransits, which clamps the
+      // client's route timestamps to these. null = schema lagging.
+      transits: transitsBlock,
       // C-1: the first sync of a profile persists the server kit, not the
       // body — the client is told so it can reconcile against the server
       // figures if it wants to.

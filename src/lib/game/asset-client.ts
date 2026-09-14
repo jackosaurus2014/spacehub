@@ -43,7 +43,7 @@ export async function requestAssetOp<T = Record<string, unknown>>(
   return first;
 }
 
-export type AssetOpPath = 'build' | 'refit' | 'sell' | 'mothball' | 'reactivate' | 'repair' | 'research' | 'ship' | 'scrap' | 'unlock' | 'mining';
+export type AssetOpPath = 'build' | 'refit' | 'sell' | 'mothball' | 'reactivate' | 'repair' | 'research' | 'ship' | 'scrap' | 'unlock' | 'mining' | 'dispatch';
 
 async function requestAssetOpOnce<T = Record<string, unknown>>(
   path: AssetOpPath,

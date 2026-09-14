@@ -8531,3 +8531,65 @@ model Expedition {
   @@index([status, returnsAt])
   @@unique([profileId, clientId])
 }
+
+/// Ship traffic Phase 2 (2026-09-14): the SERVER record of a hull in flight.
+///
+/// The traffic layer shipped (commit 9004b9a6) reading every other
+/// corporation's position out of `GameProfile.shipsData` — the blob the
+/// client last synced. Nothing the server said about another player's fleet
+/// was authoritative: a contact lagged whoever had not synced, and a ship
+/// that had arrived still showed "holding at its destination" until its
+/// owner came back. This row is the fix, and it is the same posture
+/// MiningOrder / Expedition already have: plain `profileId` strings, no
+/// relations, every writer status-guarded, the CLOCK owned by the server.
+///
+/// What the server owns: the identity of the hull, its origin, destination
+/// and lane, and the departure / arrival instants. Those are stamped once
+/// and never move — a later sync cannot bring an arrival forward, and a
+/// client that never syncs again still has a ship that arrives.
+/// What stays client-side: the ship's name, hull damage, crew, the smooth
+/// local animation between ticks, and everything a manifest is spent on
+/// after it lands.
+///
+/// `activeKey` is "<profileId>:<shipInstanceId>" while the leg is in flight
+/// and NULL once it ends, so the unique index is the one-live-transit-per-
+/// hull guarantee under a race (the AsteroidClaim / PropellantDepot idiom).
+model ShipTransit {
+  id        String  @id @default(cuid())
+  profileId String
+  /// "<profileId>:<shipInstanceId>" while in flight, NULL once terminal.
+  activeKey String? @unique
+
+  shipInstanceId   String
+  shipDefinitionId String
+
+  originId      String
+  destinationId String
+  /// Canonical undirected lane key (trade-lanes.ts laneKey — "a|b", sorted),
+  /// so the traffic feed can place the contact without re-deriving it.
+  laneKey       String
+
+  departedAt DateTime
+  arrivesAt  DateTime
+  arrivedAt  DateTime?
+
+  /// The manifest riding the route. Read ONLY by the traffic feed's earned
+  /// identity block (ship-traffic-server.ts publishContact), never by any
+  /// crediting path — cargo settlement stays where it is.
+  cargo      Json?
+  cargoUnits Float @default(0)
+
+  /// in_transit | arrived | cancelled
+  status String @default("in_transit")
+  /// 'dispatch' — created by POST /api/space-tycoon/assets/dispatch, the
+  /// server-validated path; 'adopted' — back-filled by the sync from a
+  /// shipsData route for a hull that was already in flight.
+  source String @default("dispatch")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId, status])
+  @@index([status, arrivesAt])
+  @@index([shipInstanceId])
+}

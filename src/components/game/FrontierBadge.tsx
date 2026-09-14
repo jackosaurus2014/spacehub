@@ -9,19 +9,33 @@ import {
   FRONTIER_CONTRACT_PAYOUT_MULTIPLIER,
 } from '@/lib/game/frontier';
 import { formatMoney } from '@/lib/game/formulas';
+import { frontierVariant, type FrontierVariant } from '@/lib/game/hud-layout';
 import { useModalA11y } from './useModalA11y';
 import GameIcon from './GameIcon';
 
 interface Props {
   state: GameState;
   onGraduate: () => void;
+  /** HUD compaction (2026-09-14, lib/game/hud-layout.ts). The badge draws
+   *  either the full-width band it has always drawn, or the same three
+   *  figures folded into the ResourceBar's money row as a chip — reclaiming
+   *  the 48 px the band cost above the map stage. frontierVariant() decides:
+   *  a band while the Frontier is news (first two days, normal mode only) or
+   *  urgent (last three days / auto-graduation armed, both modes), a chip
+   *  otherwise. Either way the badge keeps the SAME accessible name and the
+   *  SAME route into the detail modal — nothing is hidden, only re-seated. */
+  compact?: boolean;
+  /** Render nothing unless the resolved variant matches. Lets the shell mount
+   *  the band above the hub bar and the chip inside the ResourceBar without
+   *  either one having to know which way the decision went. */
+  only?: FrontierVariant;
 }
 
 /**
  * Compact badge in the game header that shows Protected Frontier status.
  * Renders nothing for players who have already graduated or never entered.
  */
-export default function FrontierBadge({ state, onGraduate }: Props) {
+export default function FrontierBadge({ state, onGraduate, compact = false, only }: Props) {
   const [now, setNow] = useState(() => Date.now());
   const [detailOpen, setDetailOpen] = useState(false);
 
@@ -36,6 +50,52 @@ export default function FrontierBadge({ state, onGraduate }: Props) {
   }
 
   const urgent = summary.remainingDays <= 3 || summary.autoGraduateReady;
+  const resolved: FrontierVariant = frontierVariant(summary, compact);
+  if (only && only !== resolved) return null;
+
+  const timeText = summary.remainingDays > 0 ? `${summary.remainingDays}d left` : 'grace period';
+  const worthText = `${formatMoney(summary.netWorth)} / ${formatMoney(FRONTIER_GRADUATION_NET_WORTH)}`;
+  // One accessible name for both variants, so collapsing the band to a chip
+  // never changes what a screen reader hears.
+  const accessibleName = `Protected Frontier — ${timeText}, net worth ${worthText} toward graduation. Open Protected Frontier details.`;
+
+  if (resolved === 'chip') {
+    return (
+      <>
+        <button
+          type="button"
+          data-frontier-chip=""
+          onClick={() => setDetailOpen(true)}
+          aria-label={accessibleName}
+          title={accessibleName}
+          className={`inline-flex items-center gap-1.5 shrink-0 min-h-[44px] sm:min-h-[26px] px-2 py-0.5 rounded-full border text-[10px] sm:text-xs transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+            urgent
+              ? 'bg-amber-500/10 border-amber-500/30 text-amber-200 hover:bg-amber-500/20'
+              : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200 hover:bg-emerald-500/20'
+          }`}
+        >
+          <GameIcon name="shield" size={12} glow={urgent ? 'amber' : 'green'} />
+          {/* Phones have ~100 px for this chip on the money line, so the word
+              drops below 640px and the shield + the countdown carry it — the
+              same shield the band uses. The full sentence stays in the
+              aria-label and the title either way, so nothing is lost. */}
+          <span aria-hidden="true" className="hidden sm:inline font-bold uppercase tracking-wider">Frontier</span>
+          <span aria-hidden="true" className="hidden sm:inline text-white/30">·</span>
+          <span aria-hidden="true" className="font-mono whitespace-nowrap">{timeText}</span>
+          <span aria-hidden="true" className="hidden 2xl:inline text-white/30">·</span>
+          <span aria-hidden="true" className="hidden 2xl:inline font-mono">{worthText}</span>
+        </button>
+
+        {detailOpen && (
+          <FrontierDetailModal
+            state={state}
+            onClose={() => setDetailOpen(false)}
+            onGraduate={() => { setDetailOpen(false); onGraduate(); }}
+          />
+        )}
+      </>
+    );
+  }
 
   return (
     <>
@@ -49,18 +109,14 @@ export default function FrontierBadge({ state, onGraduate }: Props) {
         <GameIcon name="shield" size={12} glow={urgent ? 'amber' : 'green'} />
         <span className="font-bold uppercase tracking-wider text-[10px] shrink-0">Protected Frontier</span>
         <span className="text-slate-300 shrink-0">·</span>
-        <span className="font-mono shrink-0">
-          {summary.remainingDays > 0 ? `${summary.remainingDays}d left` : 'grace period'}
-        </span>
+        <span className="font-mono shrink-0">{timeText}</span>
         <span className="text-slate-400 shrink-0">·</span>
-        <span className="font-mono shrink-0 truncate">
-          {formatMoney(summary.netWorth)} / {formatMoney(FRONTIER_GRADUATION_NET_WORTH)}
-        </span>
+        <span className="font-mono shrink-0 truncate">{worthText}</span>
         <div className="flex-1" />
         <button
           onClick={() => setDetailOpen(true)}
           className="ml-auto min-h-[38px] px-2 py-0.5 rounded text-[10px] font-bold bg-black/30 hover:bg-black/50 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 shrink-0"
-          aria-label="Open Protected Frontier details"
+          aria-label={accessibleName}
         >
           Details
         </button>

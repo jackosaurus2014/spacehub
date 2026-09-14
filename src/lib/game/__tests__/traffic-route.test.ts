@@ -5,6 +5,10 @@
  * game profile, 429 past the per-profile throttle; QA profiles excluded at
  * the query, the reveal query scoped to succeeded + unexpired
  * FLEET_REVEAL_ACTIONS missions, own ships out, identity only with intel.
+ *
+ * Phase 2 (2026-09-14): positions come from the ShipTransit rows, not from
+ * the synced blob — pinned below by a corporation whose blob SAYS it is in
+ * transit and which the feed therefore does not place.
  */
 
 jest.mock('@/lib/db', () => ({
@@ -12,6 +16,8 @@ jest.mock('@/lib/db', () => ({
   default: {
     gameProfile: { findUnique: jest.fn(), findMany: jest.fn() },
     espionageMission: { findMany: jest.fn() },
+    shipTransit: { findMany: jest.fn() },
+    miningOrder: { findMany: jest.fn() },
   },
 }));
 jest.mock('next-auth', () => ({ getServerSession: jest.fn() }));
@@ -28,12 +34,20 @@ const mockSession = getServerSession as jest.Mock;
 const db = prisma as unknown as {
   gameProfile: { findUnique: jest.Mock; findMany: jest.Mock };
   espionageMission: { findMany: jest.Mock };
+  shipTransit: { findMany: jest.Mock };
+  miningOrder: { findMany: jest.Mock };
 };
 
 const NOW = Date.now();
 const transitShip = (instanceId: string) => ({
   instanceId, definitionId: 'freighter', name: 'x', status: 'in_transit', currentLocation: 'leo', isBuilt: true,
   route: { from: 'leo', to: 'lunar_orbit', departedAtMs: NOW - 10_000, arrivalAtMs: NOW + 50_000, cargo: { metal: 10 } },
+});
+const transitRow = (profileId: string, shipInstanceId: string) => ({
+  id: `t-${shipInstanceId}`, profileId, shipInstanceId, shipDefinitionId: 'freighter',
+  originId: 'leo', destinationId: 'lunar_orbit', laneKey: 'leo|lunar_orbit',
+  departedAt: new Date(NOW - 10_000), arrivesAt: new Date(NOW + 50_000), arrivedAt: null,
+  cargo: { metal: 10 }, cargoUnits: 10, status: 'in_transit', source: 'dispatch',
 });
 
 beforeEach(() => {
@@ -44,6 +58,8 @@ beforeEach(() => {
     { id: 'me', companyName: 'My Corp', shipsData: [transitShip('mine-1')] },
     { id: 'p1', companyName: 'Acme Haulage', shipsData: [transitShip('acme-1')] },
   ]);
+  db.shipTransit.findMany.mockResolvedValue([transitRow('me', 'mine-1'), transitRow('p1', 'acme-1')]);
+  db.miningOrder.findMany.mockResolvedValue([]);
   db.espionageMission.findMany.mockResolvedValue([]);
 });
 
@@ -102,6 +118,27 @@ describe('GET /api/space-tycoon/traffic', () => {
     expect(revealed).toHaveLength(1);
     expect(revealed[0].intel).toMatchObject({ corpId: 'p1', corpName: 'Acme Haulage', destinationId: 'lunar_orbit' });
     expect(body.revealed).toBe(1);
+  });
+
+  it('places nothing for a corporation whose blob claims a transit the server has no row for', async () => {
+    signedIn();
+    // p1's save says its freighter is mid-lane. Without a ShipTransit row
+    // that is just a claim, and the feed refuses to draw it — the whole
+    // point of Phase 2.
+    db.shipTransit.findMany.mockResolvedValue([transitRow('me', 'mine-1')]);
+    const body = await (await GET()).json();
+    expect(body.contacts.filter((c: { npc?: boolean }) => !c.npc)).toHaveLength(0);
+  });
+
+  it('lands a contact whose arrival has passed even though its owner never re-synced', async () => {
+    signedIn();
+    db.shipTransit.findMany.mockResolvedValue([
+      { ...transitRow('p1', 'acme-1'), departedAt: new Date(NOW - 200_000), arrivesAt: new Date(NOW - 1) },
+    ]);
+    const body = await (await GET()).json();
+    const players = body.contacts.filter((c: { npc?: boolean }) => !c.npc);
+    expect(players).toHaveLength(1);
+    expect(players[0]).toMatchObject({ status: 'holding', locationId: 'lunar_orbit' });
   });
 
   it('429 past 30 requests a minute for one profile', async () => {

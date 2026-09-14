@@ -5,6 +5,7 @@ import prisma from '@/lib/db';
 import { notQaProfile } from '@/lib/qa-accounts';
 import { allow as throttleAllow, throttledBody } from '@/lib/game/route-throttle';
 import { loadTrafficFeed, FLEET_REVEAL_ACTION_LIST, type TrafficSourceProfile } from '@/lib/game/ship-traffic-server';
+import { loadTrafficTransits } from '@/lib/game/server-ship-transit';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,6 +48,12 @@ export async function GET() {
             where: { ...notQaProfile, lastSyncAt: { gte: new Date(sinceMs) } },
             select: { id: true, companyName: true, shipsData: true },
           }),
+        // Phase 2 (2026-09-14): positions come from the SERVER's movement
+        // rows — ShipTransit plus the Mining-Order projection — not from the
+        // synced blob. Rows whose owner is not in loadProfiles' result are
+        // dropped inside the builder, so the QA and active-window exclusions
+        // above still gate everything the feed can see.
+        loadTransits: async (nowMs) => loadTrafficTransits(prisma, nowMs),
         loadRevealedOwners: async (requesterId, nowMs) => {
           const rows = await prisma.espionageMission.findMany({
             where: {

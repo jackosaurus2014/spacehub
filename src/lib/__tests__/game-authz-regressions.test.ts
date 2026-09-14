@@ -28,7 +28,21 @@ const mockSeasonParticipation = { findUnique: jest.fn(), update: jest.fn() };
 const mockSeasonChallenge = { findFirst: jest.fn() };
 const mockMarketFill = { aggregate: jest.fn(), count: jest.fn() };
 const mockAllianceMember = { findUnique: jest.fn() };
-const mockGameChatMessage = { count: jest.fn(), findFirst: jest.fn(), create: jest.fn(), deleteMany: jest.fn() };
+// `deleteMany` MUST resolve: the chat route's opportunistic 7-day retention
+// trim is fire-and-forget (`prisma.gameChatMessage.deleteMany(...).catch(...)`)
+// and runs on 5% of writes (`Math.random() < 0.05`). A bare `jest.fn()`
+// returns `undefined`, so `.catch` threw a TypeError inside the route's own
+// try/catch and the POST answered 500 — the 2026-09-13 "one full run in
+// three" flake in this file's P10 chat test. It was never cross-suite
+// pollution (jest gives each test FILE its own module registry, so the
+// prisma-mocking suites added that day cannot reach this one's mock); it was
+// a probabilistic branch this mock did not model. The chat test also pins
+// Math.random so the trim branch is ALWAYS taken — the path is covered on
+// every run instead of one run in twenty.
+const mockGameChatMessage = {
+  count: jest.fn(), findFirst: jest.fn(), create: jest.fn(),
+  deleteMany: jest.fn().mockResolvedValue({ count: 0 }),
+};
 const mockColonyClaim = { findUnique: jest.fn(), count: jest.fn(), create: jest.fn(), findMany: jest.fn() };
 const mockPlayerActivity = { create: jest.fn() };
 const mockMarketResource = { findUnique: jest.fn() };
@@ -355,8 +369,17 @@ describe('POST /api/space-tycoon/chat (P10)', () => {
       ...data,
     }));
     mockGameProfile.findUnique.mockResolvedValue({ companyName: 'Honest Aerospace' });
+    // Force the route's 5%-probability retention trim to run on EVERY pass
+    // (see mockGameChatMessage above): the branch is then exercised
+    // deterministically rather than flaking one run in twenty.
+    const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.01);
 
-    const res = await POST(post('/api/space-tycoon/chat', { message: 'hello', companyName: 'Rival Dynamics' }));
+    let res: Response;
+    try {
+      res = await POST(post('/api/space-tycoon/chat', { message: 'hello', companyName: 'Rival Dynamics' }));
+    } finally {
+      randomSpy.mockRestore();
+    }
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -365,6 +388,9 @@ describe('POST /api/space-tycoon/chat (P10)', () => {
     );
     expect(body.message.companyName).toBe('Honest Aerospace');
     expect(JSON.stringify(body)).not.toContain('Rival Dynamics');
+    // The retention trim ran (Math.random pinned above) and did not break the
+    // write path — the regression guard for the flake fixed 2026-09-14.
+    expect(mockGameChatMessage.deleteMany).toHaveBeenCalled();
   });
 });
 

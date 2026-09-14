@@ -7,6 +7,7 @@ import type { GameState } from '@/lib/game/types';
 import { getHeadquarters } from '@/lib/game/headquarters';
 import type { ServerHeadquartersBlock } from '@/lib/game/hq-relocation';
 import type { ServerMiningBlock } from '@/lib/game/asteroid-claims';
+import type { ServerTransitBlock } from '@/lib/game/ship-transit';
 import {
   queueServerReconciliation,
   queueMoneyCorrection,
@@ -120,6 +121,10 @@ export function useGameSync(
     /** Mining Phase B: the server's mining block (claims, live intel,
      *  notices) — adopted via asteroid-claims.ts adoptServerMining. */
     mining?: ServerMiningBlock | null;
+    /** Ship traffic Phase 2: the server's transit rows for this fleet —
+     *  adopted via ship-transit.ts adoptServerTransits (the server's
+     *  departure/arrival instants win over the local route). */
+    transits?: ServerTransitBlock[] | null;
   }) => void,
 ): SyncStatus {
   const [status, setStatus] = useState<SyncStatus>({
@@ -562,6 +567,9 @@ export function useGameSync(
             // absent = the server had nothing to say this sync).
             headquarters: data.headquarters && typeof data.headquarters === 'object' ? (data.headquarters as ServerHeadquartersBlock) : undefined,
             mining: data.mining && typeof data.mining === 'object' ? (data.mining as ServerMiningBlock) : undefined,
+            // Ship traffic Phase 2: [] is meaningful ("nothing of yours is
+            // flying"), so it is passed through like orbitalSlotLeases.
+            transits: Array.isArray(data.transits) ? (data.transits as ServerTransitBlock[]) : undefined,
           });
         }
 

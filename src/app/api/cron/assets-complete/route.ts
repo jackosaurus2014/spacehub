@@ -16,6 +16,10 @@ import {
 // the interstellar HQ gate counts and what the sync's expedition headroom
 // credit is priced from, so it must never depend on a client being awake.
 import { advanceDueExpeditions } from '@/lib/game/server-expeditions';
+// Ship traffic Phase 2 (2026-09-14): the same pass lands every ShipTransit
+// leg whose arrival has passed. That flip is what makes the traffic feed's
+// "this hull has arrived" true regardless of whether its owner has synced.
+import { advanceDueTransits } from '@/lib/game/server-ship-transit';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,9 +53,10 @@ export async function POST(request: NextRequest) {
     const hqUpkeep = await chargeHqSeatUpkeep(prisma);
     const hqAuctions = await resolveDueHqSeatAuctions(prisma);
     const expeditions = await advanceDueExpeditions(prisma);
+    const transitsLanded = await advanceDueTransits(prisma);
     const durationMs = Date.now() - startedAt;
-    logger.info('assets-complete cron completed', { completed, miningSettled, claimsExpired, claimUpkeep, rocksRespawned, hqRelocated, hqSeats, hqUpkeep, hqAuctions, expeditions, durationMs });
-    return NextResponse.json({ success: true, completed, miningSettled, claimsExpired, claimUpkeep, rocksRespawned, hqRelocated, hqSeats, hqUpkeep, hqAuctions, expeditions, durationMs });
+    logger.info('assets-complete cron completed', { completed, miningSettled, claimsExpired, claimUpkeep, rocksRespawned, hqRelocated, hqSeats, hqUpkeep, hqAuctions, expeditions, transitsLanded, durationMs });
+    return NextResponse.json({ success: true, completed, miningSettled, claimsExpired, claimUpkeep, rocksRespawned, hqRelocated, hqSeats, hqUpkeep, hqAuctions, expeditions, transitsLanded, durationMs });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     logger.error('assets-complete cron failed', { error: msg });

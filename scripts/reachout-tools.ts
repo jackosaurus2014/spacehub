@@ -21,6 +21,18 @@ async function main() {
     const status = arg2 || 'responded';
     const res = await prisma.contactSubmission.updateMany({ where: { id: { startsWith: arg } }, data: { status } });
     console.log('HEX', hex({ updated: res.count, status }));
+  } else if (cmd === 'open') {
+    // Every ContactSubmission still awaiting a reply, newest first. Used when a
+    // batch of inbound messages was deliberately deferred and we need to know
+    // which ones are still open before reminding the founder.
+    const days = Number(arg || 60);
+    const rows = await prisma.contactSubmission.findMany({
+      where: { status: { notIn: ['responded', 'resolved', 'closed', 'spam'] }, createdAt: { gte: new Date(Date.now() - days * 24 * 3600_000) } },
+      orderBy: { createdAt: 'desc' },
+      take: 40,
+      select: { id: true, name: true, email: true, subject: true, status: true, createdAt: true },
+    });
+    console.log('HEX', hex(rows.map((r) => ({ ...r, id: r.id.slice(0, 8), createdAt: r.createdAt.toISOString().slice(0, 10) }))));
   } else if (cmd === 'user') {
     const u = await prisma.user.findFirst({ where: { email: { equals: arg, mode: 'insensitive' } }, select: { id: true, email: true, name: true, createdAt: true, subscriptionTier: true, stripeCustomerId: true, stripeSubscriptionId: true, subscriptionStatus: true } as never });
     console.log('HEX', hex(u));
@@ -29,7 +41,7 @@ async function main() {
     const t = u ? await prisma.emailChangeToken.findFirst({ where: { userId: u.id, used: false }, orderBy: { createdAt: 'desc' }, select: { token: true, newEmail: true, expiresAt: true } }) : null;
     console.log('HEX', hex(t));
   } else {
-    console.log('usage: show <id> | close <id> [status] | user <email>');
+    console.log('usage: open [days] | show <id> | close <id> [status] | user <email>');
   }
 }
 

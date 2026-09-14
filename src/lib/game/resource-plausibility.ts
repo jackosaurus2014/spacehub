@@ -61,6 +61,11 @@ import {
 import { LEGACY_MILESTONES, STRETCH_LEGACIES, LEGACY_CATEGORY_CAPS } from './legacy-system';
 import { isBuildingOperational, REACTIVATION_SPINUP_MONTHS } from './mothball';
 import { getMiningRevenueScale } from './mining-pricing';
+// 2026-09-14 mining valuation (docs/SECURITY_AUDIT_2026-09.md "C-2 follow-up
+// 5"): the money path prices mined output at the anti-cornering BAND, and at
+// the live spot when the caller can supply one. Same band helper the client
+// snapshot is built with, so the two can never drift.
+import { clampSpotToBand } from './spot-price';
 import { SUBSIDIARY_DEFS } from './subsidiaries';
 import { frontierRevenueMultiplierUpperBound } from './frontier';
 // CC-2 (Pass 11): the seated HQ's launch-revenue term must be in the
@@ -213,6 +218,123 @@ export const MAX_SHIP_MINING_CLIENT_MULT =
  *  no client-only multiplier; the neutral state already yields the maximum. */
 export const MAX_PRODUCTION_CLIENT_MULT = 1.0;
 
+// ─── The MONEY path's mining constants (2026-09-14) ────────────────────────
+// `MAX_BUILDING_MINING_CLIENT_MULT` above belongs to the RESOURCE clamp: it
+// bounds how many UNITS the client could have accumulated, is multiplied by
+// `RESOURCE_SLACK` (3) before it clamps anything, and rides the flow lens —
+// which measures the freighter and survey-probe terms from the persisted ships
+// and the live bonus list for real (resource-flow.ts:373-378). That clamp runs
+// in shadow mode on its own evidence
+// (docs/RESOURCE_CLAMP_FALSE_POSITIVE_AUDIT.md) and must not be re-tuned from
+// the money path.
+//
+// The money path is a different measurement of the same chain. It values
+// `MINING_PRODUCTION` NAMEPLATE units (not the flow lens), so the two terms the
+// lens measures are invisible to it and have to be allowed for; and it carries
+// no `RESOURCE_SLACK`, so a term left at an under-bound here rejects honest
+// income instead of merely logging a shadow row. Hence a SEPARATE product
+// below — changing one constant must never silently move the other.
+
+/** resource-flow.ts `freighterLogisticsBonus` — +10% per idle transport /
+ *  tanker parked at the rig's location, capped at +50%. The flow lens reads
+ *  the real ships; the nameplate valuation cannot, so it allows the cap.
+ *  (Absent from `MAX_BUILDING_MINING_CLIENT_MULT` for exactly that reason.) */
+export const MAX_FREIGHTER_LOGISTICS_MINING_MULT = 1.5;
+
+/** exploration.ts — survey-probe mining bonuses SUM per (location, resource)
+ *  and the largest single anomaly is +50% ("Kuiper Belt Deposit", 60 months),
+ *  so `MAX_SURVEY_PROBE_MULT` (1.35, sized for one *average* probe and
+ *  backstopped by RESOURCE_SLACK on the resource path) is not an upper bound
+ *  on the money path. Two concurrent probes at the registry maximum is the
+ *  documented allowance here. */
+export const MAX_MONEY_PATH_SURVEY_PROBE_MULT = 2.0;
+
+/** The money path's own product of the §0c building-mining chain's
+ *  client-only terms. Identical to `MAX_BUILDING_MINING_CLIENT_MULT` except
+ *  for the two terms above — spelled out rather than derived from it so a
+ *  future edit to either constant is a deliberate, visible choice. */
+export const MAX_MONEY_PATH_MINING_CLIENT_MULT =
+  MAX_WORKFORCE_MINING_MULT
+  * MAX_RESEARCH_MINING_MULT
+  * MAX_LEGACY_MINING_MULT
+  * MAX_ERA_MINING_MULT
+  * MAX_TIER_MINING_MULT
+  * MAX_MEGASTRUCTURE_MINING_MULT
+  * MAX_REPUTATION_MINING_MULT
+  * MAX_COMMANDER_MINING_MULT
+  * MAX_WAVE_B_MINING_MULT
+  * MAX_MONEY_PATH_SURVEY_PROBE_MULT
+  * MAX_FREIGHTER_LOGISTICS_MINING_MULT;
+
+/**
+ * Headroom over the live spot price when the caller supplies one.
+ *
+ * WHY 1.5 AND NOT MORE. The engine prices mined output at the client's last
+ * `marketSnapshot` (mining-pricing.ts `priceLinkedMiningRevenue`), which is the
+ * shared `MarketResource` rows as of the PREVIOUS sync — so the spot this
+ * function reads at sync N and the spot the tick charged during [N-1, N] are
+ * not the same number, and the ceiling must cover the gap. Every spot in the
+ * game is band-clamped to `[base × 0.3, base × 3.0]` (price-band.ts, enforced
+ * by `buildMarketSnapshot` before the snapshot is sent and by `clampSpotToBand`
+ * everywhere it is read), so the widest possible gap is bounded by the band.
+ *
+ * The clamp that consumes this number multiplies it by `MONEY_HEADROOM_MULT`
+ * = 2.0 (ledger-reconcile.ts). 2.0 × 1.5 = 3.0 = `PRICE_BAND_HIGH`: for any
+ * resource whose live spot sits at or above its base price, the ceiling's
+ * effective per-unit price allowance is therefore at least the band MAXIMUM —
+ * no price move the game permits can make the money ceiling reject honest
+ * mining income. Raising this constant buys nothing; lowering it breaks that
+ * identity.
+ */
+export const MINING_SPOT_HEADROOM_MULT = 1.5;
+
+/**
+ * The per-unit price the ceiling values one unit of mined `resourceId` at.
+ *
+ * `livePrice` is `MarketResource.currentPrice` for that slug (the sync route
+ * reads the table — see `ServerMonthlyGrossInputs.marketPrices`). Resolution:
+ *
+ *   no live price → the BAND maximum, `min(maxPrice, base × 3)`. This is the
+ *                   hardest ceiling any surface in the game can pay, and it
+ *                   replaces the old `max(maxPrice, baseMarketPrice)`:
+ *                   `maxPrice` is authored at ~10× base (resources.ts), i.e.
+ *                   3.3× above a price the engine can never charge.
+ *   live price    → `max(live, min(bandMax, max(base, live) × HEADROOM))`.
+ *                   Floored at `base` because a Frontier save's spot floor and
+ *                   the post-graduation glide (mining-pricing.ts) price a
+ *                   below-base spot back up toward base; floored at `live`
+ *                   itself so a DB row whose own band is wider than the static
+ *                   registry's can never under-report.
+ */
+export function miningCeilingUnitPrice(resourceId: string, livePrice?: number | null): number {
+  const rd = RESOURCE_MAP.get(resourceId as never) as
+    { baseMarketPrice?: number; minPrice?: number; maxPrice?: number } | undefined;
+  const base = Math.max(0, rd?.baseMarketPrice || 0);
+  const minPrice = Math.max(0, rd?.minPrice || 0);
+  const maxPrice = Math.max(base, rd?.maxPrice || 0);
+  // clampSpotToBand(+huge) IS the band's upper bound — one definition site.
+  const bandMax = clampSpotToBand(Number.MAX_SAFE_INTEGER, base, minPrice, maxPrice);
+  const live = typeof livePrice === 'number' && Number.isFinite(livePrice) && livePrice > 0 ? livePrice : 0;
+  if (live <= 0) return bandMax;
+  return Math.max(live, Math.min(bandMax, Math.max(base, live) * MINING_SPOT_HEADROOM_MULT));
+}
+
+/** Nameplate $/game-month for one `mining_output` service before any
+ *  multiplier: Σ(MINING_PRODUCTION units × `miningCeilingUnitPrice`) × the
+ *  service's authored revenue/base-value scale (mining-pricing.ts). */
+export function miningOutputNameplateValue(
+  definitionId: string,
+  marketPrices?: Record<string, number> | null,
+): number {
+  let valued = 0;
+  for (const { resource, amountPerMonth } of MINING_PRODUCTION[definitionId] || []) {
+    valued += amountPerMonth * miningCeilingUnitPrice(resource, marketPrices?.[resource]);
+  }
+  let scale = 1;
+  try { scale = getMiningRevenueScale(definitionId); } catch { scale = 1; }
+  return valued * scale;
+}
+
 const CLIENT_MULT_BY_KIND: Partial<Record<FlowKind, number>> = {
   mining: MAX_BUILDING_MINING_CLIENT_MULT,
   ship_mining: MAX_SHIP_MINING_CLIENT_MULT,
@@ -261,8 +383,12 @@ const CLIENT_MULT_BY_KIND: Partial<Record<FlowKind, number>> = {
 //   * mothball status — a service whose own building is mothballed earns
 //     nothing until a REACTIVATION_SPINUP_MONTHS spin-up completes
 //   * headquarters seat (CC-2/CC-3) and the Frontier doubling (Pass 10)
-//   * mining_output rigs: tier / research / megastructure terms of the §0c
-//     mining chain, on top of the nameplate-at-band-max-price valuation
+//   * mining_output rigs: tier / research / megastructure / era /
+//     logistician-commander / crew terms of the §0c mining chain
+//   * mining_output PRICE (2026-09-14): the live `MarketResource.currentPrice`
+//     the caller supplies, plus MINING_SPOT_HEADROOM_MULT and bounded by the
+//     anti-cornering band. Was the resource's authored `maxPrice` (~10x base),
+//     a price no surface in the game can pay.
 //
 // STILL AN ALLOWANCE (no server-side evidence exists — see
 // `multiplierTerms.allowance` on the report):
@@ -271,7 +397,8 @@ const CLIENT_MULT_BY_KIND: Partial<Record<FlowKind, number>> = {
 //   demand scarcity (1.25), the returning-commander boost (1.30), the
 //   megastructure PASSIVE income and subsidiary income allowances (gated on
 //   totalEarned but not otherwise checkable), and the mining chain's
-//   workforce / reputation / commander / survey-probe / wave-B terms.
+//   reputation / wave-B / stacked-survey-probe / freighter-logistics terms
+//   (MAX_MONEY_PATH_MINING_CLIENT_MULT), plus the mining price headroom.
 // World-event bonuses (server-delivered, clampWorldEventBonuses) touch only
 // research speed and contract payouts, never service revenue, so they are
 // deliberately absent from this chain.
@@ -715,6 +842,14 @@ export interface ServerMonthlyGrossInputs {
    *  REACTIVATION_SPINUP_MONTHS spin-up before it can bill again). Absent =
    *  mothballed services are counted at their full rate. */
   elapsedMs?: number;
+  /** 2026-09-14: live `MarketResource.currentPrice` by resource slug — the
+   *  same rows `buildMarketSnapshot` prices the client's snapshot from. Used
+   *  ONLY by the `mining_output` valuation (`miningCeilingUnitPrice`). Absent
+   *  (or a slug missing from the map) falls back to that resource's BAND
+   *  maximum, which is still 3.3x tighter than the pre-2026-09-14
+   *  `max(maxPrice, baseMarketPrice)`. This function stays pure — the sync
+   *  route does the read. */
+  marketPrices?: Record<string, number> | null;
 }
 
 /** The per-term breakdown of the non-definition multiplier applied to
@@ -750,6 +885,15 @@ export interface ServerMonthlyGrossReport {
   /** 2026-09-13: what each of those terms was, and whether it was read off
    *  the row or left as a bounded allowance. */
   multiplierTerms: GrossMultiplierTerms;
+  /** 2026-09-14: how `mining_output` nameplate was priced this call.
+   *  `'live'` = `inputs.marketPrices` supplied a spot for at least one mined
+   *  resource; `'band-max'` = none were available and every unit was valued
+   *  at `min(maxPrice, base x 3)`; `'none'` = the row owns no mining rig. */
+  miningPriceSource: 'live' | 'band-max' | 'none';
+  /** 2026-09-14: the multiplier the mining chain was bounded by, after the
+   *  row-verified terms were divided back out of
+   *  `MAX_MONEY_PATH_MINING_CLIENT_MULT`. 0 when the row owns no mining rig. */
+  miningClientMultiplierBound: number;
 }
 
 const stationBonusAt = (state: GameState, locationId: string): number => {
@@ -840,11 +984,13 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
   }
 
   // Mining_output services carry their own multiplier chain (the §0c mining
-  // stack), so the same three verified terms apply there too. The rest of
-  // that chain stays at the documented caps — MAX_BUILDING_MINING_CLIENT_MULT
-  // is also the resource-ceiling constant and is deliberately not re-tuned
-  // from here (that clamp runs in shadow mode on its own evidence).
-  const miningClientMult = MAX_BUILDING_MINING_CLIENT_MULT
+  // stack), so the same verified terms apply there too. The rest of that
+  // chain stays at documented caps — but at the MONEY path's own caps
+  // (MAX_MONEY_PATH_MINING_CLIENT_MULT, see its header): the resource
+  // clamp's MAX_BUILDING_MINING_CLIENT_MULT runs in shadow mode on its own
+  // evidence and is deliberately not re-tuned from here, and it is missing
+  // the freighter/stacked-probe terms this path cannot measure.
+  const miningClientMult = MAX_MONEY_PATH_MINING_CLIENT_MULT
     * (serverTierMiningMult(serverTier) / MAX_TIER_MINING_MULT)
     * (serverResearchMiningMult(state.completedResearch || [], serverTier) / MAX_RESEARCH_MINING_MULT)
     * (serverMegastructureMiningMult(totalEarned) / MAX_MEGASTRUCTURE_MINING_MULT)
@@ -876,6 +1022,11 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
 
   let services = 0;
   let nameplate = 0;
+  // 2026-09-14: how the mining half was priced, reported for the audit.
+  let miningServiceCount = 0;
+  const livePriceCount = inputs.marketPrices && typeof inputs.marketPrices === 'object'
+    ? Object.values(inputs.marketPrices).filter(v => typeof v === 'number' && Number.isFinite(v) && v > 0).length
+    : 0;
   for (const svc of state.activeServices || []) {
     if (!svc || typeof svc.definitionId !== 'string') continue;
     const def = SERVICE_MAP.get(svc.definitionId);
@@ -914,19 +1065,21 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
     const instMult = Math.min(MAX_SERVICE_INSTANCE_MULT, Math.max(1, rawInst));
     let base = def.revenuePerMonth || 0;
     if (def.type === 'mining_output') {
-      // Price-linked mining (mining-pricing.ts): nameplate units x band-max
-      // price x scale, with the mining multiplier chain bounded by
-      // `miningClientMult` (tier / research / megastructure read off the row,
-      // the rest at their documented caps).
-      let valued = 0;
-      for (const { resource, amountPerMonth } of MINING_PRODUCTION[svc.definitionId] || []) {
-        const rd = RESOURCE_MAP.get(resource as never) as { maxPrice?: number; baseMarketPrice?: number } | undefined;
-        const price = Math.max(rd?.maxPrice || 0, rd?.baseMarketPrice || 0);
-        valued += amountPerMonth * price;
-      }
-      let scale = 1;
-      try { scale = getMiningRevenueScale(svc.definitionId); } catch { scale = 1; }
-      base = Math.max(base, valued * scale * miningClientMult);
+      // Price-linked mining (mining-pricing.ts): nameplate units x the
+      // ceiling's per-unit price x the service's authored scale, with the
+      // mining multiplier chain bounded by `miningClientMult` (tier /
+      // research / megastructure / era / logistician / crew read off the row,
+      // the rest at the money path's documented caps).
+      //
+      // 2026-09-14: the per-unit price was the resource's authored `maxPrice`
+      // (~10x base), a figure NO surface in the game can ever pay — every
+      // spot is band-clamped to base x 3. It is now the live spot plus
+      // MINING_SPOT_HEADROOM_MULT where the caller supplied one, and the band
+      // maximum where it did not. `Math.max(base, ...)` keeps the authored
+      // flat `revenuePerMonth` as a floor, because a save still inside the
+      // M3 grandfather window blends the two (blendMiningBaseRevenue).
+      miningServiceCount++;
+      base = Math.max(base, miningOutputNameplateValue(svc.definitionId, inputs.marketPrices) * miningClientMult);
     }
     nameplate += base;
     services += base * operabilityFraction * instMult * upgradeBoost * researchMult * workforceMult
@@ -962,6 +1115,8 @@ export function computeServerMonthlyGrossDetailed(state: GameState, inputs: Serv
     nameplate: Math.round(nameplate),
     clientMultiplierBound,
     multiplierTerms: { verified: verifiedTerms, allowance: allowanceTerms },
+    miningPriceSource: miningServiceCount === 0 ? 'none' : (livePriceCount > 0 ? 'live' : 'band-max'),
+    miningClientMultiplierBound: miningServiceCount === 0 ? 0 : miningClientMult,
   };
 }
 

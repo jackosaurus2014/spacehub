@@ -773,13 +773,155 @@ legitimate play — nothing in this change lowers the estimate below the
 engine, and the two terms that were previously *under*-bounds (research at
 tier 2+, the commander stack) were widened.
 
-**Deliberately left loose.** The mining_output valuation (nameplate units ×
-the resource's *band-maximum* price × the mining chain) is still ~22,000x
-nameplate. The band-max price is the dominant factor and `getServiceDemandMultiplier`-style
-live prices are not available to this function; `MAX_BUILDING_MINING_CLIENT_MULT`
-is also the resource-ceiling constant (shadow mode, see
-`RESOURCE_CLAMP_FALSE_POSITIVE_AUDIT.md`) and was not re-tuned from here.
-Next tightening for a mining-heavy world.
+**Deliberately left loose — CLOSED 2026-09-14** (see "C-2 follow-up 5"
+below). The mining_output valuation (nameplate units × the resource's
+authored `maxPrice` × the mining chain) was still ~22,000x nameplate. The
+price was the dominant factor; it now reads the live `MarketResource` rows.
+
+### C-2 follow-up 5 — the mining valuation reads the market (2026-09-14)
+
+**Was.** Follow-up 4 left one term at a documented cap on purpose, and it was
+the dominant one: `mining_output` services were valued at
+
+```
+Σ( MINING_PRODUCTION units/month × max(resource.maxPrice, baseMarketPrice) )
+  × getMiningRevenueScale(service) × MAX_BUILDING_MINING_CLIENT_MULT
+```
+
+Two problems, in opposite directions.
+
+*Too loose.* `maxPrice` is authored at **~10x base** for every tradeable
+resource (`iron` $5K base / $50K max). No surface in the game can ever pay it:
+every spot the engine reads is band-clamped to `[base × 0.3, base × 3.0]`
+(`price-band.ts`, enforced by `buildMarketSnapshot` on the way out and
+`clampSpotToBand` on the way in), so the ceiling was valuing ore at 3.3x a
+price the tick is structurally incapable of charging.
+
+*Too tight, in two places the 10x was accidentally masking.*
+`MAX_BUILDING_MINING_CLIENT_MULT` belongs to the RESOURCE clamp, which rides
+the flow lens and therefore **measures** the freighter-logistics bonus
+(`+10%` per idle transport/tanker at the rig, capped `+50%`) and the
+survey-probe bonus from real state. The money path values NAMEPLATE units
+instead, so neither term is visible to it — and `MAX_SURVEY_PROBE_MULT` (1.35)
+is not an upper bound anyway: the registry's largest single anomaly is `+50%`
+and probes SUM per (location, resource). On the resource path `RESOURCE_SLACK`
+(3) absorbs that; on the money path nothing does, and an under-bound there
+rejects honest income.
+
+**Now** (`resource-plausibility.ts`, `sync/route.ts`).
+
+*Price.* The sync route's `MarketResource` read is hoisted above the ceiling
+computation (one query, reused by the net-worth / `marketSnapshot` block that
+already did it ~600 lines later) and passed in as
+`ServerMonthlyGrossInputs.marketPrices`. `miningCeilingUnitPrice` resolves:
+
+| live spot | valued at |
+|---|---|
+| none (read failed / first-ever sync / slug absent) | the **band maximum**, `min(maxPrice, base × PRICE_BAND_HIGH)` — the hardest price any surface can pay |
+| present | `max(live, min(bandMax, max(base, live) × MINING_SPOT_HEADROOM_MULT))` |
+
+The `base` floor is there because a Frontier save's spot floor and the
+post-graduation glide (`mining-pricing.ts`) price a below-base spot back up
+toward base; the `live` floor is there so a DB row whose own band is wider
+than the static registry's can never under-report.
+
+*Why the headroom is 1.5 and not more.* The tick prices ore at the client's
+last `marketSnapshot` — the rows as of the PREVIOUS sync — so the spot this
+function reads and the spot the tick charged are not the same number.
+`ledger-reconcile.ts` multiplies this estimate by `MONEY_HEADROOM_MULT` = 2.0,
+and **2.0 × 1.5 = 3.0 = `PRICE_BAND_HIGH`**: for any resource trading at or
+above base, the clamp's effective per-unit price allowance is therefore at
+least the band maximum, so no price move the game permits can make the money
+ceiling reject honest mining income. Raising the constant buys nothing;
+lowering it breaks the identity. Asserted as a test.
+
+*Multiplier.* The money path gets its own named constant,
+`MAX_MONEY_PATH_MINING_CLIENT_MULT` (3,935.59) — the same chain as
+`MAX_BUILDING_MINING_CLIENT_MULT` (1,771.01, **unchanged**, still the shadow
+resource clamp's) with `MAX_FREIGHTER_LOGISTICS_MINING_MULT` (1.5) added and
+`MAX_SURVEY_PROBE_MULT` (1.35) replaced by
+`MAX_MONEY_PATH_SURVEY_PROBE_MULT` (2.0 — two concurrent probes at the
+registry maximum). It is written out term by term rather than derived from the
+resource constant, so a future edit to either is a deliberate, visible choice.
+The row-verified terms (tier / research / megastructure / era /
+logistician-commander / crew) are divided back out of it exactly as before.
+
+`ServerMonthlyGrossReport` gains `miningPriceSource` (`'live'` /
+`'band-max'` / `'none'`) and `miningClientMultiplierBound` so the audit can
+see which path a given sync took.
+
+**Measured** (fixtures in `__tests__/server-monthly-gross.test.ts`; "before"
+is reproduced exactly by feeding the old per-unit figure back through
+`miningCeilingUnitPrice`, whose `max(live, …)` floor returns it unchanged):
+
+| per-unit price | iron | lunar_water | helium3 | platinum_group |
+|---|---|---|---|---|
+| before (`maxPrice`) | $50,000 | $500,000 | $50.0M | $5.00M |
+| band-max fallback | $15,000 | $150,000 | $15.0M | $1.50M |
+| live, spot at base | $7,500 | $75,000 | $7.5M | $750,000 |
+
+| mining profile | authored $/month | multiple over authored | 65 s headroom |
+|---|---|---|---|
+| 6 rigs, 90 d, $2B earned | $397.1M | 19,745x → **6,763x** (live) / 13,524x (band-max) | $47.19B → **$16.16B** (2.92x) |
+| 10 rigs, 1 y, $50B earned | $1.527B | 103,843x → **35,083x** (live) / 70,165x (band-max) | $954.4B → **$322.4B** (2.96x) |
+
+The per-unit price is 6.7x tighter; the net gross is 2.9x tighter because
+roughly half the win was spent closing the two under-bounds the 10x price had
+been masking. That is the right trade: the loose part is gone and the missing
+terms are now explicit, named and testable.
+
+**Conservatism, extended.** `server-monthly-gross.test.ts` gains three
+mining-heavy fixtures — a six-rig miner, the same rigs plus a refining
+operation (`methane_refinery` / `svc_titan_chemicals`; Mining Phase C's ore
+refining is credited through server ledger rows, which the ceiling adds AFTER
+the clamp, so the refining income that must fit under this estimate is the
+refinery service), and an adversarial mining maximum (every client mining
+multiplier live, nine commanders, every megastructure, two `+50%` survey
+probes per (location, resource), five idle freighters at every rig, spot
+pinned at the band ceiling). Each asserts `gross >= processTick`'s own monthly
+payout for every sync window the clamp can see AND for three market
+conditions: the live read agreeing with the client's snapshot, no live read at
+all, and a live read at the BOTTOM of the band while the client's snapshot sat
+at the top. Observed margins (30 d window, band-max path): six-rig 7,839x,
+mining+refining 7,729x, **adversarial mining maximum 155x**. The pre-existing
+"asteroid miner" fixture moved 7,450x → 5,576x; the non-mining fixtures are
+unchanged (68x / 84x / 18x).
+
+**Residual.** The mining chain's multiplier, not its price, is now the
+dominant term (~28x for a tier-3 six-rig row after the verified terms are
+divided out, 1,313x for the adversarial one). What is left in it is genuinely
+unverifiable from the row: reputation (1.30), the mining legacy soft cap
+(4.00 — `stretch_mining` keys on total units mined, which the row does not
+persist), the engine-capped wave-B stack (2.00), and the two nameplate
+allowances above. Verifying any of those needs new persisted state, not a
+re-tune. Next lever for a mining-heavy world.
+
+### P10's chat guard was crying wolf (fixed 2026-09-14)
+
+`game-authz-regressions.test.ts` → "POST /api/space-tycoon/chat (P10) ›
+SECURITY: writes profile.companyName, not body.companyName" failed
+intermittently in a full `npx jest` run from 2026-09-13, always alone, always
+passing in isolation and on a re-run. The suspicion recorded at the time was
+cross-suite pollution of the mocked Prisma singleton by the prisma-mocking
+suites added that day. **It was not.** Jest gives each test FILE its own module
+registry, so no other suite can reach this one's `jest.mock('@/lib/db')`
+factory; the failure reproduces deterministically inside a single-file run.
+
+The cause was inside the suite. The chat route trims chat history older than
+7 days opportunistically — `if (Math.random() < 0.05) { prisma.gameChatMessage
+.deleteMany({…}).catch(…) }` — and the mock declared `deleteMany: jest.fn()`,
+which returns `undefined`. `.catch` on `undefined` throws a `TypeError` inside
+the route's own `try`, so the POST answered **500 instead of 200** on ~5% of
+runs. The route is correct; the mock did not model a branch the route takes
+one time in twenty.
+
+Fixed by making the mock resolve (`jest.fn().mockResolvedValue({ count: 0 })`)
+and pinning `Math.random` for that one test so the retention branch is taken on
+**every** run rather than one in twenty, with
+`expect(mockGameChatMessage.deleteMany).toHaveBeenCalled()` as the regression
+guard. Verified with eight consecutive full-suite runs (412 suites / 8,512
+tests, green every time). Not skipped, not retried — a security guard that
+cries wolf trains people to ignore it.
 
 ### C-3 — Orbital-slot lease transfer debited a non-consenting buyer (fixed)
 

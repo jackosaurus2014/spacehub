@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { formatMoney, formatGameDate } from '@/lib/game/formulas';
 import { BUILDING_MAP } from '@/lib/game/buildings';
@@ -30,6 +30,9 @@ import { getFrontierRevenueMultiplier } from '@/lib/game/frontier'; // Pass 10
 // Every figure below comes from the engine's own code paths; see
 // resource-flow.ts's header for the drift rule and the omissions list.
 import { computeResourceFlows, formatFlow, flowDirection, type ResourceFlow } from '@/lib/game/resource-flow';
+// HUD compaction (2026-09-14) — see lib/game/hud-layout.ts for the pixel
+// budget this bar was carrying and why the switches moved behind one button.
+import { resourceStripSummary } from '@/lib/game/hud-layout';
 import { resourceCategoryIcon } from '@/lib/game/icons';
 import GameIcon from './GameIcon';
 import HoloTip, { Concept } from './HoloTip';
@@ -45,7 +48,70 @@ interface ResourceBarProps {
   onDensityChange?: (density: GameDensity) => void;
   /** 'local' shows the sign-in chip (save lives only in this browser); 'account' shows nothing. */
   saveScope?: 'local' | 'account';
+  /** Bridge mode (lib/game/bridge-mode.ts) — the site chrome is hidden and
+   *  the map is the stage, so the plate spends its pixels differently:
+   *  it takes the full viewport width instead of the `max-w-5xl` column
+   *  (nothing wraps to a second line), and the resource stock/flow strip
+   *  collapses to a count with the cells one click away. Outside bridge
+   *  mode the bar keeps the shape it has always had. */
+  compact?: boolean;
+  /** Chips that belong on the money line rather than on a band of their own —
+   *  today the Protected Frontier badge in its `chip` variant. */
+  children?: ReactNode;
 }
+
+/** Shared dropdown behaviour for the plate's two disclosures (console
+ *  switches, collapsed resource strip): Escape closes and returns focus to
+ *  the trigger, a pointer-down outside closes, and Escape is consumed so it
+ *  never ALSO leaves bridge mode (bridge-mode.ts skips a defaultPrevented
+ *  event). Hover opens on a mouse; the panel is anchored to its trigger so
+ *  the pointer never has to cross dead space to reach it. */
+function useHudDisclosure() {
+  const [pinned, setPinned] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const open = pinned || hovered;
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      e.stopPropagation();
+      setPinned(false);
+      setHovered(false);
+      triggerRef.current?.focus();
+    };
+    const onDown = (e: Event) => {
+      if (!wrapRef.current?.contains(e.target as Node)) { setPinned(false); setHovered(false); }
+    };
+    document.addEventListener('keydown', onKey, true);
+    document.addEventListener('pointerdown', onDown);
+    return () => {
+      document.removeEventListener('keydown', onKey, true);
+      document.removeEventListener('pointerdown', onDown);
+    };
+  }, [open]);
+
+  // Touch taps fire a synthetic pointerenter that would otherwise leave the
+  // panel stuck open with no pointerleave to follow; only a real mouse opens
+  // on hover.
+  const hoverProps = {
+    onPointerEnter: (e: ReactPointerEvent) => { if (e.pointerType === 'mouse') setHovered(true); },
+    onPointerLeave: (e: ReactPointerEvent) => { if (e.pointerType === 'mouse') setHovered(false); },
+  };
+
+  return { open, pinned, setPinned, wrapRef, triggerRef, hoverProps };
+}
+
+// `animate-reveal-up` is a globals.css class, not a Tailwind utility, so a
+// `motion-safe:` prefix would never be generated — it carries its own
+// `prefers-reduced-motion: reduce` guard there instead (animation: none).
+const DISCLOSURE_PANEL =
+  'absolute right-0 top-full mt-1 z-40 rounded-lg border border-white/[0.1] bg-[#050510]/97 backdrop-blur-sm shadow-[0_12px_32px_-8px_rgba(0,0,0,0.8)] animate-reveal-up';
+const SWITCH_ROW =
+  'w-full min-h-[44px] px-2 py-1 flex items-center gap-2 rounded text-[11px] text-left transition-colors hover:bg-white/[0.06] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-cyan-400';
 
 /** Animated number that rolls toward a target value via RAF easing.
  *
@@ -216,7 +282,9 @@ function ResourceFlowCell({ flow, omitted }: { flow: ResourceFlow; omitted: read
   );
 }
 
-export default function ResourceBar({ state, density = 'comfortable', onDensityChange, saveScope }: ResourceBarProps) {
+export default function ResourceBar({ state, density = 'comfortable', onDensityChange, saveScope, compact = false, children }: ResourceBarProps) {
+  const switches = useHudDisclosure();
+  const stripDisclosure = useHudDisclosure();
   const [muted, setMuted] = useState(true);
   const [ambient, setAmbient] = useState(false);
   const [music, setMusic] = useState(false);
@@ -290,6 +358,25 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
   // and storage lenses. Memoized on `state` for the same reason as the P&L.
   const flowReport = useMemo(() => computeResourceFlows(state), [state]);
   const strip = flowReport.flows.slice(0, FLOW_STRIP_MAX);
+  // HUD compaction: the collapsed form of the strip. Counts, not colour, say
+  // how many stockpiles need a decision — the label reads "6 resources · 2
+  // low" and the same words are the button's accessible name.
+  const stripSummary = useMemo(() => resourceStripSummary(strip), [strip]);
+  // One list, rendered either as the rail below the money line (normal mode)
+  // or inside the disclosure panel (bridge mode). Same cells, same HoloTips,
+  // same focus order — only the container moves.
+  const stripList = (
+    <ul
+      className={`flex items-center gap-1.5 ${compact ? 'flex-wrap' : 'overflow-x-auto game-scroll scrollbar-hide'}`}
+      aria-label="Resource stocks and net monthly flow"
+    >
+      {strip.map(flow => (
+        <li key={flow.resourceId} className="shrink-0">
+          <ResourceFlowCell flow={flow} omitted={flowReport.omitted} />
+        </li>
+      ))}
+    </ul>
+  );
 
   // âââ Client-side money history (sparkline) + delta-flash driver ââââââââââ
   const historyRef = useRef<number[]>([]);
@@ -355,6 +442,10 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
     onDensityChange?.(next);
   };
 
+  // The overflow trigger's accessible name carries the one piece of state a
+  // player checks without opening it — whether sound is off.
+  const switchesLabel = `Audio and display settings — sound effects ${muted ? 'muted' : 'on'}`;
+
   return (
     // Wave A2.1 (docs/VISUAL_AAA_2026-08.md Â§A2.1) â `bezel-plate-top` makes
     // this the top plate of the docked command bezel rather than a web
@@ -369,9 +460,11 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
       {/* The seam where the plate meets the tab selector channel. */}
       <span className="bezel-seam" aria-hidden="true" />
 
-      <div className="flex items-center justify-between gap-2 sm:gap-4 flex-wrap max-w-5xl mx-auto">
+      {/* Bridge mode hands the plate the whole viewport; spend it on ONE line
+          rather than on a `max-w-5xl` column that wraps to two. */}
+      <div className={`flex items-center justify-between gap-2 sm:gap-3 flex-wrap mx-auto ${compact ? 'max-w-none' : 'max-w-5xl'}`}>
         {/* Money + sparkline + net income chip */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <div
             // Re-mounting the span via key={flashKey} re-triggers the one-shot
             // delta-flash animation defined in GameStyles.
@@ -472,6 +565,11 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
               <span className="hidden sm:inline">{tierDef.name}</span>
             </div>
           </HoloTip>
+
+          {/* HUD compaction — chips the shell folds onto the money line rather
+              than giving them a full-width band of their own (the Protected
+              Frontier badge in its `chip` variant). */}
+          {children}
         </div>
 
         {/* Date + Live indicator */}
@@ -492,101 +590,177 @@ export default function ResourceBar({ state, density = 'comfortable', onDensityC
               className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-[10px] text-amber-300 hover:bg-amber-500/20 tracking-wide"
               title="This save lives only in this browser. Sign in to keep it on your account and continue on any device."
             >
-              Not saved to an account Â· Sign in
+              Not saved to an account · Sign in
             </Link>
           )}
         </div>
 
-        {/* Audio Controls */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={handleToggleMusic}
-            aria-label={music ? 'Turn off music' : 'Turn on music'}
-            aria-pressed={music}
-            className={`min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs transition-colors rounded ${music ? 'text-cyan-400' : 'text-slate-600 hover:text-slate-400'}`}
-            title={music ? 'Music: On' : 'Music: Off'}
-          >
-            <GameIcon name="music" size={14} />
-          </button>
-          {music && (
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.05}
-              value={musicVol}
-              onChange={(e) => handleMusicVolume(parseFloat(e.target.value))}
-              aria-label="Music volume"
-              className="hidden sm:block w-16 accent-cyan-400"
-              title={`Music volume: ${Math.round(musicVol * 100)}%`}
-            />
+        {/* Console switches + the collapsed resource strip.
+            HUD compaction (2026-09-14, lib/game/hud-layout.ts): the six
+            audio/haptics/density switches each carry a 44 px touch-target
+            floor, and three flex groups of them did not fit inside the bar's
+            content box - the money line wrapped to two rows (88 px) at
+            1366x900. They now sit behind ONE button. Nothing was deleted:
+            every switch keeps its own aria-label, aria-pressed state and
+            title inside the panel, the panel is keyboard-reachable (Enter on
+            the trigger, Escape to close and return focus), and the trigger's
+            own glyph still reports whether sound is muted, so the state
+            stays legible without opening anything. */}
+        <div className="flex items-center gap-1 shrink-0">
+          {compact && strip.length > 0 && (
+            <div className="relative" ref={stripDisclosure.wrapRef} {...stripDisclosure.hoverProps}>
+              <button
+                type="button"
+                ref={stripDisclosure.triggerRef}
+                onClick={() => stripDisclosure.setPinned(v => !v)}
+                aria-expanded={stripDisclosure.open}
+                aria-controls="tycoon-resource-strip"
+                aria-label={stripSummary.ariaLabel}
+                title={stripSummary.ariaLabel}
+                className={`min-h-[44px] px-2 inline-flex items-center gap-1.5 rounded border text-[11px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                  stripSummary.attention > 0
+                    ? 'border-amber-500/30 bg-amber-500/[0.08] text-amber-200 hover:bg-amber-500/[0.14]'
+                    : 'border-white/[0.08] bg-white/[0.02] text-slate-300 hover:text-white'
+                }`}
+              >
+                <GameIcon name="package" size={13} />
+                <span aria-hidden="true" className="font-mono whitespace-nowrap">{stripSummary.label}</span>
+                <GameIcon name={stripDisclosure.open ? 'chevron-up' : 'chevron-down'} size={11} />
+              </button>
+              {stripDisclosure.open && (
+                <div id="tycoon-resource-strip" className={`${DISCLOSURE_PANEL} p-2 w-[min(92vw,44rem)]`}>
+                  {stripList}
+                </div>
+              )}
+            </div>
           )}
-          <button
-            onClick={handleToggleAmbient}
-            aria-label={ambient ? 'Turn off ambient music' : 'Turn on ambient music'}
-            aria-pressed={ambient}
-            className={`min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs transition-colors rounded ${ambient ? 'text-purple-400' : 'text-slate-600 hover:text-slate-400'}`}
-            title={ambient ? 'Ambient: On' : 'Ambient: Off'}
-          >
-            <GameIcon name="ambient" size={14} />
-          </button>
-          <button
-            onClick={handleToggleMute}
-            aria-label={muted ? 'Unmute sound effects' : 'Mute sound effects'}
-            aria-pressed={muted}
-            className="min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs text-slate-500 hover:text-white transition-colors"
-            title={muted ? 'Unmute SFX' : 'Mute SFX'}
-          >
-            <GameIcon name={muted ? 'mute' : 'unmute'} size={14} />
-          </button>
-          {hapticsSupported && (
+
+          <div className="relative" ref={switches.wrapRef} {...switches.hoverProps}>
             <button
-              onClick={handleToggleHaptics}
-              aria-label={haptics ? 'Turn off haptic feedback' : 'Turn on haptic feedback'}
-              aria-pressed={haptics}
-              className={`min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs transition-colors rounded ${haptics ? 'text-cyan-400' : 'text-slate-600 hover:text-slate-400'}`}
-              title={haptics ? 'Haptics: On' : 'Haptics: Off'}
+              type="button"
+              ref={switches.triggerRef}
+              onClick={() => switches.setPinned(v => !v)}
+              aria-expanded={switches.open}
+              aria-controls="tycoon-console-switches"
+              aria-haspopup="true"
+              aria-label={switchesLabel}
+              title={switchesLabel}
+              className="min-h-[44px] min-w-[44px] px-1.5 py-1 inline-flex items-center justify-center gap-0.5 rounded text-slate-400 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
             >
-              <GameIcon name={haptics ? 'haptics' : 'haptics-off'} size={14} />
+              <GameIcon name={muted ? 'mute' : 'unmute'} size={14} />
+              <GameIcon name={switches.open ? 'chevron-up' : 'chevron-down'} size={11} />
             </button>
-          )}
-          {/* Wave V8 â density toggle. Hidden under 640px: compact mode is
-              forced back to comfortable on phones (44px touch-target floor
-              takes priority over information density there), so the control
-              itself is hidden rather than offering a choice that silently
-              does nothing. `hidden sm:flex` matches Tailwind's 640px `sm`
-              breakpoint, the same threshold GameStyles.tsx's compact-mode
-              media guards use. */}
-          <button
-            onClick={handleToggleDensity}
-            aria-label={density === 'compact' ? 'Switch to comfortable density' : 'Switch to compact density'}
-            aria-pressed={density === 'compact'}
-            className={`hidden sm:flex min-h-[44px] min-w-[44px] px-1.5 py-1 text-xs transition-colors rounded ${density === 'compact' ? 'text-cyan-400' : 'text-slate-600 hover:text-slate-400'}`}
-            title={density === 'compact' ? 'Density: Compact' : 'Density: Comfortable'}
-          >
-            <GameIcon name={density === 'compact' ? 'density-compact' : 'density-comfortable'} size={14} />
-          </button>
+            {switches.open && (
+              <div
+                id="tycoon-console-switches"
+                role="group"
+                aria-label="Audio and display settings"
+                className={`${DISCLOSURE_PANEL} p-1.5 w-60`}
+              >
+                <button
+                  type="button"
+                  onClick={handleToggleMusic}
+                  aria-label={music ? 'Turn off music' : 'Turn on music'}
+                  aria-pressed={music}
+                  className={SWITCH_ROW}
+                  title={music ? 'Music: On' : 'Music: Off'}
+                >
+                  <GameIcon name="music" size={14} className={music ? 'text-cyan-400' : 'text-slate-500'} />
+                  <span className="flex-1 text-slate-200">Music</span>
+                  <span aria-hidden="true" className={`font-mono text-[10px] ${music ? 'text-cyan-300' : 'text-slate-500'}`}>{music ? 'On' : 'Off'}</span>
+                </button>
+                {music && (
+                  <div className="px-2 py-1 flex items-center gap-2">
+                    <span className="text-[10px] text-slate-400 shrink-0">Volume</span>
+                    <input
+                      type="range"
+                      min={0}
+                      max={1}
+                      step={0.05}
+                      value={musicVol}
+                      onChange={(e) => handleMusicVolume(parseFloat(e.target.value))}
+                      aria-label="Music volume"
+                      className="flex-1 min-w-0 accent-cyan-400"
+                      title={`Music volume: ${Math.round(musicVol * 100)}%`}
+                    />
+                    <span aria-hidden="true" className="w-8 text-right text-[10px] font-mono text-slate-400">{Math.round(musicVol * 100)}%</span>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={handleToggleAmbient}
+                  aria-label={ambient ? 'Turn off ambient music' : 'Turn on ambient music'}
+                  aria-pressed={ambient}
+                  className={SWITCH_ROW}
+                  title={ambient ? 'Ambient: On' : 'Ambient: Off'}
+                >
+                  <GameIcon name="ambient" size={14} className={ambient ? 'text-purple-400' : 'text-slate-500'} />
+                  <span className="flex-1 text-slate-200">Ambient</span>
+                  <span aria-hidden="true" className={`font-mono text-[10px] ${ambient ? 'text-purple-300' : 'text-slate-500'}`}>{ambient ? 'On' : 'Off'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleToggleMute}
+                  aria-label={muted ? 'Unmute sound effects' : 'Mute sound effects'}
+                  aria-pressed={!muted}
+                  className={SWITCH_ROW}
+                  title={muted ? 'Unmute SFX' : 'Mute SFX'}
+                >
+                  <GameIcon name={muted ? 'mute' : 'unmute'} size={14} className={muted ? 'text-slate-500' : 'text-cyan-400'} />
+                  <span className="flex-1 text-slate-200">Sound effects</span>
+                  <span aria-hidden="true" className={`font-mono text-[10px] ${muted ? 'text-slate-500' : 'text-cyan-300'}`}>{muted ? 'Off' : 'On'}</span>
+                </button>
+                {hapticsSupported && (
+                  <button
+                    type="button"
+                    onClick={handleToggleHaptics}
+                    aria-label={haptics ? 'Turn off haptic feedback' : 'Turn on haptic feedback'}
+                    aria-pressed={haptics}
+                    className={SWITCH_ROW}
+                    title={haptics ? 'Haptics: On' : 'Haptics: Off'}
+                  >
+                    <GameIcon name={haptics ? 'haptics' : 'haptics-off'} size={14} className={haptics ? 'text-cyan-400' : 'text-slate-500'} />
+                    <span className="flex-1 text-slate-200">Haptics</span>
+                    <span aria-hidden="true" className={`font-mono text-[10px] ${haptics ? 'text-cyan-300' : 'text-slate-500'}`}>{haptics ? 'On' : 'Off'}</span>
+                  </button>
+                )}
+                {/* Wave V8 density toggle. Still hidden under 640px: compact
+                    mode is forced back to comfortable on phones (44px
+                    touch-target floor beats information density there), so
+                    the control is hidden rather than offering a choice that
+                    silently does nothing. */}
+                <button
+                  type="button"
+                  onClick={handleToggleDensity}
+                  aria-label={density === 'compact' ? 'Switch to comfortable density' : 'Switch to compact density'}
+                  aria-pressed={density === 'compact'}
+                  className={`${SWITCH_ROW} hidden sm:flex`}
+                  title={density === 'compact' ? 'Density: Compact' : 'Density: Comfortable'}
+                >
+                  <GameIcon name={density === 'compact' ? 'density-compact' : 'density-comfortable'} size={14} className={density === 'compact' ? 'text-cyan-400' : 'text-slate-500'} />
+                  <span className="flex-1 text-slate-200">Density</span>
+                  <span aria-hidden="true" className="font-mono text-[10px] text-slate-400">{density === 'compact' ? 'Compact' : 'Comfortable'}</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* âââ Wave A1: resource stock + flow strip ââââââââââââââââââââââââââ
+      {/* --- Wave A1: resource stock + flow strip -------------------------
           Stellaris's defining top-bar feature. Horizontally scrollable, so it
           holds at 375px without clipping or wrapping the bar above it; each
           cell is its own focus stop with a HoloTip breakdown. Hidden entirely
           when the player holds and moves nothing (a brand-new corporation),
-          rather than showing an empty rail. */}
-      {strip.length > 0 && (
+          rather than showing an empty rail.
+
+          HUD compaction (2026-09-14): in bridge mode the strip does not get a
+          row of its own - it collapses into the "N resources - k low" button
+          on the money line above, which opens this same list as an anchored
+          panel. Outside bridge mode the rail is exactly where it was. */}
+      {!compact && strip.length > 0 && (
         <div className="max-w-5xl mx-auto mt-1.5 border-t border-white/[0.05] pt-1.5">
-          <ul
-            className="flex items-center gap-1.5 overflow-x-auto game-scroll scrollbar-hide"
-            aria-label="Resource stocks and net monthly flow"
-          >
-            {strip.map(flow => (
-              <li key={flow.resourceId} className="shrink-0">
-                <ResourceFlowCell flow={flow} omitted={flowReport.omitted} />
-              </li>
-            ))}
-          </ul>
+          {stripList}
         </div>
       )}
     </div>

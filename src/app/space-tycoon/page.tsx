@@ -231,6 +231,7 @@ import { planMiningOrder, materializeOrder, canTakeMiningOrder, resolveEscortCov
 // Mining Phase B (2026-09-13): claims (server-first like orders) and the
 // sync's mining block (claims, live intel, notices → mail + Situation Log).
 import { adoptServerMining, stakeAsteroidClaimLocal, releaseAsteroidClaimLocal, STAKE_CLAIM_ERROR_TEXT, type AsteroidClaimRecord, type ServerMiningBlock } from '@/lib/game/asteroid-claims';
+import { adoptServerTransits } from '@/lib/game/ship-transit';
 import { getShipCargoCapacity, getFuelEfficiencyMultiplier } from '@/lib/game/cargo-logistics';
 import { hqMiningLogisticsForState } from '@/lib/game/headquarters';
 import { adoptServerHeadquarters, type ServerHeadquartersBlock } from '@/lib/game/hq-relocation';
@@ -1208,6 +1209,14 @@ export default function SpaceTycoonPage() {
     // Mining Phase B: claims / live intel / notices are server truth.
     if (serverData.mining !== undefined) {
       setState(prev => prev ? adoptServerMining(prev, serverData.mining as ServerMiningBlock | null) : prev);
+    }
+    // Ship traffic Phase 2 (2026-09-14): a hull in flight is a ShipTransit
+    // row, and the row owns the clock. adoptServerTransits pulls an arrival
+    // DOWN only and restores a leg the local save lost (second device,
+    // cleared browser) — it never clears a route, so the engine's arrival
+    // branch still credits the manifest exactly once.
+    if (serverData.transits !== undefined) {
+      setState(prev => prev ? adoptServerTransits(prev, serverData.transits) : prev);
     }
   });
 
@@ -2627,7 +2636,24 @@ export default function SpaceTycoonPage() {
   // and sets the route; the tick engine credits the destination exactly
   // once on arrival. Travel remains real (getTravelTime inside the mutator;
   // ships interpolate on the canvas over arrivalAtMs - departedAtMs).
+  // Ship traffic Phase 2 (2026-09-14): freight stays CLIENT-FIRST — the
+  // mutator debits the manifest and the fuel bill, and no money moves on the
+  // server — but the leg is then recorded as a ShipTransit row so every
+  // other corporation sees this hull from the server's clock instead of from
+  // whenever this browser last synced. Best-effort on purpose: the route is
+  // idempotent, it charges nothing, and the sync's reconcile back-fills any
+  // leg this post missed, so a failure must never cost the player a dispatch.
   const handleDispatchShip = useCallback((shipInstanceId: string, toLocation: string, cargo?: Record<string, number>) => {
+    // The leg is derived from a PREFLIGHT against stateRef — dispatchShipWithCargo
+    // is pure, and a functional updater does not run soon enough to read the
+    // committed route here. The commit below is still the functional updater,
+    // so the real mutation stays race-free against the tick engine. If the
+    // preflight and the commit ever disagree, the row is a phantom that the
+    // owner's next sync cancels (server-ship-transit.ts reconcileShipTransits
+    // drops legs the fleet no longer claims), which is why this post is
+    // best-effort and never gates the dispatch.
+    const before = stateRef.current;
+    const preflight = before ? dispatchShipWithCargo(before, shipInstanceId, toLocation, cargo || {}, Date.now()) : null;
     setState(prev => {
       if (!prev) return prev;
       const origin = prev.ships?.find(s => s.instanceId === shipInstanceId)?.currentLocation;
@@ -2638,6 +2664,16 @@ export default function SpaceTycoonPage() {
       hapticAck();
       return result.state;
     });
+    const route = preflight?.ok ? preflight.state.ships?.find(s => s.instanceId === shipInstanceId)?.route : null;
+    if (route && route.from && route.to && route.arrivalAtMs > route.departedAtMs) {
+      void requestAssetOp('dispatch', {
+        shipInstanceId,
+        fromLocationId: route.from,
+        toLocationId: route.to,
+        travelSeconds: Math.max(1, (route.arrivalAtMs - route.departedAtMs) / 1000),
+        cargo: route.cargo || {},
+      }, 'ship dispatch');
+    }
   }, []);
 
   // ─── Interstellar expeditions (Wave 10) ──────────────────────────────────
@@ -2943,8 +2979,33 @@ export default function SpaceTycoonPage() {
       <div className="game-nebula-bg" />
       {/* Wave V7 — tab-independent order-completion feedback (map pings, sound, haptics) */}
       <GlobalEffectsLayer state={state} />
-      {/* Resource Bar */}
-      <ResourceBar state={state} density={density} onDensityChange={setDensityState} saveScope={sessionStatus === 'authenticated' ? 'account' : sessionStatus === 'unauthenticated' ? 'local' : undefined} />
+      {/* Resource Bar.
+          HUD compaction (2026-09-14, lib/game/hud-layout.ts): `compact` is
+          bridge mode — the plate then spans the full width (its money line
+          stops wrapping to two rows) and the resource stock/flow strip
+          collapses into a count on that line. The Protected Frontier badge
+          rides the same line as a chip once it is no longer news; while it
+          IS news, or while graduation is imminent, it keeps the full-width
+          band below (the second FrontierBadge). Exactly one of the two
+          renders — `only` compares against the shared decision in
+          hud-layout.ts, so they can never both appear or both vanish. */}
+      <ResourceBar
+        state={state}
+        density={density}
+        onDensityChange={setDensityState}
+        saveScope={sessionStatus === 'authenticated' ? 'account' : sessionStatus === 'unauthenticated' ? 'local' : undefined}
+        compact={bridge}
+      >
+        <FrontierBadge
+          state={state}
+          only="chip"
+          compact={bridge}
+          onGraduate={() => {
+            playSound('milestone');
+            setState(prev => prev ? graduateFrontier(prev) : prev);
+          }}
+        />
+      </ResourceBar>
       <AccountKeepPrompt show={sessionStatus === 'unauthenticated' && isOnboardingComplete(state)} companyName={state.companyName || 'your corporation'} />
 
       {/* Scheduled world-restart notice — renders only while a restart is pending */}
@@ -2964,9 +3025,13 @@ export default function SpaceTycoonPage() {
         onNavigate={(navTab) => { playSound('click'); navigateToTab(navTab); }}
       />
 
-      {/* Protected Frontier banner — renders only when active */}
+      {/* Protected Frontier banner — renders only when active AND still loud
+          (the first two days, the last three, or auto-graduation armed).
+          Otherwise the chip above carries it and this band costs nothing. */}
       <FrontierBadge
         state={state}
+        only="band"
+        compact={bridge}
         onGraduate={() => {
           playSound('milestone');
           setState(prev => prev ? graduateFrontier(prev) : prev);
