@@ -8,7 +8,7 @@ the Lunar Gateway as a bright point overhead.
     blender -b --python art/blender/hq-lunar.py -- --variant all --actors --out <dir> --samples 160
 
 Options (after the `--`):
-    --variant  polar_day | earthrise | night | all   (default: polar_day)
+    --variant  day | sunrise | night | all   (default: day)
     --actors                                    also render the actor layers
     --out DIR                                   output directory (PNG + EXR + render-meta.json)
     --samples N                                 Cycles samples per render (default 128)
@@ -54,7 +54,7 @@ from mathutils import Vector, Matrix
 def parse_args():
     argv = sys.argv
     args = argv[argv.index('--') + 1:] if '--' in argv else []
-    opts = {'variant': 'polar_day', 'actors': False, 'out': None, 'samples': 128, 'scale': 1.0,
+    opts = {'variant': 'day', 'actors': False, 'out': None, 'samples': 128, 'scale': 1.0,
             'engine': 'CYCLES', 'save_blend': None, 'post': True, 'post_only': False}
     i = 0
     while i < len(args):
@@ -115,15 +115,21 @@ RIG = Vector((330.0, 310.0))
 
 TEX_DIR = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'public', 'textures'))
 
-VARIANT_ORDER = ['polar_day', 'earthrise', 'night']
+# VARIANT NAMES.  The Bridge picks which plate to show with
+# BridgeWindow.pickVariant, and that function only knows `sunrise`, `day`, `dusk` and `night`;
+# anything else falls through to `available[0]`.  Under the round-2 names this stage rendered
+# `night` 24 hours a day and neither the polar-day nor the earthrise plate was ever drawn.
+# `day` is the grazing polar sun and `sunrise` is the earthrise; there is no dusk at the pole,
+# so the picker's dusk hours fall through to `day`, which is correct here.
+VARIANT_ORDER = ['day', 'sunrise', 'night']
 # sun elevation / rotation (0 = +Y ahead, 90 = +X right), Earth elevation / azimuth (deg), exposure,
 # base-light factor, earthlight fill, stars, bloom
 VARIANTS = {
     # The real south pole sits under a 1-2 deg sun and renders as a black plate with two lit rim
     # peaks: true, unreadable, and no fun to command from. The sun is lifted to 7-8 deg — still
     # grazing, still throwing shadows the length of the crater floor, but the regolith reads.
-    'polar_day': dict(sun_elev=7.6, sun_rot=300.0, earth_elev=5.0, earth_az=15.0, exposure=0.9, lights=0.55, earthlight=0.0, stars=0.6, bloom=0.5, look='None'),
-    'earthrise': dict(sun_elev=3.2, sun_rot=236.0, earth_elev=3.0, earth_az=-14.0, exposure=1.15, lights=0.6, earthlight=0.02, stars=0.8, bloom=0.7, look='None'),
+    'day':       dict(sun_elev=7.6, sun_rot=300.0, earth_elev=5.0, earth_az=15.0, exposure=0.9, lights=0.55, earthlight=0.0, stars=0.6, bloom=0.5, look='None'),
+    'sunrise':   dict(sun_elev=3.2, sun_rot=236.0, earth_elev=3.0, earth_az=-14.0, exposure=1.15, lights=0.6, earthlight=0.02, stars=0.8, bloom=0.7, look='None'),
     'night':     dict(sun_elev=-8.0, sun_rot=194.0, earth_elev=5.0, earth_az=15.0, exposure=1.5, lights=1.4, earthlight=0.50, stars=1.0, bloom=0.9, look='AgX - Punchy'),
 }
 
@@ -1194,7 +1200,7 @@ def main():
     meta['engine'] = opts['engine']
     meta['samples'] = opts['samples']
     meta.update({'stage': 'lunar_hq', 'title': 'Lunar Gateway HQ', 'source': 'art/blender/hq-lunar.py',
-                 'defaultVariant': 'polar_day', 'clockOffsetHours': 0,
+                 'defaultVariant': 'day', 'clockOffsetHours': 0,
                  'layers': [
                      {'name': 'far', 'order': 0, 'parallax': 0.10, 'alpha': False, 'note': 'black sky, stars, Earth over the rim, the Gateway, the crater rim and highlands (opaque backplate)'},
                      {'name': 'mid', 'order': 1, 'parallax': 0.45, 'alpha': True, 'note': 'crater floor with craters, boulders and tracks; the base: two pads, habitats, drill rig, solar tower, rover, containers'},

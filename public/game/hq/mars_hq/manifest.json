@@ -1,0 +1,676 @@
+{
+  "stage": "mars_hq",
+  "title": "Mars Orbital HQ",
+  "version": 1,
+  "generatedAt": "2026-09-14T19:03:03.369Z",
+  "source": "art/blender/hq-mars.py",
+  "aspect": [
+    21,
+    9
+  ],
+  "native": {
+    "width": 2560,
+    "height": 1097
+  },
+  "widths": [
+    2560,
+    1280,
+    640
+  ],
+  "files": "game/hq/mars_hq/{variant}-{layer}-{width}.webp",
+  "defaultVariant": "day",
+  "variantOrder": [
+    "day",
+    "dusk",
+    "night",
+    "sunrise"
+  ],
+  "composition": {
+    "horizonY": 0.33,
+    "limbAhead": [
+      0.5,
+      0.33
+    ],
+    "limbLeft": [
+      0.08,
+      0.531
+    ],
+    "limbRight": [
+      0.92,
+      0.531
+    ],
+    "colony": [
+      0.485,
+      0.589
+    ],
+    "colonyLatLon": [
+      -1.6,
+      354.2
+    ],
+    "colonyAlphaPhiDeg": [
+      14.54,
+      91.83
+    ],
+    "relayDish": [
+      0.205,
+      0.655
+    ],
+    "dockedShuttle": [
+      0.755,
+      0.585
+    ],
+    "phobos": [
+      0.36,
+      0.11
+    ],
+    "orbitalPeriodMin": 132.3,
+    "consoleClearBottom": 0.12,
+    "overscan": 0.03,
+    "clockOffsetHours": 0,
+    "camera": {
+      "altitudeKm": 700,
+      "pitchDeg": -40.26,
+      "lensMm": 24,
+      "limbDipDeg": 34.02,
+      "bodyRadiusKm": 3389.5
+    },
+    "variantOrder": [
+      "day",
+      "dusk",
+      "night",
+      "sunrise"
+    ],
+    "defaultVariant": "day",
+    "note": "Layers share one camera; scale each by (1 + overscan) so parallax never reveals an edge. Consoles dock in the bottom 12%. Coordinates are normalized [x, y] from the top-left."
+  },
+  "depthThresholds": {
+    "nearMaxM": 60,
+    "midMaxM": 6000
+  },
+  "layers": [
+    {
+      "name": "far",
+      "order": 0,
+      "parallax": 0.05,
+      "alpha": false,
+      "note": "stars, Mars (albedo map, ice cloud, dust sheet, two Fresnel shells), the sun disc + glare, Phobos and Deimos (opaque backplate)"
+    },
+    {
+      "name": "mid",
+      "order": 1,
+      "parallax": 0.45,
+      "alpha": true,
+      "note": "the relay dish and its jointed boom, the grappled Mars shuttle, a tender, two relay satellites"
+    },
+    {
+      "name": "near",
+      "order": 5,
+      "parallax": 1,
+      "alpha": true,
+      "note": "window frame with cyan/amber/purple console strips, station truss, oversized solar wing, dust-streaked radiator, Earth-link dish"
+    }
+  ],
+  "variants": {
+    "day": {
+      "sunDirection": [
+        -0.42,
+        -0.25,
+        0.87
+      ],
+      "exposure": 0.15,
+      "lights": 0,
+      "look": "None",
+      "bloom": 0.45,
+      "dust": 0.18,
+      "horizonRow": 362,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "day-far-640.webp",
+              "bytes": 15058,
+              "height": 274
+            },
+            "1280": {
+              "file": "day-far-1280.webp",
+              "bytes": 47798,
+              "height": 549
+            },
+            "2560": {
+              "file": "day-far-2560.webp",
+              "bytes": 130798,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "day-mid-640.webp",
+              "bytes": 7282,
+              "height": 274
+            },
+            "1280": {
+              "file": "day-mid-1280.webp",
+              "bytes": 15476,
+              "height": 549
+            },
+            "2560": {
+              "file": "day-mid-2560.webp",
+              "bytes": 29720,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "day-near-640.webp",
+              "bytes": 20640,
+              "height": 274
+            },
+            "1280": {
+              "file": "day-near-1280.webp",
+              "bytes": 48600,
+              "height": 549
+            },
+            "2560": {
+              "file": "day-near-2560.webp",
+              "bytes": 97270,
+              "height": 1097
+            }
+          }
+        }
+      }
+    },
+    "dusk": {
+      "sunDirection": [
+        0.32,
+        -0.85,
+        0.4145
+      ],
+      "exposure": 0.7,
+      "lights": 0.6,
+      "look": "None",
+      "bloom": 0.6,
+      "dust": 0.3,
+      "horizonRow": 362,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "dusk-far-640.webp",
+              "bytes": 13634,
+              "height": 274
+            },
+            "1280": {
+              "file": "dusk-far-1280.webp",
+              "bytes": 44856,
+              "height": 549
+            },
+            "2560": {
+              "file": "dusk-far-2560.webp",
+              "bytes": 115016,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "dusk-mid-640.webp",
+              "bytes": 7638,
+              "height": 274
+            },
+            "1280": {
+              "file": "dusk-mid-1280.webp",
+              "bytes": 16152,
+              "height": 549
+            },
+            "2560": {
+              "file": "dusk-mid-2560.webp",
+              "bytes": 33968,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "dusk-near-640.webp",
+              "bytes": 22840,
+              "height": 274
+            },
+            "1280": {
+              "file": "dusk-near-1280.webp",
+              "bytes": 54682,
+              "height": 549
+            },
+            "2560": {
+              "file": "dusk-near-2560.webp",
+              "bytes": 111388,
+              "height": 1097
+            }
+          }
+        }
+      }
+    },
+    "night": {
+      "sunDirection": [
+        0.1,
+        0.35,
+        -0.93
+      ],
+      "exposure": 1.45,
+      "lights": 1,
+      "look": "AgX - Punchy",
+      "bloom": 0.8,
+      "dust": 0.1,
+      "horizonRow": 362,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "night-far-640.webp",
+              "bytes": 5632,
+              "height": 274
+            },
+            "1280": {
+              "file": "night-far-1280.webp",
+              "bytes": 23090,
+              "height": 549
+            },
+            "2560": {
+              "file": "night-far-2560.webp",
+              "bytes": 53722,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "night-mid-640.webp",
+              "bytes": 6388,
+              "height": 274
+            },
+            "1280": {
+              "file": "night-mid-1280.webp",
+              "bytes": 13360,
+              "height": 549
+            },
+            "2560": {
+              "file": "night-mid-2560.webp",
+              "bytes": 29784,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "night-near-640.webp",
+              "bytes": 18658,
+              "height": 274
+            },
+            "1280": {
+              "file": "night-near-1280.webp",
+              "bytes": 44000,
+              "height": 549
+            },
+            "2560": {
+              "file": "night-near-2560.webp",
+              "bytes": 90854,
+              "height": 1097
+            }
+          }
+        }
+      }
+    },
+    "sunrise": {
+      "sunDirection": [
+        0.18,
+        0.899,
+        -0.4
+      ],
+      "exposure": 0.25,
+      "lights": 0.8,
+      "look": "None",
+      "bloom": 0.9,
+      "dust": 0.26,
+      "horizonRow": 362,
+      "layers": {
+        "far": {
+          "quality": 90,
+          "files": {
+            "640": {
+              "file": "sunrise-far-640.webp",
+              "bytes": 6738,
+              "height": 274
+            },
+            "1280": {
+              "file": "sunrise-far-1280.webp",
+              "bytes": 21900,
+              "height": 549
+            },
+            "2560": {
+              "file": "sunrise-far-2560.webp",
+              "bytes": 57070,
+              "height": 1097
+            }
+          }
+        },
+        "mid": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "sunrise-mid-640.webp",
+              "bytes": 6490,
+              "height": 274
+            },
+            "1280": {
+              "file": "sunrise-mid-1280.webp",
+              "bytes": 13452,
+              "height": 549
+            },
+            "2560": {
+              "file": "sunrise-mid-2560.webp",
+              "bytes": 28982,
+              "height": 1097
+            }
+          }
+        },
+        "near": {
+          "quality": 88,
+          "files": {
+            "640": {
+              "file": "sunrise-near-640.webp",
+              "bytes": 18834,
+              "height": 274
+            },
+            "1280": {
+              "file": "sunrise-near-1280.webp",
+              "bytes": 42624,
+              "height": 549
+            },
+            "2560": {
+              "file": "sunrise-near-2560.webp",
+              "bytes": 88828,
+              "height": 1097
+            }
+          }
+        }
+      }
+    }
+  },
+  "actors": {
+    "shipDeparting": {
+      "blend": "normal",
+      "order": 3,
+      "trigger": "launch",
+      "below": "near",
+      "idle": false,
+      "perVariant": true,
+      "anchor": {
+        "x": 0.4203125,
+        "y": 0.15314494074749316,
+        "w": 0.0921875,
+        "h": 0.1649954421148587
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "An ascent vehicle climbing out of the well with its engine lit, lit per variant. Translate it up and right along the arc while it plays; it is not drawn at rest.",
+      "widths": [
+        2560,
+        1280,
+        640
+      ],
+      "files": {
+        "day": {
+          "640": {
+            "file": "day-shipDeparting-640.webp",
+            "bytes": 1182,
+            "width": 59,
+            "height": 45
+          },
+          "1280": {
+            "file": "day-shipDeparting-1280.webp",
+            "bytes": 2172,
+            "width": 118,
+            "height": 91
+          },
+          "2560": {
+            "file": "day-shipDeparting-2560.webp",
+            "bytes": 3198,
+            "width": 236,
+            "height": 181
+          }
+        },
+        "dusk": {
+          "640": {
+            "file": "dusk-shipDeparting-640.webp",
+            "bytes": 1152,
+            "width": 59,
+            "height": 45
+          },
+          "1280": {
+            "file": "dusk-shipDeparting-1280.webp",
+            "bytes": 2208,
+            "width": 118,
+            "height": 91
+          },
+          "2560": {
+            "file": "dusk-shipDeparting-2560.webp",
+            "bytes": 3220,
+            "width": 236,
+            "height": 181
+          }
+        },
+        "night": {
+          "640": {
+            "file": "night-shipDeparting-640.webp",
+            "bytes": 1078,
+            "width": 59,
+            "height": 45
+          },
+          "1280": {
+            "file": "night-shipDeparting-1280.webp",
+            "bytes": 2032,
+            "width": 118,
+            "height": 91
+          },
+          "2560": {
+            "file": "night-shipDeparting-2560.webp",
+            "bytes": 3256,
+            "width": 236,
+            "height": 181
+          }
+        },
+        "sunrise": {
+          "640": {
+            "file": "sunrise-shipDeparting-640.webp",
+            "bytes": 1070,
+            "width": 59,
+            "height": 45
+          },
+          "1280": {
+            "file": "sunrise-shipDeparting-1280.webp",
+            "bytes": 1988,
+            "width": 118,
+            "height": 91
+          },
+          "2560": {
+            "file": "sunrise-shipDeparting-2560.webp",
+            "bytes": 3134,
+            "width": 236,
+            "height": 181
+          }
+        }
+      },
+      "quality": 86
+    },
+    "colonyLights": {
+      "blend": "screen",
+      "order": 1,
+      "trigger": "build_complete",
+      "below": "mid",
+      "idle": true,
+      "perVariant": false,
+      "anchor": {
+        "x": 0.421875,
+        "y": 0.49225159525979945,
+        "w": 0.162109375,
+        "h": 0.21969006381039197
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "The Meridian colony on the plain below: habitat domes, a lit landing field with red threshold beacons, and the road out to the mining line (screen blend). Drawn at rest - hold it near 1.0 on night, about 0.45 on dusk and sunrise and 0.18 on day, and flare it when a build completes.",
+      "widths": [
+        1280,
+        640
+      ],
+      "files": {
+        "640": {
+          "file": "actor-colonyLights-640.webp",
+          "bytes": 2264,
+          "width": 104,
+          "height": 60
+        },
+        "1280": {
+          "file": "actor-colonyLights-1280.webp",
+          "bytes": 6124,
+          "width": 208,
+          "height": 121
+        }
+      },
+      "quality": 84
+    },
+    "dustStorm": {
+      "blend": "normal",
+      "order": 4,
+      "trigger": "weather",
+      "below": "near",
+      "idle": false,
+      "perVariant": false,
+      "anchor": {
+        "x": 0,
+        "y": 0,
+        "w": 1,
+        "h": 1
+      },
+      "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
+      "note": "A driven dust front crossing the disc (alpha). Fade it in over 3-4 s during a hazard, slide it slowly along the track, and cross-fade the far layer to farPlate underneath so the planet itself goes flat and ochre - a storm at Mars erases the surface, it does not just fog the glass.",
+      "widths": [
+        1280,
+        640
+      ],
+      "files": {
+        "640": {
+          "file": "actor-dustStorm-640.webp",
+          "bytes": 90120,
+          "width": 640,
+          "height": 274
+        },
+        "1280": {
+          "file": "actor-dustStorm-1280.webp",
+          "bytes": 331606,
+          "width": 1280,
+          "height": 549
+        }
+      },
+      "quality": 82,
+      "farPlate": {
+        "layer": "far",
+        "note": "The far layer re-rendered with the dust cap at full strength: a planet-encircling storm, surface detail gone, the limb arc salmon. Cross-fade far -> this while the veil plays.",
+        "quality": 86,
+        "files": {
+          "640": {
+            "file": "dustStorm-far-640.webp",
+            "bytes": 22412,
+            "height": 274
+          },
+          "1280": {
+            "file": "dustStorm-far-1280.webp",
+            "bytes": 70120,
+            "height": 549
+          },
+          "2560": {
+            "file": "dustStorm-far-2560.webp",
+            "bytes": 188328,
+            "height": 1097
+          }
+        }
+      }
+    }
+  },
+  "depth": {
+    "file": "depth-1280.webp",
+    "bytes": 7188,
+    "width": 1280,
+    "height": 549,
+    "metersAtWhite": 3000000,
+    "encoding": "linear: metres = value / 255 * metersAtWhite; 0 = sky"
+  },
+  "bytes": {
+    "byVariant": {
+      "day": 412642,
+      "dusk": 420174,
+      "night": 285488,
+      "sunrise": 284918
+    },
+    "actors": 736664,
+    "depth": 7188,
+    "total": 2147074
+  },
+  "render": {
+    "engine": "CYCLES",
+    "samples": 160,
+    "timings": {
+      "day": {
+        "far": 3.8,
+        "mid": 0.9,
+        "near": 1.4,
+        "depart": 0.6,
+        "post": 7.8,
+        "total": 23.5
+      },
+      "dusk": {
+        "far": 3.7,
+        "mid": 0.9,
+        "near": 1.5,
+        "depart": 0.6,
+        "post": 8.2,
+        "total": 22
+      },
+      "night": {
+        "far": 3.7,
+        "mid": 0.9,
+        "near": 1.6,
+        "depart": 0.7,
+        "post": 7.9,
+        "total": 22
+      },
+      "sunrise": {
+        "far": 3.6,
+        "mid": 0.9,
+        "near": 1.5,
+        "depart": 0.6,
+        "post": 8.3,
+        "total": 21.8
+      },
+      "actors": {
+        "colonyLights": 0.6,
+        "dustStorm": 0.9,
+        "dustFar": 3.2,
+        "total": 16.6
+      }
+    }
+  }
+}

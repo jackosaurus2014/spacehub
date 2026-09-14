@@ -390,6 +390,38 @@ export const SKYBOX_ASSETS = {
   nebulaEquirect: `${BASE}/skybox-nebula-equirect.webp`,
 };
 
+// ─── HQ WINDOW STAGES (Command Center CC-1 … CC-4) ──────────────────────────
+// The Bridge's living-window plates: one directory per headquarters seat,
+// rendered by `art/blender/hq-*.py` and encoded by `art/blender/encode-hq-
+// stage.ts` (see art/blender/README.md). Each directory holds a
+// `manifest.json` plus the layer, variant and actor WebPs at 2560/1280/640.
+//
+// The Bridge does NOT read this map — `src/lib/game/hq-manifest.ts` owns that,
+// bundling the manifests it knows at build time and FETCHING the rest from
+// these same `/game/hq/<stage>/` paths at runtime, so a stage's art can land
+// without a code change. This map is the asset-side record of which seats have
+// window art on disk today, and it exists so an audit of the art library can
+// answer "which HQ stages are rendered?" from the asset registry rather than
+// from a directory listing.
+//
+// A seat that is absent here is reachable but still draws the Earth plate with
+// a "window plates coming" overlay (headquarters.ts `windowPreview` supplies
+// the words). Still to render: jovian_hq, saturnian_hq, deep_space_hq,
+// interstellar_hq.
+export const HQ_STAGE_PLATES: Record<string, string> = {
+  earth_ops: `${BASE}/hq/earth/`,
+  orbital_deck: `${BASE}/hq/orbital_deck/`,
+  lunar_hq: `${BASE}/hq/lunar_hq/`,
+  // Round 3 (2026-09-14): the relay station above Meridian — art/blender/hq-mars.py.
+  mars_hq: `${BASE}/hq/mars_hq/`,
+};
+
+/** The published plate directory for an HQ stage, or null while that seat's
+ *  window art is still being rendered. */
+export function getHqStagePlates(stageId: string): string | null {
+  return HQ_STAGE_PLATES[stageId] ?? null;
+}
+
 // ─── MULTI-SIZE VARIANTS (Wave V6) ──────────────────────────────────────────
 // scripts/resize-art.ts emits 1536/512/128px WebP siblings next to a base
 // asset (e.g. `commander-dr-solene-marchetti-512.webp`) for every asset

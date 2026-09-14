@@ -4,13 +4,16 @@ Rendered plates for the Command Center's "living headquarters" window
 (`docs/COMMAND_CENTER_DESIGN_2026-09-13.md`). The founder approved rendered
 plates with a few live actors rather than a live 3D scene (2026-09-13).
 
-Three stages are built today, one procedural Python script each:
+Four of the eight headquarters seats are built today, one procedural Python script each. The
+rest (`jovian_hq`, `saturnian_hq`, `deep_space_hq`, `interstellar_hq`) are reachable in game
+and draw the Earth plate with a "window plates coming" overlay until their directory lands:
 
 | Stage id | Script | Assets | What the window shows |
 |---|---|---|---|
 | `earth` (`earth_ops`) | `hq-earth-ops.py` | `public/game/hq/earth/` | A coastal launch complex from the third floor of the ops building; the vehicle on the pad is the hero. |
 | `orbital_deck` | `hq-orbital-deck.py` | `public/game/hq/orbital_deck/` | Earth's limb from a LEO module at 420 km: terminator, clouds, night-side cities; truss, solar wing and radiator framing the glass; a docking arm and a docked freighter. |
 | `lunar_hq` | `hq-lunar.py` | `public/game/hq/lunar_hq/` | A south-pole crater floor from the base's second level: long shadows, the rim on the skyline, Earth low over it, pads and rigs as lights, the Gateway overhead. |
+| `mars_hq` | `hq-mars.py` | `public/game/hq/mars_hq/` | Mars from the relay station above Meridian at 700 km: Sinus Meridiani and the outflow channels under the glass, the relay dish on its boom, the colony a thread of lights, dust storms in season. |
 
 Everything is procedural. There is no hand-modelled `.blend` to keep in sync;
 each script builds its scene from primitives and node graphs every run.
@@ -30,6 +33,17 @@ falls back to CPU), Node with the repo's `sharp`.
 **Variants** are lighting states driven by the world clock, all from the same
 camera so the layers line up pixel for pixel. `manifest.defaultVariant` names
 the one to open on.
+
+> **Name variants `day`, `dusk`, `night`, `sunrise` — nothing else.**
+> `BridgeWindow.pickVariant` maps the hour to exactly those four names and
+> falls through to `available[0]` for anything it does not recognise. Rounds
+> 1 and 2 shipped descriptive names and paid for it: `orbital_deck` showed
+> `dayside` 21 hours a day and never once drew its terminator or night
+> plates, and `lunar_hq` showed `night` all 24 hours, so its polar-day and
+> earthrise plates were dead bytes on disk. Round 3 renamed both (`dayside →
+> day`, `terminator → dusk`, `nightside → night`; `polar_day → day`,
+> `earthrise → sunrise`) and every stage now cycles. A stage with no real
+> dusk (the lunar pole) simply omits it and the picker falls back to `day`.
 
 **Layers** are separated by depth and rendered as separate passes on
 transparent film so every edge has real coverage alpha, then edge-dilated 16 px
@@ -135,9 +149,9 @@ Earth, and every continent, cloud and terminator underneath disappears.
 
 | Variant | Sun (camera-world x right / y forward / z up) | Look |
 |---|---|---|
-| `dayside` | (-0.45, -0.35, 0.82), exposure -1.7 | high sun, deep blue sea, cumulus with shadows |
-| `terminator` | (0.30, -0.55, 0.16), exposure 0.30 | the day/night line inside the frame: lit desert below, night at the limb. The sun's **+z must stay small but positive and its y negative** — a sun on the local horizon puts every normal in frame at the same grazing angle and the plate reads as one flat brown disc |
-| `nightside` | (0.10, 0.35, -0.93), exposure 0.55, AgX Punchy | black Earth, city lights, a thin blue airglow arc |
+| `day` | (-0.45, -0.35, 0.82), exposure -1.7 | high sun, deep blue sea, cumulus with shadows |
+| `dusk` | (0.30, -0.55, 0.16), exposure 0.30 | the day/night line inside the frame: lit desert below, night at the limb. The sun's **+z must stay small but positive and its y negative** — a sun on the local horizon puts every normal in frame at the same grazing angle and the plate reads as one flat brown disc |
+| `night` | (0.10, 0.35, -0.93), exposure 0.55, AgX Punchy | black Earth, city lights, a thin blue airglow arc |
 | `sunrise` (default) | (0.23, 0.915, -0.335), exposure -1.1 | the sun cresting the limb with a painted flare, the night side still below |
 
 | Layer | Content | Parallax |
@@ -188,8 +202,8 @@ Three numbers carry this stage and are easy to get wrong:
 
 | Variant | Sun / Earth | Look |
 |---|---|---|
-| `polar_day` (default) | sun 7.6 deg az 300, Earth 5.0 deg az 15 (right pane) | grazing white light, long shadows, Earth high-right, the Gateway a bright point in the left pane |
-| `earthrise` | sun 3.2 deg az 236, Earth 3.0 deg az -14 (left pane) | the rim brilliantly lit, Earth low over it on the left |
+| `day` (default) | sun 7.6 deg az 300, Earth 5.0 deg az 15 (right pane) | grazing white light, long shadows, Earth high-right, the Gateway a bright point in the left pane |
+| `sunrise` | sun 3.2 deg az 236, Earth 3.0 deg az -14 (left pane) | the earthrise: the rim brilliantly lit, Earth low over it on the left |
 | `night` | sun -8 deg, earthlight 0.50 | black floor lit only by base lamps and full Earth; stars; AgX Punchy |
 
 | Layer | Content | Parallax |
@@ -203,6 +217,83 @@ Three numbers carry this stage and are easy to get wrong:
 | `haulerLanding` | launch / arrival | normal | a cargo hauler on final over pad 1, engines lit and throwing light on the regolith, **per variant** |
 | `rigLights` | build complete | screen | the rig and pad lamps' contribution only |
 | `dustStorm` | hazard | normal | a driven regolith veil across the floor |
+
+## Stage: Mars Orbital HQ (`mars_hq`)
+
+```bash
+# render: 106 s on an RTX 4090 at 160 samples (4 variants x 4 passes + 3 actors + the storm plate)
+blender -b --python art/blender/hq-mars.py -- --variant all --actors --out /tmp/hq-mars --samples 160
+
+# encode + manifest + contact sheet
+npx tsx art/blender/encode-hq-stage.ts --in /tmp/hq-mars --out public/game/hq/mars_hq --contact scratchpad/shots/hq/mars-contact.png
+```
+
+The relay station above Meridian at 700 km, 24 mm lens. Same construction as
+the orbital deck — spherical caps around the nadir, the limb pinned to
+y = 0.33 by `CAM_PITCH` (-40.3 deg from the local horizontal) — but at Mars'
+3,389.5 km radius the limb dips 34.0 deg, so the window sees the ground from
+**7.7 deg (the sill) to 34.0 deg (the limb)**: a 1,556 km band, with the nadir
+itself below the glass. One orbit is 132 minutes.
+
+**Geography is real and chosen for what lies ahead of the nadir.**
+`NADIR_LATLON` puts the station over Arabia Terra and `FORWARD_LATLON` runs the
+ground track west-southwest, which lays **Sinus Meridiani** — the dark albedo
+patch the prime meridian is named after, and the seat's own Meridian colony —
+across the lower third, **Margaritifer Terra and the Aram/Ares outflow
+channels** through the middle, and the eastern approaches to **Valles
+Marineris** on the limb. Dark albedo, bright dust and carved terrain in one
+frame. `local_from_latlon()` inverts the same rotation, so a place named in
+real Mars coordinates (`COLONY_LATLON`) and the lights put on it land on the
+same pixels.
+
+Three things carry the identity, and all three were got wrong on the first
+pass:
+
+- **Light level.** Mars gets 43% of Earth's sunlight, so the sun lamp is
+  1.85 W/m2 and every exposure sits about a stop above the orbital deck's.
+  Raising the lamp instead of the exposure makes the specular highlights read
+  as Earth's and the plate stops looking like Mars.
+- **The limb arc is blue-white**, not blue and not pink: CO2 and high ice haze
+  scatter short wavelengths at the limb even though the sky at the surface is
+  butterscotch. The inner shell carries the dusty wash. Same rule as the
+  orbital deck — high `blend_power`, low `strength`, or the shell goes grazing
+  far from the limb and veils the whole disc.
+- **Dust is a layer, not a filter.** `dust_material` is a real cap at +25 km
+  whose coverage rides on the variant (0.10-0.30 in normal weather). Its
+  emission has to FALL as coverage rises; at a constant strength a full storm
+  turns the planet into a featureless cream ball instead of butterscotch.
+
+| Variant | Sun (camera-world x right / y forward / z up) | Look |
+|---|---|---|
+| `day` (default) | (-0.42, -0.25, 0.87), exposure 0.15 | high sun, rust-orange plains, sparse white ice cloud, the blue-white limb |
+| `dusk` | (0.32, -0.85, 0.4145), exposure 0.70 | the terminator at 26 deg from the nadir: two thirds of the frame lit at a 17 deg sun, the limb already dark |
+| `night` | (0.10, 0.35, -0.93), exposure 1.45, AgX Punchy | black Mars, stars, a thin airglow arc; the colony is the only thing on the ground |
+| `sunrise` | (0.18, 0.899, -0.400), exposure 0.25 | the sun cresting the limb with a painted flare, the night side below |
+
+The terminator lands where `tan(alpha) = sz / -sy`, and the window only spans
+alpha 7.7-34.0 deg — so a sun whose ratio falls outside that range gives a
+flat, evenly lit disc and no line at all.
+
+| Layer | Content | Parallax |
+|---|---|---|
+| `far` | stars, Mars (the albedo map with three scales of grain, a bump relief, the dark basalt seas lifted grey so they read as markings and not as shadow), thin water-ice cloud at +12 km, the dust sheet at +25 km, both Fresnel shells, the sun disc (0.35 deg at Mars) + glare, Phobos and Deimos; opaque | 0.05 |
+| `mid` | the relay dish — an 8.4 m bowl at three quarters on a three-segment jointed boom, quadripod and feed horn silhouetted across it — the grappled Mars shuttle with its scorched aeroshell, a tender further out, two relay satellites as specks | 0.45 |
+| `near` | window frame with the cyan/amber/purple console strips, the lattice truss up the **right** edge (the orbital deck's is on the left, so the two windows never read as the same room), an oversized solar wing top-left, the seven-panel radiator on the right and the Earth-link high-gain dish, all ochre-streaked by `dusted_material` | 1.0 |
+
+| Actor | Trigger | Blend | Notes |
+|---|---|---|---|
+| `shipDeparting` | launch | normal | an ascent vehicle climbing out of the well, engine lit, **per variant**; not drawn at rest |
+| `colonyLights` | build complete | screen | **idle** — the Meridian colony on the plain below: habitat domes, a lit landing field with red threshold beacons, and the road out to the mining line. 6 KB at 1280. Hold it near 1.0 on `night`, 0.45 on `dusk`/`sunrise`, 0.18 on `day` |
+| `dustStorm` | weather | normal | a driven ochre front across the disc, capped at 1280, carrying a **`farPlate`** (`dustStorm-far-*.webp`) — the whole `far` layer re-rendered with the dust cap at full strength. Cross-fade the backplate to it while the veil plays: a storm at Mars erases the surface, it does not just fog the glass |
+
+Two deliberate lies, both for legibility and both flagged in the source:
+**Phobos** is scaled 7x (0.43 deg of albedo-0.07 rock is true and invisible
+against black), and the colony is spread over ~120 km by `COLONY_SPAN`
+(2.2 px per real kilometre at 1,170 km means a true-scale settlement is four
+pixels wide). The colony lamps are sub-pixel, so their emission strengths are
+single digits — at the hundreds you would use for a visible light the renderer
+divides by pixel coverage and blows a 40 px white hole where a street should
+be.
 
 ## Rules
 

@@ -2,7 +2,7 @@
   "stage": "orbital_deck",
   "title": "Orbital Command Deck",
   "version": 1,
-  "generatedAt": "2026-09-13T18:01:32.309Z",
+  "generatedAt": "2026-09-14T19:08:25.958Z",
   "source": "art/blender/hq-orbital-deck.py",
   "aspect": [
     21,
@@ -20,9 +20,9 @@
   "files": "game/hq/orbital_deck/{variant}-{layer}-{width}.webp",
   "defaultVariant": "sunrise",
   "variantOrder": [
-    "dayside",
-    "terminator",
-    "nightside",
+    "day",
+    "dusk",
+    "night",
     "sunrise"
   ],
   "composition": {
@@ -58,9 +58,9 @@
       "limbDipDeg": 20.26
     },
     "variantOrder": [
-      "dayside",
-      "terminator",
-      "nightside",
+      "day",
+      "dusk",
+      "night",
       "sunrise"
     ],
     "defaultVariant": "sunrise",
@@ -94,7 +94,7 @@
     }
   ],
   "variants": {
-    "dayside": {
+    "day": {
       "sunDirection": [
         -0.45,
         -0.35,
@@ -111,18 +111,18 @@
           "quality": 90,
           "files": {
             "640": {
-              "file": "dayside-far-640.webp",
-              "bytes": 21612,
+              "file": "day-far-640.webp",
+              "bytes": 21532,
               "height": 274
             },
             "1280": {
-              "file": "dayside-far-1280.webp",
-              "bytes": 63622,
+              "file": "day-far-1280.webp",
+              "bytes": 63372,
               "height": 549
             },
             "2560": {
-              "file": "dayside-far-2560.webp",
-              "bytes": 177264,
+              "file": "day-far-2560.webp",
+              "bytes": 176532,
               "height": 1097
             }
           }
@@ -131,18 +131,18 @@
           "quality": 88,
           "files": {
             "640": {
-              "file": "dayside-mid-640.webp",
-              "bytes": 8588,
+              "file": "day-mid-640.webp",
+              "bytes": 8614,
               "height": 274
             },
             "1280": {
-              "file": "dayside-mid-1280.webp",
-              "bytes": 15706,
+              "file": "day-mid-1280.webp",
+              "bytes": 15692,
               "height": 549
             },
             "2560": {
-              "file": "dayside-mid-2560.webp",
-              "bytes": 29980,
+              "file": "day-mid-2560.webp",
+              "bytes": 30282,
               "height": 1097
             }
           }
@@ -151,25 +151,25 @@
           "quality": 88,
           "files": {
             "640": {
-              "file": "dayside-near-640.webp",
-              "bytes": 23506,
+              "file": "day-near-640.webp",
+              "bytes": 23548,
               "height": 274
             },
             "1280": {
-              "file": "dayside-near-1280.webp",
-              "bytes": 52618,
+              "file": "day-near-1280.webp",
+              "bytes": 52648,
               "height": 549
             },
             "2560": {
-              "file": "dayside-near-2560.webp",
-              "bytes": 99954,
+              "file": "day-near-2560.webp",
+              "bytes": 100138,
               "height": 1097
             }
           }
         }
       }
     },
-    "terminator": {
+    "dusk": {
       "sunDirection": [
         0.3,
         -0.55,
@@ -186,18 +186,18 @@
           "quality": 90,
           "files": {
             "640": {
-              "file": "terminator-far-640.webp",
-              "bytes": 15668,
+              "file": "dusk-far-640.webp",
+              "bytes": 15560,
               "height": 274
             },
             "1280": {
-              "file": "terminator-far-1280.webp",
-              "bytes": 53362,
+              "file": "dusk-far-1280.webp",
+              "bytes": 53344,
               "height": 549
             },
             "2560": {
-              "file": "terminator-far-2560.webp",
-              "bytes": 129656,
+              "file": "dusk-far-2560.webp",
+              "bytes": 130094,
               "height": 1097
             }
           }
@@ -206,18 +206,18 @@
           "quality": 88,
           "files": {
             "640": {
-              "file": "terminator-mid-640.webp",
-              "bytes": 9610,
+              "file": "dusk-mid-640.webp",
+              "bytes": 9612,
               "height": 274
             },
             "1280": {
-              "file": "terminator-mid-1280.webp",
-              "bytes": 18824,
+              "file": "dusk-mid-1280.webp",
+              "bytes": 18838,
               "height": 549
             },
             "2560": {
-              "file": "terminator-mid-2560.webp",
-              "bytes": 36098,
+              "file": "dusk-mid-2560.webp",
+              "bytes": 36736,
               "height": 1097
             }
           }
@@ -226,25 +226,25 @@
           "quality": 88,
           "files": {
             "640": {
-              "file": "terminator-near-640.webp",
-              "bytes": 27228,
+              "file": "dusk-near-640.webp",
+              "bytes": 27232,
               "height": 274
             },
             "1280": {
-              "file": "terminator-near-1280.webp",
-              "bytes": 60324,
+              "file": "dusk-near-1280.webp",
+              "bytes": 60366,
               "height": 549
             },
             "2560": {
-              "file": "terminator-near-2560.webp",
-              "bytes": 115912,
+              "file": "dusk-near-2560.webp",
+              "bytes": 115652,
               "height": 1097
             }
           }
         }
       }
     },
-    "nightside": {
+    "night": {
       "sunDirection": [
         0.1,
         0.35,
@@ -261,18 +261,18 @@
           "quality": 90,
           "files": {
             "640": {
-              "file": "nightside-far-640.webp",
-              "bytes": 6340,
+              "file": "night-far-640.webp",
+              "bytes": 6376,
               "height": 274
             },
             "1280": {
-              "file": "nightside-far-1280.webp",
-              "bytes": 20156,
+              "file": "night-far-1280.webp",
+              "bytes": 20742,
               "height": 549
             },
             "2560": {
-              "file": "nightside-far-2560.webp",
-              "bytes": 50534,
+              "file": "night-far-2560.webp",
+              "bytes": 50610,
               "height": 1097
             }
           }
@@ -281,18 +281,18 @@
           "quality": 88,
           "files": {
             "640": {
-              "file": "nightside-mid-640.webp",
-              "bytes": 8524,
+              "file": "night-mid-640.webp",
+              "bytes": 8532,
               "height": 274
             },
             "1280": {
-              "file": "nightside-mid-1280.webp",
-              "bytes": 17356,
+              "file": "night-mid-1280.webp",
+              "bytes": 17346,
               "height": 549
             },
             "2560": {
-              "file": "nightside-mid-2560.webp",
-              "bytes": 35474,
+              "file": "night-mid-2560.webp",
+              "bytes": 35388,
               "height": 1097
             }
           }
@@ -301,18 +301,18 @@
           "quality": 88,
           "files": {
             "640": {
-              "file": "nightside-near-640.webp",
-              "bytes": 23814,
+              "file": "night-near-640.webp",
+              "bytes": 23776,
               "height": 274
             },
             "1280": {
-              "file": "nightside-near-1280.webp",
-              "bytes": 52856,
+              "file": "night-near-1280.webp",
+              "bytes": 52878,
               "height": 549
             },
             "2560": {
-              "file": "nightside-near-2560.webp",
-              "bytes": 102470,
+              "file": "night-near-2560.webp",
+              "bytes": 102322,
               "height": 1097
             }
           }
@@ -337,17 +337,17 @@
           "files": {
             "640": {
               "file": "sunrise-far-640.webp",
-              "bytes": 6922,
+              "bytes": 6842,
               "height": 274
             },
             "1280": {
               "file": "sunrise-far-1280.webp",
-              "bytes": 18428,
+              "bytes": 18376,
               "height": 549
             },
             "2560": {
               "file": "sunrise-far-2560.webp",
-              "bytes": 49816,
+              "bytes": 48922,
               "height": 1097
             }
           }
@@ -357,17 +357,17 @@
           "files": {
             "640": {
               "file": "sunrise-mid-640.webp",
-              "bytes": 7946,
+              "bytes": 7932,
               "height": 274
             },
             "1280": {
               "file": "sunrise-mid-1280.webp",
-              "bytes": 14980,
+              "bytes": 15004,
               "height": 549
             },
             "2560": {
               "file": "sunrise-mid-2560.webp",
-              "bytes": 31832,
+              "bytes": 31522,
               "height": 1097
             }
           }
@@ -377,17 +377,17 @@
           "files": {
             "640": {
               "file": "sunrise-near-640.webp",
-              "bytes": 23140,
+              "bytes": 23142,
               "height": 274
             },
             "1280": {
               "file": "sunrise-near-1280.webp",
-              "bytes": 50250,
+              "bytes": 50174,
               "height": 549
             },
             "2560": {
               "file": "sunrise-near-2560.webp",
-              "bytes": 99976,
+              "bytes": 99968,
               "height": 1097
             }
           }
@@ -417,62 +417,62 @@
         640
       ],
       "files": {
-        "dayside": {
+        "day": {
           "640": {
-            "file": "dayside-shipDeparting-640.webp",
-            "bytes": 1010,
+            "file": "day-shipDeparting-640.webp",
+            "bytes": 1006,
             "width": 55,
             "height": 45
           },
           "1280": {
-            "file": "dayside-shipDeparting-1280.webp",
-            "bytes": 1828,
+            "file": "day-shipDeparting-1280.webp",
+            "bytes": 1824,
             "width": 109,
             "height": 90
           },
           "2560": {
-            "file": "dayside-shipDeparting-2560.webp",
-            "bytes": 2644,
+            "file": "day-shipDeparting-2560.webp",
+            "bytes": 2640,
             "width": 218,
             "height": 180
           }
         },
-        "terminator": {
+        "dusk": {
           "640": {
-            "file": "terminator-shipDeparting-640.webp",
-            "bytes": 1044,
+            "file": "dusk-shipDeparting-640.webp",
+            "bytes": 1042,
             "width": 55,
             "height": 45
           },
           "1280": {
-            "file": "terminator-shipDeparting-1280.webp",
-            "bytes": 2004,
+            "file": "dusk-shipDeparting-1280.webp",
+            "bytes": 2008,
             "width": 109,
             "height": 90
           },
           "2560": {
-            "file": "terminator-shipDeparting-2560.webp",
-            "bytes": 2818,
+            "file": "dusk-shipDeparting-2560.webp",
+            "bytes": 2808,
             "width": 218,
             "height": 180
           }
         },
-        "nightside": {
+        "night": {
           "640": {
-            "file": "nightside-shipDeparting-640.webp",
-            "bytes": 1072,
+            "file": "night-shipDeparting-640.webp",
+            "bytes": 1076,
             "width": 55,
             "height": 45
           },
           "1280": {
-            "file": "nightside-shipDeparting-1280.webp",
-            "bytes": 1926,
+            "file": "night-shipDeparting-1280.webp",
+            "bytes": 1928,
             "width": 109,
             "height": 90
           },
           "2560": {
-            "file": "nightside-shipDeparting-2560.webp",
-            "bytes": 2980,
+            "file": "night-shipDeparting-2560.webp",
+            "bytes": 2968,
             "width": 218,
             "height": 180
           }
@@ -480,19 +480,19 @@
         "sunrise": {
           "640": {
             "file": "sunrise-shipDeparting-640.webp",
-            "bytes": 1020,
+            "bytes": 1022,
             "width": 55,
             "height": 45
           },
           "1280": {
             "file": "sunrise-shipDeparting-1280.webp",
-            "bytes": 1812,
+            "bytes": 1804,
             "width": 109,
             "height": 90
           },
           "2560": {
             "file": "sunrise-shipDeparting-2560.webp",
-            "bytes": 2718,
+            "bytes": 2706,
             "width": 218,
             "height": 180
           }
@@ -523,19 +523,19 @@
       "files": {
         "640": {
           "file": "actor-debrisWarning-640.webp",
-          "bytes": 5334,
+          "bytes": 5332,
           "width": 253,
           "height": 99
         },
         "1280": {
           "file": "actor-debrisWarning-1280.webp",
-          "bytes": 14772,
+          "bytes": 14910,
           "width": 507,
           "height": 199
         },
         "2560": {
           "file": "actor-debrisWarning-2560.webp",
-          "bytes": 48930,
+          "bytes": 48878,
           "width": 1013,
           "height": 397
         }
@@ -556,7 +556,7 @@
         "h": 0.5259799453053783
       },
       "anchorNote": "normalized stage coordinates of the crop (x, y = top-left; w, h = size); place the image there at stage scale",
-      "note": "Aurora curtains standing on the limb (screen blend). Fade in during a solar storm; drift it slowly sideways. Strongest on nightside/terminator; on dayside keep opacity under 0.4.",
+      "note": "Aurora curtains standing on the limb (screen blend). Fade in during a solar storm; drift it slowly sideways. Strongest on night/dusk; on day keep opacity under 0.4.",
       "widths": [
         1280,
         640
@@ -564,13 +564,13 @@
       "files": {
         "640": {
           "file": "actor-aurora-640.webp",
-          "bytes": 21354,
+          "bytes": 21616,
           "width": 640,
           "height": 144
         },
         "1280": {
           "file": "actor-aurora-1280.webp",
-          "bytes": 63892,
+          "bytes": 64034,
           "width": 1280,
           "height": 289
         }
@@ -599,13 +599,13 @@
       "files": {
         "640": {
           "file": "actor-satGlint-640.webp",
-          "bytes": 1500,
+          "bytes": 1496,
           "width": 360,
           "height": 39
         },
         "1280": {
           "file": "actor-satGlint-1280.webp",
-          "bytes": 3942,
+          "bytes": 3958,
           "width": 720,
           "height": 78
         }
@@ -623,56 +623,56 @@
   },
   "bytes": {
     "byVariant": {
-      "dayside": 492850,
-      "terminator": 466682,
-      "nightside": 317524,
-      "sunrise": 303290
+      "day": 492358,
+      "dusk": 467434,
+      "night": 317970,
+      "sunrise": 301882
     },
-    "actors": 182600,
+    "actors": 183056,
     "depth": 8566,
-    "total": 1771512
+    "total": 1771266
   },
   "render": {
     "engine": "CYCLES",
     "samples": 160,
     "timings": {
-      "dayside": {
-        "far": 6.3,
-        "mid": 0.9,
-        "near": 1.6,
-        "depart": 0.6,
-        "post": 8,
-        "total": 24.5
-      },
-      "terminator": {
-        "far": 5.8,
-        "mid": 0.9,
-        "near": 1.7,
-        "depart": 0.6,
-        "post": 7.9,
-        "total": 22.2
-      },
-      "nightside": {
-        "far": 5.5,
+      "day": {
+        "far": 6.9,
         "mid": 0.9,
         "near": 1.7,
         "depart": 0.7,
-        "post": 8.3,
-        "total": 22.7
+        "post": 8.1,
+        "total": 25.4
+      },
+      "dusk": {
+        "far": 6.3,
+        "mid": 0.9,
+        "near": 1.8,
+        "depart": 0.7,
+        "post": 7.9,
+        "total": 23.5
+      },
+      "night": {
+        "far": 5.9,
+        "mid": 1,
+        "near": 1.9,
+        "depart": 0.7,
+        "post": 9.1,
+        "total": 24
       },
       "sunrise": {
-        "far": 5.3,
+        "far": 7.3,
         "mid": 0.9,
-        "near": 1.7,
-        "depart": 0.6,
-        "post": 8.5,
-        "total": 22.6
+        "near": 1.8,
+        "depart": 0.7,
+        "post": 9.1,
+        "total": 28.8
       },
       "actors": {
-        "debrisWarning": 0.6,
+        "debrisWarning": 0.7,
         "aurora": 0.6,
         "satGlint": 0.4,
-        "total": 6.7
+        "total": 6.9
       }
     }
   }

@@ -8,7 +8,7 @@ freighter in the middle distance, the Moon sits small above the limb.
     blender -b --python art/blender/hq-orbital-deck.py -- --variant all --actors --out <dir> --samples 160
 
 Options (after the `--`):
-    --variant  dayside | terminator | nightside | sunrise | all   (default: sunrise)
+    --variant  day | dusk | night | sunrise | all   (default: sunrise)
     --actors                                    also render the actor layers
     --out DIR                                   output directory (PNG + EXR + render-meta.json)
     --samples N                                 Cycles samples per render (default 128)
@@ -113,18 +113,24 @@ U = 0.001                                                 # one metre
 
 TEX_DIR = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'public', 'textures'))
 
-VARIANT_ORDER = ['dayside', 'terminator', 'nightside', 'sunrise']
+# VARIANT NAMES.  The Bridge picks which plate to show with
+# BridgeWindow.pickVariant, and that function only knows `sunrise`, `day`, `dusk` and `night`;
+# anything else falls through to `available[0]`.  Rounds 1-2 shipped this stage with descriptive
+# names, and the measured cost was that the world clock could only ever reach two of its four
+# plates (`dayside` 21 h a day, `sunrise` 3 h; the terminator and night plates never once
+# appeared).  The names below are the picker's, so all four are reachable.
+VARIANT_ORDER = ['day', 'dusk', 'night', 'sunrise']
 # sun direction = unit vector from the scene toward the sun in camera-world axes
 # (x right, y forward, z local up); exposure (AgX); station flood factor; bloom; aurora boost.
 # The surface normal at central angle a ahead of the nadir is (0, sin a, cos a), and the window sees
 # a = 4 deg (sill) to 20.2 deg (limb) — so a sun with a small +z and a negative y puts the day/night
-# line INSIDE the frame, which is the whole point of the `terminator` variant. A sun on the local
+# line INSIDE the frame, which is the whole point of the `dusk` variant. A sun on the local
 # horizon (z ~ 0) does the opposite: every normal in frame sits at the same grazing angle and the
 # plate reads as one flat brown disc.
 VARIANTS = {
-    'dayside':    dict(sun=(-0.45, -0.35, 0.82), exposure=-1.7, lights=0.0,  bloom=0.5, streak=0.0, look='None',        earthshine=0.0),
-    'terminator': dict(sun=(0.30, -0.55, 0.16),  exposure=-0.45, lights=0.6,  bloom=0.6, streak=0.0, look='None',        earthshine=0.02),
-    'nightside':  dict(sun=(0.10, 0.35, -0.93),  exposure=0.55, lights=1.0,  bloom=0.8, streak=0.0, look='AgX - Punchy', earthshine=0.03),
+    'day':        dict(sun=(-0.45, -0.35, 0.82), exposure=-1.7, lights=0.0,  bloom=0.5, streak=0.0, look='None',        earthshine=0.0),
+    'dusk':       dict(sun=(0.30, -0.55, 0.16),  exposure=-0.45, lights=0.6,  bloom=0.6, streak=0.0, look='None',        earthshine=0.02),
+    'night':      dict(sun=(0.10, 0.35, -0.93),  exposure=0.55, lights=1.0,  bloom=0.8, streak=0.0, look='AgX - Punchy', earthshine=0.03),
     'sunrise':    dict(sun=(0.23, 0.915, -0.335), exposure=-1.1, lights=0.8,  bloom=0.9, streak=0.55, look='None',       earthshine=0.03),
 }
 
@@ -1289,7 +1295,7 @@ def main():
         MATS.pop('sun_disc', None)
         build_far(V['sun'])
         build_lights(V['sun'], V)
-        world_space(stars=1.0 if v != 'dayside' else 0.5)
+        world_space(stars=1.0 if v != 'day' else 0.5)
         sc.view_settings.exposure = V['exposure']
         try:
             sc.view_settings.look = V.get('look', 'None')
@@ -1366,7 +1372,7 @@ def main():
             aur, bb = crop_to_alpha(dilate_edges(glow_alpha(aur, radius=r * 2, lo=0.005, hi=0.25), iterations=8), margin=24, thresh=0.01)
             write_png(os.path.join(out, 'actor-aurora.png'), aur)
             meta['actors']['aurora'] = {'blend': 'screen', 'anchor': anchor_dict(bb, W, H), 'below': 'mid', 'trigger': 'weather', 'order': 1, 'quality': 82, 'maxWidth': 1280,
-                                        'note': 'Aurora curtains standing on the limb (screen blend). Fade in during a solar storm; drift it slowly sideways. Strongest on nightside/terminator; on dayside keep opacity under 0.4.'}
+                                        'note': 'Aurora curtains standing on the limb (screen blend). Fade in during a solar storm; drift it slowly sideways. Strongest on night/dusk; on day keep opacity under 0.4.'}
             gl = np_load(os.path.join(out, 'actor-satGlint-raw.png'), 4)
             gl = bloom(gl, thresh=0.5, radius=r, gain=2.0)
             gl, bb = crop_to_alpha(dilate_edges(glow_alpha(gl, radius=r, lo=0.01, hi=0.3), iterations=6), margin=24, thresh=0.01)
