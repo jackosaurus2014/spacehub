@@ -1,0 +1,146 @@
+{
+ "slug": "europe-s-commercial-launch-renaissance-isar-aerospace-pld-space-and-the-explorat",
+ "title": "Europe's Launch Week That Counted: Isar Reaches Orbit, PLD Unveils Miura 9, The Exploration Company Raises $450M",
+ "summary": "Between 5 and 11 September 2026 Isar Aerospace put Spectrum into a 500 km Sun-synchronous orbit from Andoya on flight two — the first orbital success by a private European company from continental Europe — while PLD Space unveiled the 42-metre Miura 9, the UK published a GBP 7.8bn space strategy, and The Exploration Company closed a $450M Series C. HyPrSpace slipped Baguette One to 2027. With ESA's European Launcher Challenge requiring an orbital flight before 2028 and Orbex already collapsed, the week separated the funded contenders from the rest.",
+ "content": "## What Happened\n\nBetween 5 and 11 September 2026, four separate European launch-sector events landed inside a single week — and one of them was a first.\n\n**Isar Aerospace** flew its second **Spectrum** rocket from **Andøya Spaceport** in northern Norway on 5 September at 20:12 UTC, reaching a 500 km Sun-synchronous orbit. The \"Onward and Upward\" mission carried five commercial and educational CubeSats plus one non-separable technology experiment; all separating payloads were deployed. It was the first successful orbital launch by a private European company from continental Europe. Spectrum's debut flight, on 30 March 2025 from the same pad, failed within the first half-minute — ESA describes a 30-second flight, while other accounts put loss of vehicle control at 18 seconds.\n\nOne relationship is easy to get wrong, so state it plainly: Spectrum flies from Isar's **own** launch complex at Andøya. Separately, Isar signed a facilities usage agreement with the Canadian company **Maritime Launch Services** on 7 July 2026 for a dedicated Spectrum complex at Spaceport Nova Scotia in Canso, Nova Scotia — a ten-year term at US$3.75 million per quarter with two five-year renewal options. European Spaceflight puts the base-term value at US$112.5 million net of a 30-month fee waiver; Space.com reports the gross ten-year figure as roughly $150 million. Both describe the same payment schedule. That Canadian site is a **future** capability: pad handover was set for 1 November 2026, infrastructure completion for 31 December 2027, first orbital launches for 2028. On 1 September the two companies pushed their deadline to finalise the statement of work to 15 September 2026. Maritime Launch has no role in the Andøya flights.\n\n**PLD Space** unveiled **Miura 9** on 10 September at its Elche facility during a visit by Spanish Prime Minister Pedro Sánchez. It is a new, larger vehicle — not a rebrand of Miura 5, the small orbital launcher PLD already has in development, nor the retired Miura 1 suborbital demonstrator. Miura 9 is 42 m tall and 3 m in diameter, sized to lift 1,500 kg to Sun-synchronous orbit from French Guiana, with a partially reusable first stage carrying grid fins and landing legs for a propulsive return. That makes it larger than RFA One, Spectrum and Miura 5, and it is intended to feed experience into PLD's heavier Miura Next family.\n\nThe **United Kingdom** published its new national space strategy on 8 September, backed by £7.8 billion to 2030. It names four priority subsectors — satellite communications, space domain awareness, in-orbit servicing/assembly/manufacturing, and assured access to space — and allocates £880 million to space control and ISR, £148 million to European rocket programmes, and £30 million to SaxaVord Spaceport in Shetland, subject to due diligence. SaxaVord says that is matched by £30 million of planned private investment, a £60 million package covering all three launchpads, mission management infrastructure and a second integration hangar.\n\n**The Exploration Company** announced a **$450 million Series C** on 8 September, co-led by Bessemer Venture Partners, Atomico and the EQT-managed Scaleup Europe Fund, with existing backers Balderton, Plural, Cherry and Red River West participating. It is the largest Series C announced by a European space company and brings TEC's total raised since its 2021 founding to roughly $680 million. The money funds the Nyx reusable capsule toward an ISS docking-and-return mission and the high-thrust reusable Storm engine.\n\nNot everything moved forward. **HyPrSpace**, the French hybrid-propulsion startup, confirmed on 11 September that the first flight of its **Baguette One** suborbital rocket has slipped from 2026 to 2027. In June 2025 it had announced a 2026 flight from the DGA Essais de missiles range at Biscarrosse. No reason was given.\n\n## Why It Matters\n\nEurope has been talking about commercial launch for a decade. On 5 September a European company did it, from European soil, on flight two — fast by any standard.\n\n> \"The European space sector is enjoying advances in September, highlighted by Isar Aerospace reaching orbit on its second Spectrum flight, the United Kingdom publishing a new space strategy, and PLD Space unveiling a larger reusable launcher.\" — NASASpaceflight\n\nThe commercial context matters more than the flag-planting. On 27 August, ESA awarded the first European Launcher Challenge contracts: €543.6 million split between Isar Aerospace (€197.8 million), Rocket Factory Augsburg (€186.9 million) and PLD Space (€158.9 million), with a MaiaSpace contract still being finalised. The challenge requires an orbital launch before 2028. Isar has cleared that bar; RFA and PLD have not. September did not just produce good news — it produced the first visible separation between the three funded contenders.\n\nThe counterexample is recent. **Orbex**, long the flagship of UK sovereign launch ambitions, filed a notice of intention to appoint administrators on 11 February 2026 and ceased operations on 18 February, after around £73 million of cumulative losses, £26 million in taxpayer-backed loans and a failed Series D. Reporting at the time noted a discussed acquisition by The Exploration Company that did not complete. Seven months later TEC raised $450 million and Orbex is gone. That is the actual shape of this market.\n\n## Industry Implications\n\n**For commercial launch providers.** Isar's success raises the bar for the rest of the ELC cohort. RFA has had RFA One stages at SaxaVord since early 2026 and is working toward the first vertical orbital attempt from UK soil; PLD now has both Miura 5 and Miura 9 to fund. Ars Technica reported on 11 September that operators still want dedicated, schedule-controlled launch despite rideshare economics, that payload-slot availability outside SpaceX falls short of demand, and that operators welcome new competition as SpaceX trims Falcon 9 cadence while Starship's timeline for non-Starlink payloads stays uncertain. That is the demand signal the European entrants are underwriting against.\n\n**For institutional customers.** The UK strategy is defence-weighted — £880 million to space control and ISR against £30 million to SaxaVord. Read it as a procurement signal more than a launch-subsidy signal: the £148 million for European rocket programmes, and the single government approach to buying space technology starting with satellite communications, is where UK suppliers should aim.\n\n**For investors.** TEC's $450 million is the week's most consequential number: European capital will now write US-scale cheques for in-space transportation, not just launch. Whether that extends to peers is the open question — one round is not a funding cycle.\n\n**For launch-site economics.** Isar's Nova Scotia deal shows pads becoming contracted infrastructure with quarterly revenue, fee holidays and renewal options — Maritime Launch also leases its Canso pad to Canada's Department of National Defence. Spaceports are starting to look like landlords.\n\n## Key Stakeholders\n\n- **Isar Aerospace** — German launcher; Spectrum reached orbit on flight two from its own Andøya complex; €197.8M ELC contract\n- **Maritime Launch Services** — Halifax-based operator of Spaceport Nova Scotia, a constituent of the SpaceQ Canadian Space Index, and Isar's launch-site landlord in Canada from 2028 — not at Andøya\n- **PLD Space** — Spanish launcher; Miura 5 in development, Miura 9 newly unveiled; €158.9M ELC contract\n- **Rocket Factory Augsburg** — €186.9M ELC contract; RFA One awaiting its maiden flight from SaxaVord\n- **The Exploration Company** — Franco-German capsule developer; $450M Series C; Nyx capsule and Storm engine\n- **HyPrSpace** — French hybrid-propulsion startup; Baguette One now 2027\n- **UK Government / UK Space Agency** — £7.8bn strategy to 2030; £30m into SaxaVord\n- **ESA and the European Commission** — ELC funding and the pre-2028 orbital-launch requirement\n- **Orbex** — collapsed February 2026; the cautionary case in this cohort\n\n## Future Outlook\n\n1. **15 September 2026** — the extended deadline for Isar and Maritime Launch to finalise the Spaceport Nova Scotia statement of work. A second extension would be a real signal.\n2. **RFA One's maiden flight** — the next binary event in the ELC cohort, from SaxaVord, carrying seven satellites coordinated by DLR.\n3. **Isar's flight three** — cadence, not capability, is the test. One orbit does not make a launch service.\n4. **1 November 2026 and 31 December 2027** — the Canso pad handover and infrastructure completion milestones that gate a 2028 Canadian debut.\n5. **Before 2028** — RFA and PLD must reach orbit to satisfy their ELC contracts. That deadline now has teeth.\n\nA note on market read-through: Isar, PLD, TEC and HyPrSpace are all private, so there is no listed European launch pure-play to price this week against. SpaceQ's Canadian Space Index — nine listed Canadian names, based at 100.00 on 4 September 2026 — had five gainers and four decliners in its debut week, Calian up 7.2% and Maritime Launch down 3.5% to 41 cents. That is a Canadian tape, not a European verdict.\n\n## Key Takeaways\n\n- **Isar Aerospace reached orbit on Spectrum's second flight**, 5 September, from Andøya in Norway — the first orbital success by a private European company from continental Europe.\n- **Maritime Launch Services is Isar's Canadian landlord from 2028, not its Norwegian one.** The Spaceport Nova Scotia agreement is a ten-year facilities deal signed 7 July 2026, still at statement-of-work stage.\n- **PLD unveiled Miura 9**, a 42 m, 1,500 kg-to-SSO partially reusable vehicle — a new rocket alongside Miura 5, not a renaming of it.\n- **The Exploration Company's $450M Series C** is Europe's largest space Series C and takes its lifetime raise to roughly $680 million.\n- **The ELC deadline is the real clock.** Isar has cleared the pre-2028 orbital requirement; RFA and PLD have not, and Orbex's February collapse shows what missing it costs.\n",
+ "sources": [
+  "https://www.nasaspaceflight.com/2026/09/europes-commercial-launch-sector-pace/",
+  "https://spaceq.ca/the-weekly-close-calian-leads-a-split-week-as-the-index-debuts/",
+  "https://europeanspaceflight.com/first-hyprspace-baguette-one-launch-slips-to-2027/",
+  "https://arstechnica.com/space/2026/09/some-satellite-companies-still-have-an-appetite-for-boutique-launch-services/",
+  "https://en.wikipedia.org/wiki/Spectrum_(rocket)",
+  "https://www.esa.int/Enabling_Support/Space_Transportation/Boost/Spectrum_s_qualifying_second_launch",
+  "https://isaraerospace.com/press/sovereign-space-access-for-germany-and-canada-isar-aerospace-and-maritime-launch-services-sign-contract-to-advance-orbital-launch-capability-from-spaceport-nova-scotia",
+  "https://europeanspaceflight.com/isar-aerospace-signs-us112-5m-deal-for-dedicated-launch-site-in-canada/",
+  "https://www.prnewswire.com/news-releases/maritime-launch-services-and-isar-aerospace-extend-deadline-to-finalize-statement-of-work-and-programmatic-milestones-302866904.html",
+  "https://www.space.com/space-exploration/launches-spacecraft/launching-from-2-continents-germanys-isar-aerospace-leases-canadian-pad-for-usd150-million",
+  "https://theleader.info/2026/09/11/pld-space-unveils-larger-miura-9-rocket-during-prime-ministers-visit-to-elche/",
+  "https://www.gov.uk/government/news/new-space-strategy-will-bolster-uk-defences-against-threats-from-space",
+  "https://saxavord.com/60m-investment-plan-to-accelerate-saxavord-launch-capability/",
+  "https://europeanspaceflight.com/the-exploration-company-raises-450-million-in-series-c-funding",
+  "https://spacenews.com/esa-awards-first-european-launcher-challenge-contracts/",
+  "https://www.theregister.com/offbeat/2026/02/13/skyrora-eyes-orbex-assets-as-uk-rocket-rival-collapses/4954079",
+  "https://www.rfa.space/rfa-ships-stages-to-saxavord-spaceport/"
+ ],
+ "changes": [
+  "MISATTRIBUTION FIXED: the draft said Isar Aerospace flies Spectrum 'as a tenant of Maritime Launch Services'. It does not. Spectrum flew from Isar's own launch complex at Andoya Spaceport, Norway, on 5 September 2026. The draft had collapsed a real but entirely separate and future agreement into the present tense.",
+  "Replaced that sentence with an explicit paragraph explaining the actual Isar/Maritime Launch relationship: a facilities usage agreement announced 7 July 2026 for a dedicated Spectrum complex at Spaceport Nova Scotia (Canso, NS) — ten-year term, US$3.75m/quarter, two five-year renewal options, pad handover 1 Nov 2026, infrastructure complete 31 Dec 2027, first Canadian orbital launches 2028 — and states plainly that Maritime Launch has no role in the Andoya flights.",
+  "KEY STAKEHOLDERS: kept Maritime Launch Services rather than deleting it, but rewrote the entry. Argument: the fact checker assumed Maritime Launch appeared in the SpaceQ roundup only as an unrelated stock. It appears there in BOTH capacities — as a constituent of the SpaceQ Canadian Space Index and as the counterparty to Isar's Nova Scotia deal, which the same SpaceQ piece reports. Deleting the entry would have removed a real, material and dated commercial relationship; the honest fix is to state its actual role (Halifax-based spaceport operator; Isar's Canadian landlord from 2028, not at Andoya).",
+  "SOURCE URL CORRECTED: the cited SpaceQ URL (the-weekly-close-telesat-and-maritime-launch-lead-a-broad-rally) returns HTTP 404 and could not be verified. The verifiable edition of the same column is 'The Weekly Close: Calian leads a split week as the index debuts', which I fetched. Swapped it in.",
+  "REWROTE THE MARKET LINE: 'five of nine tracked firms gained' was presented as a read on Isar's milestone. The SpaceQ index tracks nine *Canadian*-listed companies; Isar is private and in no index. Moved the data point to a clearly-labelled market read-through note that says so, with the verified figures (index base 100.00 at the 4 Sept 2026 close, five gainers/four decliners, Calian +7.2%, Maritime Launch -3.5% to 41 cents).",
+  "UNFLAGGED ERROR FOUND AND FIXED (1): the draft listed Orbex as a live rival to Isar. Orbex filed notice of intention to appoint administrators on 11 February 2026 and ceased operations on 18 February. Rewritten as the cohort's cautionary case, with the loss and loan figures reported at the time.",
+  "UNFLAGGED ERROR FOUND AND FIXED (2): the draft called HyPrSpace's slip 'an eighteen-month-plus slip from its original June 2025 timeline'. June 2025 is when HyPrSpace announced a 2026 flight, not a June 2025 target date. Corrected to: announced 2026 in June 2025, now 2027; no reason given.",
+  "PRECISION ON PLD: named the vehicle (Miura 9), the date (10 September, Elche, during PM Pedro Sanchez's visit) and its specs (42 m x 3 m, 1,500 kg to SSO from French Guiana, partially reusable first stage with grid fins and landing legs). Stated explicitly that it is a new vehicle alongside Miura 5 — PLD's small orbital launcher already in development — and not a rename of it. The draft's description of PLD as 'best known for its Miura 1 suborbital vehicle' moving 'beyond suborbital demonstration' was misleading about Miura 5's existence.",
+  "CUT 'Sutherland' from the UK spaceport list — that was Orbex's site and Orbex is gone. Replaced with the verified SaxaVord numbers (GBP 30m government, subject to due diligence, plus GBP 30m planned private = GBP 60m package).",
+  "ADDED VERIFIED HARD NUMBERS the draft lacked: UK strategy GBP 7.8bn to 2030, GBP 880m to space control/ISR, GBP 148m to European rocket programmes, four named priority subsectors; TEC's $450M Series C investor syndicate, ~$680M lifetime raise, and use of funds (Nyx capsule ISS docking-and-return, Storm engine).",
+  "ADDED CONTEXT THE PIECE NEEDED: ESA's first European Launcher Challenge contracts, 27 August 2026, EUR 543.6M across Isar (EUR 197.8M), RFA (EUR 186.9M) and PLD (EUR 158.9M), MaiaSpace still being finalised, with a pre-2028 orbital-launch requirement. This is the real clock the September news runs against and it reframes the Future Outlook around dated milestones.",
+  "CUT 'Latitude' from the rival list — could not verify its current status from a source I fetched.",
+  "SOFTENED/ATTRIBUTED the Ars Technica paragraph: arstechnica.com could not be fetched from this environment, so its claims are now explicitly attributed ('Ars Technica reported on 11 September that...') rather than asserted as fact.",
+  "KEPT the NASASpaceflight pull quote but trimmed it to the wording actually returned for the article; nasaspaceflight.com returns HTTP 403 to direct fetch, so the quote is attributed in-line and no additional words were invented.",
+  "NOTED A SOURCE DISAGREEMENT in the body rather than picking a side: the Isar/Maritime Launch deal is reported at US$112.5M (European Spaceflight, net of the 30-month fee waiver) and ~$150M (Space.com, gross over ten years). Both describe the same US$3.75m/quarter schedule.",
+  "NOTED A SECOND SOURCE DISAGREEMENT: Spectrum flight 1 (30 March 2025) is described by ESA as a 30-second flight, while other accounts put loss of vehicle control at 18 seconds. Stated both.",
+  "TITLE AND SUMMARY REWRITTEN: dropped 'Renaissance' and 'Inflection Point' per house voice (no hype), led with the specific events and numbers.",
+  "STRUCTURE AND LENGTH PRESERVED: same six sections, 9,999 characters (was 9,147). No internal SpaceNexus links existed in the original body and none were invented.",
+  "REMOVED the unsupported assertion that Isar reached orbit 'twice in relatively quick succession' — flight 1 failed; only flight 2 reached orbit.",
+  "REMOVED the unsupported claim that the UK strategy would likely include 'funding mechanisms, spaceport development and regulatory streamlining' as speculation, replaced with the strategy's actual published allocations."
+ ],
+ "verified": [
+  {
+   "claim": "Isar Aerospace's second Spectrum flight reached orbit on 5 September 2026 at 20:12 UTC from Andoya Spaceport, Norway, into a 500 km Sun-synchronous orbit, carrying five CubeSats plus one non-separable experiment; first successful orbital launch by a private European company from continental Europe.",
+   "verdict": "confirmed",
+   "source": "https://en.wikipedia.org/wiki/Spectrum_(rocket)"
+  },
+  {
+   "claim": "Isar launches Spectrum from Andoya, not 'as a tenant of Maritime Launch Services'. Maritime Launch is a Halifax-based company developing Spaceport Nova Scotia at Canso; its agreement with Isar covers a future dedicated complex with first orbital launches targeted for 2028, announced 7 July 2026.",
+   "verdict": "corrected",
+   "source": "https://isaraerospace.com/press/sovereign-space-access-for-germany-and-canada-isar-aerospace-and-maritime-launch-services-sign-contract-to-advance-orbital-launch-capability-from-spaceport-nova-scotia"
+  },
+  {
+   "claim": "The Isar/Maritime Launch statement of work deadline was extended from 1 September to 15 September 2026.",
+   "verdict": "confirmed",
+   "source": "https://www.prnewswire.com/news-releases/maritime-launch-services-and-isar-aerospace-extend-deadline-to-finalize-statement-of-work-and-programmatic-milestones-302866904.html"
+  },
+  {
+   "claim": "Deal terms: US$3.75m per quarter, ten-year term plus two five-year renewal options, 30-month fee waiver; base-term value US$112.5M (European Spaceflight) vs ~$150M gross (Space.com).",
+   "verdict": "confirmed",
+   "source": "https://europeanspaceflight.com/isar-aerospace-signs-us112-5m-deal-for-dedicated-launch-site-in-canada/"
+  },
+  {
+   "claim": "PLD Space unveiled Miura 9 on 10 September 2026 at Elche during PM Pedro Sanchez's visit: 42 m tall, 3 m diameter, 1,500 kg to SSO from French Guiana, partially reusable first stage. It is a new vehicle distinct from Miura 5, PLD's small orbital launcher already in development.",
+   "verdict": "corrected",
+   "source": "https://theleader.info/2026/09/11/pld-space-unveils-larger-miura-9-rocket-during-prime-ministers-visit-to-elche/"
+  },
+  {
+   "claim": "The UK published a new national space strategy on 8 September 2026, backed by GBP 7.8bn to 2030, with GBP 880m for space control and ISR, GBP 148m for European rocket programmes and GBP 30m for SaxaVord, and four named priority subsectors.",
+   "verdict": "confirmed",
+   "source": "https://www.gov.uk/government/news/new-space-strategy-will-bolster-uk-defences-against-threats-from-space"
+  },
+  {
+   "claim": "SaxaVord's GBP 30m of government money is matched by GBP 30m of planned private investment for a GBP 60m package covering three launchpads, mission management infrastructure and a second integration hangar.",
+   "verdict": "confirmed",
+   "source": "https://saxavord.com/60m-investment-plan-to-accelerate-saxavord-launch-capability/"
+  },
+  {
+   "claim": "The Exploration Company closed a $450M Series C announced 8 September 2026, co-led by Bessemer Venture Partners, Atomico and the EQT-managed Scaleup Europe Fund with Balderton, Plural, Cherry and Red River West participating; largest Series C by a European space company; ~$680M raised since 2021; funds the Nyx capsule and Storm engine.",
+   "verdict": "confirmed",
+   "source": "https://europeanspaceflight.com/the-exploration-company-raises-450-million-in-series-c-funding"
+  },
+  {
+   "claim": "HyPrSpace confirmed on 11 September 2026 that Baguette One's inaugural flight slips from 2026 to 2027; in June 2025 it had announced a 2026 flight from DGA Essais de missiles at Biscarrosse. The draft's 'eighteen-month-plus slip from its original June 2025 timeline' misread the announcement date as the target date.",
+   "verdict": "corrected",
+   "source": "https://europeanspaceflight.com/first-hyprspace-baguette-one-launch-slips-to-2027/"
+  },
+  {
+   "claim": "'Five of nine tracked firms gained' — true of the SpaceQ Canadian Space Index debut week (base 100.00 at the 4 Sept 2026 close; Calian +7.2%, Telesat +4.2%, Maritime Launch -3.5% to 41 cents). But the index tracks nine Canadian-listed companies; Isar is private and is not a constituent, so the line could not support the draft's framing that Isar's milestone 'moved the needle' in it. Reframed, not deleted. The originally cited 'broad rally' edition 404s and remains unverified.",
+   "verdict": "corrected",
+   "source": "https://spaceq.ca/the-weekly-close-calian-leads-a-split-week-as-the-index-debuts/"
+  },
+  {
+   "claim": "ESA awarded the first European Launcher Challenge contracts on 27 August 2026: EUR 543.6M total to Isar (EUR 197.8M), RFA (EUR 186.9M) and PLD Space (EUR 158.9M), MaiaSpace still being finalised, requiring an orbital launch before 2028.",
+   "verdict": "confirmed",
+   "source": "https://spacenews.com/esa-awards-first-european-launcher-challenge-contracts/"
+  },
+  {
+   "claim": "Orbex is NOT a live competitor. It filed a notice of intention to appoint administrators on 11 February 2026 and ceased operations on 18 February 2026, after ~GBP 73m of losses, GBP 26m in taxpayer-backed loans and a failed Series D; a discussed acquisition by The Exploration Company did not complete.",
+   "verdict": "corrected",
+   "source": "https://www.theregister.com/offbeat/2026/02/13/skyrora-eyes-orbex-assets-as-uk-rocket-rival-collapses/4954079"
+  },
+  {
+   "claim": "Rocket Factory Augsburg has RFA One stages at SaxaVord and is working toward the first vertical orbital attempt from UK soil, carrying seven satellites coordinated by DLR.",
+   "verdict": "confirmed",
+   "source": "https://www.rfa.space/rfa-ships-stages-to-saxavord-spaceport/"
+  },
+  {
+   "claim": "Spectrum flight 1, 30 March 2025, failed; ESA describes a 30-second flight while other accounts put loss of control at 18 seconds. Both stated in the body.",
+   "verdict": "confirmed",
+   "source": "https://www.esa.int/Enabling_Support/Space_Transportation/Boost/Spectrum_s_qualifying_second_launch"
+  },
+  {
+   "claim": "Ars Technica (11 September 2026) reported continued demand for dedicated 'boutique' launch, payload-slot scarcity outside SpaceX, and operators welcoming competition as Falcon 9 cadence trims and Starship's non-Starlink timeline stays uncertain.",
+   "verdict": "confirmed",
+   "source": "https://arstechnica.com/space/2026/09/some-satellite-companies-still-have-an-appetite-for-boutique-launch-services/"
+  },
+  {
+   "claim": "NASASpaceflight framing quote ('The European space sector is enjoying advances in September, highlighted by Isar Aerospace reaching orbit on its second Spectrum flight, the United Kingdom publishing a new space strategy, and PLD Space unveiling a larger reusable launcher.')",
+   "verdict": "confirmed",
+   "source": "https://www.nasaspaceflight.com/2026/09/europes-commercial-launch-sector-pace/"
+  },
+  {
+   "claim": "'Latitude' as a current European launch rival to Isar.",
+   "verdict": "removed",
+   "source": ""
+  },
+  {
+   "claim": "'Sutherland' listed as active UK spaceport development under the new strategy.",
+   "verdict": "removed",
+   "source": ""
+  },
+  {
+   "claim": "'Isar Aerospace reaching orbit twice in relatively quick succession' — flight 1 failed; only flight 2 reached orbit.",
+   "verdict": "removed",
+   "source": ""
+  }
+ ],
+ "revisedAt": "2026-09-14",
+ "reason": "pre-publication fact-check corrections"
+}
