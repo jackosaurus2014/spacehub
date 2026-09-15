@@ -221,8 +221,14 @@ describe('SpaceNexus Research capability gates', () => {
 
   it('the /research page has no hand-written feature list to drift out of sync', () => {
     const src = fs.readFileSync(path.join(process.cwd(), 'src/app/research/page.tsx'), 'utf-8');
-    // Bullets are rendered from the registry, not typed into JSX.
-    expect(src).toContain('RESEARCH_CAPABILITIES.map');
+    // Bullets are rendered from the registry, not typed into JSX. The page
+    // composes RESEARCH_CAPABILITIES with researchCallCapability(), which
+    // returns a row only while a briefing call is actually scheduled — so the
+    // list is still derived, and the one data-dependent claim appears exactly
+    // when the product does. See src/lib/research-call.ts.
+    expect(src).toContain('RESEARCH_CAPABILITIES');
+    expect(src).toContain('researchCallCapability');
+    expect(src).toMatch(/\{capabilities\.map\(/);
     // And the price shown is the one the integrity check verifies against Stripe.
     expect(src).toContain('availability.plan.priceYearly');
   });

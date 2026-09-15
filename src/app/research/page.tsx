@@ -5,6 +5,8 @@ import { SITE_STATS } from '@/lib/site-stats';
 import { RESEARCH_CAPABILITIES, RESEARCH_PLAN, getResearchAvailability } from '@/lib/research';
 import { RESEARCH_DATASETS, RESEARCH_DATASET_IDS } from '@/lib/research-export';
 import { EXPOSURE_COVERAGE_NOTE } from '@/lib/research-exposure';
+import { getScheduledCall, researchCallCapability, formatCallTime } from '@/lib/research-call';
+import { RESEARCH_RELEASES, latestPeriod, periodLabel } from '@/lib/research-releases';
 import ResearchCheckoutButton from './ResearchCheckoutButton';
 
 // The availability flag is read from the environment at request time, and the
@@ -50,6 +52,15 @@ const AUDIENCES = [
 export default async function ResearchPage() {
   const availability = getResearchAvailability();
 
+  // The briefing-call bullet exists only while a call is actually scheduled.
+  // See the note above RESEARCH_REJECTED_CAPABILITIES in src/lib/research.ts:
+  // the claim appears exactly when the product does.
+  const scheduledCall = await getScheduledCall();
+  const callCapability = researchCallCapability(scheduledCall);
+  const capabilities = callCapability
+    ? [...RESEARCH_CAPABILITIES, callCapability]
+    : RESEARCH_CAPABILITIES;
+
   // Building it is not launching it. With RESEARCH_TIER_ENABLED off there is no
   // product to describe, so this page does not exist for the public — a
   // redirect rather than notFound(), because notFound() from a matched route
@@ -92,7 +103,7 @@ export default async function ResearchPage() {
             What is in it
           </h2>
           <ul className="grid gap-4 sm:grid-cols-2">
-            {RESEARCH_CAPABILITIES.map((cap) => (
+            {capabilities.map((cap) => (
               <li
                 key={cap.id}
                 className="rounded-xl border border-slate-800 bg-slate-900/60 p-5"
@@ -102,6 +113,82 @@ export default async function ResearchPage() {
               </li>
             ))}
           </ul>
+        </section>
+
+        {/* Recurring releases — the named franchises */}
+        <section aria-labelledby="releases" className="mb-14">
+          <h2 id="releases" className="text-2xl font-bold text-white mb-2">
+            What arrives, and when
+          </h2>
+          <p className="text-sm text-slate-400 mb-5 max-w-3xl">
+            Named releases on a fixed calendar, each one computed from our own rows rather than written.
+            The summary and the methodology are public so the release is citable; the full row set and the
+            export are part of a seat.
+          </p>
+          <div className="overflow-x-auto rounded-xl border border-slate-800">
+            <table className="w-full text-sm">
+              <caption className="sr-only">SpaceNexus recurring releases and their cadence</caption>
+              <thead className="bg-slate-900">
+                <tr>
+                  <th scope="col" className="text-left text-slate-200 font-semibold px-4 py-3">
+                    Release
+                  </th>
+                  <th scope="col" className="text-left text-slate-200 font-semibold px-4 py-3 whitespace-nowrap">
+                    Cadence
+                  </th>
+                  <th scope="col" className="text-left text-slate-200 font-semibold px-4 py-3 whitespace-nowrap">
+                    Latest edition
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {RESEARCH_RELEASES.map((r) => {
+                  const period = latestPeriod(r);
+                  return (
+                    <tr key={r.id} className="border-t border-slate-800 align-top">
+                      <th scope="row" className="text-left px-4 py-3 font-medium">
+                        <Link href={r.href(period)} className="text-white hover:text-cyan-300">
+                          {r.title}
+                        </Link>
+                        <span className="block text-slate-400 font-normal mt-1 leading-relaxed">
+                          {r.summary}
+                        </span>
+                      </th>
+                      <td className="text-slate-300 px-4 py-3 capitalize whitespace-nowrap">{r.cadence}</td>
+                      <td className="text-slate-300 px-4 py-3 whitespace-nowrap">
+                        {periodLabel(r.cadence, period)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-4 text-sm text-slate-400">
+            Every edition and its archive lives on{' '}
+            <Link href="/releases" className="text-cyan-400 underline hover:text-cyan-300">
+              the release calendar
+            </Link>
+            , where a release that has missed its date is shown as overdue rather than quietly skipped.
+          </p>
+          {scheduledCall?.scheduledAt ? (
+            <p className="mt-3 text-sm text-slate-400">
+              The next live briefing call is {formatCallTime(scheduledCall.scheduledAt)} &mdash;{' '}
+              <Link href="/research/call" className="text-cyan-400 underline hover:text-cyan-300">
+                register and get the calendar invite
+              </Link>
+              .
+            </p>
+          ) : (
+            <p className="mt-3 text-sm text-slate-400">
+              A live briefing call for seat holders is built and waiting on a date. Nothing on this page
+              promises one until it is scheduled &mdash; you can see the state of it on{' '}
+              <Link href="/research/call" className="text-cyan-400 underline hover:text-cyan-300">
+                the call page
+              </Link>
+              .
+            </p>
+          )}
         </section>
 
         {/* Who it is for */}

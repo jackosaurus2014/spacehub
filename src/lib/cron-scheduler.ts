@@ -118,6 +118,11 @@ const CRON_JOBS: CronJobDef[] = [
   // the regulatory-feeds refresh so the day's new documents are in the pool.
   { schedule: '45 12 * * *',   path: '/api/cron/radar-explainers',          label: 'radar-explainers',           maxStaleMinutes: 1560 },
   { schedule: '0 14 * * *',    path: '/api/refresh?type=sec-filings',       label: 'sec-filings',                maxStaleMinutes: 1560 },
+  // SEC EDGAR Form D + filer-record slice. Resumable by CompanyProfile.slug
+  // (cursor in DataSourceRun), 40 companies a night, so the roster comes
+  // round about weekly and a new private placement lands within a lap.
+  // Watched by `funding-feeds-alive` in content-accuracy.ts.
+  { schedule: '20 4 * * *',    path: '/api/cron/funding-sync',              label: 'funding-sync',               maxStaleMinutes: 2880 },
   // Three years of annual revenue for public CompanyProfile rows, pulled
   // from SEC EDGAR 10-K XBRL companyfacts (SYNTHESIS.md item 35). Roughly
   // quarterly — 10-Ks trickle in year-round but nothing in this dataset
@@ -200,6 +205,19 @@ const CRON_JOBS: CronJobDef[] = [
   // src/lib/mothballed-routes.ts). Restore this row when forums relist.
   // { schedule: '0 9 * * 0',    path: '/api/newsletter/forum-digest',              label: 'forum-digest-email',         maxStaleMinutes: 11520 },
   // State of the Space Economy — weekly data brief, Mondays 1pm UTC (no AI, pure DB aggregation)
+  // Chart of the Week (2026-09-14) — pins one chart a week into
+  // ChartWeeklyEdition with a caption computed from the series. Wednesdays
+  // 15:30 UTC: a habit needs the same day every week, and this one is clear of
+  // the Mon/Thu digest. Idempotent and IMMUTABLE — a week already on the shelf
+  // is never redrawn, so a catch-up run cannot rewrite last week's permalink.
+  // maxStaleMinutes spans Wed -> Wed (10080) plus a 6h grace.
+  { schedule: '30 15 * * 3',  path: '/api/cron/chart-of-the-week',               label: 'chart-of-the-week',          maxStaleMinutes: 10440 },
+  // Recurring release calendar (2026-09-14) — publishes whatever edition of
+  // each named franchise is due (src/lib/research-releases.ts) and emails the
+  // alert inbox listing anything still overdue. DAILY on purpose: a job that
+  // fires once a quarter is a job nobody notices has stopped working, so this
+  // one wakes every morning and the watchdog below keeps it honest.
+  { schedule: '10 5 * * *',   path: '/api/cron/research-releases',               label: 'research-releases',          maxStaleMinutes: 1560 },
   { schedule: '0 13 * * 1',   path: '/api/cron/weekly-economy-post',             label: 'weekly-economy-post',        maxStaleMinutes: 11520 },
   // Regulatory Radar — weekly regulatory brief, Mondays 14:30 UTC (no AI, pure DB aggregation over RegulatoryAction)
   { schedule: '30 14 * * 1',  path: '/api/cron/weekly-regulatory-post',          label: 'weekly-regulatory-post',     maxStaleMinutes: 11520 },

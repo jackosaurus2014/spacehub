@@ -172,3 +172,73 @@ export async function sendResearchScreenAlert(opts: {
     text
   );
 }
+
+/**
+ * A recurring release did not land.
+ *
+ * Goes to the ALERT inbox, not the correspondence one: a missed release is a
+ * broken thing, and the whole point of the publication ledger is that nobody
+ * finds out from a reader. One email per run, listing every overdue franchise,
+ * so a week where three of them break does not send three separate pages.
+ */
+export async function sendReleaseOverdueAlert(opts: {
+  to: string;
+  overdue: {
+    title: string;
+    periodLabel: string;
+    dueAt: string;
+    daysLate: number;
+    href: string;
+    reason?: string;
+  }[];
+}): Promise<boolean> {
+  if (opts.overdue.length === 0) return false;
+
+  const rows = opts.overdue
+    .map(
+      (o) =>
+        `<tr>
+           <td style="padding:8px 10px;border-bottom:1px solid #1e293b">${esc(o.title)}</td>
+           <td style="padding:8px 10px;border-bottom:1px solid #1e293b">${esc(o.periodLabel)}</td>
+           <td style="padding:8px 10px;border-bottom:1px solid #1e293b">${esc(o.dueAt)}</td>
+           <td style="padding:8px 10px;border-bottom:1px solid #1e293b">${o.daysLate} day${o.daysLate === 1 ? '' : 's'}</td>
+           <td style="padding:8px 10px;border-bottom:1px solid #1e293b">${esc(o.reason ?? 'Not computed')}</td>
+         </tr>`
+    )
+    .join('');
+
+  const html = shell(
+    'A recurring release is overdue',
+    `<p>${opts.overdue.length} recurring release${
+      opts.overdue.length === 1 ? ' is' : 's are'
+    } past due. Each one has a fixed calendar and a reader who expects it.</p>
+     <table style="width:100%;border-collapse:collapse;font-size:14px">
+       <thead><tr>
+         <th align="left" style="padding:8px 10px;border-bottom:1px solid #334155">Release</th>
+         <th align="left" style="padding:8px 10px;border-bottom:1px solid #334155">Edition</th>
+         <th align="left" style="padding:8px 10px;border-bottom:1px solid #334155">Due</th>
+         <th align="left" style="padding:8px 10px;border-bottom:1px solid #334155">Late by</th>
+         <th align="left" style="padding:8px 10px;border-bottom:1px solid #334155">Why</th>
+       </tr></thead>
+       <tbody>${rows}</tbody>
+     </table>
+     <p style="margin-top:16px"><a href="${APP_URL}/releases" style="display:inline-block;background:#0ea5e9;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none">Open the release calendar</a></p>
+     <p style="font-size:12px;color:#64748b">Re-run the publication job at /api/cron/research-releases once the underlying data is in place.</p>`
+  );
+
+  const text = `${opts.overdue.length} recurring release(s) overdue\n\n${opts.overdue
+    .map(
+      (o) =>
+        `- ${o.title} — ${o.periodLabel}, due ${o.dueAt}, ${o.daysLate} day(s) late. ${o.reason ?? 'Not computed'}\n  ${APP_URL}${o.href}`
+    )
+    .join('\n')}\n`;
+
+  return send(
+    opts.to,
+    `[SpaceNexus] ${opts.overdue.length} recurring release${
+      opts.overdue.length === 1 ? '' : 's'
+    } overdue`,
+    html,
+    text
+  );
+}

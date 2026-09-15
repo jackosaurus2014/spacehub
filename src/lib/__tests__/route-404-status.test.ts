@@ -17,6 +17,12 @@
  *      SLUG_EXISTENCE_CHECKS, which asks a tiny side-effect-free `exists`
  *      API and returns a genuine 404 Response before rendering. (Railway's
  *      build container has no DB, so option 1 is impossible for these.)
+ *   3. registry routes     — src/lib/registry-routes.ts, consulted by the
+ *      middleware before rendering. Valid params are known statically but the
+ *      PAGE needs a database (so option 1 is impossible) and there is no DB
+ *      lookup to make (so option 2 would be a pointless round-trip). Proven
+ *      here by calling registryRouteMissing() on the probe path: a route that
+ *      merely mentions the registry but is not actually matched by it fails.
  *
  * These tests fail if someone adds a dynamic page that calls notFound()
  * and forgets to give it one of the two — the case that let this defect
@@ -25,6 +31,7 @@
 import fs from 'fs';
 import path from 'path';
 import { SLUG_EXISTENCE_CHECKS } from '@/middleware';
+import { registryRouteMissing } from '@/lib/registry-routes';
 
 const APP_DIR = path.join(process.cwd(), 'src', 'app');
 
@@ -133,16 +140,22 @@ describe('dynamic routes return a real 404 status for unknown params', () => {
         /export\s+const\s+dynamicParams\s*=\s*false/.test(page.source) &&
         /generateStaticParams/.test(page.source);
       const hasMiddlewareFix = SLUG_EXISTENCE_CHECKS.some((c) => c.match.test(routePath));
+      // The probe path substitutes _param_ for every dynamic segment, which is
+      // never a valid registry value — so a registry-backed route must report
+      // it as missing.
+      const hasRegistryFix = registryRouteMissing(routePath);
 
-      const covered = hasStaticParamsFix || hasMiddlewareFix;
+      const covered = hasStaticParamsFix || hasMiddlewareFix || hasRegistryFix;
       if (!covered) {
         throw new Error(
           `${page.file} calls notFound() on dynamic route ${routePath}, which means ` +
             `unknown params return HTTP 200 with 404-looking content. Give it either ` +
             `(a) "export const dynamicParams = false" + generateStaticParams() if the ` +
-            `valid values are build-time-known, or (b) an exists route + an entry in ` +
-            `SLUG_EXISTENCE_CHECKS in src/middleware.ts if they come from Postgres. ` +
-            `If neither applies, add it to DOCUMENTED_EXCEPTIONS in this file with a reason.`
+            `valid values are build-time-known, (b) an exists route + an entry in ` +
+            `SLUG_EXISTENCE_CHECKS in src/middleware.ts if they come from Postgres, or ` +
+            `(c) a case in registryRouteMissing() in src/lib/registry-routes.ts if the ` +
+            `valid values are statically known but the page itself needs a database. ` +
+            `If none applies, add it to DOCUMENTED_EXCEPTIONS in this file with a reason.`
         );
       }
       expect(covered).toBe(true);

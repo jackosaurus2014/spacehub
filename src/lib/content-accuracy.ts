@@ -419,6 +419,16 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     run: checkAdvertisedDiscounts,
   },
   {
+    id: 'funding-feeds-alive',
+    label: 'Funding data feeds ran and wrote (no silently-dead fetcher)',
+    run: checkFundingFeedsAlive,
+  },
+  {
+    id: 'funding-rows-cite-a-source',
+    label: 'New funding rounds carry a source URL and flag undisclosed amounts',
+    run: checkFundingRowsCiteASource,
+  },
+  {
     id: 'stuck-transitional-rows',
     label: 'No digests stuck sending / insights stuck in review',
     run: checkStuckTransitionalRows,
@@ -859,6 +869,105 @@ async function checkStockQuotesFresh(): Promise<AccuracyCheckOutcome> {
     return { ok: false, detail: `Freshest stock quote is ${Math.round(ageDays)}d old (${newest.ticker}) — stock-sync is skipping every ticker (Yahoo consent wall from an EU region?).` };
   }
   return { ok: true, detail: `Freshest quote ${ageDays.toFixed(1)}d old.` };
+}
+
+/**
+ * The funding feeds must be demonstrably alive, not merely quiet.
+ *
+ * Two FCC fetchers sat dead for weeks in September 2026 behind a swallowed
+ * 403: a circuit breaker returned its fallback, nothing was written, and
+ * "no new rows" was indistinguishable from "no new filings". The Research
+ * tier is sold on funding depth, so a dead funding feed is a refund event.
+ *
+ * DataSourceRun (see src/lib/funding/provenance.ts) makes the three cases
+ * separable, and all three fail here:
+ *   - never ran           -> no row for the source at all;
+ *   - ran and failed      -> ok=false, with the verbatim error;
+ *   - ran, wrote nothing, collected HTTP errors -> finishRun marks ok=false.
+ * A run that genuinely found nothing new stays green, which is the point.
+ */
+const FUNDING_FEEDS: Array<{ source: string; label: string; maxAgeDays: number }> = [
+  { source: 'sec-form-d', label: 'SEC EDGAR Form D', maxAgeDays: 9 },
+  { source: 'edgar-company-facts', label: 'SEC EDGAR filer record', maxAgeDays: 16 },
+];
+
+async function checkFundingFeedsAlive(): Promise<AccuracyCheckOutcome> {
+  const problems: string[] = [];
+  const healthy: string[] = [];
+
+  for (const feed of FUNDING_FEEDS) {
+    const last = await prisma.dataSourceRun.findFirst({
+      where: { source: feed.source },
+      orderBy: { startedAt: 'desc' },
+      select: { startedAt: true, finishedAt: true, ok: true, error: true, itemsWritten: true, httpErrors: true },
+    });
+    if (!last) {
+      problems.push(`${feed.label}: has never run (no DataSourceRun row for "${feed.source}").`);
+      continue;
+    }
+    const ageDays = (Date.now() - last.startedAt.getTime()) / MS_PER_DAY;
+    if (!last.finishedAt) {
+      problems.push(`${feed.label}: last run started ${ageDays.toFixed(1)}d ago and never finished (killed mid-sweep).`);
+      continue;
+    }
+    if (!last.ok) {
+      const why = (last.error ?? 'no error recorded').split(/\r?\n/)[0].slice(0, 200);
+      problems.push(`${feed.label}: last run FAILED (${why}); httpErrors=${last.httpErrors}.`);
+      continue;
+    }
+    if (ageDays > feed.maxAgeDays) {
+      problems.push(`${feed.label}: last successful run ${Math.round(ageDays)}d ago (policy: < ${feed.maxAgeDays}d).`);
+      continue;
+    }
+    healthy.push(`${feed.label} ${ageDays.toFixed(1)}d ago (+${last.itemsWritten})`);
+  }
+
+  // Belt and braces: the feeds can be green while the table they exist to
+  // fill is not growing. A research dataset that has not gained a single
+  // round in two months is stale whatever the run ledger says.
+  const newest = await prisma.fundingRound.findFirst({
+    orderBy: { createdAt: 'desc' },
+    select: { createdAt: true },
+  });
+  if (!newest) {
+    problems.push('FundingRound is EMPTY.');
+  } else {
+    const ageDays = (Date.now() - newest.createdAt.getTime()) / MS_PER_DAY;
+    if (ageDays > 60) {
+      problems.push(`Newest FundingRound row was written ${Math.round(ageDays)}d ago — nothing is filling the table.`);
+    }
+  }
+
+  if (problems.length > 0) return { ok: false, detail: problems.join(' | ') };
+  return { ok: true, detail: `${healthy.length} funding feed(s) alive: ${healthy.join('; ')}.` };
+}
+
+/**
+ * Every funding row we sell must be checkable. A row with no sourceUrl cannot
+ * be defended to an investor, and a row whose amount is missing must say
+ * "undisclosed" rather than silently reading as zero. Both are policy, so
+ * both are watched: the check fails when unsourced rows are being ADDED, not
+ * on the historical backlog (which would just page forever).
+ */
+const FUNDING_SOURCE_URL_GRACE_DAYS = 30;
+
+async function checkFundingRowsCiteASource(): Promise<AccuracyCheckOutcome> {
+  const since = new Date(Date.now() - FUNDING_SOURCE_URL_GRACE_DAYS * MS_PER_DAY);
+  const [recent, unsourced, silentlyZero] = await Promise.all([
+    prisma.fundingRound.count({ where: { createdAt: { gte: since } } }),
+    prisma.fundingRound.count({ where: { createdAt: { gte: since }, OR: [{ sourceUrl: null }, { sourceUrl: '' }] } }),
+    prisma.fundingRound.count({ where: { amount: null, amountUndisclosed: false } }),
+  ]);
+
+  const problems: string[] = [];
+  if (unsourced > 0) {
+    problems.push(`${unsourced} of ${recent} FundingRound rows added in the last ${FUNDING_SOURCE_URL_GRACE_DAYS}d carry no sourceUrl.`);
+  }
+  if (silentlyZero > 0) {
+    problems.push(`${silentlyZero} FundingRound rows have a NULL amount without amountUndisclosed set — they read as unknown instead of "undisclosed".`);
+  }
+  if (problems.length > 0) return { ok: false, detail: problems.join(' | ') };
+  return { ok: true, detail: `All ${recent} rounds added in the last ${FUNDING_SOURCE_URL_GRACE_DAYS}d cite a source URL.` };
 }
 
 /**

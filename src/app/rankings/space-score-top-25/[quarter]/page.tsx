@@ -5,6 +5,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import RankMovement from '@/components/rankings/RankMovement';
 import DeskByline from '@/components/desk/DeskByline';
+import ReleaseFooterNote from '@/components/reports/ReleaseFooterNote';
 import { getSpaceScoreEdition, SPACE_SCORE_TOP_N } from '@/lib/rankings-data';
 import {
   parseQuarterParam,
@@ -231,6 +232,12 @@ export default async function SpaceScoreTop25Page(props: { params: Promise<{ qua
             <Link href="/company-profiles" className="text-cyan-300 hover:text-cyan-200">company profile</Link>.
           </p>
         </section>
+
+        <ReleaseFooterNote
+          releaseId="space-score-top-25"
+          period={parsed.key}
+          asOf={edition.generatedAt.slice(0, 10)}
+        />
 
         <div className="mt-10 card p-5 border border-white/10">
           <DeskByline />

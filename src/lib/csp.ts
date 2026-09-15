@@ -227,6 +227,10 @@ export const NONCE_ELIGIBLE_ROUTES: readonly string[] = [
   '/build-guides/[slug]',
   '/cap-tables/[companySlug]',
   '/chart/[slug]',
+  // Chart of the Week: the archive index and the pinned weekly permalinks,
+  // both force-dynamic (2026-09-14).
+  '/chart/week',
+  '/chart/week/[week]',
   // The forum index became a server component with force-dynamic on
   // 2026-09-14 (it used to be a client page shipping invented thread counts),
   // so it renders per request and is newly nonce-eligible.
@@ -334,10 +338,18 @@ export const NONCE_ELIGIBLE_ROUTES: readonly string[] = [
   '/regulation-explainers/[slug]',
   '/regulatory-radar',
   '/regulatory-radar/action/[id]',
+  // Recurring release franchises — the archive and one dated edition, both
+  // force-dynamic (2026-09-14). Their own top-level segment on purpose:
+  // a [series] param directly under /reports would also match the
+  // statically rendered /reports/monthly and mark it nonce-eligible.
+  '/releases',
+  '/releases/[series]',
+  '/releases/[series]/[period]',
   '/report-cards',
   '/reports',
   '/research',
   '/research/accept-seat',
+  '/research/call',
   '/research/workspace',
   '/rockets',
   '/rockets/[slug]',

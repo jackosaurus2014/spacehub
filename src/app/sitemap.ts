@@ -20,6 +20,7 @@ import { BALANCE_REPORTS } from '@/lib/game/balance-reports';
 import { getJobsByCompany } from '@/lib/jobs-by-company';
 import { SALARY_PAGE_MIN_ROLES, isSalaryEligible, salaryCompanySlug } from '@/lib/salaries-by-company';
 import { spaceScoreQuarterKeys, monthKeysBetween } from '@/lib/rankings';
+import { seriesReleases, publishedPeriods } from '@/lib/research-releases';
 import { EARLIEST_INDEX_MONTH, latestEditionMonthKey } from '@/lib/hiring-index';
 
 const BASE_URL = 'https://spacenexus.us';
@@ -122,6 +123,30 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),
+
+    // Recurring release franchises (2026-09-14). The hub, each franchise
+    // archive, and every dated edition. Edition existence is pure date math
+    // (src/lib/research-releases.ts, no DB), so enumerating it here is safe in
+    // the DB-less build container, and each edition is a permanent citable URL.
+    // Only 'series' releases are listed: the Hiring Index and the Space Score
+    // Top 25 are read on their own pages, already in this sitemap above.
+    { url: `${BASE_URL}/releases`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    ...seriesReleases().flatMap((release) => [
+      {
+        url: `${BASE_URL}/releases/${release.id}`,
+        changeFrequency: release.cadence === 'monthly' ? ('monthly' as const) : ('weekly' as const),
+        priority: 0.7,
+      },
+      ...publishedPeriods(release).map((period) => ({
+        url: `${BASE_URL}${release.href(period)}`,
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+      })),
+    ]),
+
+    // Chart of the Week archive. The individual pinned editions are DB-backed
+    // and therefore not enumerable here; the archive index links every one.
+    { url: `${BASE_URL}/chart/week`, changeFrequency: 'weekly' as const, priority: 0.6 },
 
     // Job landing pages (programmatic SEO) — category/remote/location slices of
     // the jobs board, defined in src/lib/job-landing-pages.ts. Listed here

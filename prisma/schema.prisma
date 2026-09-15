@@ -3521,6 +3521,10 @@ model CompanyProfile {
   tags                String[] // Focus area tags: ["earth-observation", "sar", "leo", etc.]
   tier                Int       @default(3) // 1=must-have, 2=high-growth, 3=emerging
   naicsCode           String?
+  /// SEC EDGAR Central Index Key, zero-padded to 10 digits. Assigned to every
+  /// filer — public issuers AND private companies that file Form D — so this
+  /// is the join key for the whole EDGAR corpus, not just the tickered rows.
+  cik                 String?
   dunsNumber          String?
   cageCode            String? // For government contracting
   samUei              String? // SAM.gov Unique Entity ID
@@ -3602,6 +3606,7 @@ model CompanyProfile {
   @@index([tier])
   @@index([country])
   @@index([cageCode])
+  @@index([cik])
   @@index([samUei])
   @@index([claimedByUserId])
   @@index([verificationLevel])
@@ -3625,6 +3630,32 @@ model FundingRound {
   source        String? // "Crunchbase", "SEC Filing", "Press Release"
   sourceUrl     String?
   notes         String?        @db.Text
+
+  /// Stable key for the upstream record this row was derived from, so a
+  /// re-run of a fetcher updates the row instead of minting a duplicate.
+  /// Namespaced by source: "sec-form-d:0001715660-21-000003".
+  externalId String? @unique
+
+  /// How the row was obtained, NOT who reported it (that stays in `source`).
+  /// "official-filing" = parsed from a regulator's own document;
+  /// "press-release"   = the company's own announcement;
+  /// "news"            = extracted from a cited article;
+  /// "manual"          = hand-entered by an editor.
+  /// A research buyer filters on this, so never widen it casually.
+  sourceType String?
+
+  /// TRUE when the round is real but its size was never disclosed. The
+  /// product must show "undisclosed", never a guess — `amount` stays NULL
+  /// and nothing downstream may infer one.
+  amountUndisclosed Boolean @default(false)
+
+  /// Upstream document reference (SEC accession number, press-release id).
+  sourceRef String?
+
+  /// When a human or an official-document parse last confirmed the row
+  /// against its cited source.
+  verifiedAt DateTime?
+
   createdAt     DateTime       @default(now())
 
   @@index([companyId])
@@ -8882,4 +8913,288 @@ model SpaceScoreSnapshot {
   @@unique([companySlug, day])
   @@index([day])
   @@index([companySlug, day])
+}
+
+/// Field-level provenance for anything the platform publishes as fact.
+///
+/// The Research tier sells data, so every populated field has to be able to
+/// answer "where did this come from, and when?". Rather than widening a dozen
+/// models with a dozen `*Source` columns, one relation-free ledger records it
+/// once per (entity, entityId, field, source). Deliberately NOT a Prisma
+/// relation: provenance must outlive the row it describes, and a cascade
+/// delete that quietly erased the audit trail would be worse than an orphan.
+///
+/// Writers: src/lib/funding/provenance.ts. Never write this table by hand.
+model DataProvenance {
+  id String @id @default(cuid())
+
+  /// Prisma model name, e.g. "FundingRound" | "CompanyProfile".
+  entity   String
+  /// The row's id (or slug for CompanyProfile lookups by slug).
+  entityId String
+  /// The field this record justifies, e.g. "amount" | "foundedYear".
+  field    String
+
+  /// The value as written, stringified. Lets an auditor see that the stored
+  /// value still matches what the source said, without re-fetching.
+  value String? @db.Text
+
+  /// Human-readable publisher: "SEC EDGAR Form D", "SpaceNews", "Company IR".
+  source    String
+  /// Deep link a reader can open and check.
+  sourceUrl String?
+  /// Upstream document id (SEC accession number, filing id, article guid).
+  sourceRef String?
+
+  /// "official-filing" | "press-release" | "news" | "derived" | "manual".
+  /// "derived" means computed from other provenanced rows (e.g. totalFunding
+  /// summed from FundingRound). It NEVER means estimated, inferred or
+  /// generated — no model output may be recorded here.
+  method String
+
+  /// When the source itself published/filed the fact.
+  observedAt DateTime
+  /// When we last confirmed the stored value against the source.
+  verifiedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([entity, entityId, field, source])
+  @@index([entity, entityId])
+  @@index([source])
+  @@index([method])
+}
+
+/// One row per attempt of a background data fetch, successful or not.
+///
+/// Written because two FCC fetchers sat dead for weeks behind a swallowed 403
+/// (2026-09-14): a circuit breaker that fails silently is indistinguishable
+/// from a feed with nothing new. A run ledger separates "ran and found zero"
+/// from "never ran" from "ran and 403'd", which is what the freshness check in
+/// src/lib/content-accuracy.ts needs in order to page honestly.
+///
+/// Also carries the resume cursor for long backfills, so a run that dies
+/// halfway through 300 companies picks up where it stopped instead of
+/// restarting and re-hammering the upstream.
+model DataSourceRun {
+  id String @id @default(cuid())
+
+  /// Stable fetcher key, e.g. "sec-form-d" | "edgar-company-facts".
+  source String
+
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+
+  /// FALSE until the run completes without a fatal error. A row left with
+  /// ok=false and a finishedAt is a run that failed; ok=false with no
+  /// finishedAt is a run that was killed.
+  ok Boolean @default(false)
+
+  /// Opaque resume token owned by the fetcher (usually the last key handled).
+  cursor String?
+  /// TRUE when the cursor reached the end of the work list.
+  complete Boolean @default(false)
+
+  itemsSeen    Int @default(0)
+  itemsWritten Int @default(0)
+  /// Non-2xx responses from upstream. A run with itemsWritten=0 and
+  /// httpErrors>0 is a dead feed, and must not read as "nothing new".
+  httpErrors   Int @default(0)
+
+  /// First fatal error, verbatim. Never truncated to a friendly message.
+  error  String? @db.Text
+  /// Per-run counters the fetcher wants to keep (matched, skipped, reasons).
+  detail Json?
+
+  @@index([source, startedAt])
+  @@index([source, ok])
+}
+
+// ============================================================
+// Recurring editorial releases (2026-09-14) — the named franchises, the
+// weekly chart, and the quarterly briefing call.
+//
+// Additive and relation-free in the house style: joined in application code
+// by id, so nothing in the long-lived User/CompanyProfile/SpaceEvent graph
+// had to move, and retiring any of this is a table drop rather than a
+// migration.
+//
+// NOTE ON WHAT IS *NOT* STORED HERE. Release editions are COMPUTED from the
+// underlying tables on every request — funding rounds, launches, snapshots,
+// the supply-chain map. This log records that an edition was computed and
+// what it contained, so a MISSED release is visible instead of silent. It is
+// a publication ledger, never a cache, and nothing reads figures back out of
+// it. See src/lib/research-releases.ts.
+// ============================================================
+
+/// One row per published edition of a recurring release. Written by
+/// /api/cron/research-releases when it successfully computes the edition that
+/// the calendar says is due. A period with no row past its due date is an
+/// OVERDUE release, which the cron alerts on and /reports shows as overdue.
+model ResearchReleaseLog {
+  id String @id @default(cuid())
+
+  /// ResearchRelease.id from the registry, e.g. "launch-cadence".
+  releaseId String
+  /// Period key: "2026-08" (monthly) or "2026-Q2" (quarterly).
+  period    String
+
+  publishedAt DateTime @default(now())
+  /// When the figures were computed, which may be later than publishedAt on a
+  /// re-run. Kept apart so a recompute never rewrites the publication date.
+  computedAt  DateTime
+  /// YYYY-MM-DD the edition's figures describe (the period end).
+  asOf        String
+  /// The citable title exactly as published.
+  title       String
+
+  /// Rows across every table in the edition, and how many tables there were.
+  rowCount   Int @default(0)
+  tableCount Int @default(0)
+  /// TRUE when the edition had nothing to report. An empty edition is still
+  /// published — "we recorded nothing" is an honest release, a skipped month
+  /// is not.
+  empty      Boolean @default(false)
+
+  /// Stable content hash (src/lib/research-report-types.ts) and the previous
+  /// edition's hash. Equal hashes mean nothing in the source data moved, which
+  /// the edition page states plainly rather than dressing up as news.
+  inputHash    String
+  previousHash String?
+  unchanged    Boolean @default(false)
+
+  /// The headline figures as published, for the archive card. Display only —
+  /// the edition page always recomputes.
+  headline Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// One row per edition. A re-run updates rather than minting a duplicate.
+  @@unique([releaseId, period])
+  @@index([releaseId, publishedAt])
+  @@index([publishedAt])
+}
+
+/// Chart of the Week — one PINNED edition per ISO week.
+///
+/// /chart/[slug] renders live data and changes underneath the reader; a weekly
+/// habit needs the opposite. The publication cron picks the week's chart from
+/// the rotation, computes the series once, and freezes it here with a caption
+/// that is itself computed from the numbers. The permalink then shows what was
+/// published that week, forever, whatever the live data does afterwards.
+model ChartWeeklyEdition {
+  id String @id @default(cuid())
+
+  /// ISO week key, "2026-W38". ISO week-year, not calendar year.
+  weekKey String @unique
+  /// The Monday and Sunday (UTC) the key covers, denormalized for ordering.
+  weekStart DateTime
+  weekEnd   DateTime
+
+  /// The chart definition this edition drew (CHART_DEFS slug), plus the
+  /// display metadata as it stood, so a later edit to the registry cannot
+  /// rewrite what a published edition said.
+  slug     String
+  title    String
+  subtitle String
+  source   String
+  unit     String
+
+  /// The frozen series: string[] labels and number[] values, same length.
+  labels Json
+  values Json
+  /// The series footnote, when the loader supplied one.
+  note   String?
+
+  /// One factual sentence, COMPUTED from the series by
+  /// src/lib/chart-week.ts. It states what the chart shows and nothing else.
+  caption String @db.Text
+
+  /// How many data points the edition carries.
+  pointCount Int @default(0)
+
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([publishedAt])
+  @@index([weekStart])
+}
+
+/// The quarterly briefing call. AT MOST ONE row is 'scheduled' at a time.
+///
+/// A call needs a human host, so the software schedules nothing: with no
+/// scheduled row, /research/call states plainly that no call is scheduled and
+/// offers no registration. Nothing anywhere promises a date the founder has
+/// not set — the pricing-truth rule applied to an event.
+model ResearchCall {
+  id String @id @default(cuid())
+
+  /// scheduled | held | canceled. There is no "unscheduled" row: an
+  /// unscheduled call is the ABSENCE of a row, which cannot be forgotten.
+  status String @default("scheduled")
+
+  title String
+  /// The quarter the call covers, as printed, e.g. "Q3 2026".
+  periodLabel String?
+
+  /// UTC. The single source of the advertised date; the page renders nothing
+  /// about timing when this is null.
+  scheduledAt     DateTime?
+  durationMinutes Int       @default(45)
+  /// Where attendees join. Sent only to registered subscribers, never public.
+  joinUrl         String?
+
+  /// string[] of agenda lines, written by the host.
+  agenda Json @default("[]")
+
+  /// Filled after the call. The archive renders a past call only when at
+  /// least one of these exists.
+  recordingUrl String?
+  slidesUrl    String?
+  summary      String? @db.Text
+
+  heldAt     DateTime?
+  canceledAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, scheduledAt])
+  @@index([scheduledAt])
+}
+
+/// A Research subscriber's registration for one call. userId is the person;
+/// ownerUserId is the firm whose subscription authorized them, recorded at
+/// registration time so a later seat change does not rewrite the attendance
+/// record.
+model ResearchCallRegistration {
+  id String @id @default(cuid())
+
+  /// ResearchCall.id. Plain string — deliberately NOT a relation.
+  callId String
+  /// User.id of the attendee, and of the account that pays for their seat.
+  userId      String
+  ownerUserId String
+
+  /// Contact details as of registration, so the invite can be re-sent without
+  /// re-resolving a seat that may since have been revoked.
+  email String
+  name  String?
+
+  /// An optional question submitted with the registration, for the host.
+  question String? @db.Text
+
+  reminderSentAt DateTime?
+  canceledAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// One registration per person per call; re-registering updates the row.
+  @@unique([callId, userId])
+  @@index([callId, canceledAt])
+  @@index([userId])
 }

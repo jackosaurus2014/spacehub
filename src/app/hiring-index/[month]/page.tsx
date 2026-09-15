@@ -5,6 +5,7 @@ import Console from '@/components/ui/Console';
 import Telemetry from '@/components/ui/Telemetry';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import CiteEmbed from '@/components/CiteEmbed';
+import ReleaseFooterNote from '@/components/reports/ReleaseFooterNote';
 import { coverageChangesInWindow } from '@/lib/hiring-coverage';
 import {
   getHiringIndex,
@@ -343,6 +344,12 @@ export default async function HiringIndexMonthPage(props: PageProps) {
               title={`SpaceNexus Monthly Hiring Index — ${label}`}
               pageUrl={pageUrl}
               sourceLine={`SpaceNexus Monthly Hiring Index, ${label} edition (data: SpaceNexus jobs tracker)`}
+            />
+
+            <ReleaseFooterNote
+              releaseId="hiring-index"
+              period={resolved.key}
+              asOf={(index.activeAtMonthEndDate ?? index.generatedAt).slice(0, 10)}
             />
 
             <p className="text-sm text-slate-500">

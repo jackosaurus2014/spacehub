@@ -175,7 +175,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
           <svg className="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
-          Live Telemetry
+          Illustrative Ascent Profile
         </h3>
         <div className="flex items-center gap-2">
           {/* Max-Q Badge */}
@@ -199,15 +199,17 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
           <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-bold uppercase tracking-wider">
             Simulated
           </span>
-          <span className="flex items-center gap-1 text-xs text-green-400">
-            <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-            LIVE
+          {/* The MISSION is live; these numbers are not measured. See the
+              note below the header. */}
+          <span className="flex items-center gap-1 text-xs text-white/70">
+            <span className="w-1.5 h-1.5 bg-white/60 rounded-full animate-pulse" />
+            IN FLIGHT
           </span>
         </div>
       </div>
       <div className="px-4 py-1.5 bg-yellow-500/5 border-b border-yellow-500/10">
         <p className="text-[10px] text-yellow-400/80 text-center">
-          Illustrative ascent profile — not live vehicle telemetry.
+          Illustrative ascent profile — a generic reference curve, not this vehicle’s flight plan and not measured telemetry.
         </p>
       </div>
 

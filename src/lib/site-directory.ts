@@ -95,6 +95,7 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
       { name: 'Markets Daily', href: '/markets-daily', description: 'The Pure-Play Index and the sector day, free', icon: '🔔', nav: true },
       { name: 'Company Profiles', href: '/company-profiles', description: 'The space industry directory', icon: '🏢', nav: true, hot: true },
       { name: 'Rankings', href: '/rankings', description: 'Space Score Top 25 each quarter, fastest-hiring companies each month', icon: '🏆', nav: true },
+      { name: 'Recurring Releases', href: '/releases', description: 'Named, dated releases on a fixed calendar — investors, launch cadence and slips, supply-chain concentration', icon: '🗓️', nav: true },
       { name: 'Funding Rounds & M&A', href: '/funding-tracker', description: 'Live rounds, deals and acquisitions', icon: '💸', nav: true },
       { name: 'Startups & Pre-IPO', href: '/startups', description: 'Private companies, rounds and IPO watch', icon: '🚀', nav: true, hot: true },
       { name: 'Compare Companies', href: '/compare', description: 'Head-to-head: SpaceX vs Blue Origin and 50 more', icon: '⚖️', nav: true, hot: true },

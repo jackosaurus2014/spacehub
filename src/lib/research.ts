@@ -182,6 +182,15 @@ export const RESEARCH_CAPABILITIES: ResearchCapability[] = [
     enforcedBy: 'src/app/api/research/quarterly/route.ts',
   },
   {
+    id: 'releases',
+    label: 'Full rows and exports for every recurring release',
+    detail:
+      'The named, dated releases — Most Active Investors, the Launch Cadence and Slip Report, Supply-Chain Concentration, the Hiring Index and the Space Score Top 25 — publish a public summary with the top of every table. Research is the complete row set and its CSV and JSON exports, with the citation, the method and the coverage limits attached to the file.',
+    accessFlag: 'hasResearchExports',
+    moduleId: 'research-exports',
+    enforcedBy: 'src/app/api/research/reports/[report]/[period]/route.ts',
+  },
+  {
     id: 'seats',
     label: `${RESEARCH_PLAN.totalSeats} named seats on one invoice`,
     detail:
@@ -190,6 +199,19 @@ export const RESEARCH_CAPABILITIES: ResearchCapability[] = [
     enforcedBy: 'src/lib/research.ts',
   },
 ];
+
+/**
+ * DELIBERATELY ABSENT FROM THE LIST ABOVE: the quarterly briefing call.
+ *
+ * A call needs a human host. Putting it in this static array would advertise a
+ * quarterly call from the moment the array was written, which is a promise
+ * nobody had made — exactly the failure the pricing-truth rule exists to stop.
+ * Instead /research composes its bullets from RESEARCH_CAPABILITIES plus
+ * researchCallCapability() (src/lib/research-call.ts), which returns a row only
+ * while a scheduled ResearchCall exists. The claim therefore appears exactly
+ * when the product does, and disappears the moment it does not. There is no
+ * flag for a human to forget.
+ */
 
 /**
  * Capabilities considered and REJECTED, kept here so they are not re-proposed.

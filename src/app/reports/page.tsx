@@ -6,6 +6,9 @@ import JsonLd from '@/components/seo/JsonLd';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import EmptyState from '@/components/ui/EmptyState';
 import Provenance from '@/components/ui/Provenance';
+import ReleaseCalendarTable from '@/components/reports/ReleaseCalendarTable';
+import { releaseCalendarState } from '@/lib/research-release-log';
+import { latestChartWeekEdition, PUBLICATION_WEEKDAY_LABEL } from '@/lib/chart-week';
 
 // Railway's build container has no DB, and the list below is read from
 // PublishedBrief — render per request, with a 10-minute server cache.
@@ -118,6 +121,14 @@ export default async function ReportsPage() {
   const rows = reports ?? [];
   const newest = rows[0]?.publishedAt ?? null;
 
+  // The recurring release calendar and the week's chart. Both read their own
+  // publication ledgers, so a franchise that has missed its date shows as
+  // OVERDUE here rather than quietly disappearing from the page.
+  const [calendar, weekChart] = await Promise.all([
+    releaseCalendarState(),
+    latestChartWeekEdition(),
+  ]);
+
   const collectionJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -162,6 +173,51 @@ export default async function ReportsPage() {
             has published, newest first.
           </p>
         </div>
+
+        {/* Recurring releases — named, dated, on a fixed calendar */}
+        <section aria-labelledby="recurring-heading" className="mb-12">
+          <h2 id="recurring-heading" className="text-lg font-semibold text-white mb-1">
+            Recurring releases
+          </h2>
+          <p className="text-slate-400 text-sm mb-5 max-w-3xl">
+            Named releases on a fixed calendar, every figure computed from SpaceNexus data rather than
+            written. Each edition is dated, permanently linkable, and states its method and its coverage
+            limits beside the numbers. Where an edition has missed its date, this table says so. The full
+            hub, with what each release computes and how to read it, is at{' '}
+            <Link href="/releases" className="text-cyan-300 hover:text-cyan-200">
+              /releases
+            </Link>
+            .
+          </p>
+          <ReleaseCalendarTable calendar={calendar} />
+
+          <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] p-5">
+            <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
+              <h3 className="text-white font-semibold">
+                <Link href="/chart/week" className="hover:text-cyan-300">
+                  Chart of the Week
+                </Link>
+              </h3>
+              <span className="text-xs uppercase tracking-wider text-slate-500">
+                Every {PUBLICATION_WEEKDAY_LABEL}
+              </span>
+            </div>
+            {weekChart ? (
+              <p className="text-sm text-slate-300 leading-relaxed">
+                <Link href={`/chart/week/${weekChart.weekKey}`} className="text-cyan-400 hover:text-cyan-300">
+                  {weekChart.weekKey}
+                </Link>
+                {' — '}
+                {weekChart.caption}
+              </p>
+            ) : (
+              <p className="text-sm text-slate-400 leading-relaxed">
+                No edition has been pinned yet. Each week&rsquo;s chart is frozen on publication and keeps a
+                permanent URL whose numbers do not move afterwards.
+              </p>
+            )}
+          </div>
+        </section>
 
         {/* Flagship reports */}
         <section aria-labelledby="flagship-heading" className="mb-12">
