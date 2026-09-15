@@ -46,15 +46,23 @@ import { RESEARCH_TIER_FLAG_ENV_VAR, isResearchTierEnabled } from './research-fl
 export { RESEARCH_TIER_FLAG_ENV_VAR, isResearchTierEnabled };
 
 /**
- * The env var the founder must create in Stripe and set in Railway: a RECURRING
- * YEARLY price on the SpaceNexus Research product.
+ * The env var holding the RECURRING YEARLY price on the SpaceNexus Research
+ * product. Created on the live account 2026-09-15 and set in Railway:
+ * product prod_VGa7m0T1oJ3nD2, price price_1UG2xDDZYwgQpvkLhyZZJTF1,
+ * $399.00 USD / year, verified against Stripe after creation.
  *
  * It is deliberately NOT one of the existing STRIPE_PRICE_ENTERPRISE_* vars.
- * Those point at the withdrawn $49.99/mo Enterprise plan; selling an annual
- * firm seat against a monthly $49.99 price would charge every buyer the wrong
- * amount — precisely the failure the pricing-truth rule exists to prevent. If
- * this var is missing, checkout refuses with a clear error and never falls back
- * to another price.
+ * Checked against the live account rather than assumed:
+ * STRIPE_PRICE_ENTERPRISE_MONTHLY is $49.99/month and archived, and
+ * STRIPE_PRICE_ENTERPRISE_YEARLY is $499.00/year and STILL ACTIVE on a product
+ * that is not. Either would charge a Research buyer the wrong amount — the
+ * yearly one by $100 a year, quietly, which is precisely the failure the
+ * pricing-truth rule exists to prevent. (An earlier version of this comment
+ * said both enterprise vars were monthly $49.99. They are not; that is why
+ * this one cites what the API actually returned.)
+ *
+ * If this var is missing, checkout refuses with a clear error and never falls
+ * back to another price.
  */
 export const RESEARCH_PRICE_ENV_VAR = 'STRIPE_PRICE_RESEARCH_YEARLY';
 
