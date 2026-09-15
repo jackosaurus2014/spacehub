@@ -17,13 +17,17 @@
  * Read-only. Prints `HEX <hex JSON>`.
  */
 import prisma from '../src/lib/db';
-import { BUILDING_MAP } from '../src/lib/game/buildings';
+import { BUILDING_MAP, checkBuildingCap } from '../src/lib/game/buildings';
 import {
   checkLocalMaterials,
   getLocationInventory,
   isHomeLocation,
   isLocationEconomyActive,
 } from '../src/lib/game/cargo-logistics';
+import { canStartConstruction, getConstructionSlots, getActiveConstructions } from '../src/lib/game/construction-slots';
+import { checkOrbitalSlotGate } from '../src/lib/game/spatial-strategy';
+import { getResearchBonuses } from '../src/lib/game/research-tree';
+import { scaledBuildingCost } from '../src/lib/game/formulas';
 import type { GameState } from '../src/lib/game/types';
 
 function hex(v: unknown): string {
@@ -88,6 +92,36 @@ async function main() {
     whereIsIt,
     money: state.money,
     buildingCost: def.baseCost,
+
+    // ── every OTHER gate handleBuild and BuildPanel apply ──────────────────
+    // Materials turned out not to be the blocker for the founder's Lunar
+    // Orbital Solar Array, so this diagnostic covers the whole gate list
+    // rather than one of them.
+    gates: (() => {
+      const count = state.buildings.filter(b => b.definitionId === buildingId && b.locationId === locationId).length;
+      const { buildCostReduction } = getResearchBonuses(
+        state.completedResearch, state.repeatableResearchLevels, state.corporationTier || 1,
+      );
+      const localCost = Math.round(scaledBuildingCost(def.baseCost, count) * (1 - buildCostReduction));
+      const slotGate = checkOrbitalSlotGate(state, locationId);
+      const capGate = checkBuildingCap(state.buildings, def);
+      const missingResearch = (def.requiredResearch || []).filter(r => !(state.completedResearch || []).includes(r));
+      return {
+        locationUnlocked: (state.unlockedLocations || []).includes(locationId),
+        missingResearch,
+        scaledCost: localCost,
+        affordable: state.money >= localCost,
+        constructionSlots: getConstructionSlots(state),
+        activeConstructions: getActiveConstructions(state),
+        slotsFree: canStartConstruction(state),
+        orbitalSlotGate: slotGate,
+        buildingCap: capGate,
+        copiesHere: count,
+        inProgress: (state.buildings || [])
+          .filter(b => !b.isComplete)
+          .map(b => ({ id: b.definitionId, at: b.locationId })),
+      };
+    })(),
   }));
 }
 
