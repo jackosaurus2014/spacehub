@@ -15,6 +15,24 @@ import prisma from '../src/lib/db';
 async function main() {
   const email = process.argv[2] || process.env.FOUNDER_EMAIL || process.env.ADMIN_EMAIL || '';
   const since = new Date(Date.now() - Number(process.env.DIAG_DAYS || 7) * 86400_000);
+  // A clamp on a profile other than the named account: pass its id as
+  // DIAG_PROFILE_ID to dump that profile's own rejection details, which is
+  // what says whether real income was refused or a forged claim was caught.
+  const focusId = process.env.DIAG_PROFILE_ID || '';
+  if (focusId) {
+    const rows = await prisma.marketAuditLog.findMany({
+      where: { eventType: 'client_money_implausible_rejected', profileId: focusId },
+      orderBy: { createdAt: 'desc' }, take: 10,
+      select: { createdAt: true, details: true },
+    });
+    const prof = await prisma.gameProfile.findUnique({
+      where: { id: focusId },
+      select: { companyName: true, money: true, totalEarned: true, createdAt: true, lastSyncAt: true, user: { select: { email: true } } },
+    });
+    console.log('HEX ' + Buffer.from(JSON.stringify({ focus: { id: focusId, profile: prof, events: rows } })).toString('hex'));
+    return;
+  }
+
   const events = await prisma.marketAuditLog.findMany({
     where: { eventType: 'client_money_implausible_rejected', createdAt: { gte: since } },
     orderBy: { createdAt: 'desc' }, take: 500,
