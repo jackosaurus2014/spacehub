@@ -29,7 +29,29 @@ async function main() {
       where: { id: focusId },
       select: { companyName: true, money: true, totalEarned: true, createdAt: true, lastSyncAt: true, user: { select: { email: true } } },
     });
-    console.log('HEX ' + Buffer.from(JSON.stringify({ focus: { id: focusId, profile: prof, events: rows } })).toString('hex'));
+    // Jay's question, 2026-09-15: did they claim a contract, a race or some
+    // other event that legitimately produced the money? The audit row only
+    // lists what the SYNC credited. The ledger is where every other income
+    // path lands, so dump it around the rejection window and let the rows say.
+    const firstAt = rows.length ? rows[rows.length - 1].createdAt : new Date(0);
+    const lastAt = rows.length ? rows[0].createdAt : new Date();
+    const ledger = await prisma.gameLedgerEntry.findMany({
+      where: {
+        profileId: focusId,
+        createdAt: { gte: new Date(firstAt.getTime() - 3600_000), lte: new Date(lastAt.getTime() + 3600_000) },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 120,
+      select: { createdAt: true, reason: true, moneyDelta: true, resourceSlug: true, resourceDelta: true },
+    });
+    const byReason: Record<string, { n: number; money: number }> = {};
+    for (const l of ledger) {
+      const k = l.reason || '(none)';
+      byReason[k] = byReason[k] || { n: 0, money: 0 };
+      byReason[k].n += 1;
+      byReason[k].money += typeof l.moneyDelta === 'number' ? l.moneyDelta : 0;
+    }
+    console.log('HEX ' + Buffer.from(JSON.stringify({ focus: { id: focusId, profile: prof, events: rows, ledgerRows: ledger.length, byReason, ledger: ledger.slice(0, 40) } })).toString('hex'));
     return;
   }
 
