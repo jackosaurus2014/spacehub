@@ -694,10 +694,58 @@ async function checkMoneyClampQuiet(): Promise<AccuracyCheckOutcome> {
   if (offenders.length === 0) {
     return { ok: true, detail: `${byProfile.size} profile(s) clamped, none above $${(MONEY_CLAMP_ALERT_THRESHOLD / 1e6).toFixed(0)}M or all QA` };
   }
-  const list = offenders.slice(0, 5).map((o) => `${o.company} (${o.id}) $${(o.total / 1e6).toFixed(1)}M`).join('; ');
+  // TWO DIFFERENT EVENTS WEAR THIS ALERT, and only one of them is our bug.
+  //
+  // (a) Income with a CREDITED SOURCE was rejected. A contract paid out, a
+  //     delivery completed, a timed event finished — the server itself
+  //     credited it — and the ceiling refused it anyway. That is our defect:
+  //     a real player watched money vanish, and it needs a diagnosis and a
+  //     ledger restore. It happened twice this week.
+  //
+  // (b) A client asserted a money jump with NOTHING behind it. No contract,
+  //     no delivery, no event. On 2026-09-14 a 17-minute-old corporation
+  //     claimed $400M in a single 60-second tick against a modelled earning
+  //     power of $11.8M for that window. Nothing legitimate produces that,
+  //     and the ceiling caught it, which is the ceiling WORKING.
+  //
+  // Reporting (b) as a content-accuracy failure would have us investigate our
+  // own data every time somebody pokes at their client, and an alert that
+  // cries wolf is one people stop reading — the lesson from the security test
+  // that failed one run in three. So (a) fails and pages; (b) passes and is
+  // NAMED for review, because it is a possible-abuse signal and must not
+  // become invisible either.
+  const withSource: typeof offenders = [];
+  const unexplained: typeof offenders = [];
+  for (const o of offenders) {
+    const credited = rows.some((r) => {
+      if (r.profileId !== o.id) return false;
+      const d = (r.details || {}) as Record<string, unknown>;
+      const n = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
+      const delivery = d.deliveryCredit;
+      const deliveryAmount = typeof delivery === 'number'
+        ? delivery
+        : n((delivery as { headroomCredit?: number } | null)?.headroomCredit);
+      return n(d.contractCredit) + n(d.timedEventCredit) + deliveryAmount > 0;
+    });
+    (credited ? withSource : unexplained).push(o);
+  }
+
+  const describe = (list: typeof offenders) =>
+    list.slice(0, 5).map((o) => `${o.company} (${o.id}) $${(o.total / 1e6).toFixed(1)}M`).join('; ');
+
+  if (withSource.length > 0) {
+    const tail = unexplained.length > 0
+      ? ` Separately, ${unexplained.length} unexplained client jump(s) were rejected correctly: ${describe(unexplained)}.`
+      : '';
+    return {
+      ok: false,
+      detail: `Sync ceiling rejected CREDITED income for ${withSource.length} player(s) ${scope}: ${describe(withSource)}. Diagnose with scripts/tycoon-money-diag.ts and restore with scripts/tycoon-ledger-credit.ts.${tail}`,
+    };
+  }
+
   return {
-    ok: false,
-    detail: `Sync ceiling rejected income for ${offenders.length} player(s) ${scope}: ${list}. Diagnose with scripts/tycoon-money-diag.ts and restore with scripts/tycoon-ledger-credit.ts.`,
+    ok: true,
+    detail: `No credited income was rejected ${scope}. ${unexplained.length} unexplained client money jump(s) were refused as designed — review for abuse: ${describe(unexplained)}. Inspect one with DIAG_PROFILE_ID=<id> scripts/tycoon-money-diag.ts.`,
   };
 }
 
@@ -774,14 +822,29 @@ async function checkTablePipelineLiveness(): Promise<AccuracyCheckOutcome> {
     },
   ];
   // Spectrum filings need an ECFS api_key, which CONGRESS_GOV_API_KEY also
-  // satisfies (see fetchers/ecfs-api-key.ts — one api.data.gov key serves
-  // both federal feeds). Watch the table only once a key exists, so the
-  // sentinel never nags about a feed that cannot run.
+  // satisfies (see fetchers/ecfs-api-key.ts — one api.data.gov key serves both
+  // federal feeds). Watch only once a key exists, so the sentinel never nags
+  // about a feed that cannot run.
+  //
+  // Watch the DynamicContent rows the fetcher actually writes, NOT the
+  // SpectrumFiling table. That table is the hand-curated "Active Filings"
+  // reference tab and nothing has written to it in 206 days; the live ECFS
+  // feed stores flexible records under module 'spectrum', section
+  // 'recent-filings', because raw docket filings carry none of the structured
+  // technical fields SpectrumFiling requires and fabricating them to fit would
+  // misrepresent the filing (see spectrum-filings-fetcher.ts). Pointing the
+  // alarm at the curated table made it fire the moment the key was added — an
+  // alarm about the wrong table, which is worse than no alarm because it
+  // trains us to ignore it.
   if (hasEcfsApiKey()) {
     checks.push({
-      label: 'SpectrumFiling (FCC ECFS)',
+      label: 'Spectrum ECFS filings (DynamicContent module=spectrum)',
       maxAgeDays: 21,
-      newest: async () => (await prisma.spectrumFiling.findFirst({ orderBy: { updatedAt: 'desc' }, select: { updatedAt: true } }))?.updatedAt ?? null,
+      newest: async () => (await prisma.dynamicContent.findFirst({
+        where: { module: 'spectrum', section: 'recent-filings' },
+        orderBy: { updatedAt: 'desc' },
+        select: { updatedAt: true },
+      }))?.updatedAt ?? null,
     });
   }
 
