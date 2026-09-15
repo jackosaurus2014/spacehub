@@ -28,6 +28,8 @@ import { canStartConstruction, getConstructionSlots, getActiveConstructions } fr
 import { checkOrbitalSlotGate } from '../src/lib/game/spatial-strategy';
 import { getResearchBonuses } from '../src/lib/game/research-tree';
 import { scaledBuildingCost } from '../src/lib/game/formulas';
+import { ensureAssetAdoption, ensureAssetAdoption2, loadServerRegistry } from '../src/lib/game/server-assets';
+import { loadAuthoritativeInventory } from '../src/lib/game/server-inventory';
 import type { GameState } from '../src/lib/game/types';
 
 function hex(v: unknown): string {
@@ -43,9 +45,9 @@ async function main() {
 
   const user = await prisma.user.findUnique({
     where: { email },
-    select: { gameProfile: { select: { companyName: true, cloudSave: true, cloudSavedAt: true } } },
+    select: { gameProfile: true },
   });
-  const save = user?.gameProfile?.cloudSave as unknown;
+  const save = (user?.gameProfile as { cloudSave?: unknown } | null)?.cloudSave as unknown;
   if (!save) {
     console.log('HEX ' + hex({ error: `no cloud save for ${email}` }));
     return;
@@ -74,9 +76,38 @@ async function main() {
     whereIsIt[resId] = found;
   }
 
+  // ── THE SERVER'S OWN VIEW ───────────────────────────────────────────────
+  // Every client-side gate can pass and the build still be refused, because
+  // /api/space-tycoon/assets/build re-checks against server truth: the asset
+  // registry's unlocked-location projection and the authoritative inventory.
+  // A save can say a location is unlocked while the registry disagrees, and
+  // the route answers "not unlocked on the server yet". Look here too.
+  const gp = user!.gameProfile as unknown as { id: string; money: number };
+  let serverView: Record<string, unknown>;
+  try {
+    await ensureAssetAdoption(gp as never, prisma);
+    await ensureAssetAdoption2(gp as never, prisma);
+    const registry = await loadServerRegistry(gp.id, gp as never, { mode: 'shadow' });
+    const inv = await loadAuthoritativeInventory(gp as never);
+    serverView = {
+      serverMoney: gp.money,
+      locationUnlockedOnServer: registry.locations.unlocked.includes(locationId),
+      unlockedLocationsSource: registry.locations.source,
+      unlockedOnServer: registry.locations.unlocked,
+      inventorySource: inv.source,
+      serverHolds: Object.fromEntries(Object.keys(cost).map(k => [k, inv.resources[k] || 0])),
+      serverWouldRefuseResources: Object.entries(cost)
+        .filter(([k, q]) => (inv.resources[k] || 0) < (q as number))
+        .map(([k, q]) => k + ': has ' + (inv.resources[k] || 0) + ', needs ' + q),
+    };
+  } catch (err) {
+    serverView = { error: String(err).slice(0, 220) };
+  }
+
   console.log('HEX ' + hex({
-    company: user?.gameProfile?.companyName,
-    savedAt: user?.gameProfile?.cloudSavedAt,
+    serverView,
+    company: (user?.gameProfile as { companyName?: string } | null)?.companyName,
+    savedAt: (user?.gameProfile as { cloudSavedAt?: Date } | null)?.cloudSavedAt,
     building: def.name,
     locationId,
     recipe: cost,
