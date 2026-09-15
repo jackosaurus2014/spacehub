@@ -75,8 +75,23 @@ export function getResearchPriceId(): string | null {
 export const RESEARCH_PLAN = {
   id: 'research' as const,
   name: 'SpaceNexus Research',
-  /** USD per year, billed annually. No monthly option — this is a firm seat. */
-  priceYearly: 999,
+  /**
+   * USD per year, billed annually. No monthly option — this is a firm seat.
+   *
+   * 399, not the 999 this was built at (founder's call, 2026-09-15). Payload
+   * Pro and Space Intel Report both sit at 999 and both sell HUMAN analysis we
+   * cannot match; pricing at parity invites exactly the comparison we lose.
+   * What we sell is the layer Payload does not sell at any price — a database,
+   * exports, screening, seats — which Quilty sells at 3-5x. The unclaimed
+   * middle between a free macro quarterly and a 1,900 report is where this
+   * belongs.
+   *
+   * There is a practical half too: 999 opens a procurement conversation, 399
+   * goes on an expense card, and with no track record the constraint is proof
+   * rather than price. Raise it only after several quarters of releases that
+   * actually shipped on time, and never for anyone who bought early.
+   */
+  priceYearly: 399,
   currency: 'usd' as const,
   interval: 'year' as const,
   /** TOTAL named users included, the payer being one of them. */

@@ -16,6 +16,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { sendFreshnessAlert, resolveFreshnessAlertsByPrefix } from '@/lib/freshness-alerts';
 import { hasEcfsApiKey } from '@/lib/fetchers/ecfs-api-key';
+import { checkResearchReadiness } from '@/lib/research-readiness';
 import { QA_EMAIL_DOMAIN } from '@/lib/qa-accounts';
 import { STARTUP_HUB_ASOF } from '@/lib/startup-hub-data';
 import { REPORT_CARDS_QUARTER_ASSESSED } from '@/lib/report-cards-data';
@@ -589,6 +590,22 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
   // September 2026 (timed-event and delivery payouts the server could not
   // verify, ~$3.3B rejected across two players) and only surfaced because
   // the founder noticed his balance snapping back. Now it pages us.
+  // SpaceNexus Research is sold on an annual invoice, so a subscriber is owed
+  // accuracy in month seven as much as on the day they bought. The same
+  // function that answers "can we launch?" answers "is what we sold still
+  // true?", and it runs here so the answer cannot quietly go stale.
+  {
+    id: 'research-still-sellable',
+    label: 'SpaceNexus Research is still fit to sell (editions current, feeds alive, every row cited)',
+    run: async () => {
+      const r = await checkResearchReadiness();
+      if (r.ready) {
+        const warn = r.warnings.length > 0 ? ' (' + r.warnings.length + ' disclosed limit(s))' : '';
+        return { ok: true, detail: r.criteria.length + ' criteria pass' + warn };
+      }
+      return { ok: false, detail: r.blockers.map(b => b.id + ': ' + b.detail).join(' | ') };
+    },
+  },
   {
     id: 'money-clamp-quiet',
     label: 'No real player had income rejected by the sync ceiling in the last 24h',
