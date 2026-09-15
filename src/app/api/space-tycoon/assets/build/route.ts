@@ -7,7 +7,7 @@ import { tierFromProfileScalars } from '@/lib/game/corporation-tiers';
 import { ORBITAL_SLOT_MAP } from '@/lib/game/spatial-strategy';
 import { FRONTIER_DURATION_MS, FRONTIER_HARD_CAP_NET_WORTH } from '@/lib/game/frontier';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
-import { loadAuthoritativeInventory } from '@/lib/game/server-inventory';
+import { checkSelfConsumption } from '@/lib/game/server-inventory';
 import {
   ASSET_KIND_BUILDING,
   computeServerBuildCost,
@@ -164,11 +164,16 @@ export async function POST(request: NextRequest) {
     // Resources: verified against server truth when the profile has a
     // server map (phase 2), the client view otherwise.
     if (Object.keys(resourceCost).length > 0) {
-      const inventory = await loadAuthoritativeInventory(profile);
-      for (const [slug, qty] of Object.entries(resourceCost)) {
-        if ((inventory.resources[slug] || 0) < qty) {
-          return badRequest(`Not enough ${slug.replace(/_/g, ' ')} (${inventory.resources[slug] || 0}/${qty})`, 'insufficient_resources', { resource: slug, needed: qty, held: inventory.resources[slug] || 0 });
-        }
+      // Self-consumption: this spends the corporation's own materials on
+      // its own asset, so a false refusal only stops the player playing and
+      // helps nobody. checkSelfConsumption therefore honours the clamp MODE —
+      // shadow audits the disagreement and allows, enforce gates on server
+      // truth. Refusing on server truth in shadow blocked a real build:
+      // see the block in server-inventory.ts.
+      const consumption = await checkSelfConsumption(profile, resourceCost as Record<string, number>, 'build');
+      if (!consumption.ok && consumption.refusal) {
+        const { slug, needed, held } = consumption.refusal;
+        return badRequest(`Not enough ${slug.replace(/_/g, ' ')} (${held}/${needed})`, 'insufficient_resources', { resource: slug, needed, held });
       }
     }
     if (!Number.isFinite(profile.money) || profile.money < priced.cost) {

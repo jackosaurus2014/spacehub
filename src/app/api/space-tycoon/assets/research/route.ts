@@ -4,7 +4,7 @@ import { logger } from '@/lib/logger';
 import { tierFromProfileScalars } from '@/lib/game/corporation-tiers';
 import { RESEARCH_MAP } from '@/lib/game/research-tree';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
-import { loadAuthoritativeInventory } from '@/lib/game/server-inventory';
+import { checkSelfConsumption } from '@/lib/game/server-inventory';
 import {
   ASSET_KIND_RESEARCH,
   checkResearchStart,
@@ -105,11 +105,16 @@ export async function POST(request: NextRequest) {
       serviceCount: profile.serviceCount,
     }));
     if (Object.keys(quote.resourceCost).length > 0) {
-      const inventory = await loadAuthoritativeInventory(profile);
-      for (const [slug, qty] of Object.entries(quote.resourceCost)) {
-        if ((inventory.resources[slug] || 0) < qty) {
-          return badRequest(`Not enough ${slug.replace(/_/g, ' ')} (${inventory.resources[slug] || 0}/${qty})`, 'insufficient_resources', { resource: slug, needed: qty, held: inventory.resources[slug] || 0 });
-        }
+      // Self-consumption: this spends the corporation's own materials on
+      // its own asset, so a false refusal only stops the player playing and
+      // helps nobody. checkSelfConsumption therefore honours the clamp MODE —
+      // shadow audits the disagreement and allows, enforce gates on server
+      // truth. Refusing on server truth in shadow blocked a real build:
+      // see the block in server-inventory.ts.
+      const consumption = await checkSelfConsumption(profile, quote.resourceCost as Record<string, number>, 'research');
+      if (!consumption.ok && consumption.refusal) {
+        const { slug, needed, held } = consumption.refusal;
+        return badRequest(`Not enough ${slug.replace(/_/g, ' ')} (${held}/${needed})`, 'insufficient_resources', { resource: slug, needed, held });
       }
     }
     if (!Number.isFinite(profile.money) || profile.money < quote.cost) return fundsError(quote.cost, profile.money, def.name);

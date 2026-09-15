@@ -118,3 +118,106 @@ export async function auditServerInventoryGate(
     });
   } catch { /* audit log is best-effort */ }
 }
+
+// ─── Self-consumption gates (2026-09-15) ─────────────────────────────────────
+// A build, a refit, a research project and a ship order all SPEND the
+// corporation's own materials on the corporation's own asset. Nothing leaves
+// the player. That makes them categorically different from the outbound
+// paths above — selling, contributing to a shared project, fulfilling
+// another player's bid — where a false allow hands someone else phantom
+// goods and a gate on server truth is worth a false refusal.
+//
+// Those four routes were calling loadAuthoritativeInventory and refusing on
+// its answer. But that function returns SERVER truth whenever the profile has
+// a serverResources map and the mode is not 'off' — including in 'shadow',
+// which is the production default and is supposed to observe rather than
+// block. So shadow mode was silently enforcing on every build.
+//
+// It refused a real player: the founder's save held 80 aluminium and 40 rare
+// earth, every client gate passed, and the server map said 0 aluminium, so
+// the Lunar Orbital Solar Array could not be ordered. That is exactly the
+// failure docs/RESOURCE_CLAMP_FALSE_POSITIVE_AUDIT.md predicted — the server
+// map does not yet know about every legitimate inflow path, which is
+// precisely WHY the mode is shadow and why enforcing it is documented as
+// unsafe.
+//
+// So: in 'shadow' a disagreement is AUDITED and ALLOWED, which is what shadow
+// means, and the audit rows are the evidence that would justify enforcing
+// later. In 'enforce' the server answer gates, as it should. In 'off' the
+// client view is the only view.
+
+export interface ConsumptionCheck {
+  ok: boolean;
+  /** Present when ok is false: the first resource that failed, for the message. */
+  refusal?: { slug: string; needed: number; held: number };
+  /** True when server truth and the client view disagreed about this spend. */
+  disagreed: boolean;
+  source: 'server' | 'client';
+  mode: ResourceClampMode;
+}
+
+/**
+ * Can this profile spend `cost` on itself? Mode-aware by design — read the
+ * block above before changing it.
+ *
+ * `path` names the caller ('build', 'refit', 'research', 'ship') and travels
+ * into the audit row so we can tell which surface a false refusal would have
+ * hit.
+ */
+export async function checkSelfConsumption(
+  profile: ProfileInventoryRow & { id: string },
+  cost: Record<string, number>,
+  path: string,
+  opts: { mode?: ResourceClampMode; db?: Db } = {},
+): Promise<ConsumptionCheck> {
+  const mode = opts.mode ?? getResourceClampMode();
+  const client = (profile.resources && typeof profile.resources === 'object')
+    ? (profile.resources as Record<string, number>)
+    : {};
+
+  const wants = Object.entries(cost).filter(([, q]) => typeof q === 'number' && q > 0);
+  const shortIn = (held: Record<string, number>) =>
+    wants.find(([slug, qty]) => (held[slug] || 0) < qty);
+
+  const clientShort = shortIn(client);
+
+  if (mode === 'off') {
+    return {
+      ok: !clientShort,
+      refusal: clientShort ? { slug: clientShort[0], needed: clientShort[1], held: client[clientShort[0]] || 0 } : undefined,
+      disagreed: false,
+      source: 'client',
+      mode,
+    };
+  }
+
+  const server = await loadAuthoritativeInventory(profile, opts);
+  const serverShort = server.source === 'server' ? shortIn(server.resources) : clientShort;
+  const disagreed = !!serverShort !== !!clientShort;
+
+  // Record every disagreement, in BOTH modes. In shadow these rows are the
+  // only evidence that the server map is behind; in enforce they explain a
+  // refusal a player will complain about.
+  if (disagreed && server.source === 'server') {
+    const slug = (serverShort || clientShort)![0];
+    await auditServerInventoryGate(opts.db ?? prisma, {
+      profileId: profile.id,
+      resourceSlug: slug,
+      path: `self_consumption:${path}:${mode}`,
+      quantity: cost[slug] || 0,
+      raw: client[slug] || 0,
+      held: server.resources[slug] || 0,
+    });
+  }
+
+  // Shadow observes. Only enforce blocks on server truth.
+  const gating = mode === 'enforce' ? serverShort : clientShort;
+  const held = mode === 'enforce' ? server.resources : client;
+  return {
+    ok: !gating,
+    refusal: gating ? { slug: gating[0], needed: gating[1], held: held[gating[0]] || 0 } : undefined,
+    disagreed,
+    source: mode === 'enforce' ? server.source : 'client',
+    mode,
+  };
+}

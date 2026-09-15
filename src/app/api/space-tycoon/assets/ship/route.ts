@@ -6,7 +6,7 @@ import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { getMegaProjectBonuses } from '@/lib/game/mega-projects';
 import { MAX_SHIPYARD_SLOTS } from '@/lib/game/shipyard-slots';
 import { isLedgerAvailable } from '@/lib/game/server-ledger';
-import { loadAuthoritativeInventory } from '@/lib/game/server-inventory';
+import { checkSelfConsumption } from '@/lib/game/server-inventory';
 import {
   ASSET_KIND_SHIP,
   computeServerShipCost,
@@ -105,11 +105,16 @@ export async function POST(request: NextRequest) {
     const priced = computeServerShipCost(def, megaBonuses);
     const seconds = computeServerShipDuration(def);
     if (Object.keys(priced.resourceCost).length > 0) {
-      const inventory = await loadAuthoritativeInventory(profile);
-      for (const [slug, qty] of Object.entries(priced.resourceCost)) {
-        if ((inventory.resources[slug] || 0) < qty) {
-          return badRequest(`Not enough ${slug.replace(/_/g, ' ')} (${inventory.resources[slug] || 0}/${qty})`, 'insufficient_resources', { resource: slug, needed: qty, held: inventory.resources[slug] || 0 });
-        }
+      // Self-consumption: this spends the corporation's own materials on
+      // its own asset, so a false refusal only stops the player playing and
+      // helps nobody. checkSelfConsumption therefore honours the clamp MODE —
+      // shadow audits the disagreement and allows, enforce gates on server
+      // truth. Refusing on server truth in shadow blocked a real build:
+      // see the block in server-inventory.ts.
+      const consumption = await checkSelfConsumption(profile, priced.resourceCost as Record<string, number>, 'ship');
+      if (!consumption.ok && consumption.refusal) {
+        const { slug, needed, held } = consumption.refusal;
+        return badRequest(`Not enough ${slug.replace(/_/g, ' ')} (${held}/${needed})`, 'insufficient_resources', { resource: slug, needed, held });
       }
     }
     if (!Number.isFinite(profile.money) || profile.money < priced.cost) return fundsError(priced.cost, profile.money, def.name);
