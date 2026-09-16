@@ -18,7 +18,7 @@ jest.mock('@/lib/freshness-alerts', () => ({
 jest.mock('@/lib/db', () => ({
   __esModule: true,
   default: {
-    dataSourceRun: { findFirst: jest.fn() },
+    dataSourceRun: { findMany: jest.fn() },
     fundingRound: { findFirst: jest.fn(), count: jest.fn() },
   },
 }));
@@ -27,7 +27,7 @@ import prisma from '@/lib/db';
 import { CONTENT_ACCURACY_CHECKS, runContentAccuracyChecks } from '@/lib/content-accuracy';
 
 const db = prisma as unknown as {
-  dataSourceRun: { findFirst: jest.Mock };
+  dataSourceRun: { findMany: jest.Mock };
   fundingRound: { findFirst: jest.Mock; count: jest.Mock };
 };
 
@@ -59,7 +59,7 @@ function healthyRun(ageDays: number, itemsWritten = 6) {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  db.dataSourceRun.findFirst.mockResolvedValue(healthyRun(1));
+  db.dataSourceRun.findMany.mockResolvedValue([healthyRun(1)]);
   db.fundingRound.findFirst.mockResolvedValue({ createdAt: new Date(Date.now() - 2 * DAY) });
   db.fundingRound.count.mockResolvedValue(0);
 });
@@ -76,27 +76,32 @@ describe('funding-feeds-alive', () => {
   });
 
   it('fails when a feed has never run at all', async () => {
-    db.dataSourceRun.findFirst.mockResolvedValue(null);
+    db.dataSourceRun.findMany.mockResolvedValue([]);
     const result = await run('funding-feeds-alive');
     expect(result.ok).toBe(false);
     expect(result.detail).toMatch(/has never run/);
   });
 
-  it('fails when the last run never finished', async () => {
-    db.dataSourceRun.findFirst.mockResolvedValue({ ...healthyRun(1), finishedAt: null });
+  // CHANGED 2026-09-16. A killed attempt is only a failure when NOTHING has
+  // completed successfully in the window. A resumable sweep cut short by an
+  // edge timeout leaves exactly such a row while the feed is healthy, and
+  // failing on it made the alarm permanently red — see
+  // feed-liveness-killed-runs.test.ts for the full rule.
+  it('fails when NO run has ever completed, the latest being killed mid-sweep', async () => {
+    db.dataSourceRun.findMany.mockResolvedValue([{ ...healthyRun(1), finishedAt: null, ok: false }]);
     const result = await run('funding-feeds-alive');
     expect(result.ok).toBe(false);
-    expect(result.detail).toMatch(/never finished/);
+    expect(result.detail).toMatch(/no run has ever completed/);
   });
 
   it('surfaces the verbatim error of a failed run', async () => {
-    db.dataSourceRun.findFirst.mockResolvedValue({
+    db.dataSourceRun.findMany.mockResolvedValue([{
       ...healthyRun(1),
       ok: false,
       itemsWritten: 0,
       httpErrors: 12,
       error: 'HTTP 403 https://efts.sec.gov/LATEST/search-index\n  at secFetch',
-    });
+    }]);
     const result = await run('funding-feeds-alive');
     expect(result.ok).toBe(false);
     expect(result.detail).toContain('HTTP 403');
@@ -104,10 +109,10 @@ describe('funding-feeds-alive', () => {
   });
 
   it('fails when the last successful run is older than the policy window', async () => {
-    db.dataSourceRun.findFirst.mockResolvedValue(healthyRun(40));
+    db.dataSourceRun.findMany.mockResolvedValue([healthyRun(40)]);
     const result = await run('funding-feeds-alive');
     expect(result.ok).toBe(false);
-    expect(result.detail).toMatch(/last successful run/);
+    expect(result.detail).toMatch(/last SUCCESSFUL run/i);
   });
 
   it('fails when the feeds look fine but the table has stopped growing', async () => {

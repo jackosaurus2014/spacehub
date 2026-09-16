@@ -990,35 +990,79 @@ const FUNDING_FEEDS: Array<{ source: string; label: string; maxAgeDays: number }
   { source: 'usaspending-awards', label: 'USAspending federal awards', maxAgeDays: 4 },
 ];
 
+/**
+ * The most recent run that actually COMPLETED successfully for a source,
+ * plus whether the very latest attempt was killed part-way.
+ *
+ * Reading only the newest row — which every one of these checks used to do —
+ * is wrong for a resumable sweep. USAspending walks the roster a slice at a
+ * time and is driven by an HTTP request that a platform edge will cut after a
+ * few minutes. The cut leaves a row with a startedAt and no finishedAt, so
+ * the newest row is very often a killed one even while the sweep is healthy
+ * and writing thousands of verified rows. That made the alarm permanently
+ * red, and a permanently red alarm is one nobody reads — the same cry-wolf
+ * failure as the security test that failed one run in three, and as the money
+ * clamp that reported caught abuse as our own bug.
+ *
+ * So: a feed is alive when it has a SUCCESSFUL completion inside its window.
+ * A killed attempt alongside recent successes is ordinary operational noise
+ * and is reported as context, not as a failure. A killed attempt with NO
+ * successful completion in the window is still a failure, which is the case
+ * the alarm exists for.
+ */
+async function lastHealthyRun(source: string): Promise<{
+  success: { startedAt: Date; itemsWritten: number | null } | null;
+  latestKilled: boolean;
+  latestFailedWhy: string | null;
+  everRan: boolean;
+}> {
+  const rows = await prisma.dataSourceRun.findMany({
+    where: { source },
+    orderBy: { startedAt: 'desc' },
+    take: 25,
+    select: { startedAt: true, finishedAt: true, ok: true, error: true, itemsWritten: true },
+  });
+  if (rows.length === 0) return { success: null, latestKilled: false, latestFailedWhy: null, everRan: false };
+  const newest = rows[0];
+  const success = rows.find((r) => r.finishedAt && r.ok) ?? null;
+  return {
+    success: success ? { startedAt: success.startedAt, itemsWritten: success.itemsWritten } : null,
+    latestKilled: !newest.finishedAt,
+    latestFailedWhy: newest.finishedAt && !newest.ok
+      ? (newest.error ?? 'no error recorded').split(/\r?\n/)[0].slice(0, 200)
+      : null,
+    everRan: true,
+  };
+}
+
 async function checkFundingFeedsAlive(): Promise<AccuracyCheckOutcome> {
   const problems: string[] = [];
   const healthy: string[] = [];
 
   for (const feed of FUNDING_FEEDS) {
-    const last = await prisma.dataSourceRun.findFirst({
-      where: { source: feed.source },
-      orderBy: { startedAt: 'desc' },
-      select: { startedAt: true, finishedAt: true, ok: true, error: true, itemsWritten: true, httpErrors: true },
-    });
-    if (!last) {
+    const run = await lastHealthyRun(feed.source);
+    if (!run.everRan) {
       problems.push(`${feed.label}: has never run (no DataSourceRun row for "${feed.source}").`);
       continue;
     }
-    const ageDays = (Date.now() - last.startedAt.getTime()) / MS_PER_DAY;
-    if (!last.finishedAt) {
-      problems.push(`${feed.label}: last run started ${ageDays.toFixed(1)}d ago and never finished (killed mid-sweep).`);
+    if (!run.success) {
+      // No completed, successful run at all — this is the real dead feed.
+      if (run.latestKilled) {
+        problems.push(`${feed.label}: no run has ever completed; the latest was killed mid-sweep.`);
+      } else {
+        problems.push(`${feed.label}: no successful run on record (latest failed: ${run.latestFailedWhy ?? 'unknown'}).`);
+      }
       continue;
     }
-    if (!last.ok) {
-      const why = (last.error ?? 'no error recorded').split(/\r?\n/)[0].slice(0, 200);
-      problems.push(`${feed.label}: last run FAILED (${why}); httpErrors=${last.httpErrors}.`);
-      continue;
-    }
+    const ageDays = (Date.now() - run.success.startedAt.getTime()) / MS_PER_DAY;
     if (ageDays > feed.maxAgeDays) {
-      problems.push(`${feed.label}: last successful run ${Math.round(ageDays)}d ago (policy: < ${feed.maxAgeDays}d).`);
+      problems.push(`${feed.label}: last SUCCESSFUL run ${ageDays.toFixed(1)}d ago (policy: < ${feed.maxAgeDays}d).`);
       continue;
     }
-    healthy.push(`${feed.label} ${ageDays.toFixed(1)}d ago (+${last.itemsWritten})`);
+    // Healthy. A killed attempt after a recent success is normal for a
+    // resumable sweep cut short by an edge timeout; say so without failing.
+    const note = run.latestKilled ? ' (latest attempt cut short — resumes by cursor)' : '';
+    healthy.push(`${feed.label} ${ageDays.toFixed(1)}d ago (+${run.success.itemsWritten ?? 0})${note}`);
   }
 
   // Belt and braces: the feeds can be green while the table they exist to
