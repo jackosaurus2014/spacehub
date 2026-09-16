@@ -90,7 +90,7 @@ takes. This week's edition: spacenexus.us/intelligence-brief
 searchable in one place. Engineering, ops, business, gigs. spacenexus.us/space-talent
 
 **D3 — the tracking layer**
-SpaceNexus tracks 16,000+ active satellites, 300+ companies, and a $630B space economy —
+SpaceNexus tracks 16,000+ active satellites, 330+ companies, and a $626B space economy —
 with live launch coverage, Starship and Artemis program trackers, and 60+ automated data
 feeds keeping it current.
 
