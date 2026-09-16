@@ -159,14 +159,27 @@ async function checkNothingGenerated(): Promise<ReadinessCriterion> {
   }
 }
 
-/** The feeds that keep it fresh must have run, and run successfully. */
+/**
+ * The feeds that keep it fresh must have run, and run to COMPLETION.
+ *
+ * This had the same flaw the content-accuracy check had, and I wrote it: it
+ * treated any run row with ok=false as a failing source, which includes the
+ * rows a resumable sweep leaves behind every time an HTTP edge cuts it
+ * mid-pass. USAspending walks 331 companies a slice at a time, so those rows
+ * are routine — and the gate declared a product that is on sale unsellable
+ * while the sweep was healthily writing 11,681 verified awards.
+ *
+ * A source is alive when it has a COMPLETED, SUCCESSFUL run in the window.
+ * Cut-short attempts alongside a success are noise; a source with no
+ * successful completion at all is the failure worth blocking on.
+ */
 async function checkFeedsAlive(): Promise<ReadinessCriterion> {
   const since = new Date(Date.now() - 3 * 24 * 3600_000);
   try {
     const runs = await prisma.dataSourceRun.findMany({
       where: { startedAt: { gte: since } },
-      select: { source: true, ok: true },
-      take: 500,
+      select: { source: true, ok: true, finishedAt: true },
+      take: 1000,
     });
     if (runs.length === 0) {
       return {
@@ -177,15 +190,19 @@ async function checkFeedsAlive(): Promise<ReadinessCriterion> {
         detail: 'No source run recorded in 3 days. Either the nightly sync is not firing or it is not recording, and both mean the data silently ages.',
       };
     }
-    const failing = [...new Set(runs.filter(r => !r.ok).map(r => r.source))];
+    const sources = [...new Set(runs.map(r => r.source))];
+    const succeeded = new Set(runs.filter(r => r.ok && r.finishedAt).map(r => r.source));
+    const failing = sources.filter(s => !succeeded.has(s));
+    const cutShort = sources.filter(s => succeeded.has(s) && runs.some(r => r.source === s && !r.finishedAt));
+    const note = cutShort.length > 0 ? ` (${cutShort.join(', ')} had an attempt cut short; resumes by cursor)` : '';
     return {
       id: 'freshness-feeds-alive',
       label: 'The feeds that keep the data current are running',
       ok: failing.length === 0,
       severity: 'blocker',
       detail: failing.length === 0
-        ? `${runs.length} run(s) in 3d across ${new Set(runs.map(r => r.source)).size} source(s), all ok`
-        : `Failing: ${failing.join(', ')}`,
+        ? `${runs.length} run(s) in 3d across ${sources.length} source(s), all with a successful completion${note}`
+        : `No successful completion in 3d for: ${failing.join(', ')}`,
     };
   } catch (err) {
     return {
