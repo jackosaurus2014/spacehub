@@ -486,8 +486,13 @@ export default function Navigation() {
             >
               Jobs
             </Link>
+            {/* prefetch={false}: the game route pulls a ~718KB chunk, and
+                Next would fetch it on every page that renders this nav. The
+                game is a destination people choose, not something to preload
+                for a reader who came for the news. */}
             <Link
               href="/space-tycoon"
+              prefetch={false}
               className="text-white/90 hover:text-white transition-colors text-sm font-medium flex items-center gap-1"
             >
               <span>🎮</span> Space Tycoon

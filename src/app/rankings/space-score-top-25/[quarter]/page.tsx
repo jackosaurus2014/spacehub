@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import RankMovement from '@/components/rankings/RankMovement';
-import DeskByline from '@/components/desk/DeskByline';
+import ComputedByline from '@/components/reports/ComputedByline';
 import ReleaseFooterNote from '@/components/reports/ReleaseFooterNote';
 import { getSpaceScoreEdition, SPACE_SCORE_TOP_N } from '@/lib/rankings-data';
 import {
@@ -239,8 +239,9 @@ export default async function SpaceScoreTop25Page(props: { params: Promise<{ qua
           asOf={edition.generatedAt.slice(0, 10)}
         />
 
+        {/* Computed, not drafted - see ComputedByline. */}
         <div className="mt-10 card p-5 border border-white/10">
-          <DeskByline />
+          <ComputedByline />
         </div>
       </div>
     </div>

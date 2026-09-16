@@ -8,6 +8,7 @@ import { EXPOSURE_COVERAGE_NOTE } from '@/lib/research-exposure';
 import { getScheduledCall, researchCallCapability, formatCallTime } from '@/lib/research-call';
 import { RESEARCH_RELEASES, latestPeriod, periodLabel } from '@/lib/research-releases';
 import ResearchCheckoutButton from './ResearchCheckoutButton';
+import ResearchSample from './ResearchSample';
 
 // The availability flag is read from the environment at request time, and the
 // funding/score counts come from the database. The build container reaches
@@ -89,6 +90,7 @@ export default async function ResearchPage() {
             <ResearchCheckoutButton
               priceYearly={availability.plan.priceYearly}
               totalSeats={availability.plan.totalSeats}
+              resumeAfterSignIn
             />
             <p className="text-sm text-slate-400">
               ${availability.plan.priceYearly.toLocaleString()} per year &middot;{' '}
@@ -114,6 +116,9 @@ export default async function ResearchPage() {
             ))}
           </ul>
         </section>
+
+        {/* Evidence — real rows from a live edition, never a mock-up */}
+        <ResearchSample />
 
         {/* Recurring releases — the named franchises */}
         <section aria-labelledby="releases" className="mb-14">
@@ -289,7 +294,7 @@ export default async function ResearchPage() {
               ],
               [
                 'Hiring index',
-                `Monthly, from a daily crawl of ${SITE_STATS.companies}+ company career pages and 16 ATS boards.`,
+                `Monthly, from a daily crawl of ${SITE_STATS.companies} company career pages and 16 ATS boards.`,
               ],
               [
                 'Screen alerts',
@@ -321,11 +326,24 @@ export default async function ResearchPage() {
               they were sent to, so forwarding one does not transfer a seat.
             </p>
             <p>
-              A seat unlocks the Research workspace &mdash; exports, portfolio
-              exposure, screens, Space Score history and the quarterly. To be
-              precise about it: a seat is <strong>not</strong> a Professional
-              subscription, and it carries no billing authority. Only the account
-              that pays can invite or revoke seats.
+              <strong className="text-white">The account that pays gets everything
+              Professional has, at no extra cost.</strong> Research sits above
+              Professional in the tier model (TIER_ACCESS in
+              src/lib/subscription.ts), so the payer&rsquo;s account carries every
+              Professional capability &mdash; the supply-chain map, the regulatory
+              calendar and compliance suite, API access, custom alerts, watchlists
+              and the ad-free site &mdash; plus everything on this page. You do not
+              need to buy Professional as well, and nothing on this page is priced
+              as though you did.
+            </p>
+            <p>
+              An invited colleague&rsquo;s seat is narrower, and we would rather say
+              so before you buy than after: it unlocks the Research workspace
+              &mdash; exports, portfolio exposure, screens, Space Score history, the
+              quarterly and the full row sets behind every release &mdash; but it
+              does not by itself confer the Professional capabilities listed above,
+              and it carries no billing authority. Only the account that pays can
+              invite or revoke seats.
             </p>
             <p>
               Need more than {RESEARCH_PLAN.totalSeats}?{' '}

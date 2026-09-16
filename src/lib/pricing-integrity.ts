@@ -274,3 +274,111 @@ export async function checkResearchTierMatchesStripe(): Promise<DiscountCheckOut
         detail: `SpaceNexus Research is advertised at $${RESEARCH_PLAN.priceYearly}/year and Stripe agrees.`,
       };
 }
+
+/**
+ * Nothing may quietly discount the Research seat.
+ *
+ * Checkout sets `allow_promotion_codes: true` for EVERY tier, Research
+ * included (src/app/api/stripe/checkout/route.ts). That renders a promo-code
+ * box on the $399/year firm seat, and Stripe will honour any active promotion
+ * code typed into it unless the underlying coupon is restricted to specific
+ * products via `coupon.applies_to.products`.
+ *
+ * So an offer written for a $19.99/month Pro subscription — FOUNDER50, say —
+ * silently becomes an offer on a $399/year annual seat. That is the same class
+ * of failure as 2026-08-24 (advertised terms and billed terms diverging), just
+ * pointed the other way: the buyer pays LESS than the page says, and we find
+ * out from the revenue report.
+ *
+ * This check fails when any active promotion code could be applied to the
+ * Research price. The fix is in Stripe (restrict the coupon to the Pro
+ * product) or in checkout (drop `allow_promotion_codes` for tier=research) —
+ * never by deleting this check.
+ */
+export async function checkPromotionCodesCannotDiscountResearch(): Promise<DiscountCheckOutcome> {
+  if (!isResearchTierEnabled()) {
+    return {
+      ok: true,
+      detail: 'SpaceNexus Research is behind its feature flag — there is no seat to discount.',
+    };
+  }
+
+  const priceId = getResearchPriceId();
+  if (!priceId) {
+    // checkResearchTierMatchesStripe already fails loudly on this; do not
+    // page twice for one misconfiguration.
+    return {
+      ok: true,
+      detail: `${RESEARCH_PRICE_ENV_VAR} is not set — reported by the Research price check.`,
+    };
+  }
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return {
+      ok: false,
+      detail:
+        'SpaceNexus Research is advertised but STRIPE_SECRET_KEY is not configured — cannot verify that no promotion code discounts it.',
+    };
+  }
+
+  try {
+    const stripe = getStripe();
+    const price = await stripe.prices.retrieve(priceId);
+    const productId = typeof price.product === 'string' ? price.product : price.product?.id;
+    const list = await stripe.promotionCodes.list({ active: true, limit: 100 });
+
+    const listPrice = RESEARCH_PLAN.priceYearly;
+    const offenders: string[] = [];
+
+    for (const pc of list.data) {
+      const coupon = pc.coupon;
+      if (!coupon || coupon.valid === false) continue;
+
+      const products = coupon.applies_to?.products;
+      const restrictedAway =
+        Array.isArray(products) && products.length > 0 && !!productId && !products.includes(productId);
+      if (restrictedAway) continue;
+
+      const charged =
+        coupon.percent_off != null
+          ? listPrice * (1 - coupon.percent_off / 100)
+          : coupon.amount_off != null
+            ? Math.max(0, listPrice - coupon.amount_off / 100)
+            : null;
+
+      offenders.push(
+        `${pc.code} (${
+          coupon.percent_off != null
+            ? `${coupon.percent_off}% off`
+            : coupon.amount_off != null
+              ? `$${(coupon.amount_off / 100).toFixed(2)} off`
+              : 'unknown discount'
+        }, ${coupon.duration === 'repeating' ? `${coupon.duration_in_months} months` : coupon.duration})` +
+          (charged == null ? '' : ` would bill $${charged.toFixed(2)} instead of $${listPrice}`)
+      );
+    }
+
+    if (offenders.length > 0) {
+      return {
+        ok: false,
+        detail:
+          `${offenders.length} active Stripe promotion code(s) are not product-restricted and can be typed into the ` +
+          `$${listPrice}/year Research checkout (which sets allow_promotion_codes: true): ${offenders.join(' | ')}. ` +
+          'Restrict the coupon to the Pro product in Stripe (coupon.applies_to.products), or stop sending ' +
+          'allow_promotion_codes for tier=research in src/app/api/stripe/checkout/route.ts.',
+      };
+    }
+
+    return {
+      ok: true,
+      detail: `No active promotion code can be applied to the $${listPrice}/year Research seat.`,
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      detail: `Could not check Stripe promotion codes against the Research price (${
+        err instanceof Error ? err.message : String(err)
+      })`,
+    };
+  }
+}

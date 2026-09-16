@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { internalError, notFoundError, validationError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { requireResearchAccess } from '@/lib/research-guard';
-import { toResearchCsv } from '@/lib/research-export';
+import { csvProvenanceHeader, jsonProvenance, toResearchCsv } from '@/lib/research-export';
 import { allReleaseIds, citationFor, getRelease } from '@/lib/research-releases';
 import {
   buildReleaseEdition,
@@ -99,6 +99,10 @@ export async function GET(
         // forgotten the moment it lands in a spreadsheet.
         methodology: release.methodology,
         coverage: edition.coverage,
+        // Source credits travel with the file. The UK register is Crown
+        // copyright under the Open Government Licence v3.0, which grants
+        // reuse ONLY while the acknowledgement is given.
+        ...jsonProvenance(),
         // A standing legal notice, when the release carries one, travels with
         // the file. A disclaimer that lives only on a web page is a disclaimer
         // that gets forgotten the moment the export lands in a spreadsheet.
@@ -148,8 +152,22 @@ export async function GET(
   const csv = toResearchCsv(table.rows, columnKeys);
   const filename = `spacenexus-${release.id}-${period}-${table.id}.csv`;
 
+  // The citation, the notice, the coverage limits and the source credits go
+  // INSIDE the file as comment rows. They used to travel only as response
+  // headers, which meant they ceased to exist the moment the download
+  // finished - exactly the "attached to the file, not just printed on this
+  // page" promise /research makes, unkept. The headers stay too.
+  const provenance = csvProvenanceHeader({
+    title: `${edition.title} - ${table.label}`,
+    sourceUrl: `https://spacenexus.us${release.href(period)}`,
+    citation,
+    notice: edition.notice ?? null,
+    coverage: edition.coverage,
+    rowCount: table.rows.length,
+  });
+
   // Leading UTF-8 BOM so Excel opens accented company and investor names right.
-  return new NextResponse(`﻿${csv}`, {
+  return new NextResponse(`﻿${provenance}${csv}`, {
     status: 200,
     headers: {
       'Content-Type': 'text/csv; charset=utf-8',

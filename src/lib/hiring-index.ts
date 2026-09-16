@@ -42,8 +42,21 @@ export interface HiringIndex {
   /** Site-wide active postings per the last _TOTAL snapshot on/before month end; null if none in range. */
   activeAtMonthEnd: number | null;
   activeAtMonthEndDate: string | null; // date of that snapshot
-  /** Live count of active postings right now — fallback when no snapshot exists yet. */
+  /**
+   * Live count of active postings right now — the same query the month-end
+   * snapshot froze, run again today.
+   *
+   * THREE NUMBERS, ONE METRIC. This page carries `activeAtMonthEnd` (a frozen
+   * historical reading) and `activeNow` (today's reading of the same thing),
+   * and until 2026-09 it printed the second under a tile that read like the
+   * first: "REMOTE SHARE 1.5% — 135 of 8,925 active roles" on a page headlined
+   * "6,733 at month end". Both figures are right; the page did not say which
+   * was which. Every consumer of `activeNow` must stamp it with
+   * `activeNowAsOf`, and the reconciliation note below is rendered on the page.
+   */
   activeNow: number | null;
+  /** YYYY-MM-DD the live count was taken — always today, never the month end. */
+  activeNowAsOf: string;
   /** Prior month's month-end total (null when the prior month predates history). */
   priorActiveAtMonthEnd: number | null;
   /** Month-over-month change in month-end totals; null when no prior edition exists. */
@@ -60,13 +73,47 @@ export interface HiringIndex {
     gainers: HiringIndexMover[];
     decliners: HiringIndexMover[];
   };
+  /**
+   * Remote share of postings that are active RIGHT NOW, not at month end.
+   *
+   * We hold no history of the remote flag, so this cannot be reconstructed for
+   * a past month and we will not pretend otherwise: `asOf` carries today's
+   * date and the page labels the tile "live". Its denominator is `activeNow`
+   * by construction — the two can never drift apart.
+   */
   remoteShare: {
     remote: number;
     total: number;
     percent: number | null; // null when total is 0
+    asOf: string; // YYYY-MM-DD — today, the same date as activeNowAsOf
   };
-  topLocations: { location: string; count: number }[]; // top 8, remote excluded
+  /** Top 8 locations among postings active right now (as of `activeNowAsOf`); remote excluded. */
+  topLocations: { location: string; count: number }[];
   generatedAt: string; // ISO timestamp
+}
+
+/**
+ * The sentence that reconciles the two active-postings figures on the page.
+ *
+ * Exported so the edition page, any export of it and the test all read the
+ * same words. A reader who sees 6,733 in one tile and 8,925 in another must be
+ * able to tell, on the page, why they differ — that is the whole point.
+ */
+export function activePostingsReconciliation(index: HiringIndex): string | null {
+  if (index.activeAtMonthEnd == null || index.activeNow == null) return null;
+  if (index.activeAtMonthEndDate === index.activeNowAsOf) return null;
+  const delta = index.activeNow - index.activeAtMonthEnd;
+  const direction = delta === 0 ? 'unchanged since' : delta > 0 ? 'up by' : 'down by';
+  const magnitude = delta === 0 ? '' : ` ${Math.abs(delta).toLocaleString('en-US')}`;
+  return (
+    `Two readings of one metric. ${index.activeAtMonthEnd.toLocaleString('en-US')} is the site-wide ` +
+    `snapshot frozen on ${index.activeAtMonthEndDate}, the last day of ${index.monthLabel} — that is the ` +
+    `edition's headline and it will never move. ${index.activeNow.toLocaleString('en-US')} is the same ` +
+    `count taken today, ${index.activeNowAsOf} (${direction}${magnitude}), and it is what the remote-share ` +
+    `and location panels below are computed over, because we hold no history of a posting's remote flag ` +
+    `or location and will not reconstruct one. Both are the same query over the same table on two ` +
+    `different days.`
+  );
 }
 
 /** 'YYYY-MM' for a (year, 1-12 month) pair. */
@@ -146,8 +193,10 @@ async function computeHiringIndex(year: number, month: number): Promise<HiringIn
     seniorityGroups,
     monthSnapshots,
     remoteCount,
-    activeTotal,
     locationGroups,
+    // NOTE: the remote-share denominator is `activeNow` above, not a second
+    // count of its own. It used to be a separate identical query, which is how
+    // one metric ended up with two names on one page.
   ] = await Promise.all([
     prisma.companyJobSnapshot.findFirst({
       where: { companyName: TOTAL_SENTINEL, date: { lt: nextMonthStart } },
@@ -177,7 +226,6 @@ async function computeHiringIndex(year: number, month: number): Promise<HiringIn
       select: { companyName: true, companyProfileId: true, activeJobs: true, date: true },
     }),
     prisma.spaceJobPosting.count({ where: { isActive: true, remoteOk: true } }),
-    prisma.spaceJobPosting.count({ where: { isActive: true } }),
     prisma.spaceJobPosting.groupBy({
       by: ['location'],
       where: { isActive: true },
@@ -285,6 +333,8 @@ async function computeHiringIndex(year: number, month: number): Promise<HiringIn
     .slice(0, 8);
 
   const activeAtMonthEnd = lastTotalSnapshot?.activeJobs ?? null;
+  const now = new Date();
+  const activeNowAsOf = toDateKey(now);
 
   return {
     month: monthKey(year, month),
@@ -292,6 +342,7 @@ async function computeHiringIndex(year: number, month: number): Promise<HiringIn
     activeAtMonthEnd,
     activeAtMonthEndDate: lastTotalSnapshot ? toDateKey(lastTotalSnapshot.date) : null,
     activeNow,
+    activeNowAsOf,
     priorActiveAtMonthEnd,
     momChange:
       activeAtMonthEnd != null && priorActiveAtMonthEnd != null
@@ -310,11 +361,12 @@ async function computeHiringIndex(year: number, month: number): Promise<HiringIn
     movers: { gainers, decliners },
     remoteShare: {
       remote: remoteCount,
-      total: activeTotal,
-      percent: activeTotal > 0 ? (remoteCount / activeTotal) * 100 : null,
+      total: activeNow,
+      percent: activeNow > 0 ? (remoteCount / activeNow) * 100 : null,
+      asOf: activeNowAsOf,
     },
     topLocations,
-    generatedAt: new Date().toISOString(),
+    generatedAt: now.toISOString(),
   };
 }
 

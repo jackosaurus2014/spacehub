@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import LegalDisclaimerModal from '@/components/LegalDisclaimerModal';
 import NewsletterSignup from '@/components/NewsletterSignup';
+import ResearchFooterLink from '@/components/research/ResearchFooterLink';
 
 const footerLinks = {
   platform: {
@@ -188,6 +189,15 @@ export default function Footer() {
                       </Link>
                     </li>
                   ))}
+                  {/*
+                    SpaceNexus Research sits in Solutions, and only while the
+                    server says the tier is for sale. Before 2026-09-16 the
+                    footer's 47 links contained no route to the one page that
+                    sells anything.
+                  */}
+                  {section.title === 'Solutions' && (
+                    <ResearchFooterLink className="text-slate-400 hover:text-white text-sm transition-colors inline-block py-1.5 sm:py-0.5 min-h-[44px] sm:min-h-0 flex items-center" />
+                  )}
                 </ul>
               </div>
             ))}

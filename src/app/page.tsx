@@ -9,6 +9,7 @@ import NextLaunchHero from '@/components/home/NextLaunchHero';
 import NextFiveRail from '@/components/home/NextFiveRail';
 import TycoonBand from '@/components/home/TycoonBand';
 import ModuleSpotlight from '@/components/home/ModuleSpotlight';
+import ResearchBand from '@/components/home/ResearchBand';
 import Console from '@/components/ui/Console';
 
 // Mission Control homepage (docs/research-2026-08-30/SYNTHESIS.md, item 15).
@@ -168,6 +169,8 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Releases, and the seat that unlocks the rows behind them */}
+      <ResearchBand />
 
       {/* Digest */}
       <section className="py-10 md:py-16">

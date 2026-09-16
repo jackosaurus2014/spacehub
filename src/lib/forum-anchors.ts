@@ -28,6 +28,8 @@
  * a thread costs no join into SpaceEvent or CompanyProfile.
  */
 
+import bcrypt from 'bcryptjs';
+import { randomBytes } from 'node:crypto';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { APP_URL } from '@/lib/constants';
@@ -123,14 +125,25 @@ export async function getForumSystemUserId(): Promise<string> {
     return existing.id;
   }
 
-  // No password hash — the credentials provider rejects a user without one,
-  // so this account has no login path at all.
+  // The account needs a password column — it is NOT nullable — but must have
+  // no usable login. An `as never` cast previously hid the missing field from
+  // the compiler, so every run of this cron threw "Argument `password` is
+  // missing" and no anchor thread was ever created. The forum therefore sat
+  // empty while its own page promised that launch threads open automatically.
+  //
+  // So: hash a cryptographically random secret and throw the secret away.
+  // The stored value is a real bcrypt hash, so the credentials provider
+  // compares against it normally and simply never matches, because nobody —
+  // including us — knows the plaintext. That is safer than a sentinel string,
+  // which some bcrypt implementations throw on rather than returning false.
+  const unusableSecret = randomBytes(48).toString('hex');
   const created = await prisma.user.create({
     data: {
       email: FORUM_SYSTEM_EMAIL,
       name: FORUM_SYSTEM_NAME,
       isAdmin: false,
-    } as never,
+      password: await bcrypt.hash(unusableSecret, 10),
+    },
     select: { id: true },
   });
   cachedSystemUserId = created.id;

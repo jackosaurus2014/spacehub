@@ -77,8 +77,19 @@ function TickerItemView({ item }: { item: TickerItem }) {
   );
 
   if (item.url) {
+    // tabIndex={-1}: the strip is decorative chrome (see the aria-hidden note
+    // on the scrolling container). Every headline, launch and quote in it has
+    // a real home on /news, /launches and /space-stocks, and the strip renders
+    // each item TWICE for the seamless loop - so leaving these in the tab
+    // order cost 28 Tab presses before the first control on any page below it,
+    // half of them repeats of a link the reader had already passed.
     return (
-      <a href={item.url} className="hover:opacity-80 transition-opacity" target={item.url.startsWith('http') ? '_blank' : undefined}>
+      <a
+        href={item.url}
+        tabIndex={-1}
+        className="hover:opacity-80 transition-opacity"
+        target={item.url.startsWith('http') ? '_blank' : undefined}
+      >
         {content}
       </a>
     );
@@ -170,8 +181,17 @@ export default function IndustryTicker() {
         <div className="absolute right-0 top-0 bottom-0 w-8 z-10" style={{ background: 'linear-gradient(to left, rgba(9,9,11,1), transparent)' }} />
         <button type="button" onClick={hide} aria-label="Hide market ticker" title="Hide market ticker (Account → Appearance to restore)" className="absolute right-1 top-0 bottom-0 z-20 px-1.5 text-slate-500 hover:text-white text-xs leading-none">×</button>
 
-        {/* Scrolling content — duplicated for seamless loop */}
-        <div className="animate-ticker flex items-center whitespace-nowrap">
+        {/*
+          aria-hidden: this is a decorative marquee. It duplicates its own
+          contents to loop seamlessly, it moves on its own, and every item in
+          it is reachable at its real destination (/news, /launches,
+          /space-stocks). Announcing it - twice - ahead of the page's own
+          content is noise to a screen-reader user and a 28-stop detour to a
+          keyboard user. The hide button below stays outside this container and
+          remains focusable and announced, so the strip can still be turned
+          off without a mouse.
+        */}
+        <div className="animate-ticker flex items-center whitespace-nowrap" aria-hidden="true">
           {items.map((item, i) => (
             <span key={`a-${i}`} className="inline-flex items-center">
               <TickerItemView item={item} />

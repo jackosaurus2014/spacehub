@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import DataLicenceNote from '@/components/reports/DataLicenceNote';
 import type { ResearchRelease } from '@/lib/research-releases';
 import type { ReportTable, ResearchReportEdition } from '@/lib/research-report-types';
 
@@ -286,6 +287,15 @@ export default function ReleaseEditionView({
           ))}
         </ul>
       </section>
+
+      {/*
+        Required attribution. The OGL grants reuse of the Crown-copyright UK
+        register ONLY on condition that the source is acknowledged, and the
+        rights end automatically without it. It sits next to the coverage
+        limits because both answer the same question: where did this come from
+        and what is it allowed to be.
+      */}
+      <DataLicenceNote />
     </>
   );
 }

@@ -159,7 +159,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
+      // /favicon.ico was referenced for months and never existed; the 404
+      // returned a 98KB HTML page on every load. These PNGs are real.
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
     ],
@@ -167,7 +170,8 @@ export const metadata: Metadata = {
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
     other: [
-      { rel: 'mask-icon', url: '/safari-pinned-tab.svg', color: '#6366f1' },
+      // mask-icon dropped: we never shipped safari-pinned-tab.svg, so this
+      // was a second guaranteed 404 in every document head.
     ],
   },
   manifest: '/site.webmanifest',

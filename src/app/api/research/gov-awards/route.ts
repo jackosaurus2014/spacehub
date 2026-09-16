@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { internalError, validationError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { requireResearchAccess } from '@/lib/research-guard';
-import { toResearchCsv } from '@/lib/research-export';
+import { csvProvenanceHeader, jsonProvenance, toResearchCsv } from '@/lib/research-export';
 import prisma from '@/lib/db';
 import {
   DEFAULT_SINCE,
@@ -224,8 +224,18 @@ export async function GET(req: NextRequest) {
     const stamp = new Date().toISOString().slice(0, 10);
 
     if (format === 'csv') {
+      // Coverage and source credits go INSIDE the file, not only in the
+      // X-SpaceNexus-Coverage header that stops existing the moment the
+      // download finishes.
+      const provenance = csvProvenanceHeader({
+        title: `SpaceNexus Research - federal awards (${USASPENDING_SOURCE_LABEL})`,
+        sourceUrl: 'https://spacenexus.us/research',
+        coverage: COVERAGE,
+        ...jsonProvenance(),
+        rowCount: flat.length,
+      });
       const csv = toResearchCsv(flat, columns);
-      return new NextResponse(`﻿${csv}`, {
+      return new NextResponse(`﻿${provenance}${csv}`, {
         status: 200,
         headers: {
           'Content-Type': 'text/csv; charset=utf-8',

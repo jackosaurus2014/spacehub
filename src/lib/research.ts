@@ -235,7 +235,7 @@ export const RESEARCH_CAPABILITIES: ResearchCapability[] = [
     id: 'seats',
     label: `${RESEARCH_PLAN.totalSeats} named seats on one invoice`,
     detail:
-      `Up to ${RESEARCH_PLAN.totalSeats} named users, one annual invoice. A seat unlocks the Research workspace — exports, exposure, screens, score history and the quarterly. A seat is not a Professional subscription, and the copy on /research says so.`,
+      `Up to ${RESEARCH_PLAN.totalSeats} named users, one annual invoice. The account that pays gets Research, which sits ABOVE Professional in TIER_ACCESS (src/lib/subscription.ts) and therefore carries every Professional capability as well — buying this does not also require a Professional subscription. An invited colleague’s seat unlocks the Research workspace — exports, exposure, screens, score history, the quarterly and the full row sets behind every release — and carries no billing authority; /research spells that difference out rather than leaving it to be discovered.`,
     accessFlag: 'hasSeats',
     enforcedBy: 'src/lib/research.ts',
   },

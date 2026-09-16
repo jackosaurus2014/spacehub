@@ -8,6 +8,7 @@ import CiteEmbed from '@/components/CiteEmbed';
 import ReleaseFooterNote from '@/components/reports/ReleaseFooterNote';
 import { coverageChangesInWindow } from '@/lib/hiring-coverage';
 import {
+  activePostingsReconciliation,
   getHiringIndex,
   parseMonthParam,
   currentMonthKey,
@@ -159,6 +160,7 @@ export default async function HiringIndexMonthPage(props: PageProps) {
 
   const headlineActive = index ? index.activeAtMonthEnd ?? index.activeNow : null;
   const movers = index ? [...index.movers.gainers, ...index.movers.decliners] : [];
+  const reconciliation = index ? activePostingsReconciliation(index) : null;
 
   return (
     <div className="min-h-screen pb-16">
@@ -210,12 +212,24 @@ export default async function HiringIndexMonthPage(props: PageProps) {
                 tone={index.momChange != null && index.momChange < 0 ? 'ember' : 'signal'}
                 sub={index.momChange == null ? 'first edition — no prior month' : 'active postings vs prior month end'}
               />
+              {/* Labelled "live" on purpose. This tile is the only one on the
+                  strip that is NOT a figure for the month in the headline: we
+                  hold no history of a posting's remote flag, so it can only be
+                  computed over what is active today. The reconciliation note
+                  below spells out the difference in the reader's words. */}
               <Telemetry
-                label="Remote share"
+                label="Remote share (live)"
                 value={index.remoteShare.percent != null ? `${index.remoteShare.percent.toFixed(1)}%` : '—'}
-                sub={`${formatCount(index.remoteShare.remote)} of ${formatCount(index.remoteShare.total)} active roles`}
+                sub={`${formatCount(index.remoteShare.remote)} of ${formatCount(index.remoteShare.total)} postings active today (${index.remoteShare.asOf})`}
               />
             </div>
+
+            {reconciliation && (
+              <p className="text-[13px] text-white/70 leading-relaxed bg-white/[0.02] border border-white/[0.06] rounded px-4 py-3">
+                <span className="text-white/90 font-medium">Why two different totals appear on this page.</span>{' '}
+                {reconciliation}
+              </p>
+            )}
 
             <Console title={`Top 10 hirers — ${label}`} source="SpaceNexus daily snapshots" asOf={index.generatedAt}>
               {index.topCompanies.length === 0 ? (
@@ -286,7 +300,7 @@ export default async function HiringIndexMonthPage(props: PageProps) {
               </Console>
             </div>
 
-            <Console title="Top hiring locations" source="Active postings">
+            <Console title="Top hiring locations (live)" source={`Postings active today (${index.activeNowAsOf})`}>
               {index.topLocations.length === 0 ? (
                 <p className="text-slate-500 text-sm">No location data available.</p>
               ) : (
@@ -300,7 +314,10 @@ export default async function HiringIndexMonthPage(props: PageProps) {
                 </ul>
               )}
               <p className="mt-3 text-[11px] text-slate-500">
-                Remote-only postings ({formatCount(index.remoteShare.remote)}) are excluded here and reported in the remote-share tile above.
+                Counted over the {formatCount(index.activeNow ?? 0)} postings active today ({index.activeNowAsOf}), not the{' '}
+                {index.activeAtMonthEnd != null ? formatCount(index.activeAtMonthEnd) : '—'} frozen at month end — we hold no
+                history of a posting&apos;s location. Remote-only postings ({formatCount(index.remoteShare.remote)}) are excluded
+                here and reported in the remote-share tile above.
               </p>
             </Console>
 
@@ -330,8 +347,17 @@ export default async function HiringIndexMonthPage(props: PageProps) {
                     <> (for this first edition that window is Aug 13&ndash;31, since snapshot history begins mid-month)</>
                   )}.
                   &ldquo;New postings&rdquo; counts roles whose posted date falls inside the calendar month (UTC).
-                  Remote share and location rankings reflect currently active postings. Companies without a
-                  linked profile appear under their board&apos;s name as-is.
+                  Companies without a linked profile appear under their board&apos;s name as-is.
+                </p>
+                <p>
+                  <span className="text-white/90">Two totals, and why.</span> Every figure on this page describes{' '}
+                  {label} except the remote-share tile and the location table, which are computed over postings active
+                  today ({index.activeNowAsOf}) and are labelled &ldquo;live&rdquo; where they appear. We record no
+                  history of a posting&apos;s remote flag or location, so those two cannot be reconstructed for a past
+                  month, and we would rather say so than publish a month-end number we did not measure. The{' '}
+                  <Link href="/chart/open-space-jobs" className="text-cyan-300 hover:underline">open-jobs chart</Link>{' '}
+                  plots the same site-wide snapshot series this page&apos;s headline is taken from, so the two agree by
+                  construction.
                 </p>
                 <p>
                   This index is free to cite with attribution. Questions or corrections:{' '}

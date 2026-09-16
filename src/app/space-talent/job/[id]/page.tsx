@@ -236,7 +236,7 @@ export async function generateMetadata(
   const params = await props.params;
   const job = await fetchJob(params.id);
   if (!job || !job.isActive) {
-    return { title: 'Job not found | SpaceNexus' };
+    return { title: 'Job not found' };
   }
 
   const description = job.description
@@ -246,7 +246,7 @@ export async function generateMetadata(
   const url = `${APP_URL}/space-talent/job/${job.id}`;
 
   return {
-    title: `${job.title} at ${job.company} | SpaceNexus`,
+    title: `${job.title} at ${job.company}`,
     description,
     alternates: { canonical: url },
     openGraph: {

@@ -102,6 +102,7 @@ const hiringFixture = {
   activeAtMonthEnd: 6512,
   activeAtMonthEndDate: '2026-08-31',
   activeNow: 6600,
+  activeNowAsOf: '2026-09-03',
   priorActiveAtMonthEnd: 6300,
   momChange: 212,
   newPostings: {
@@ -114,7 +115,7 @@ const hiringFixture = {
     gainers: [{ companyName: 'Relativity', slug: 'relativity', first: 40, last: 65, change: 25, percentChange: 62.5, firstDate: '2026-08-01', lastDate: '2026-08-31' }],
     decliners: [{ companyName: 'Astra', slug: null, first: 30, last: 12, change: -18, percentChange: -60, firstDate: '2026-08-01', lastDate: '2026-08-31' }],
   },
-  remoteShare: { remote: 640, total: 6512, percent: 9.8 },
+  remoteShare: { remote: 640, total: 6600, percent: 9.7, asOf: '2026-09-03' },
   topLocations: [{ location: 'Hawthorne, CA', count: 900 }],
   generatedAt: '2026-09-03T13:00:00Z',
 };

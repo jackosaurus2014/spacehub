@@ -1,3 +1,4 @@
+import { coverageChangesInWindow } from '@/lib/hiring-coverage';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -36,6 +37,11 @@ export default async function ChartPage(props: { params: Promise<{ slug: string 
   const def = getChartDef(params.slug);
   if (!def) notFound();
   const series = await loadChartSeries(def.slug);
+  // Only the jobs series is distorted by a tracker-coverage change; every
+  // other chart draws from a source whose scope has not moved.
+  const coverageNotes = def.slug === 'open-space-jobs'
+    ? coverageChangesInWindow(new Date(Date.now() - 120 * 86400000))
+    : [];
   const others = CHART_DEFS.filter((c) => c.slug !== def.slug);
 
   return (
@@ -54,7 +60,13 @@ export default async function ChartPage(props: { params: Promise<{ slug: string 
 
         {series ? (
           <>
-            <ChartFrame title={def.title} deck={def.subtitle} slug={def.slug} source={def.source} recordCount={def.unit === 'usd' ? undefined : series.values.reduce((x, y) => x + y, 0)} asOf={new Date()} tableId="chart-data" className="mb-6">
+            {/* The record count comes from the loader, which knows how many
+                rows it read. It used to be the SUM OF THE PLOTTED VALUES,
+                which for a level series is meaningless: adding up the jobs
+                open in each of six weeks published "120,763 records" for a
+                site with about eight thousand open roles. A loader that has
+                not stated a record count prints none. */}
+            <ChartFrame title={def.title} deck={def.subtitle} slug={def.slug} source={def.source} recordCount={series.recordCount} asOf={new Date()} tableId="chart-data" className="mb-6">
               {/* Plain img on purpose: the endpoint is dynamic and already 1200×630. */}
               <img src={`/api/chart/${def.slug}?format=svg`} alt={`${def.title}: ${def.subtitle}`} width={1200} height={630} className="w-full h-auto block" />
             </ChartFrame>
@@ -66,6 +78,24 @@ export default async function ChartPage(props: { params: Promise<{ slug: string 
               <a href={`/api/chart/${def.slug}/csv`} className="btn-secondary text-sm py-2 px-4">Download CSV</a>
               <span className="text-xs text-slate-500">Source: {def.source}{series.note ? ` · ${series.note}` : ''} · CSV needs a free account</span>
             </div>
+
+            {/* A coverage change looks exactly like a market move on a line
+                chart. The open-jobs series steps up ~26% in the week of
+                2026-09-01 because Blue Origin's board joined the tracker, not
+                because the industry hired 1,590 people that week. The note is
+                already carried on /hiring-trends, /jobs, the hiring index and
+                the fastest-hiring ranking; the CHART is where the jump is most
+                visible and was the one surface not saying so. */}
+            {coverageNotes.length > 0 && (
+              <div className="mb-8 rounded-lg border border-amber-500/20 bg-amber-500/5 p-3" role="note">
+                <p className="text-xs font-semibold text-amber-300/90 mb-1">Coverage change in this window</p>
+                {coverageNotes.map((c) => (
+                  <p key={`${c.date}-${c.company}`} className="text-xs text-slate-300 leading-relaxed">
+                    <span className="font-mono">{c.date}</span> — {c.note}
+                  </p>
+                ))}
+              </div>
+            )}
 
             <div className="mb-6">
               <CiteEmbed

@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 import { CHART_DEFS, allChartSlugs, chartOfTheWeekSlug, getChartDef, isoWeek } from '../charts/registry';
 import { formatValue, niceCeiling, renderBarChartSvg } from '../charts/render';
 import { buildChartOfTheWeekSection } from '../newsletter/email-templates';
@@ -77,5 +80,62 @@ describe('launch source filter', () => {
     expect(isLaunchLibraryId('event-1394')).toBe(false);
     expect(isLaunchLibraryId('artemis-ii-mission')).toBe(false);
     expect(isLaunchLibraryId(null)).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The open-jobs chart must agree with /hiring-index (fixed 2026-09)
+// ---------------------------------------------------------------------------
+
+/**
+ * /chart/open-space-jobs published 22.6k for 31 August 2026 while
+ * /hiring-index/2026-08 published 6,733 for the same day and the same metric.
+ * The loader grouped CompanyJobSnapshot by date and summed activeJobs across
+ * EVERY row - the per-company rows plus the _TOTAL and _PRIVATE_TOTAL
+ * sentinels - counting the same postings about three times. The footer then
+ * added the plotted values together and called the result "120,763 records".
+ *
+ * These are source guards rather than data tests: the fix is WHICH ROWS the
+ * query asks for, and a query that drifts back to a groupBy over every row
+ * would pass any assertion made on mocked output.
+ */
+describe('open-space-jobs reads the same row the hiring index reads', () => {
+  const src = fs.readFileSync(path.join(process.cwd(), 'src/lib/charts/data.ts'), 'utf-8');
+  const loader = src.slice(src.indexOf('async function openSpaceJobs'), src.indexOf('async function launchSlipsByWeek'));
+
+  it('filters to the _TOTAL sentinel instead of summing every snapshot row', () => {
+    expect(loader).toContain('companyName: TOTAL_SENTINEL');
+    expect(loader).not.toContain('groupBy');
+    expect(loader).not.toContain('_sum');
+  });
+
+  it('imports the sentinel from the module that writes it, so the two cannot drift', () => {
+    expect(src).toContain("import { TOTAL_SENTINEL } from '@/lib/hiring-snapshots'");
+  });
+
+  it('states its own record count rather than letting the page add the values up', () => {
+    expect(loader).toContain('recordCount: rows.length');
+  });
+});
+
+describe('the funding chart counts only what the published rule counts', () => {
+  const src = fs.readFileSync(path.join(process.cwd(), 'src/lib/charts/data.ts'), 'utf-8');
+  const loader = src.slice(src.indexOf('async function fundingByMonth'), src.indexOf('/**\n * Open space-industry jobs'));
+
+  it('applies the same space-venture rule the investors release publishes', () => {
+    expect(src).toContain("from '@/lib/funding/space-classification'");
+    expect(loader).toContain('qualifiesAsSpaceVenture');
+  });
+
+  it('tells the reader what it left out', () => {
+    expect(loader).toMatch(/IPOs, secondaries, debt and grants excluded/);
+  });
+});
+
+describe('the chart page never invents a record count', () => {
+  it('prints the loader count, not the sum of the plotted values', () => {
+    const page = fs.readFileSync(path.join(process.cwd(), 'src/app/chart/[slug]/page.tsx'), 'utf-8');
+    expect(page).toContain('recordCount={series.recordCount}');
+    expect(page).not.toContain('series.values.reduce');
   });
 });

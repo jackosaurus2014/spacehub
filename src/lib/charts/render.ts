@@ -9,6 +9,17 @@ export interface ChartSeries {
   values: number[];
   /** Optional footnote, e.g. "Partial month" or the as-of date. */
   note?: string;
+  /**
+   * How many underlying rows this series was computed from.
+   *
+   * The permalink page used to print the SUM OF THE VALUES here, labelled
+   * "records". For a flow series (launches in a month) that happens to be the
+   * row count, but for a LEVEL series it is arithmetic nonsense: adding up the
+   * number of jobs open in each of six weeks produced "120,763 records" for a
+   * site with about eight thousand open roles. Each loader now states its own
+   * record count and the page prints nothing when a loader has not.
+   */
+  recordCount?: number;
 }
 
 const W = 1200;

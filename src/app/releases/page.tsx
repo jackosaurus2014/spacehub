@@ -4,6 +4,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import DeskByline from '@/components/desk/DeskByline';
 import ReleaseCalendarTable from '@/components/reports/ReleaseCalendarTable';
+import ResearchSeatCallout from '@/components/research/ResearchSeatCallout';
 import {
   RESEARCH_RELEASES,
   latestPeriod,
@@ -21,8 +22,10 @@ import {
 // PUBLIC, and public on purpose. These are citable, dated releases; a ranking
 // nobody can see wins us nothing. The full row set and the export behind each
 // edition are the Research capability — the summary, the method and the
-// coverage limits are not. Nothing here advertises the paid tier when
-// RESEARCH_TIER_ENABLED is off, because nothing here mentions it at all.
+// coverage limits are not. The one mention of the paid tier is
+// <ResearchSeatCallout />, which is a server component that reads the flag and
+// renders nothing at all unless the tier is genuinely for sale, so with
+// RESEARCH_TIER_ENABLED off this page still does not mention it.
 //
 // force-dynamic: latest editions and overdue state roll forward on the
 // calendar without a deploy, and the Railway build container has no database.
@@ -217,6 +220,8 @@ export default async function ReleasesHubPage() {
             ))}
           </ul>
         </section>
+
+        <ResearchSeatCallout className="mt-12" />
 
         <p className="text-sm text-slate-500 mt-8 max-w-2xl leading-relaxed">
           Longer-form written reports and every weekly brief live on{' '}

@@ -84,7 +84,7 @@ describe('the platform author', () => {
     );
   });
 
-  it('creates it with no password and no admin rights', async () => {
+  it('creates it with an UNUSABLE password and no admin rights', async () => {
     db.user.findUnique.mockResolvedValue(null);
     db.user.create.mockResolvedValue({ id: 'sys_2' });
 
@@ -93,10 +93,38 @@ describe('the platform author', () => {
     const data = db.user.create.mock.calls[0][0].data;
     expect(data.email).toBe(FORUM_SYSTEM_EMAIL);
     expect(data.name).toBe(FORUM_SYSTEM_NAME);
-    // No password hash means no credential login path can ever use it, and
-    // an anchor must carry no moderation privilege.
-    expect(data.password).toBeUndefined();
+    // This test used to assert NO password at all. That was the intent, but
+    // User.password is not nullable, so every run of the anchor cron threw
+    // "Argument `password` is missing" and no launch thread was ever created —
+    // the forum sat empty while its own page promised otherwise. An `as never`
+    // cast had hidden the missing field from the compiler.
+    //
+    // So the account now stores a real bcrypt hash of a random secret that is
+    // discarded immediately. The credentials provider compares against it
+    // normally and can never match, because nobody knows the plaintext. A
+    // sentinel string would be worse: some bcrypt implementations throw on a
+    // malformed hash rather than returning false.
+    expect(typeof data.password).toBe('string');
+    expect(data.password).toMatch(/^\$2[aby]\$/);
     expect(data.isAdmin).toBe(false);
+  });
+
+  it('never reuses the same unusable password twice', async () => {
+    db.user.findUnique.mockResolvedValue(null);
+    db.user.create.mockResolvedValue({ id: 'sys_3' });
+    await getForumSystemUserId();
+    const first = db.user.create.mock.calls[0][0].data.password;
+
+    // The id is memoised, so the cache has to be cleared or the second
+    // call never reaches user.create at all.
+    jest.clearAllMocks();
+    __resetForumSystemUserCache();
+    db.user.findUnique.mockResolvedValue(null);
+    db.user.create.mockResolvedValue({ id: 'sys_4' });
+    await getForumSystemUserId();
+    const second = db.user.create.mock.calls[0][0].data.password;
+
+    expect(second).not.toBe(first);
   });
 
   it('caches the lookup', async () => {

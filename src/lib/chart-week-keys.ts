@@ -112,10 +112,23 @@ export function previousChartWeek(key: string): string | null {
  */
 const CATEGORY_CHARTS = new Set(['launches-by-agency-90d']);
 
-export type ChartShape = 'time' | 'category';
+/**
+ * LEVEL SERIES, WHERE A TOTAL IS MEANINGLESS.
+ *
+ * Each point of open-space-jobs is a stock — how many roles stood open on that
+ * day — not a flow. Adding six weekly readings of the same roles together
+ * produced "120,763" for a site with about eight thousand open postings, and
+ * the caption said it "totalled" that. A stock series gets the latest reading,
+ * the move and the range, and never a sum.
+ */
+const STOCK_CHARTS = new Set(['open-space-jobs']);
+
+export type ChartShape = 'time' | 'category' | 'stock';
 
 export function chartShape(slug: string): ChartShape {
-  return CATEGORY_CHARTS.has(slug) ? 'category' : 'time';
+  if (CATEGORY_CHARTS.has(slug)) return 'category';
+  if (STOCK_CHARTS.has(slug)) return 'stock';
+  return 'time';
 }
 
 /**
@@ -136,8 +149,26 @@ export function captionFor(def: ChartDef, series: ChartSeries): string {
   const fmt = (v: number) => formatValue(v, def.unit);
 
   const parts: string[] = [];
+  const shape = chartShape(def.slug);
 
-  if (chartShape(def.slug) === 'category') {
+  if (shape === 'stock') {
+    // A level series: no total, because the same roles appear in every point.
+    const latestValue = values[values.length - 1];
+    const latestLabel = labels[labels.length - 1] ?? '';
+    parts.push(`${values.length} readings`);
+    parts.push(`latest ${latestLabel} at ${fmt(latestValue)}`);
+    if (values.length > 1) {
+      const prior = values[values.length - 2];
+      const delta = latestValue - prior;
+      parts.push(
+        delta === 0
+          ? `unchanged from ${labels[labels.length - 2] ?? 'the reading before'}`
+          : `${delta > 0 ? 'up' : 'down'} ${fmt(Math.abs(delta))} on ${labels[labels.length - 2] ?? 'the reading before'}`
+      );
+      parts.push(`highest ${maxLabel} at ${fmt(maxValue)}`);
+      parts.push(`lowest ${minLabel} at ${fmt(minValue)}`);
+    }
+  } else if (shape === 'category') {
     const leadLabel = maxLabel;
     const share = total > 0 ? ((maxValue / total) * 100).toFixed(1) : null;
     parts.push(`${values.length} shown, totalling ${fmt(total)}`);

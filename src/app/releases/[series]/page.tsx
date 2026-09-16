@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import DeskByline from '@/components/desk/DeskByline';
+import ResearchSeatCallout from '@/components/research/ResearchSeatCallout';
 import {
   getRelease,
   isRetrospectiveEdition,
@@ -188,6 +189,8 @@ export default async function ReleaseArchivePage(props: PageProps) {
             means the publication ledger holds no row for that edition; the page still computes.
           </p>
         </section>
+
+        <ResearchSeatCallout className="mt-12" />
 
         <div className="mt-10 card p-5 border border-white/10">
           <DeskByline />

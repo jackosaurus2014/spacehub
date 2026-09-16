@@ -33,6 +33,8 @@ import { PRICING_CTA_TEST } from '@/lib/ab-testing';
 import { SITE_STATS } from '@/lib/site-stats';
 import Provenance from '@/components/ui/Provenance';
 import ResearchTierBand from '@/components/pricing/ResearchTierBand';
+import { useResearchAvailability } from '@/components/research/useResearchAvailability';
+import type { ResearchAvailability } from '@/components/research/useResearchAvailability';
 
 const PRICING_FAQ = [
   { question: 'What is SpaceNexus?', answer: `SpaceNexus is a comprehensive space industry intelligence platform that provides real-time data on satellite tracking, launch schedules, space stocks, regulatory compliance, and ${SITE_STATS.companies} company profiles across ${SITE_STATS.modules} modules.` },
@@ -344,7 +346,25 @@ function renderCellValue(value: boolean | string) {
   return <span className="text-slate-300 text-sm">{value}</span>;
 }
 
-function FeatureComparisonTable() {
+/**
+ * The feature comparison, with SpaceNexus Research as a real column.
+ *
+ * PRICING TRUTH, and the only two rules that matter here:
+ *
+ *  1. The Research cell on every EXISTING row repeats the Professional cell,
+ *     because that is literally what the code does: TIER_ACCESS.research
+ *     (src/lib/subscription.ts) copies every Professional value unchanged and
+ *     only adds, and TIER_ORDER puts 'research' above 'pro' so every Pro
+ *     module gate also passes for Research. Nothing is hand-asserted.
+ *  2. The rows that are Research-ONLY are not typed here at all. They are
+ *     rendered from RESEARCH_CAPABILITIES, served by /api/research/availability,
+ *     each entry of which names the server file that enforces it.
+ *
+ * With the tier unavailable `research` is null and the table is exactly the
+ * two-column table it has always been.
+ */
+function FeatureComparisonTable({ research }: { research: ResearchAvailability | null }) {
+  const cols = research ? 4 : 3;
   return (
     <div className="max-w-5xl mx-auto">
       <div className="section-header mb-6">
@@ -359,21 +379,29 @@ function FeatureComparisonTable() {
       </p>
       <div className="card-terminal"><div className="card-terminal__header"><div className="flex items-center gap-2"><div className="card-terminal__dots"><div className="card-terminal__dot card-terminal__dot--red" /><div className="card-terminal__dot card-terminal__dot--amber" /><div className="card-terminal__dot card-terminal__dot--green" /></div><span className="card-terminal__path">spacenexus:~/features</span></div></div>
       <div className="overflow-x-auto scroll-smooth">
-        <table className="w-full min-w-[520px] text-left">
+        <table className={`w-full text-left ${research ? 'min-w-[680px]' : 'min-w-[520px]'}`}>
           <thead className="sticky top-0 z-10 bg-[#0a0a0a]/95 backdrop-blur-sm">
             <tr className="border-b border-white/[0.06]">
-              <th className="py-3 px-3 sm:py-4 sm:px-5 text-sm font-semibold text-slate-300 w-[40%]">Feature</th>
-              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-white w-[30%]">
+              <th scope="col" className={`py-3 px-3 sm:py-4 sm:px-5 text-sm font-semibold text-slate-300 ${research ? 'w-[34%]' : 'w-[40%]'}`}>Feature</th>
+              <th scope="col" className={`py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-white ${research ? 'w-[22%]' : 'w-[30%]'}`}>
                 <div>Explorer</div>
                 <div className="text-xs font-normal text-slate-400 mt-0.5">Free</div>
               </th>
-              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-white/90 w-[30%] border-x border-white/10 bg-white/5">
+              <th scope="col" className={`py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-white/90 border-x border-white/10 bg-white/5 ${research ? 'w-[22%]' : 'w-[30%]'}`}>
                 <div className="flex items-center justify-center gap-1.5">
                   Professional
                   <span className="text-[10px] bg-white/10 text-white/90 px-1.5 py-0.5 rounded-full font-medium">Everything</span>
                 </div>
                 <div className="text-xs font-normal text-slate-400 mt-0.5">$19.99/mo</div>
               </th>
+              {research && (
+                <th scope="col" className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-cyan-300 w-[22%] bg-cyan-500/[0.06]">
+                  <div>Research</div>
+                  <div className="text-xs font-normal text-slate-400 mt-0.5">
+                    ${research.plan.priceYearly.toLocaleString()}/yr &middot; {research.plan.totalSeats} seats
+                  </div>
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -381,7 +409,7 @@ function FeatureComparisonTable() {
               <Fragment key={category.name}>
                 {/* Category header */}
                 <tr className="bg-white/[0.04]">
-                  <td colSpan={3} className="py-2.5 px-5 text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  <td colSpan={cols} className="py-2.5 px-5 text-xs font-semibold uppercase tracking-wider text-slate-300">
                     {category.name}
                   </td>
                 </tr>
@@ -391,14 +419,47 @@ function FeatureComparisonTable() {
                     <td className="py-2.5 px-3 sm:py-3 sm:px-5 text-sm text-slate-300">{feature.label}</td>
                     <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center">{renderCellValue(feature.free)}</td>
                     <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center border-x border-white/10 bg-white/[0.02]">{renderCellValue(feature.pro)}</td>
+                    {/* Research repeats Professional verbatim - see the note above this component. */}
+                    {research && (
+                      <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center bg-cyan-500/[0.04]">{renderCellValue(feature.pro)}</td>
+                    )}
                   </tr>
                 ))}
               </Fragment>
             ))}
+            {research && (
+              <Fragment key="research-only">
+                <tr className="bg-white/[0.04]">
+                  <td colSpan={cols} className="py-2.5 px-5 text-xs font-semibold uppercase tracking-wider text-cyan-300">
+                    Research only
+                  </td>
+                </tr>
+                {research.capabilities.map((cap, idx) => (
+                  <tr key={cap.id} className={`border-b border-white/[0.04] hover:bg-white/[0.06] transition-colors ${idx % 2 === 1 ? 'bg-white/[0.02]' : ''}`}>
+                    <td className="py-2.5 px-3 sm:py-3 sm:px-5 text-sm text-slate-300">{cap.label}</td>
+                    <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center">{renderCellValue(false)}</td>
+                    <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center border-x border-white/10 bg-white/[0.02]">{renderCellValue(false)}</td>
+                    <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center bg-cyan-500/[0.04]">{renderCellValue(true)}</td>
+                  </tr>
+                ))}
+              </Fragment>
+            )}
           </tbody>
         </table>
       </div>
       </div>
+      {research && (
+        <p className="text-xs text-slate-500 mt-3 leading-relaxed">
+          Research is a strict superset of Professional: every Professional row above is repeated
+          because the tier model repeats it, not because we say so &mdash; so the account that pays
+          for Research does not need a Professional subscription as well. An invited seat unlocks
+          the Research rows;{' '}
+          <Link href="/research" className="text-cyan-300 underline hover:text-cyan-200">
+            /research explains the difference in full
+          </Link>
+          .
+        </p>
+      )}
     </div>
   );
 }
@@ -524,6 +585,10 @@ function PricingPageContent() {
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [hasPaymentMethod, setHasPaymentMethod] = useState(false);
   const [hasHadTrial, setHasHadTrial] = useState(false);
+  // The server's answer on SpaceNexus Research: null until it arrives, and null
+  // forever when the tier is off. Everything Research-shaped on this page is
+  // rendered from it, never from hand-written copy.
+  const research = useResearchAvailability();
 
   // A/B test: pricing CTA wording
   const { variant: ctaVariant, trackConversion: trackCtaConversion } = useABTest(PRICING_CTA_TEST);
@@ -729,9 +794,19 @@ function PricingPageContent() {
               <div className="section-header__bar bg-gradient-to-b from-indigo-400 to-indigo-600" />
               <h1 className="section-header__title">Select Your Clearance Level</h1>
             </div>
-            <span className="section-header__meta">2 tiers</span>
+            {/*
+              This said "2 tiers / One paid plan. The entire platform." while a
+              third paid tier rendered a few hundred pixels below it. The count
+              and the sentence now both come from whether Research is actually
+              for sale, so the page cannot contradict itself again.
+            */}
+            <span className="section-header__meta">{research ? '3 tiers' : '2 tiers'}</span>
           </div>
-          <p className="section-header__desc">One paid plan. The entire platform.</p>
+          <p className="section-header__desc">
+            {research
+              ? `Free for enthusiasts. Professional for individuals at work. ${research.plan.name} for firms — an annual seat with ${research.plan.totalSeats} named users.`
+              : 'One paid plan. The entire platform.'}
+          </p>
         </div>
 
         {/* Audience strip */}
@@ -871,7 +946,7 @@ function PricingPageContent() {
 
         {/* Feature Comparison Table */}
         <ScrollReveal className="mt-16">
-          <FeatureComparisonTable />
+          <FeatureComparisonTable research={research} />
         </ScrollReveal>
 
         {/* Trust Guarantees */}

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import ResearchCheckoutButton from '@/app/research/ResearchCheckoutButton';
+import { TRIAL_DAYS } from '@/lib/subscription';
 
 interface Availability {
   available: boolean;
@@ -63,7 +65,9 @@ export default function ResearchTierBand() {
       <p className="text-sm text-slate-300 mb-4">
         For investors, corporate strategy and BD teams. {plan.totalSeats} named
         seats on one annual invoice. Everything on the free and Professional plans
-        is unchanged &mdash; Research adds depth, history and exports on top.
+        is unchanged &mdash; Research adds depth, history and exports on top, and
+        the account that pays carries every Professional capability as well, so
+        there is nothing to buy twice.
       </p>
       <ul className="space-y-2 mb-5">
         {capabilities.map((c) => (
@@ -75,12 +79,28 @@ export default function ResearchTierBand() {
           </li>
         ))}
       </ul>
-      <Link
-        href="/research"
-        className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-cyan-500 px-5 font-semibold text-slate-950 transition-colors hover:bg-cyan-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-      >
-        See what is in SpaceNexus Research
-      </Link>
+      {/*
+        A price with no way to pay it is not a pricing page. Until 2026-09-16
+        this band ended at a link to /research; the buy button now lives here
+        too, and it is the same component /research uses, so a signed-out
+        visitor gets the same sign-in round trip that returns them to checkout.
+      */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <ResearchCheckoutButton
+          priceYearly={plan.priceYearly}
+          totalSeats={plan.totalSeats}
+        />
+        <Link
+          href="/research"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-lg border border-cyan-500/40 px-5 font-semibold text-cyan-300 transition-colors hover:border-cyan-400 hover:text-cyan-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+        >
+          See what is in it first
+        </Link>
+      </div>
+      <p className="text-xs text-slate-400 mt-3">
+        Billed annually &middot; no trial &mdash; the {TRIAL_DAYS}-day trial on this site is a
+        Professional trial, and a Research line item never inherits it.
+      </p>
     </section>
   );
 }

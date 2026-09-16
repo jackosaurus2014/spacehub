@@ -2,15 +2,24 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import type { DirectoryGroup } from '@/lib/site-directory';
+import { directoryGroups, type DirectoryGroup } from '@/lib/site-directory';
+import { useResearchAvailability } from '@/components/research/useResearchAvailability';
 
 // The searchable half of /tools. Groups collapse to matching rows as you
 // type; with no query, "Most used" leads (data-proven pages) and every group
 // follows with an anchor so nav menus can deep-link to it (#launches…).
+//
+// One row is not in the static directory: SpaceNexus Research (/research),
+// which exists only while the server says the tier is for sale. It is spliced
+// in here rather than baked into SITE_DIRECTORY so that /tools can stay
+// statically rendered and the directory still never lists — or returns a
+// search result for — a product nobody can buy.
 
-export default function DirectoryBrowser({ groups }: { groups: readonly DirectoryGroup[] }) {
+export default function DirectoryBrowser({ groups: input }: { groups: readonly DirectoryGroup[] }) {
   const [q, setQ] = useState('');
   const query = q.trim().toLowerCase();
+  const research = useResearchAvailability();
+  const groups = useMemo(() => directoryGroups(!!research, input), [research, input]);
 
   const filtered = useMemo(() => {
     if (!query) return groups;

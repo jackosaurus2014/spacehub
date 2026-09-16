@@ -194,18 +194,24 @@ export async function composeHiringIndexReport(now: Date = new Date()): Promise<
     });
   }
 
-  // Remote share + locations
+  // Remote share + locations. BOTH ARE LIVE FIGURES, not month-end ones: we
+  // hold no history of a posting's remote flag or location, so these are read
+  // off what is active today and the section heading says so. A live number
+  // under a month-end heading is how one metric ends up with two different
+  // denominators on one screen.
   const geoBits: string[] = [];
   if (index.remoteShare.percent !== null) {
-    geoBits.push(`Remote-eligible: ${index.remoteShare.percent.toFixed(1)}% (${fmtInt(index.remoteShare.remote)} of ${fmtInt(index.remoteShare.total)})`);
+    geoBits.push(`Remote-eligible: ${index.remoteShare.percent.toFixed(1)}% (${fmtInt(index.remoteShare.remote)} of ${fmtInt(index.remoteShare.total)} postings active now)`);
   }
   if (index.topLocations.length > 0) {
     geoBits.push(`Top locations: ${index.topLocations.slice(0, 5).map((l) => `${l.location} ${fmtInt(l.count)}`).join(' · ')}`);
   }
   if (geoBits.length > 0) {
+    const geoHeading = `Where the roles are (live, ${index.activeNowAsOf})`;
+    const geoCaveat = 'Read today, not at month end: we keep no history of a posting’s remote flag or location.';
     parts.push({
-      html: `<p style="${S.kicker}">Where the roles are</p>${geoBits.map((b) => `<p style="${S.item}">${escapeHtml(b)}</p>`).join('')}`,
-      plain: `\nWHERE THE ROLES ARE\n${geoBits.map((b) => `- ${b}`).join('\n')}\n`,
+      html: `<p style="${S.kicker}">${escapeHtml(geoHeading)}</p>${geoBits.map((b) => `<p style="${S.item}">${escapeHtml(b)}</p>`).join('')}<p style="${S.meta}">${escapeHtml(geoCaveat)}</p>`,
+      plain: `\n${geoHeading.toUpperCase()}\n${geoBits.map((b) => `- ${b}`).join('\n')}\n${geoCaveat}\n`,
     });
   }
 

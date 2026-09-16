@@ -181,7 +181,24 @@ export async function POST(req: Request) {
           tier,
         },
       },
-      allow_promotion_codes: true,
+      // Promotion codes are accepted on Pro, NOT on Research.
+      //
+      // FOUNDER50 and FOUNDER499-CONNER are both live, both `applies_to: null`
+      // — not restricted to any product — so with this flag on, a first-time
+      // buyer could type FOUNDER50 into the Research checkout and pay $199.50
+      // for a $399 annual firm seat, or FOUNDER499-CONNER for $15 off it
+      // forever. Those coupons were written for a $19.99/month consumer plan.
+      //
+      // This is the same class of failure as the founding-member price the
+      // site advertised and checkout never applied, which overcharged two
+      // customers in August — an advertised price and a charged price that
+      // disagree. Undercharging is the friendlier direction and just as wrong.
+      //
+      // Closing it here rather than in Stripe keeps every existing Pro
+      // discount working untouched. If the coupons are later restricted to the
+      // Pro product in Stripe, this can be revisited — `pricing-integrity.ts`
+      // checkPromotionCodesCannotDiscountResearch() watches for exactly that.
+      allow_promotion_codes: tier !== 'research',
       metadata: {
         userId: user.id,
         tier,

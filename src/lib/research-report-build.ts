@@ -13,7 +13,12 @@
  * No model is called anywhere below. Every figure is arithmetic over our rows.
  */
 
-import { getHiringIndex, monthLabelOf, parseMonthParam } from '@/lib/hiring-index';
+import {
+  activePostingsReconciliation,
+  getHiringIndex,
+  monthLabelOf,
+  parseMonthParam,
+} from '@/lib/hiring-index';
 import { getSpaceScoreEdition, SPACE_SCORE_TOP_N } from '@/lib/rankings-data';
 import { getCompanyScore } from '@/lib/space-score';
 import { buildInvestorsEdition } from '@/lib/research-report-investors';
@@ -94,10 +99,13 @@ async function buildHiringEdition(
       detail: `${index.newPostings.byCategory.length} functions represented`,
     },
     {
-      label: 'Remote share',
+      // LIVE, not month-end. We hold no history of a posting's remote flag, so
+      // this is the only honest version of it — and it must never sit beside a
+      // month-end headline without saying which it is.
+      label: 'Remote share (live)',
       value:
         index.remoteShare.percent === null ? '—' : `${index.remoteShare.percent.toFixed(1)}%`,
-      detail: `${fmtCount(index.remoteShare.remote)} of ${fmtCount(index.remoteShare.total)} active postings`,
+      detail: `${fmtCount(index.remoteShare.remote)} of ${fmtCount(index.remoteShare.total)} postings active on ${index.remoteShare.asOf} — not a month-end figure`,
     },
   ];
 
@@ -229,6 +237,8 @@ async function buildHiringEdition(
       'Movers compare a company’s first and last snapshot inside the month. A company that opened and filled ten roles inside the month shows no growth, by design.',
       'When a company’s board newly joins the tracker inside a month, its first snapshot is the day we started watching it, so its apparent growth is coverage rather than hiring.',
       'Coverage is the companies whose boards we track. A company we do not track contributes nothing to any figure here.',
+      activePostingsReconciliation(index) ??
+        'The month-end and live readings of open roles coincide in this edition.',
     ],
     inputHash: hashEditionContent(headline, tables),
     empty: false,

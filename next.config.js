@@ -328,6 +328,12 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // The two most guessable URLs on a site like this, both 404ing
+      // (found in the 2026-09-16 site review). A visitor who types the
+      // obvious thing should land on the real page, not a dead end.
+      { source: '/companies', destination: '/company-profiles', permanent: true },
+      { source: '/companies/:path*', destination: '/company-profiles/:path*', permanent: true },
+      { source: '/guides', destination: '/learn', permanent: true },
       // v0.7.0 module consolidation - preserve legacy URLs
       { source: '/lunar-gateway', destination: '/cislunar?tab=gateway', permanent: true },
       // 2026-09-06: the space-tourism blog post promoted to a fact-checked guide.

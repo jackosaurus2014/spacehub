@@ -263,3 +263,43 @@ describe('the weekly archive routes', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// 4. A level series is never totalled
+// ---------------------------------------------------------------------------
+
+/**
+ * open-space-jobs plots a STOCK: how many roles stood open on each date. The
+ * same roles appear in every point, so adding the points together is
+ * meaningless - it published "120,763" for a site with about eight thousand
+ * open postings, and the caption froze that into every pinned edition.
+ */
+describe('stock series captions', () => {
+  const jobsDef = getChartDef('open-space-jobs')!;
+
+  it('classifies the jobs chart as a level series', () => {
+    expect(chartShape('open-space-jobs')).toBe('stock');
+  });
+
+  it('reports the latest reading, the move and the range — never a total', () => {
+    const caption = captionFor(jobsDef, {
+      labels: ['Aug 16', 'Aug 23', 'Aug 30', 'Sep 6'],
+      values: [5600, 5900, 6100, 6733],
+    });
+    expect(caption).toContain('4 readings');
+    expect(caption).toContain('latest Sep 6 at 6733');
+    expect(caption).toContain('up 633 on Aug 30');
+    expect(caption).toContain('highest Sep 6 at 6733');
+    expect(caption).toContain('lowest Aug 16 at 5600');
+    expect(caption).not.toMatch(/total/i);
+    // The old caption would have said 24.3k, a number that describes nothing.
+    expect(caption).not.toContain('24.3k');
+  });
+
+  it('survives a single reading without inventing a comparison', () => {
+    const caption = captionFor(jobsDef, { labels: ['Sep 6'], values: [6733] });
+    expect(caption).toContain('1 readings');
+    expect(caption).not.toMatch(/\bup\b|\bdown\b|unchanged/);
+    expect(caption).not.toContain('NaN');
+  });
+});

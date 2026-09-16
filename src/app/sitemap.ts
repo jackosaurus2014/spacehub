@@ -22,6 +22,7 @@ import { SALARY_PAGE_MIN_ROLES, isSalaryEligible, salaryCompanySlug } from '@/li
 import { spaceScoreQuarterKeys, monthKeysBetween } from '@/lib/rankings';
 import { seriesReleases, publishedPeriods } from '@/lib/research-releases';
 import { EARLIEST_INDEX_MONTH, latestEditionMonthKey } from '@/lib/hiring-index';
+import { getResearchAvailability } from '@/lib/research';
 
 const BASE_URL = 'https://spacenexus.us';
 
@@ -131,6 +132,20 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // Only 'series' releases are listed: the Hiring Index and the Space Score
     // Top 25 are read on their own pages, already in this sitemap above.
     { url: `${BASE_URL}/releases`, changeFrequency: 'weekly' as const, priority: 0.7 },
+
+    // SpaceNexus Research — the sales page for the annual firm seat. Absent
+    // from this file until 2026-09-16, which meant Google had no way to reach
+    // the only page that sells anything: /releases, every edition, every chart
+    // and /company-research were all listed and /research was not.
+    //
+    // Listed ONLY while the tier is genuinely for sale (flag on AND a Stripe
+    // price configured, the same condition /research itself renders on). With
+    // it off, middleware blocks the route and the page redirects to /pricing,
+    // so an entry here would be a crawl error advertising a product nobody can
+    // buy. force-dynamic on this file means the flag is read per request.
+    ...(getResearchAvailability().available
+      ? [{ url: `${BASE_URL}/research`, changeFrequency: 'weekly' as const, priority: 0.9 }]
+      : []),
     ...seriesReleases().flatMap((release) => [
       {
         url: `${BASE_URL}/releases/${release.id}`,

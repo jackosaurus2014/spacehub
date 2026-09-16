@@ -7,7 +7,9 @@ import { requireResearchAccess } from '@/lib/research-guard';
 import {
   RESEARCH_DATASETS,
   RESEARCH_DATASET_IDS,
+  csvProvenanceHeader,
   isResearchDatasetId,
+  jsonProvenance,
   toResearchCsv,
 } from '@/lib/research-export';
 
@@ -65,6 +67,10 @@ export async function GET(
           dataset: spec.id,
           label: spec.label,
           coverage: spec.coverage,
+          // Source credits travel in the file, not only on /data-sources. The
+          // Open Government Licence that covers the UK register grants reuse
+          // ONLY while the acknowledgement is given, so it has to be here.
+          ...jsonProvenance(),
           generatedAt: new Date().toISOString(),
           rowCount: rows.length,
           columns: spec.columns,
@@ -79,9 +85,19 @@ export async function GET(
       );
     }
 
+    // Coverage and attribution go INSIDE the file. As a response header they
+    // survived only until the download finished; a spreadsheet opened six
+    // months from now has to be able to say where its numbers came from and
+    // what they cannot see. The header stays too, for tooling that reads it.
+    const provenance = csvProvenanceHeader({
+      title: `SpaceNexus Research — ${spec.label}`,
+      sourceUrl: 'https://spacenexus.us/research',
+      coverage: [spec.coverage],
+      rowCount: rows.length,
+    });
     const csv = toResearchCsv(rows, spec.columns);
     // A leading UTF-8 BOM so Excel opens accented supplier names correctly.
-    return new NextResponse(`﻿${csv}`, {
+    return new NextResponse(`﻿${provenance}${csv}`, {
       status: 200,
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',

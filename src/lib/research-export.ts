@@ -15,6 +15,12 @@
 
 import prisma from '@/lib/db';
 import {
+  COMPANIES_HOUSE_ATTRIBUTION_LONG,
+  COMPANIES_HOUSE_LICENCE_NAME,
+  COMPANIES_HOUSE_LICENCE_URL,
+  UK_REGISTRY_SOURCE_LABEL,
+} from '@/lib/uk-registry/attribution';
+import {
   SUPPLY_CHAIN_COMPANIES,
   SUPPLY_RELATIONSHIPS,
   SUPPLY_SHORTAGES,
@@ -42,6 +48,113 @@ export interface ResearchDataset {
    */
   coverage: string;
   rows: () => Promise<Record<string, unknown>[]>;
+}
+
+// ---------------------------------------------------------------------------
+// Attribution and provenance — what travels INSIDE every file
+// ---------------------------------------------------------------------------
+
+/**
+ * A credit that has to appear wherever the data it describes is shown or
+ * shipped.
+ *
+ * `required: true` means the licence is conditional: reuse is granted ONLY
+ * while the credit is given. The Open Government Licence v3.0, which covers
+ * the Crown-copyright UK Companies House register, says the rights "end
+ * automatically" if the condition is not met. That is not a courtesy line we
+ * can drop to save a row in a CSV.
+ */
+export interface SourceCredit {
+  source: string;
+  licence: string;
+  licenceUrl: string;
+  /** The wording the Information Provider specifies, verbatim. */
+  statement: string;
+  required: boolean;
+}
+
+/**
+ * Register-derived facts reach these exports indirectly and that still counts.
+ * companies-house-fetcher.ts writes CompanyProfile.foundedYear and .legalName
+ * and creates KeyPersonnel rows from the register (see the recordProvenance
+ * calls with source = UK_REGISTRY_SOURCE_LABEL), and those profile fields are
+ * joined into the funding-rounds export and read on every release edition. So
+ * the credit ships with the file, not only on /data-sources.
+ */
+export const RESEARCH_SOURCE_CREDITS: SourceCredit[] = [
+  {
+    source: UK_REGISTRY_SOURCE_LABEL,
+    licence: COMPANIES_HOUSE_LICENCE_NAME,
+    licenceUrl: COMPANIES_HOUSE_LICENCE_URL,
+    statement: COMPANIES_HOUSE_ATTRIBUTION_LONG,
+    required: true,
+  },
+];
+
+/** One line per credit, licence URL included. Used in CSV headers and email. */
+export const RESEARCH_ATTRIBUTION_LINES: string[] = RESEARCH_SOURCE_CREDITS.map(
+  (c) => `${c.statement} Licence: ${c.licenceUrl}`
+);
+
+export interface ExportProvenance {
+  /** What this file is, in the product's own words. */
+  title: string;
+  /** The page the file was produced from, so a stray CSV can be traced back. */
+  sourceUrl?: string;
+  /** The citation line, where the surface has one. */
+  citation?: string;
+  /** A standing legal notice (e.g. not investment advice), where one applies. */
+  notice?: string | null;
+  /** The honest coverage statement(s) — what these numbers cannot see. */
+  coverage: string[];
+  rowCount?: number;
+  generatedAt?: Date;
+}
+
+/**
+ * The provenance block that goes INSIDE a CSV.
+ *
+ * Why inside: coverage and attribution used to travel only as the
+ * X-SpaceNexus-Coverage response header. A header survives exactly as long as
+ * the HTTP response — the moment the file is on an analyst's disk it says
+ * nothing about what it can and cannot see, which contradicts /research's own
+ * promise that the statement is "attached to the file, not just printed on
+ * this page". A spreadsheet opened in six months has to answer for itself.
+ *
+ * Shape: leading `#` comment rows, each emitted as ONE quoted CSV field so a
+ * strict parser sees a single-column row rather than ragged columns, and every
+ * row still reads as plain text in column A of Excel.
+ */
+export function csvProvenanceHeader(p: ExportProvenance): string {
+  const when = (p.generatedAt ?? new Date()).toISOString();
+  const lines: string[] = [
+    `# ${p.title}`,
+    '# SpaceNexus Research export — https://spacenexus.us/research',
+    `# Generated: ${when}`,
+  ];
+  if (typeof p.rowCount === 'number') lines.push(`# Rows: ${p.rowCount}`);
+  if (p.sourceUrl) lines.push(`# Source page: ${p.sourceUrl}`);
+  if (p.citation) lines.push(`# Cite as: ${p.citation}`);
+  if (p.notice) lines.push(`# Notice: ${p.notice}`);
+  for (const c of p.coverage) lines.push(`# Coverage: ${c}`);
+  for (const line of RESEARCH_ATTRIBUTION_LINES) lines.push(`# Attribution: ${line}`);
+  lines.push('#');
+  // csvCell quotes anything containing a comma, quote or newline, so each
+  // comment survives as one field.
+  // CRLF row separators, matching toResearchCsv and what Excel expects.
+  const CRLF = String.fromCharCode(13, 10);
+  return lines.map(csvCell).join(CRLF) + CRLF;
+}
+
+/** The same provenance as a JSON object, for the .json exports. */
+export function jsonProvenance(): {
+  attribution: string[];
+  sources: SourceCredit[];
+} {
+  return {
+    attribution: RESEARCH_ATTRIBUTION_LINES,
+    sources: RESEARCH_SOURCE_CREDITS,
+  };
 }
 
 // ---------------------------------------------------------------------------

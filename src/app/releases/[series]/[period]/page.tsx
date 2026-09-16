@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
-import DeskByline from '@/components/desk/DeskByline';
+import ComputedByline from '@/components/reports/ComputedByline';
 import CiteEmbed from '@/components/CiteEmbed';
 import ReleaseEditionView from '@/components/reports/ReleaseEditionView';
 import { authOptions } from '@/lib/auth';
@@ -185,8 +185,14 @@ export default async function ReleaseEditionPage(props: PageProps) {
           </div>
         </section>
 
+        {/*
+          NOT DeskByline. That byline reads "AI-drafted analysis", which is
+          true of /ai-insights and false here: a release edition is computed
+          arithmetic over our own rows, which is exactly what /releases claims
+          in writing. See ComputedByline for the full note.
+        */}
         <div className="mt-10 card p-5 border border-white/10">
-          <DeskByline />
+          <ComputedByline />
         </div>
       </div>
     </div>

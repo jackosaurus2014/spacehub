@@ -8,6 +8,12 @@ import { SITE_DIRECTORY } from '@/lib/site-directory';
 // the rest — so the menus stay short without any page going away.
 // (Before 2026-08-28 this page listed seven calculators; those now sit in
 // the "Engineering & Operations" group below.)
+//
+// One row is not in SITE_DIRECTORY: SpaceNexus Research (/research), which
+// exists only while RESEARCH_TIER_ENABLED is on and its Stripe price is set.
+// DirectoryBrowser asks the server for that and splices the row in, so this
+// page stays statically rendered and the directory still cannot list a product
+// nobody can buy. That is also why the count below is the static one.
 
 const total = SITE_DIRECTORY.reduce((n, g) => n + g.entries.length, 0);
 

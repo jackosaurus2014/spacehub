@@ -63,7 +63,17 @@ describe('advertised discount registry', () => {
       const src = fs.readFileSync(path.join(process.cwd(), rel), 'utf-8');
       expect(src).not.toMatch(/for life|locked forever|access forever|\$4\.99/i);
     }
-    expect(fs.readFileSync(path.join(process.cwd(), 'src/app/api/stripe/checkout/route.ts'), 'utf-8')).toMatch(/allow_promotion_codes: true/);
+    // FOUNDER50 must remain claimable at checkout — but NOT on Research.
+    // Neither FOUNDER50 nor FOUNDER499-CONNER is product-restricted in Stripe
+    // (`applies_to: null`), so an unconditional `allow_promotion_codes: true`
+    // let a first-time buyer pay $199.50 for a $399 annual Research seat, or
+    // take $15 off it forever. Those coupons were written for a $19.99/month
+    // consumer plan. The flag is therefore conditional, and this assertion
+    // pins the condition rather than the old blanket true — reverting it
+    // silently reopens the discount.
+    const checkoutSrc = fs.readFileSync(path.join(process.cwd(), 'src/app/api/stripe/checkout/route.ts'), 'utf-8');
+    expect(checkoutSrc).toMatch(/allow_promotion_codes:\s*tier !== 'research'/);
+    expect(checkoutSrc).not.toMatch(/allow_promotion_codes:\s*true/);
   });
 
   it('every advertised discount names where it is claimed', () => {
@@ -194,6 +204,7 @@ describe('checkAdvertisedDiscountsMatchStripe', () => {
 // pinned here alongside the discount checks above.
 
 import {
+  checkPromotionCodesCannotDiscountResearch,
   checkResearchCapabilitiesAreGated,
   checkResearchTierMatchesStripe,
   isResearchAdvertised,
@@ -369,6 +380,152 @@ describe('checkResearchTierMatchesStripe', () => {
     enableAdvertised();
     priceRetrieveMock.mockRejectedValue(new Error('network down'));
     const r = await checkResearchTierMatchesStripe();
+    expect(r.ok).toBe(false);
+    expect(r.detail).toContain('network down');
+  });
+});
+
+// ── The control has to actually RUN ─────────────────────────────────────────
+//
+// checkResearchTierMatchesStripe() existed, was unit-tested, and was called
+// from nowhere in src/ for two days. A price check nothing invokes is a
+// comment. These tests pin the wiring, not just the function.
+
+describe('the Stripe price checks are wired into the daily sentinel', () => {
+  const sentinel = fs.readFileSync(
+    path.join(process.cwd(), 'src/lib/content-accuracy.ts'),
+    'utf-8'
+  );
+
+  it('content-accuracy imports both Research pricing checks', () => {
+    expect(sentinel).toContain('checkResearchTierMatchesStripe');
+    expect(sentinel).toContain('checkPromotionCodesCannotDiscountResearch');
+  });
+
+  it('registers them as checks the daily runner executes', () => {
+    // CONTENT_ACCURACY_CHECKS is what /api/cron/content-accuracy iterates.
+    const registry = sentinel.slice(
+      sentinel.indexOf('export const CONTENT_ACCURACY_CHECKS')
+    );
+    expect(registry).toContain("id: 'research-price-matches-stripe'");
+    expect(registry).toContain("id: 'research-not-discountable-by-promo'");
+  });
+});
+
+describe('checkPromotionCodesCannotDiscountResearch', () => {
+  const saved = {
+    flag: process.env[RESEARCH_TIER_FLAG_ENV_VAR],
+    price: process.env[RESEARCH_PRICE_ENV_VAR],
+    key: process.env.STRIPE_SECRET_KEY,
+  };
+
+  const enableAdvertised = () => {
+    process.env[RESEARCH_TIER_FLAG_ENV_VAR] = 'true';
+    process.env[RESEARCH_PRICE_ENV_VAR] = 'price_research';
+    process.env.STRIPE_SECRET_KEY = 'sk_test_x';
+  };
+
+  beforeEach(() => {
+    listMock.mockReset();
+    priceRetrieveMock.mockReset();
+    priceRetrieveMock.mockResolvedValue({
+      active: true,
+      unit_amount: RESEARCH_PLAN.priceYearly * 100,
+      currency: 'usd',
+      type: 'recurring',
+      recurring: { interval: 'year', interval_count: 1 },
+      product: 'prod_research',
+    });
+  });
+
+  afterEach(() => {
+    const restore = (k: string, v: string | undefined) => {
+      if (v === undefined) delete process.env[k];
+      else process.env[k] = v;
+    };
+    restore(RESEARCH_TIER_FLAG_ENV_VAR, saved.flag);
+    restore(RESEARCH_PRICE_ENV_VAR, saved.price);
+    restore('STRIPE_SECRET_KEY', saved.key);
+  });
+
+  it('passes when nothing is advertised', async () => {
+    delete process.env[RESEARCH_TIER_FLAG_ENV_VAR];
+    const r = await checkPromotionCodesCannotDiscountResearch();
+    expect(r.ok).toBe(true);
+  });
+
+  it('passes when every active coupon is restricted to another product', async () => {
+    enableAdvertised();
+    listMock.mockResolvedValue({
+      data: [
+        {
+          code: 'FOUNDER50',
+          coupon: {
+            percent_off: 50,
+            duration: 'repeating',
+            duration_in_months: 12,
+            valid: true,
+            applies_to: { products: ['prod_pro'] },
+          },
+        },
+      ],
+    });
+    const r = await checkPromotionCodesCannotDiscountResearch();
+    expect(r.ok).toBe(true);
+  });
+
+  /**
+   * The live shape on 2026-09-16: FOUNDER50's coupon has applies_to = null,
+   * so Stripe honours it against any price — including the annual firm seat.
+   */
+  it('FAILS on an unrestricted percentage coupon and says what it would bill', async () => {
+    enableAdvertised();
+    listMock.mockResolvedValue({
+      data: [
+        {
+          code: 'FOUNDER50',
+          coupon: {
+            percent_off: 50,
+            duration: 'repeating',
+            duration_in_months: 12,
+            valid: true,
+            applies_to: null,
+          },
+        },
+      ],
+    });
+    const r = await checkPromotionCodesCannotDiscountResearch();
+    expect(r.ok).toBe(false);
+    expect(r.detail).toContain('FOUNDER50');
+    expect(r.detail).toContain((RESEARCH_PLAN.priceYearly / 2).toFixed(2));
+  });
+
+  it('FAILS on an unrestricted fixed-amount coupon too', async () => {
+    enableAdvertised();
+    listMock.mockResolvedValue({
+      data: [
+        {
+          code: 'FOUNDER499-CONNER',
+          coupon: { amount_off: 1500, duration: 'forever', valid: true, applies_to: null },
+        },
+      ],
+    });
+    const r = await checkPromotionCodesCannotDiscountResearch();
+    expect(r.ok).toBe(false);
+    expect(r.detail).toContain('FOUNDER499-CONNER');
+  });
+
+  it('only considers ACTIVE promotion codes', async () => {
+    enableAdvertised();
+    listMock.mockResolvedValue({ data: [] });
+    await checkPromotionCodesCannotDiscountResearch();
+    expect(listMock).toHaveBeenCalledWith(expect.objectContaining({ active: true }));
+  });
+
+  it('fails loudly rather than silently when Stripe errors', async () => {
+    enableAdvertised();
+    listMock.mockRejectedValue(new Error('network down'));
+    const r = await checkPromotionCodesCannotDiscountResearch();
     expect(r.ok).toBe(false);
     expect(r.detail).toContain('network down');
   });

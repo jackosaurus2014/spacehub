@@ -7,6 +7,7 @@ import {
 } from '@/lib/research-releases';
 import { releaseState } from '@/lib/research-release-log';
 import { getResearchAvailability } from '@/lib/research';
+import DataLicenceNote from '@/components/reports/DataLicenceNote';
 
 /**
  * The "this is a recurring release" block for the two franchises that are read
@@ -92,6 +93,13 @@ export default async function ReleaseFooterNote({
           </p>
         )}
       </div>
+
+      {/*
+        The Hiring Index and the Space Score Top 25 read the same
+        register-enriched company rows as the series editions, so they owe the
+        same acknowledgement. See DataLicenceNote for why it is mandatory.
+      */}
+      <DataLicenceNote />
     </section>
   );
 }

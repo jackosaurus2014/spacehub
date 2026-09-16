@@ -224,6 +224,44 @@ export const SITE_DIRECTORY: readonly DirectoryGroup[] = [
   },
 ];
 
+/**
+ * SpaceNexus Research — the annual firm seat (/research).
+ *
+ * It is kept OUT of SITE_DIRECTORY on purpose. The constant is imported by
+ * client components (the navigation and both command palettes) which cannot
+ * read an env var, and the tier is gated by RESEARCH_TIER_ENABLED: with the
+ * flag off, middleware blocks /research entirely, so a row sitting in the
+ * static array would advertise — and offer search results for — a product
+ * nobody can buy. Server surfaces call directoryGroups(available) instead and
+ * the row appears exactly when the product does.
+ */
+export const RESEARCH_DIRECTORY_ENTRY: DirectoryEntry = {
+  name: 'SpaceNexus Research',
+  href: '/research',
+  description:
+    'The annual firm seat: full-history CSV/JSON exports, portfolio supply-chain exposure, saved screens, Space Score history and 5 named seats',
+  icon: '🔬',
+};
+
+/**
+ * The directory as it should actually be rendered. Pass the server's answer to
+ * getResearchAvailability().available (client surfaces get it from
+ * useResearchAvailability); with it false this is the input unchanged.
+ */
+export function directoryGroups(
+  researchAvailable: boolean,
+  groups: readonly DirectoryGroup[] = SITE_DIRECTORY
+): readonly DirectoryGroup[] {
+  if (!researchAvailable) return groups;
+  return groups.map((group) => {
+    if (group.key !== 'markets') return group;
+    const at = group.entries.findIndex((e) => e.href === '/releases');
+    const entries = group.entries.slice();
+    entries.splice(at >= 0 ? at + 1 : entries.length, 0, RESEARCH_DIRECTORY_ENTRY);
+    return { ...group, entries };
+  });
+}
+
 export function navItemsFor(key: DirectoryGroup['key']): DirectoryEntry[] {
   return SITE_DIRECTORY.find((g) => g.key === key)?.entries.filter((e) => e.nav) ?? [];
 }

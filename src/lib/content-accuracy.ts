@@ -23,7 +23,11 @@ import { REPORT_CARDS_QUARTER_ASSESSED } from '@/lib/report-cards-data';
 import { getArtemisNewsArticles } from '@/lib/artemis-news';
 import { getStarshipNewsArticles } from '@/lib/starship-news';
 import { FRESHNESS_POLICIES, type FreshnessPolicy } from '@/lib/freshness-policies';
-import { checkAdvertisedDiscountsMatchStripe } from '@/lib/pricing-integrity';
+import {
+  checkAdvertisedDiscountsMatchStripe,
+  checkPromotionCodesCannotDiscountResearch,
+  checkResearchTierMatchesStripe,
+} from '@/lib/pricing-integrity';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -418,6 +422,16 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     id: 'advertised-discounts-match-stripe',
     label: 'Advertised discounts match Stripe billing',
     run: checkAdvertisedDiscounts,
+  },
+  {
+    id: 'research-price-matches-stripe',
+    label: 'The advertised Research price matches the live Stripe price',
+    run: checkResearchPriceMatchesStripe,
+  },
+  {
+    id: 'research-not-discountable-by-promo',
+    label: 'No unrestricted promotion code can discount the Research seat',
+    run: checkResearchIsNotDiscountable,
   },
   {
     id: 'funding-feeds-alive',
@@ -1120,6 +1134,30 @@ async function checkFundingRowsCiteASource(): Promise<AccuracyCheckOutcome> {
  */
 async function checkAdvertisedDiscounts(): Promise<AccuracyCheckOutcome> {
   return checkAdvertisedDiscountsMatchStripe();
+}
+
+/**
+ * The advertised PRICE of a plan must match how Stripe will bill it, for the
+ * same reason an advertised discount must. On 2026-08-24 the site said $4.99
+ * and Stripe charged $19.99, and nothing in the running system compared the
+ * two. checkResearchTierMatchesStripe() is that comparison for the $399/year
+ * Research seat - the one plan expensive enough that a mismatch is a refund
+ * and a lost firm. It was written and unit-tested on 2026-09-14 but called
+ * from nowhere until it was wired in here, which is the same thing as not
+ * having it: a control that does not run is documentation.
+ */
+async function checkResearchPriceMatchesStripe(): Promise<AccuracyCheckOutcome> {
+  return checkResearchTierMatchesStripe();
+}
+
+/**
+ * The same failure pointed the other way: an active promotion code written
+ * for the $19.99/month Pro plan that Stripe will also honour on the $399/year
+ * Research seat, because checkout renders a promo-code box on every tier and
+ * the coupon is not restricted to a product.
+ */
+async function checkResearchIsNotDiscountable(): Promise<AccuracyCheckOutcome> {
+  return checkPromotionCodesCannotDiscountResearch();
 }
 
 export async function runContentAccuracyChecks(

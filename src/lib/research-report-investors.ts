@@ -17,6 +17,35 @@
  * Both tables are published, each with its own coverage denominator printed
  * directly beneath it. Neither is merged into the other.
  *
+ * WHAT COUNTS AS SPACE FUNDING (added 2026-09)
+ * --------------------------------------------
+ * This release's Q2 2026 edition headlined "DISCLOSED CAPITAL $84.9B" for one
+ * quarter of space funding, roughly ten times the real market. It was summing
+ * the amount column of every transaction we hold for a company in the space
+ * database, and inside that sum sat a $75.0B SpaceX IPO, a $416M HawkEye 360
+ * IPO, three registered directs and PIPEs into listed companies, and a $5.0B
+ * Anduril round — a defence-autonomy company, not a space one. The trailing-
+ * twelve-month table put Fidelity at the top on the strength of a $10.0B
+ * SpaceX TENDER OFFER, which is existing shares changing hands.
+ *
+ * The federal-awards release solved the same problem correctly: it reports
+ * only the subset the government itself codes as space and says so on the
+ * page. src/lib/funding/space-classification.ts does the equivalent here, and
+ * its rule is printed verbatim in this edition's coverage block. Nothing is
+ * deleted — every excluded transaction is published in its own table with the
+ * rule that excluded it.
+ *
+ * WHO LED THE ROUND (added 2026-09)
+ * ---------------------------------
+ * `leadInvestor` is one free-text column and our sources write a jointly-led
+ * round as "Eclipse / Riot Ventures". Ranked as written, every co-lead credit
+ * was lost and the most active investor in the quarter had two rounds.
+ * src/lib/funding/investor-names.ts splits those strings — on " / " and
+ * nothing else, because an ampersand or a comma can sit inside a real firm
+ * name — and merges the handful of variant spellings our own data carries.
+ * Every string it changed is published in an audit table so a wrong split is
+ * visible rather than buried in an aggregate.
+ *
  * Nothing here calls a model. Every number is a count, a sum, a median or a
  * ratio over rows in our own database.
  */
@@ -39,6 +68,17 @@ import {
   periodRange,
   previousPeriod,
 } from '@/lib/research-releases';
+import {
+  SPACE_VENTURE_RULE,
+  classifyInstrument,
+  exclusionReason,
+  qualifiesAsSpaceVenture,
+  spaceAttribution,
+} from '@/lib/funding/space-classification';
+import {
+  investorNameAudit,
+  splitInvestorString,
+} from '@/lib/funding/investor-names';
 
 const RELEASE_ID = 'most-active-investors';
 
@@ -56,7 +96,13 @@ interface RoundRow {
   investors: string[];
   source: string | null;
   sourceUrl: string | null;
-  company: { slug: string; name: string; sector: string | null } | null;
+  company: {
+    slug: string;
+    name: string;
+    sector: string | null;
+    subsector: string | null;
+    isPublic: boolean | null;
+  } | null;
 }
 
 const SELECT = {
@@ -70,20 +116,29 @@ const SELECT = {
   investors: true,
   source: true,
   sourceUrl: true,
-  company: { select: { slug: true, name: true, sector: true } },
+  // sector/subsector/isPublic are what the space-venture rule reads. They are
+  // selected here rather than fetched later so the classification can never be
+  // computed against a different row set than the one that is published.
+  company: {
+    select: { slug: true, name: true, sector: true, subsector: true, isPublic: true },
+  },
 } as const;
 
-/** Trim and drop the empties; investor names arrive from several fetchers. */
+/**
+ * Every investor a set of recorded strings names, normalised and de-duplicated
+ * within the round. One round never credits the same firm twice, however many
+ * spellings of it the row carries.
+ */
 function cleanNames(values: (string | null | undefined)[]): string[] {
   const out: string[] = [];
   const seen = new Set<string>();
   for (const v of values) {
-    const name = (v ?? '').trim();
-    if (!name) continue;
-    const key = name.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(name);
+    for (const name of splitInvestorString(v)) {
+      const key = name.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(name);
+    }
   }
   return out;
 }
@@ -191,21 +246,37 @@ export async function buildInvestorsEdition(period: string): Promise<ResearchRep
     }),
     prisma.fundingRound.findMany({
       where: { date: { gte: lookbackStart, lt: range.start } },
-      select: { leadInvestor: true },
+      select: SELECT,
     }),
     priorRange
       ? prisma.fundingRound.findMany({
           where: { date: { gte: priorRange.start, lt: priorRange.end } },
-          select: { leadInvestor: true },
+          select: SELECT,
         })
-      : Promise.resolve([] as { leadInvestor: string | null }[]),
-  ])) as [RoundRow[], RoundRow[], { leadInvestor: string | null }[], { leadInvestor: string | null }[]];
+      : Promise.resolve([] as RoundRow[]),
+  ])) as [RoundRow[], RoundRow[], RoundRow[], RoundRow[]];
 
   const computedAt = new Date().toISOString();
   const asOf = periodEndDate('quarterly', period)!;
   const title = `${release.title}, ${periodLabel('quarterly', period)}`;
 
-  if (quarterRounds.length === 0) {
+  // --- The rule, applied before anything is counted ------------------------
+  // Every table, every total and every ranking below is computed over
+  // `counted`. `excluded` is not thrown away: it is published as its own
+  // table, each row carrying the reason the rule refused it.
+  const counted = quarterRounds.filter((r) => qualifiesAsSpaceVenture(r));
+  const excluded = quarterRounds.filter((r) => !qualifiesAsSpaceVenture(r));
+  const ttmCounted = ttmRounds.filter((r) => qualifiesAsSpaceVenture(r));
+  const excludedTotal = excluded.reduce((s, r) => s + (r.amount ?? 0), 0);
+
+  // An empty edition says what KIND of empty it is. "We recorded nothing" and
+  // "we recorded transactions but none of them were space funding rounds" are
+  // different statements and a reader is entitled to which one applies.
+  if (counted.length === 0) {
+    const reason =
+      quarterRounds.length === 0
+        ? 'No funding rounds are recorded for this quarter.'
+        : `${quarterRounds.length} transactions are recorded for this quarter but none of them is a private space funding round under the rule below.`;
     return {
       releaseId: RELEASE_ID,
       period,
@@ -216,39 +287,47 @@ export async function buildInvestorsEdition(period: string): Promise<ResearchRep
       headline: [],
       tables: [],
       coverage: [
-        'No funding rounds are recorded in our database for this quarter. That is a statement about our coverage, not a claim that no rounds happened.',
+        quarterRounds.length === 0
+          ? 'No funding rounds are recorded in our database for this quarter. That is a statement about our coverage, not a claim that no rounds happened.'
+          : `${quarterRounds.length} transactions are recorded against tracked companies in this quarter, and every one of them is excluded by the rule below — they are IPOs, secondaries, debt, grants, or rounds into companies our records do not classify as space. That is a statement about what we recorded, not a claim that no space rounds happened.`,
+        ...SPACE_VENTURE_RULE,
       ],
       inputHash: hashEditionContent([], []),
       empty: true,
-      emptyReason: 'No funding rounds are recorded for this quarter.',
+      emptyReason: reason,
     };
   }
 
   // --- Denominators, computed before anything is ranked --------------------
-  const withLead = quarterRounds.filter((r) => (r.leadInvestor ?? '').trim().length > 0);
-  const withInvestorList = quarterRounds.filter((r) => cleanNames(r.investors).length > 0);
-  const disclosed = quarterRounds.filter((r) => typeof r.amount === 'number' && r.amount > 0);
+  const withLead = counted.filter((r) => splitInvestorString(r.leadInvestor).length > 0);
+  const withInvestorList = counted.filter((r) => cleanNames(r.investors).length > 0);
+  const disclosed = counted.filter((r) => typeof r.amount === 'number' && r.amount > 0);
   const disclosedTotal = disclosed.reduce((s, r) => s + (r.amount ?? 0), 0);
 
   // --- Table 1: leads, this quarter ---------------------------------------
+  // A jointly-led round credits BOTH co-leads with one round led. That is the
+  // point of the split, and it means the disclosed-total column sums to more
+  // than the quarter's capital. The table note says so.
   const leadMap = new Map<string, InvestorBucket>();
-  for (const r of withLead) addRound(bucketFor(leadMap, r.leadInvestor!.trim()), r);
+  for (const r of counted) {
+    for (const name of splitInvestorString(r.leadInvestor)) addRound(bucketFor(leadMap, name), r);
+  }
   const leadsThisQuarter = rankBuckets(leadMap);
 
   // --- Table 2: leads, trailing twelve months ------------------------------
   const ttmMap = new Map<string, InvestorBucket>();
   let ttmWithLead = 0;
-  for (const r of ttmRounds) {
-    const lead = (r.leadInvestor ?? '').trim();
-    if (!lead) continue;
+  for (const r of ttmCounted) {
+    const names = splitInvestorString(r.leadInvestor);
+    if (names.length === 0) continue;
     ttmWithLead += 1;
-    addRound(bucketFor(ttmMap, lead), r);
+    for (const name of names) addRound(bucketFor(ttmMap, name), r);
   }
   const leadsTtm = rankBuckets(ttmMap);
 
   // --- Table 3: participation ----------------------------------------------
   const participationMap = new Map<string, InvestorBucket>();
-  for (const r of quarterRounds) {
+  for (const r of counted) {
     for (const name of cleanNames(r.investors)) {
       addRound(bucketFor(participationMap, name), r);
     }
@@ -256,15 +335,21 @@ export async function buildInvestorsEdition(period: string): Promise<ResearchRep
   const participants = rankBuckets(participationMap);
 
   // --- Table 4: new to the table -------------------------------------------
+  // The lookback is scoped by the same rule: an investor whose only earlier
+  // credit was on a round this release does not count is genuinely new to
+  // THIS table, and saying otherwise would be a different kind of lie.
   const seenBefore = new Set(
-    cleanNames(lookbackRounds.map((r) => r.leadInvestor)).map((n) => n.toLowerCase())
+    lookbackRounds
+      .filter((r) => qualifiesAsSpaceVenture(r))
+      .flatMap((r) => splitInvestorString(r.leadInvestor))
+      .map((n) => n.toLowerCase())
   );
   const newEntrants = leadsThisQuarter.filter(
     (row) => !seenBefore.has(row.investor.toLowerCase())
   );
 
   // --- Table 5: the rounds behind the tables -------------------------------
-  const roundRows = quarterRounds
+  const roundRows = counted
     .slice()
     .sort((a, b) => (b.amount ?? -1) - (a.amount ?? -1) || a.date.getTime() - b.date.getTime())
     .map((r) => ({
@@ -275,38 +360,67 @@ export async function buildInvestorsEdition(period: string): Promise<ResearchRep
       stage: r.seriesLabel ?? r.roundType ?? '',
       amountUsd: typeof r.amount === 'number' && r.amount > 0 ? r.amount : null,
       amountDisclosed: typeof r.amount === 'number' && r.amount > 0 ? 'yes' : 'no',
-      leadInvestor: (r.leadInvestor ?? '').trim(),
+      leadInvestor: splitInvestorString(r.leadInvestor).join('; '),
+      leadInvestorAsRecorded: (r.leadInvestor ?? '').trim(),
       otherInvestors: cleanNames(r.investors).join('; '),
       source: r.source ?? '',
       sourceUrl: r.sourceUrl ?? '',
     }));
 
+  // --- Table 6: what the rule left out -------------------------------------
+  const exclusionRows = excluded
+    .slice()
+    .sort((a, b) => (b.amount ?? -1) - (a.amount ?? -1) || a.date.getTime() - b.date.getTime())
+    .map((r) => ({
+      date: r.date.toISOString().slice(0, 10),
+      company: r.company?.name ?? '',
+      companySlug: r.company?.slug ?? '',
+      sector: r.company?.sector ?? '',
+      subsector: r.company?.subsector ?? '',
+      stage: r.seriesLabel ?? r.roundType ?? '',
+      amountUsd: typeof r.amount === 'number' && r.amount > 0 ? r.amount : null,
+      instrument: classifyInstrument(r),
+      recipient: spaceAttribution(r.company),
+      reason: exclusionReason(r) ?? '',
+      source: r.source ?? '',
+      sourceUrl: r.sourceUrl ?? '',
+    }));
+
+  // --- Table 7: every investor string this edition rewrote ------------------
+  const nameAudit = investorNameAudit([
+    ...ttmRounds.map((r) => r.leadInvestor),
+    ...ttmRounds.flatMap((r) => r.investors),
+  ]);
+
   const priorLeadCount = new Set(
-    cleanNames(priorRounds.map((r) => r.leadInvestor)).map((n) => n.toLowerCase())
+    priorRounds
+      .filter((r) => qualifiesAsSpaceVenture(r))
+      .flatMap((r) => splitInvestorString(r.leadInvestor))
+      .map((n) => n.toLowerCase())
   ).size;
 
   const headline: ReportFigure[] = [
     {
-      label: 'Rounds recorded',
-      value: fmtCount(quarterRounds.length),
-      detail: `${fmtCount(disclosed.length)} with a disclosed amount`,
+      label: 'Space rounds counted',
+      value: fmtCount(counted.length),
+      detail: `${fmtCount(excluded.length)} of ${fmtCount(quarterRounds.length)} recorded transactions fall outside the rule and are listed below`,
     },
     {
       label: 'Disclosed capital',
       value: fmtUsd(disclosedTotal),
-      detail: 'A floor: undisclosed rounds contribute nothing',
+      detail: `A floor: undisclosed rounds contribute nothing. A further ${fmtUsd(excludedTotal)} of recorded transactions — IPOs, secondaries, debt, grants and non-space recipients — is excluded by the rule, not hidden.`,
     },
     {
       label: 'Rounds naming a lead',
-      value: `${fmtCount(withLead.length)} of ${fmtCount(quarterRounds.length)}`,
-      detail: `${fmtShare(withLead.length, quarterRounds.length)} — the ranking below sees only these`,
+      value: `${fmtCount(withLead.length)} of ${fmtCount(counted.length)}`,
+      detail: `${fmtShare(withLead.length, counted.length)} — the ranking below sees only these`,
     },
     {
       label: 'Distinct lead investors',
       value: fmtCount(leadsThisQuarter.length),
       detail:
         priorKey && priorLeadCount > 0
-          ? `${fmtCount(priorLeadCount)} in ${periodLabel('quarterly', priorKey)}`
+          ? `${fmtCount(priorLeadCount)} in ${periodLabel('quarterly', priorKey)}. Co-led rounds credit every co-lead.`
           : 'No comparable prior quarter in our records',
     },
   ];
@@ -339,7 +453,7 @@ export async function buildInvestorsEdition(period: string): Promise<ResearchRep
         companies: row.companies.join('; '),
       })),
       publicRowLimit: 10,
-      note: `Computed over the ${withLead.length} of ${quarterRounds.length} rounds in the quarter that name a lead investor.`,
+      note: `Computed over the ${withLead.length} of ${counted.length} counted space rounds in the quarter that name a lead investor. A jointly-led round credits every co-lead with one round led, so the disclosed-total column sums to more than the quarter’s capital — it is a per-investor figure, not a share of the market.`,
     },
     {
       id: 'leads-ttm',
@@ -367,7 +481,7 @@ export async function buildInvestorsEdition(period: string): Promise<ResearchRep
         companies: row.companies.join('; '),
       })),
       publicRowLimit: 10,
-      note: `Computed over the ${ttmWithLead} of ${ttmRounds.length} rounds in the trailing twelve months that name a lead investor.`,
+      note: `Computed over the ${ttmWithLead} of ${ttmCounted.length} counted space rounds in the trailing twelve months that name a lead investor (${ttmRounds.length} transactions were recorded in the window before the rule was applied). Co-leads are credited individually.`,
     },
     {
       id: 'participation',
@@ -392,7 +506,7 @@ export async function buildInvestorsEdition(period: string): Promise<ResearchRep
         companies: row.companies.join('; '),
       })),
       publicRowLimit: 10,
-      note: `Only ${withInvestorList.length} of ${quarterRounds.length} rounds in the quarter carry an investor list. Disclosed round value is the size of the rounds an investor appears in, NOT the amount that investor put in — we do not hold per-investor allocations and will not infer them.`,
+      note: `Only ${withInvestorList.length} of ${counted.length} counted space rounds in the quarter carry an investor list. Disclosed round value is the size of the rounds an investor appears in, NOT the amount that investor put in — we do not hold per-investor allocations and will not infer them.`,
     },
     {
       id: 'new-entrants',
@@ -418,7 +532,7 @@ export async function buildInvestorsEdition(period: string): Promise<ResearchRep
       id: 'rounds',
       label: 'Rounds behind these tables',
       description:
-        'Every round recorded in the quarter, largest disclosed first, with its source. This is the row set the tables above are computed from.',
+        'Every round the rule counts, largest disclosed first, with its source. This is the row set the tables above are computed from. What the rule left out is in the next table, not missing.',
       columns: [
         { key: 'date', label: 'Date' },
         { key: 'company', label: 'Company' },
@@ -430,7 +544,39 @@ export async function buildInvestorsEdition(period: string): Promise<ResearchRep
       ],
       rows: roundRows,
       publicRowLimit: 10,
-      note: 'A blank amount means the round is real and its size was never disclosed. Nothing downstream infers one.',
+      note: 'A blank amount means the round is real and its size was never disclosed. Nothing downstream infers one. The Lead column is the recorded string split into its co-leads; the string exactly as stored travels in the export as leadInvestorAsRecorded.',
+    },
+    {
+      id: 'exclusions',
+      label: 'Transactions the rule excludes',
+      description:
+        'Every transaction recorded against a tracked company in the quarter that does NOT reach the capital figure, with the reason. Published so the headline can be checked rather than trusted.',
+      columns: [
+        { key: 'date', label: 'Date' },
+        { key: 'company', label: 'Company' },
+        { key: 'stage', label: 'Stage' },
+        { key: 'amountUsd', label: 'Amount', numeric: true },
+        { key: 'instrument', label: 'Instrument' },
+        { key: 'reason', label: 'Why it is excluded' },
+      ],
+      rows: exclusionRows,
+      publicRowLimit: 10,
+      note: `${fmtCount(excluded.length)} of ${fmtCount(quarterRounds.length)} recorded transactions, ${fmtUsd(excludedTotal)} in disclosed value. Nothing here has been deleted or altered in the database — these rows are excluded from ONE figure, and they are printed so the exclusion is checkable.`,
+    },
+    {
+      id: 'investor-name-normalisation',
+      label: 'Investor strings this edition rewrote',
+      description:
+        'Our sources record a jointly-led round as one free-text string. Every string this edition split or renamed is listed here with what it became, over the whole trailing-twelve-month window, so a wrong split is visible rather than buried in an aggregate.',
+      columns: [
+        { key: 'recorded', label: 'As recorded' },
+        { key: 'resolved', label: 'Read as' },
+        { key: 'action', label: 'Rule applied' },
+        { key: 'occurrences', label: 'Rows', numeric: true },
+      ],
+      rows: nameAudit.map((row) => ({ ...row })),
+      publicRowLimit: 10,
+      note: 'Split only on a slash with whitespace on both sides. Ampersands and commas are deliberately left alone, because "Kongsberg Defence & Aerospace", "Mitsui & Co." and "ESA European Launcher Challenge (Germany, UK)" are single names — so a co-lead pair joined by an ampersand is under-credited rather than wrongly split. Strings that passed through unchanged are not listed.',
     },
   ];
 
@@ -444,11 +590,14 @@ export async function buildInvestorsEdition(period: string): Promise<ResearchRep
     headline,
     tables,
     coverage: [
-      `This edition sees ${quarterRounds.length} rounds recorded for the quarter, of which ${disclosed.length} disclosed an amount. Totals are a floor, not an estimate.`,
-      `${withLead.length} of ${quarterRounds.length} rounds name a lead investor (${fmtShare(withLead.length, quarterRounds.length)}). Every lead ranking on this page is computed over that subset only.`,
-      `${withInvestorList.length} of ${quarterRounds.length} rounds carry a wider investor list. The participation table is computed over that subset, and it is the weaker of the two attributions.`,
+      ...SPACE_VENTURE_RULE,
+      `APPLIED TO THIS QUARTER. ${quarterRounds.length} transactions are recorded against tracked companies, ${counted.length} of them pass the rule and ${excluded.length} do not. The ${excluded.length} excluded carry ${fmtUsd(excludedTotal)} of disclosed value, and every one of them is printed in the exclusions table above with the reason it was refused.`,
+      `Of the ${counted.length} counted rounds, ${disclosed.length} disclosed an amount. Totals are a floor, not an estimate.`,
+      `${withLead.length} of ${counted.length} counted rounds name a lead investor (${fmtShare(withLead.length, counted.length)}). Every lead ranking on this page is computed over that subset only.`,
+      `${withInvestorList.length} of ${counted.length} counted rounds carry a wider investor list. The participation table is computed over that subset, and it is the weaker of the two attributions.`,
+      'HOW CO-LED ROUNDS ARE READ. Our sources record a jointly-led round as one free-text string, such as "Eclipse / Riot Ventures". We split those on a slash with whitespace on both sides, and on nothing else, because an ampersand or a comma can sit inside a real firm name; each co-lead is then credited with one round led. A short list of variant spellings that both appear in our own data is merged to one name. Every string that was split or renamed is listed in the normalisation table above. One consequence to keep in mind: a round led by two firms appears in full under both, so the disclosed-total column of a ranking sums to more than the quarter did.',
       'Our round coverage is built from regulatory filings, company announcements and cited press coverage. It is not a census of the market, and an investor absent from a table may simply be absent from our records for that quarter.',
-      'Sector is taken from the company profile as it stands today, so a company that changed sector is reported under its current one in every quarter.',
+      'Sector is taken from the company profile as it stands today, so a company that changed sector is reported under its current one in every quarter. The space test above is therefore applied using the classification as it stands today.',
       'Every figure on this page is a count, a sum, a median or a ratio over our own rows. Nothing is model-generated, estimated or projected.',
     ],
     inputHash: hashEditionContent(headline, tables),

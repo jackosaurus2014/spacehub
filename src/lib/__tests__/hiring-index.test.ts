@@ -28,6 +28,7 @@ jest.mock('../db', () => ({
 }));
 
 import {
+  activePostingsReconciliation,
   getHiringIndex,
   parseMonthParam,
   latestEditionMonthKey,
@@ -245,5 +246,62 @@ describe('monthKey', () => {
   it('zero-pads months', () => {
     expect(monthKey(2026, 8)).toBe('2026-08');
     expect(monthKey(2026, 12)).toBe('2026-12');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// One metric, three published denominators (fixed 2026-09)
+// ---------------------------------------------------------------------------
+
+/**
+ * The August 2026 edition printed "ACTIVE POSTINGS 6,733 at month end" beside
+ * "REMOTE SHARE 1.5% - 135 of 8,925 active roles", and /chart/open-space-jobs
+ * plotted 22.6k for the same series. Three numbers, one metric, on adjacent
+ * public screens. Two of those were bugs and one was a labelling failure:
+ *
+ *   22.6k  the chart summed the per-company rows AND both site-wide sentinel
+ *          rows, counting the same postings about three times. Fixed in
+ *          src/lib/charts/data.ts, which now reads the _TOTAL sentinel.
+ *   8,925  a live count printed with no date on a page about a past month.
+ *          It is still live - we hold no history of the remote flag - but it
+ *          is now stamped, and the page carries the reconciliation below.
+ *   6,733  correct, and now the only lineage any surface publishes.
+ */
+describe('the two active-postings readings are labelled, not merged', () => {
+  it('stamps the live count with today and shares its denominator with remote share', async () => {
+    snapshotFindFirst.mockResolvedValue({ date: new Date(Date.UTC(2026, 7, 31)), activeJobs: 6733 });
+    jobCount.mockResolvedValue(8925);
+
+    const index = (await getHiringIndex(2026, 8))!;
+    expect(index.activeAtMonthEnd).toBe(6733);
+    expect(index.activeAtMonthEndDate).toBe('2026-08-31');
+    expect(index.activeNow).toBe(8925);
+    expect(index.activeNowAsOf).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(index.activeNowAsOf).not.toBe('2026-08-31');
+
+    // The remote-share denominator IS the live count. It used to be a second,
+    // identical query, which is how one metric acquired two names.
+    expect(index.remoteShare.total).toBe(index.activeNow);
+    expect(index.remoteShare.asOf).toBe(index.activeNowAsOf);
+  });
+
+  it('explains the gap on the page in the reader words, with both dates', async () => {
+    snapshotFindFirst.mockResolvedValue({ date: new Date(Date.UTC(2026, 7, 31)), activeJobs: 6733 });
+    jobCount.mockResolvedValue(8925);
+
+    const index = (await getHiringIndex(2026, 8))!;
+    const note = activePostingsReconciliation(index)!;
+    expect(note).toContain('6,733');
+    expect(note).toContain('8,925');
+    expect(note).toContain('2026-08-31');
+    expect(note).toContain(index.activeNowAsOf);
+    expect(note).toMatch(/up by 2,192/);
+    expect(note).toMatch(/remote-share/i);
+  });
+
+  it('says nothing when there is nothing to reconcile', async () => {
+    snapshotFindFirst.mockResolvedValue(null);
+    const index = (await getHiringIndex(2026, 8))!;
+    expect(activePostingsReconciliation(index)).toBeNull();
   });
 });
