@@ -214,6 +214,24 @@ export const RESEARCH_CAPABILITIES: ResearchCapability[] = [
     enforcedBy: 'src/app/api/research/reports/[report]/[period]/route.ts',
   },
   {
+    id: 'federal-awards',
+    label: 'Federal contract and grant awards, by company and agency',
+    detail:
+      'Every prime federal award we can attribute to a tracked space company, from USAspending.gov: obligated dollars, awarding agency and sub-agency, award type, period of performance, the government’s own space product/service code, and a link to the record for each one. Screen it by company, agency, date, size and space-coded-only — which for a diversified prime is the difference between its space business and its whole federal book — then export the rows. Prime awards only, obligated dollars rather than announced ceilings, and nothing classified: the coverage limits ship with every download.',
+    accessFlag: 'hasResearchExports',
+    moduleId: 'research-exports',
+    enforcedBy: 'src/app/api/research/gov-awards/route.ts',
+  },
+  {
+    id: 'insider-activity',
+    label: 'SEC insider and 5%-holder activity',
+    detail:
+      'Every Form 4 and Form 5 transaction line we parse for the listed space names — insider, role, code, shares, price, value and a link to the filing — plus Schedule 13D/G holders of 5% or more and the full EDGAR filing index behind them. Open-market purchases and sales (codes P and S) are kept strictly apart from grants and tax withholding, which most datasets add together. Screen it by company and window, and export the rows. US-listed issuers only; parsed history begins 2025-01-01; this is disclosure reporting, not investment advice.',
+    accessFlag: 'hasResearchExports',
+    moduleId: 'research-exports',
+    enforcedBy: 'src/app/api/research/insider-activity/route.ts',
+  },
+  {
     id: 'seats',
     label: `${RESEARCH_PLAN.totalSeats} named seats on one invoice`,
     detail:

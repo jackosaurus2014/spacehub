@@ -19,6 +19,8 @@ import { getCompanyScore } from '@/lib/space-score';
 import { buildInvestorsEdition } from '@/lib/research-report-investors';
 import { buildLaunchCadenceEdition } from '@/lib/research-report-launch';
 import { buildSupplyChainEdition } from '@/lib/research-report-supply-chain';
+import { buildGovAwardsEdition } from '@/lib/research-report-gov-awards';
+import { buildInsiderActivityEdition } from '@/lib/research-report-insider';
 import {
   getRelease,
   isPublishedPeriod,
@@ -433,6 +435,10 @@ export async function buildReleaseEdition(
       return buildHiringEdition(release, period);
     case 'space-score-top-25':
       return buildSpaceScoreEdition(release, period);
+    case 'federal-space-awards':
+      return buildGovAwardsEdition(period);
+    case 'space-insider-activity':
+      return buildInsiderActivityEdition(period);
     default:
       throw new UnknownReleaseError(`No builder registered for ${release.id}`);
   }

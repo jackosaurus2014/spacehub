@@ -625,6 +625,21 @@ export const CONTENT_ACCURACY_CHECKS: AccuracyCheckDef[] = [
     label: 'Nightly Space Tycoon probe reported within 36h',
     run: () => checkQaProbeRan('qa-tycoon'),
   },
+  {
+    id: 'federal-awards-usable',
+    label: 'Federal award table is filling, and every row cites its award record',
+    run: checkFederalAwardsUsable,
+  },
+  {
+    id: 'insider-feeds-alive',
+    label: 'SEC insider sweep ran and wrote, and every row cites its filing',
+    run: checkInsiderFeedsAlive,
+  },
+  {
+    id: 'uk-registry-alive',
+    label: 'UK Companies House sweep ran, is configured, and every row cites the register',
+    run: checkUkRegistryAlive,
+  },
 ];
 
 /** A rejection this large means a player watched money vanish. */
@@ -969,6 +984,10 @@ async function checkStockQuotesFresh(): Promise<AccuracyCheckOutcome> {
 const FUNDING_FEEDS: Array<{ source: string; label: string; maxAgeDays: number }> = [
   { source: 'sec-form-d', label: 'SEC EDGAR Form D', maxAgeDays: 9 },
   { source: 'edgar-company-facts', label: 'SEC EDGAR filer record', maxAgeDays: 16 },
+  // USAspending prime federal awards (src/lib/fetchers/usaspending-awards-fetcher.ts).
+  // The nightly cron walks a slice of the roster, so a healthy feed runs every
+  // night; 4 days allows for a missed run without crying wolf.
+  { source: 'usaspending-awards', label: 'USAspending federal awards', maxAgeDays: 4 },
 ];
 
 async function checkFundingFeedsAlive(): Promise<AccuracyCheckOutcome> {
@@ -1135,4 +1154,300 @@ export async function runContentAccuracySentinel(
   }
 
   return { checks: results, failedCount: failed.length };
+}
+
+// ---------------------------------------------------------------------------
+// Federal awards
+// ---------------------------------------------------------------------------
+
+/**
+ * The federal-award pipeline must be visibly working, not merely quiet.
+ *
+ * funding-feeds-alive already watches the RUN ledger for this source, which
+ * catches "never ran", "ran and failed" and "ran, wrote nothing, collected
+ * HTTP errors". This check watches the TABLE, which is a different failure:
+ * a sweep can run green forever while attributing nothing, or while writing
+ * rows a buyer cannot open.
+ *
+ * Three conditions, each one a refund event if it goes unnoticed on a dataset
+ * sold to investors:
+ *   - the roster is being swept at all (FederalAwardCoverage is not empty and
+ *     is not months stale);
+ *   - awards exist and at least one company has one;
+ *   - every stored award carries the usaspending.gov URL it was read from.
+ */
+async function checkFederalAwardsUsable(): Promise<AccuracyCheckOutcome> {
+  const problems: string[] = [];
+
+  const [coverageRows, searchedRows, newestSweep, awards, attributed, unsourced] =
+    await Promise.all([
+      prisma.federalAwardCoverage.count(),
+      prisma.federalAwardCoverage.count({ where: { status: 'searched' } }),
+      prisma.federalAwardCoverage.findFirst({
+        orderBy: { searchedAt: 'desc' },
+        select: { searchedAt: true },
+      }),
+      prisma.federalAward.count(),
+      prisma.federalAward.count({ where: { companyId: { not: null } } }),
+      prisma.federalAward.count({ where: { OR: [{ sourceUrl: '' }] } }),
+    ]);
+
+  if (coverageRows === 0) {
+    return {
+      ok: false,
+      detail:
+        'FederalAwardCoverage is EMPTY — the USAspending sweep has never attributed a single company. Run /api/cron/gov-awards-sync.',
+    };
+  }
+  if (newestSweep) {
+    const ageDays = (Date.now() - newestSweep.searchedAt.getTime()) / MS_PER_DAY;
+    if (ageDays > 45) {
+      problems.push(
+        `No company has been swept against USAspending in ${Math.round(ageDays)}d (coverage rows go stale after 30d by policy).`,
+      );
+    }
+  }
+  if (awards === 0) {
+    problems.push(
+      `FederalAward is EMPTY while ${searchedRows} companies are recorded as searched — the matcher is attributing nothing.`,
+    );
+  }
+  if (awards > 0 && attributed === 0) {
+    problems.push(`${awards} FederalAward rows exist but none carry a companyId.`);
+  }
+  if (unsourced > 0) {
+    problems.push(
+      `${unsourced} FederalAward rows carry no source URL — a row an investor cannot open is a row we cannot defend.`,
+    );
+  }
+
+  if (problems.length > 0) return { ok: false, detail: problems.join(' | ') };
+  return {
+    ok: true,
+    detail: `${attributed} attributed federal awards across ${searchedRows} swept companies; every row cites its usaspending.gov record.`,
+  };
+}
+
+
+// ---------------------------------------------------------------------------
+// SEC-derived investor signals
+// ---------------------------------------------------------------------------
+
+/**
+ * How stale the insider sweep may be before it is a failure. The cron runs
+ * nightly; three days allows for one missed night and a redeploy.
+ */
+const INSIDER_MAX_RUN_AGE_DAYS = 3;
+
+/**
+ * The SEC insider pipeline must be visibly working, not merely quiet.
+ *
+ * This is the failure the whole design is built against: two FCC fetchers sat
+ * dead for weeks behind a swallowed 403, and the only symptom anybody saw was
+ * an empty tab. A dataset sold to investors cannot fail that way, so three
+ * different kinds of dead are separated here:
+ *
+ *   RUN LEDGER (DataSourceRun, src/lib/funding/provenance.ts)
+ *     - never ran           -> no row for "sec-insider" at all;
+ *     - ran and failed      -> ok=false with the verbatim error;
+ *     - killed mid-sweep    -> startedAt with no finishedAt;
+ *     - ran, wrote nothing, collected HTTP errors -> finishRun marks ok=false.
+ *   THE TABLES
+ *     A sweep can run green forever while writing nothing usable, so the
+ *     tables are checked too: transactions exist, they are still arriving,
+ *     and the filing index is being refreshed.
+ *   CITABILITY
+ *     Every row we sell must be openable. A transaction or position with no
+ *     filing URL cannot be defended to a buyer, so any such row fails the
+ *     check outright rather than waiting for somebody to notice.
+ *
+ * A run that genuinely found no new filings stays green, which is the point.
+ */
+async function checkInsiderFeedsAlive(): Promise<AccuracyCheckOutcome> {
+  const problems: string[] = [];
+
+  const last = await prisma.dataSourceRun.findFirst({
+    where: { source: 'sec-insider' },
+    orderBy: { startedAt: 'desc' },
+    select: {
+      startedAt: true,
+      finishedAt: true,
+      ok: true,
+      error: true,
+      itemsWritten: true,
+      httpErrors: true,
+    },
+  });
+
+  if (!last) {
+    return {
+      ok: false,
+      detail:
+        'SEC insider sweep has NEVER run (no DataSourceRun row for "sec-insider"). Run /api/cron/insider-sync, or scripts/backfill-sec-insider.ts for a first full pass.',
+    };
+  }
+
+  const runAgeDays = (Date.now() - last.startedAt.getTime()) / MS_PER_DAY;
+  if (!last.finishedAt) {
+    problems.push(
+      `last run started ${runAgeDays.toFixed(1)}d ago and never finished (killed mid-sweep).`
+    );
+  } else if (!last.ok) {
+    const why = (last.error ?? 'no error recorded').split(/\r?\n/)[0].slice(0, 200);
+    problems.push(`last run FAILED (${why}); httpErrors=${last.httpErrors}.`);
+  } else if (runAgeDays > INSIDER_MAX_RUN_AGE_DAYS) {
+    problems.push(
+      `last successful run ${Math.round(runAgeDays)}d ago (policy: < ${INSIDER_MAX_RUN_AGE_DAYS}d).`
+    );
+  }
+
+  const [transactions, positions, filings, newestTransaction, newestFiling, unsourcedTx, unsourcedPos] =
+    await Promise.all([
+      prisma.insiderTransaction.count(),
+      prisma.institutionalPosition.count(),
+      prisma.issuerFiling.count(),
+      prisma.insiderTransaction.findFirst({
+        orderBy: { filingDate: 'desc' },
+        select: { filingDate: true },
+      }),
+      prisma.issuerFiling.findFirst({
+        orderBy: { filingDate: 'desc' },
+        select: { filingDate: true },
+      }),
+      prisma.insiderTransaction.count({ where: { sourceUrl: '' } }),
+      prisma.institutionalPosition.count({ where: { sourceUrl: '' } }),
+    ]);
+
+  if (transactions === 0) {
+    problems.push(
+      'InsiderTransaction is EMPTY — the Space Insider Activity release has nothing to compute from.'
+    );
+  }
+  if (filings === 0) {
+    problems.push('IssuerFiling is EMPTY — filing cadence cannot be computed.');
+  }
+
+  // A listed roster this size files something every few days. Three weeks of
+  // silence across every tracked issuer is a pipeline fault, not a quiet market.
+  if (newestFiling) {
+    const ageDays = (Date.now() - newestFiling.filingDate.getTime()) / MS_PER_DAY;
+    if (ageDays > 21) {
+      problems.push(
+        `newest indexed filing is ${Math.round(ageDays)}d old — the submissions sweep is not refreshing.`
+      );
+    }
+  }
+  // Form 4s arrive within two business days of a trade, so a 45-day gap across
+  // the whole roster means we stopped parsing documents even if the index moved.
+  if (newestTransaction) {
+    const ageDays = (Date.now() - newestTransaction.filingDate.getTime()) / MS_PER_DAY;
+    if (ageDays > 45) {
+      problems.push(
+        `newest Form 4 we hold was filed ${Math.round(ageDays)}d ago — ownership documents are not being parsed.`
+      );
+    }
+  }
+
+  if (unsourcedTx > 0 || unsourcedPos > 0) {
+    problems.push(
+      `${unsourcedTx + unsourcedPos} SEC row(s) carry no filing URL and cannot be checked by a reader.`
+    );
+  }
+
+  if (problems.length > 0) {
+    return { ok: false, detail: `SEC insider pipeline: ${problems.join(' | ')}` };
+  }
+  return {
+    ok: true,
+    detail: `${transactions} insider transactions, ${positions} 5%-holder rows and ${filings} indexed filings; last sweep ${runAgeDays.toFixed(1)}d ago (+${last.itemsWritten}); every row cites its filing.`,
+  };
+}
+
+/**
+ * The UK Companies House sweep must be alive, configured, and citable.
+ *
+ * This feed has a failure mode the SEC feeds do not: its credential lives only
+ * in Railway, so an environment deployed before COMPANIES_HOUSE_API_KEY was
+ * added runs the cron happily and resolves nothing. That is indistinguishable
+ * from "no UK company changed" unless something checks, which is what the run
+ * ledger and this function are for. syncUkRegistry deliberately throws on a
+ * missing key so the run is recorded as FAILED rather than empty.
+ *
+ * Four ways to fail, all of them real:
+ *   - never ran           -> no DataSourceRun row for "companies-house";
+ *   - ran and failed      -> ok=false, with the verbatim error (a missing key
+ *                            lands here, naming itself);
+ *   - ran but the table is empty -> resolution is broken, not merely quiet;
+ *   - rows exist that cite no register URL -> unverifiable, so unsellable.
+ * A run that found no CHANGES stays green, which is the point.
+ */
+const UK_REGISTRY_MAX_AGE_DAYS = 9;
+
+async function checkUkRegistryAlive(): Promise<AccuracyCheckOutcome> {
+  const problems: string[] = [];
+
+  const last = await prisma.dataSourceRun.findFirst({
+    where: { source: 'companies-house' },
+    orderBy: { startedAt: 'desc' },
+    select: {
+      startedAt: true,
+      finishedAt: true,
+      ok: true,
+      error: true,
+      itemsWritten: true,
+      httpErrors: true,
+    },
+  });
+
+  if (!last) {
+    return {
+      ok: false,
+      detail:
+        'UK Companies House: has never run (no DataSourceRun row for "companies-house"). ' +
+        'Run /api/cron/uk-registry-sync, or scripts/backfill-companies-house.ts for a first pass.',
+    };
+  }
+
+  const runAgeDays = (Date.now() - last.startedAt.getTime()) / MS_PER_DAY;
+  if (!last.finishedAt) {
+    problems.push(
+      `last run started ${runAgeDays.toFixed(1)}d ago and never finished (killed mid-sweep).`
+    );
+  } else if (!last.ok) {
+    const why = (last.error ?? 'no error recorded').split(/\r?\n/)[0].slice(0, 200);
+    problems.push(`last run FAILED (${why}); httpErrors=${last.httpErrors}.`);
+  } else if (runAgeDays > UK_REGISTRY_MAX_AGE_DAYS) {
+    problems.push(
+      `last successful run ${Math.round(runAgeDays)}d ago (policy: < ${UK_REGISTRY_MAX_AGE_DAYS}d).`
+    );
+  }
+
+  const [registrations, unsourced, officers, statusEvents] = await Promise.all([
+    prisma.ukCompanyRegistration.count(),
+    prisma.ukCompanyRegistration.count({ where: { sourceUrl: '' } }),
+    prisma.ukCompanyOfficer.count(),
+    prisma.ukCompanyStatusEvent.count(),
+  ]);
+
+  if (registrations === 0) {
+    problems.push(
+      'UkCompanyRegistration is EMPTY — no UK company has resolved to a company number at all.'
+    );
+  }
+  if (unsourced > 0) {
+    problems.push(
+      `${unsourced} registration row(s) carry no register URL and cannot be checked by a reader.`
+    );
+  }
+
+  if (problems.length > 0) {
+    return { ok: false, detail: `UK Companies House: ${problems.join(' | ')}` };
+  }
+  return {
+    ok: true,
+    detail:
+      `${registrations} UK registrations, ${officers} officers and ${statusEvents} dated ` +
+      `register events; last sweep ${runAgeDays.toFixed(1)}d ago (+${last.itemsWritten}); ` +
+      'every row cites the register.',
+  };
 }

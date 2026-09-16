@@ -31,7 +31,7 @@ export const dynamic = 'force-dynamic';
 const BASE = 'https://spacenexus.us';
 const TITLE = 'SpaceNexus Recurring Releases';
 const DESCRIPTION =
-  'Named, dated releases on a fixed calendar — the Most Active Space Investors, the Launch Cadence and Slip Report, Supply-Chain Concentration, the Hiring Index and the Space Score Top 25 — every figure computed from SpaceNexus data, with the method and the coverage limits stated in full.';
+  'Named, dated releases on a fixed calendar — the Most Active Space Investors, the Launch Cadence and Slip Report, Supply-Chain Concentration, Federal Space Awards, the Hiring Index and the Space Score Top 25 — every figure computed from SpaceNexus data, with the method and the coverage limits stated in full.';
 
 export const metadata: Metadata = {
   title: TITLE,

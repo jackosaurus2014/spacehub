@@ -7,6 +7,11 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import {
+  COMPANIES_HOUSE_ATTRIBUTION,
+  COMPANIES_HOUSE_LICENCE_NAME,
+  COMPANIES_HOUSE_LICENCE_URL,
+} from '@/lib/uk-registry/attribution';
 
 interface DataSource {
   name: string;
@@ -106,6 +111,13 @@ const dataCategories: DataCategory[] = [
         description: 'Federal spending data including space-related contract awards, grant disbursements, and agency budgets',
         updateFrequency: 'Daily',
         tier: 'Free',
+      },
+      {
+        name: 'UK Companies House',
+        description:
+          'The UK statutory company register: incorporation dates, corporate status (including administration and liquidation), registered offices, SIC codes, directors, persons with significant control, and dated filing history for UK-registered space companies',
+        updateFrequency: 'Daily',
+        tier: 'Free (Rate Limited)',
       },
     ],
   },
@@ -354,6 +366,25 @@ export default function DataSourcesPage() {
                   and licensed commercial providers. We do not scrape private data or use unauthorized sources.
                   Every data point on our platform can be traced back to the original source listed here.
                   When AI is used to generate insights, it is clearly labeled as AI-generated content.
+                </p>
+                {/*
+                  Required attribution, not a courtesy. UK Companies House data is Crown
+                  copyright released under the Open Government Licence v3.0, which grants
+                  reuse ON CONDITION that the source is acknowledged and the licence linked.
+                  The OGL ends automatically if the condition is not met, so this line is
+                  load-bearing wherever register-derived data is displayed or exported.
+                  Single-sourced from src/lib/uk-registry/attribution.ts.
+                */}
+                <p className="text-slate-400 text-xs leading-relaxed mt-3">
+                  {COMPANIES_HOUSE_ATTRIBUTION}{' '}
+                  <a
+                    href={COMPANIES_HOUSE_LICENCE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-400 hover:text-cyan-300 underline"
+                  >
+                    {COMPANIES_HOUSE_LICENCE_NAME}
+                  </a>
                 </p>
               </div>
             </div>

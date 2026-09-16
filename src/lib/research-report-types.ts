@@ -61,6 +61,15 @@ export interface ResearchReportEdition {
   /** What this edition can and cannot see. Travels with the numbers, always. */
   coverage: string[];
   /**
+   * A standing legal notice rendered ABOVE the figures and shipped with every
+   * export of them. Added for the SEC-derived releases, where the house rule
+   * (see the spacex-stock guide) is that any surface touching investing
+   * carries a not-investment-advice notice in the reader's first screenful,
+   * not in a footnote under six tables. Optional: a release with nothing to
+   * disclaim leaves it undefined rather than inventing boilerplate.
+   */
+  notice?: string;
+  /**
    * Stable hash of the computed content. Two consecutive editions with the
    * same hash mean nothing in the source data changed, which the page reports
    * plainly instead of dressing an unchanged quarter up as news.

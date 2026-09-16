@@ -266,6 +266,12 @@ describe('the release registry', () => {
       'src/lib/research-report-investors.ts',
       'src/lib/research-report-launch.ts',
       'src/lib/research-report-supply-chain.ts',
+      'src/lib/research-report-gov-awards.ts',
+      'src/lib/gov-awards/match.ts',
+      'src/lib/gov-awards/aggregate.ts',
+      'src/lib/research-report-insider.ts',
+      'src/lib/market-signals/form4-codes.ts',
+      'src/lib/market-signals/sec-filing-parsers.ts',
       'src/lib/chart-week-keys.ts',
       'src/lib/chart-week.ts',
     ];

@@ -363,6 +363,87 @@ export const RESEARCH_RELEASES: readonly ResearchRelease[] = [
     ],
     computedBy: 'src/lib/space-score.ts',
   },
+  {
+    id: 'federal-space-awards',
+    title: 'SpaceNexus Federal Space Awards',
+    shortTitle: 'Federal Space Awards',
+    cadence: 'quarterly',
+    summary:
+      'Which tracked space companies won US federal money in the quarter, from which agencies, and how concentrated that money is.',
+    computes: [
+      'Space-coded federal dollars obligated to each tracked company in the quarter, and over the trailing twelve months',
+      'Agency mix — NASA against DoD against everyone else — as a customer-concentration signal',
+      'Award concentration: what share of a company’s space money rides on its single largest award, and the HHI across the whole field',
+      'Each company’s whole federal book beside the share of it the government codes as space, which is what separates a pure-play from a diversified prime',
+      'Companies winning their first space award inside our window',
+      'Space obligations set beside private funding for the companies that did both',
+      'The full award list behind every table, each row linking to its usaspending.gov record',
+    ],
+    earliestPeriod: '2024-Q1',
+    firstScheduledPeriod: '2026-Q3',
+    publishesLivePeriod: false,
+    // 30, not 14: defense contract records reach USAspending on a reporting
+    // lag of up to 90 days, so publishing a quarter the day it closes would
+    // publish a number we already know is low.
+    graceDays: 30,
+    href: seriesHref('federal-space-awards'),
+    surface: 'series',
+    exportHref: exportHref('federal-space-awards'),
+    methodology: [
+      'Every figure is a count, a sum, a share, a maximum or a Herfindahl index over the FederalAward table, which is built from USAspending.gov — the US Treasury’s public record of federal spending. No estimate, model or projection is used anywhere in this release, and every stored award carries the usaspending.gov URL it was read from.',
+      'Every dollar figure is the SPACE-CODED subset: awards the government itself codes as space work through the award’s own product/service code (space vehicles, space R&D, space transportation and launch) or industry code (space research and technology, satellite telecommunications). Several tracked companies are diversified primes whose federal business is mostly aircraft, missiles and services, and reporting their whole federal book as space would be arithmetically correct and completely misleading. The all-federal figure is published beside the space figure, never instead of it.',
+      'The space-coded flag deliberately excludes the "guided missile and space vehicle manufacturing" industry codes, which conflate tactical missiles with spacecraft. Space work under those codes almost always carries a space product/service code as well, so the loss is small — but every space figure here is a conservative floor rather than a ceiling.',
+      'Only PRIME awards are counted. A company working as a subcontractor on another firm’s prime contract does not appear, because USAspending’s subaward file is reported voluntarily and incompletely and we will not mix the two.',
+      'Amounts are the OBLIGATED total USAspending reports on the award — money actually placed on contract — not an announced ceiling. A multi-year IDIQ with a headline value appears only as the orders placed against it.',
+      'Indefinite-delivery vehicles are stored and listed but contribute $0 to every dollar figure: their reported value is the sum of the orders under them, and those orders are counted individually, so counting both would count the same money twice.',
+      'An award is attributed to the quarter its BASE OBLIGATION date falls in, in UTC — the date the award was originally made. A modification that adds money updates the existing award in place rather than creating a second row, so this release measures awards WON in the quarter, not dollars flowing in the quarter. Those are different questions and the page says which one it answers.',
+      'A recipient is attributed to a tracked company only on an exact Unique Entity ID match, an exact name match once corporate form is stripped, or a name that is the company’s own followed solely by generic corporate or federal-contracting words. Nothing fuzzy is accepted, a recipient that would match two companies is attributed to neither, and every stored row records the government’s spelling of the recipient alongside the match quality.',
+      'Concentration bands are the one judgement in this release and are fixed: a company whose largest single award is 90% or more of its federal total is called single-award dependent, 60% or more heavily concentrated, 35% or more concentrated, and below that spread. The underlying percentage is published beside the band.',
+      'Defense contract records reach USAspending on a reporting lag of up to 90 days, so the most recent quarter is systematically incomplete and grows when the edition is recomputed. Each edition prints the moment it was computed.',
+      'Classified and unacknowledged procurement is not published on USAspending at all. For a company whose federal business is largely classified, every figure here is a floor of unknown depth.',
+    ],
+    computedBy: 'src/lib/research-report-gov-awards.ts',
+  },
+  {
+    id: 'space-insider-activity',
+    title: 'SpaceNexus Space Insider Activity',
+    shortTitle: 'Space Insider Activity',
+    cadence: 'monthly',
+    summary:
+      'What company insiders and 5% holders filed with the SEC on the listed space names this month, and how much each issuer filed.',
+    computes: [
+      'Open-market insider purchases and sales — codes P and S only — with the insider, the role, the shares, the price and the filing',
+      'Every other Form 4 transaction class published beside them, so what the headline excludes is visible rather than asserted',
+      'Insider activity by company, with grants and tax withholding reported separately and never mixed into the net',
+      'Schedule 13D and 13G holders of 5% or more, and the change against that holder’s previous filing on the same issuer',
+      'Filing cadence by issuer: 8-K volume against its own trailing monthly average, form types first seen, late-filing notices, and the lag between a period end and its 10-Q',
+      'The full filing index behind every table, each row linking to its accession on sec.gov',
+    ],
+    earliestPeriod: '2025-01',
+    firstScheduledPeriod: '2026-09',
+    publishesLivePeriod: false,
+    // 12, not 5: a Form 4 is due within two business days of a transaction but
+    // a Form 5 reports deferred transactions after the fiscal year, and
+    // amendments arrive later still. Publishing the day the month closes would
+    // publish a count we already know will move.
+    graceDays: 12,
+    href: seriesHref('space-insider-activity'),
+    surface: 'series',
+    exportHref: exportHref('space-insider-activity'),
+    methodology: [
+      'Every figure is a count, a sum or a difference over the InsiderTransaction, InstitutionalPosition and IssuerFiling tables, each row of which was parsed from an SEC filing document and stores that filing’s accession number and URL. No estimate, model, projection or score is used anywhere in this release.',
+      'A transaction is attributed to the month its transaction date falls in, in UTC — the date the trade happened, not the date it was reported. A line carrying no transaction date falls back to the filing date, and nothing else is inferred.',
+      'THE HEADLINE PURCHASE AND SALE FIGURES COUNT ONLY CODES P AND S: an open-market or private purchase, and an open-market or private sale. A restricted-stock grant (code A) is not a purchase and shares withheld to pay tax on it (code F) are not a sale — both are automatic events on a compensation calendar. Every other class is published in its own table with its line count, share total and disclosed value, so the exclusion can be checked rather than trusted.',
+      'Value is shares multiplied by the price the filer disclosed. A line with no price contributes nothing and is counted as undisclosed — never as a value of zero, which would drag every total down silently.',
+      'A joint Form 4 reports one set of shares held by several related reporting persons. The line is attributed to the first person named and the others are listed beside it; attributing it to each would multiply the block by the number of filers.',
+      'Form 3 — an insider’s initial statement of holdings — is not imported. It reports a standing position rather than a transaction, and counting it as one would invent a trade on the day every director joined a board.',
+      'Schedule 13D and 13G figures come only from structured XML submissions, which the SEC mandated from 2024-12-18. Earlier filings are free-text cover pages: they are indexed and never scraped for share counts. Percent of class is the figure the filer stated and is not recomputed by us.',
+      'Filing-cadence comparisons use each company’s own trailing monthly average over the months we actually hold filings for, and the number of those months is printed beside the average. A company we began indexing recently would otherwise show a burst that is really coverage.',
+      'Coverage is the tracked companies carrying a ticker that resolves to an SEC filer through EDGAR’s official ticker-to-CIK map. Foreign-listed and privately held space companies file none of these forms, so their absence says nothing about them.',
+      'This release reports what was filed. It contains no recommendation, rating, target or forecast, it does not consider any reader’s circumstances, and it is not investment advice.',
+    ],
+    computedBy: 'src/lib/research-report-insider.ts',
+  },
 ];
 
 export function getRelease(id: string): ResearchRelease | undefined {

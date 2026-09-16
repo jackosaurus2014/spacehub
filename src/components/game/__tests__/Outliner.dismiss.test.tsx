@@ -29,7 +29,27 @@ function building(instanceId: string, damagePct: number) {
 }
 
 /** A new corporation derives ZERO attention items, so anything the test sees
- *  is something the test put there. */
+ *  is something the test put there.
+ *
+ *  That premise stopped being true on its own. The Outliner also surfaces the
+ *  WORLD's current story chapter, which chapters.ts rotates off the real
+ *  clock: `getCurrentChapterInstance(Date.now())` reveals another act on a
+ *  schedule, and once a `choice` act unlocks it becomes an Attention row that
+ *  no fixture asked for. So this suite passed at 21:55 UTC on 2026-09-15 and
+ *  failed at 01:50 UTC the next morning, having changed nothing — the third
+ *  time-dependent test failure found that day.
+ *
+ *  The clock is therefore pinned. 2026-01-05T00:00:00Z sits in cycle 487 with
+ *  exactly one act revealed, and that act is `info`, not `choice`, so the
+ *  world contributes no Attention row and the fixture is the only source
+ *  again. Date.now is spied rather than using fake timers, because fake
+ *  timers break React Testing Library's act/flush cycle.
+ */
+const PINNED_NOW = Date.UTC(2026, 0, 5, 0, 0, 0);
+let nowSpy: jest.SpyInstance;
+beforeEach(() => { nowSpy = jest.spyOn(Date, 'now').mockReturnValue(PINNED_NOW); });
+afterEach(() => { nowSpy.mockRestore(); });
+
 function stateWithDamage(...damage: number[]): GameState {
   return { ...getNewGameState(), buildings: damage.map((d, i) => building(`b${i + 1}`, d)) };
 }

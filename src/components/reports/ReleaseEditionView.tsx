@@ -183,6 +183,19 @@ export default function ReleaseEditionView({
 
   return (
     <>
+      {edition.notice && (
+        <aside
+          className="mt-6 rounded-xl border border-amber-400/30 bg-amber-400/[0.06] p-4"
+          role="note"
+          aria-label="Not investment advice"
+        >
+          <p className="text-sm text-amber-100 font-semibold mb-1">
+            For informational purposes only &mdash; not investment advice
+          </p>
+          <p className="text-sm text-slate-200 leading-relaxed">{edition.notice}</p>
+        </aside>
+      )}
+
       {retrospective && (
         <div className="mt-6 rounded-xl border border-amber-400/30 bg-amber-400/[0.06] p-4">
           <p className="text-sm text-amber-100 font-medium mb-1">Back-computed edition</p>

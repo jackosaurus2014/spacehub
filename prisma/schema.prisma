@@ -9198,3 +9198,685 @@ model ResearchCallRegistration {
   @@index([callId, canceledAt])
   @@index([userId])
 }
+
+/// A prime federal award to a tracked space company, as USAspending.gov
+/// reports it.
+///
+/// WHY A SECOND AWARD TABLE.
+/// GovernmentContractAward already exists and is fed by SAM.gov, whose Awards
+/// API we hold to a shared daily call budget and whose rows are keyed on the
+/// contract number a notice happens to carry. This table is a different corpus
+/// with a different key: USAspending publishes the OBLIGATED dollars on every
+/// prime award, contract and assistance alike, keyed on its own stable award
+/// id. Merging the two would silently double-count the awards both sources
+/// see, and would make it impossible to say which figure came from where. So
+/// the datasets stay separate, each citable on its own terms, and nothing in
+/// the SAM pipeline is touched.
+///
+/// RELATION-FREE ON PURPOSE. companyId is a plain CompanyProfile.id string,
+/// not a Prisma relation: a match is an ASSERTION this pipeline made, with a
+/// recorded quality, and it must be possible to store an award whose recipient
+/// we could not confidently resolve (companyId null) rather than drop it.
+///
+/// EVERY ROW IS CHECKABLE. sourceUrl opens the award on usaspending.gov.
+/// recipientName is the recipient EXACTLY as the government spells it, kept
+/// beside matchedName and matchQuality so a wrong attribution can be audited
+/// without re-running the resolver.
+model FederalAward {
+  id String @id @default(cuid())
+
+  /// USAspending's own stable award identifier, e.g.
+  /// "CONT_AWD_80KSC023FA107_8000_80KSC022DA107_8000". This is the upsert key
+  /// and the last path segment of sourceUrl.
+  generatedInternalId String @unique
+  /// The government-facing award number (PIID for contracts, FAIN for
+  /// assistance). NOT unique: a PIID can repeat across agencies.
+  awardIdPiid         String
+  /// contract | idv | assistance. Which of USAspending's three award-search
+  /// shapes this row came from.
+  awardGroup          String
+  /// "DELIVERY ORDER", "DEFINITIVE CONTRACT", "PROJECT GRANT (B)" - verbatim.
+  awardType           String?
+  /// False for IDVs. An IDV's reported amount is the sum of the orders placed
+  /// under it, and those orders are ALSO stored here as their own rows, so
+  /// counting both would double-count the same dollars. Every dollar figure
+  /// the product publishes is computed over rows where this is true.
+  countsTowardTotals  Boolean @default(true)
+
+  /// The recipient as the award record spells it, never normalized.
+  recipientName       String
+  /// SAM Unique Entity ID of the recipient, when the award record carries one.
+  recipientUei        String?
+  /// USAspending's internal recipient hash, for its recipient profile pages.
+  recipientInternalId String?
+
+  /// CompanyProfile.id. Null means the award was read but not confidently
+  /// attributed; the row is kept so the miss is visible rather than invented.
+  companyId    String?
+  companySlug  String?
+  /// uei | exact | federal-arm. How the attribution was made. There is no
+  /// "fuzzy" value by design - see src/lib/gov-awards/match.ts.
+  matchQuality String?
+  /// The company name WE matched from, so the comparison can be re-read.
+  matchedName  String?
+
+  /// Total obligated on the award as of observedAt, in USD. This is money
+  /// actually put on contract, not an announced ceiling.
+  amount            Float?
+  /// Outlays to date, when reported. Often null on a live award.
+  totalOutlays      Float?
+  awardingAgency    String
+  awardingSubAgency String?
+  agencySlug        String?
+
+  /// Base obligation date - the date the award was made. The quarter every
+  /// release attributes the award to is the quarter this date falls in.
+  actionDate DateTime?
+  /// Period of performance. IDVs report no end date, only a last order date.
+  startDate  DateTime?
+  endDate    DateTime?
+
+  /// The government's own industry and product/service codes for the award,
+  /// verbatim. The space-coded flag in src/lib/gov-awards/aggregate.ts is
+  /// derived from these and nothing else, so it is the government's
+  /// classification rather than ours - and pscDescription is stored so a
+  /// reader can see that the official description says SPACE.
+  naicsCode        String?
+  naicsDescription String?
+  pscCode          String?
+  pscDescription   String?
+  /// Assistance listing (CFDA) number and the government's own program
+  /// title, present on grants and cooperative agreements - which carry no
+  /// product/service code at all. The title is what makes a NASA grant
+  /// identifiable as space work ("SPACE TECHNOLOGY", "SPACE OPERATIONS")
+  /// without anyone having to judge it.
+  cfdaNumber       String?
+  cfdaProgramTitle String?
+  description      String? @db.Text
+
+  /// The page a buyer opens to check the row. Always populated.
+  sourceUrl String
+  source    String @default("USAspending.gov")
+  /// When the API reported this state of the award.
+  observedAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([companySlug])
+  @@index([awardingAgency])
+  @@index([actionDate])
+  @@index([recipientUei])
+  @@index([awardGroup, countsTowardTotals])
+}
+
+/// What the federal-award sweep did for one tracked company, and when.
+///
+/// THREE JOBS, ALL OF THEM HONESTY JOBS.
+///
+/// 1. STOP RE-ASKING. Roughly half the roster is non-US and will never hold a
+///    US prime award. Without a record of the miss, each of them costs three
+///    USAspending searches on every lap of the sweep, forever. A recorded miss
+///    is a real observation - "we searched on this date, over this window, and
+///    the government had nothing we could confidently attribute" - so it is
+///    stored, not cached.
+///
+/// 2. GIVE THE RELEASE A DENOMINATOR. "N companies won federal money" is
+///    meaningless without "out of M we actually searched". This table is M.
+///
+/// 3. RECORD WHAT WE REFUSED. rejectedRecipients holds the recipient names the
+///    matcher saw and declined, so the precision of the pipeline can be
+///    audited from the database without re-running the resolver against the
+///    live API.
+///
+/// Relation-free by the same reasoning as FederalAward: companyId is a plain
+/// CompanyProfile.id.
+model FederalAwardCoverage {
+  id String @id @default(cuid())
+
+  /// CompanyProfile.id. One row per company; the sweep upserts it.
+  companyId   String @unique
+  companySlug String
+  /// The company name as it stood when we searched, so a later rename does
+  /// not make an old sweep unreadable.
+  companyName String
+
+  /// searched        - we queried USAspending for this company.
+  /// skipped-generic - the company name is too generic to prefix-match safely
+  ///                   and we hold no UEI for it, so no search was made. This
+  ///                   is a deliberate refusal, not a failure.
+  status String
+
+  /// When the sweep last ran for this company, and the earliest award date it
+  /// asked for. Both are printed in the release's coverage block.
+  searchedAt  DateTime
+  windowStart DateTime
+
+  /// Recipient records the search returned, and how many we attributed.
+  recipientsSeen     Int @default(0)
+  recipientsMatched  Int @default(0)
+  recipientsRejected Int @default(0)
+  /// FederalAward rows written or refreshed on the last sweep.
+  awardsStored       Int @default(0)
+
+  /// True when a page limit stopped us before the API ran out of awards. The
+  /// stored rows are then the LARGEST awards by obligated amount, and every
+  /// total for this company is a floor. The release says so by name.
+  truncated Boolean @default(false)
+
+  /// string[] of recipient names the matcher refused, capped. The audit trail
+  /// for precision.
+  rejectedRecipients Json @default("[]")
+
+  /// Verbatim last error from the API for this company, when there was one.
+  lastError String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([searchedAt])
+  @@index([companySlug])
+}
+
+// ============================================================
+// SEC-derived investor signals (2026-09-15) — insider transactions, 5%-holder
+// positions, and the issuer filing index behind filing cadence.
+//
+// Additive and relation-free in the house style: joined to CompanyProfile in
+// application code by id and slug, so nothing in the long-lived
+// User/CompanyProfile/SpaceEvent graph had to move and retiring any of this is
+// a table drop rather than a migration.
+//
+// EVERY ROW CARRIES ITS ACCESSION NUMBER AND A URL A READER CAN OPEN. That is
+// the whole product promise: not "here is a number" but "here is a number and
+// here is the filing it came from". Written only by
+// src/lib/fetchers/sec-insider-fetcher.ts, which parses filing documents and
+// calls no model.
+// ============================================================
+
+/// One transaction line from one SEC Form 4 or Form 5.
+///
+/// A filing holds several lines and a line is the unit a reader checks, so the
+/// grain is the line, keyed by (accession, lineKey). Holdings blocks — which
+/// state a standing position rather than a trade — are not imported at all.
+///
+/// The transactionCode is stored EXACTLY as filed and classified through
+/// src/lib/market-signals/form4-codes.ts. The distinction that table exists to
+/// preserve: an A-coded grant is not a purchase and an F-coded tax withholding
+/// is not a sale, however convenient it would be to add them together.
+model InsiderTransaction {
+  id String @id @default(cuid())
+
+  /// CompanyProfile.id / .slug / .name, denormalized. Plain strings —
+  /// deliberately NOT relations.
+  companyId   String
+  companySlug String
+  companyName String
+  ticker      String?
+  /// The issuer's 10-digit zero-padded CIK. The EDGAR join key.
+  issuerCik   String
+
+  /// SEC accession number, and the line's stable position inside that filing
+  /// ("nd-0" non-derivative table, "d-2" derivative table).
+  accessionNumber String
+  lineKey         String
+
+  /// "4" | "4/A" | "5" | "5/A", as the document states it.
+  formType       String
+  filingDate     DateTime
+  /// The period the filing covers, when stated.
+  periodOfReport DateTime?
+  /// The date the transaction itself occurred, as filed. Falls back to the
+  /// filing date only when the line carries no transaction date.
+  transactionDate DateTime
+
+  /// The first reporting person on the filing. A joint Form 4 reports ONE set
+  /// of shares held by several related persons; attributing the line to each
+  /// would multiply the block, so the rest are named in additionalOwners.
+  ownerCik             String?
+  ownerName            String
+  /// Officer title as filed, e.g. "Chief Financial Officer".
+  ownerTitle           String?
+  isDirector           Boolean @default(false)
+  isOfficer            Boolean @default(false)
+  isTenPercentOwner    Boolean @default(false)
+  isOtherRelationship  Boolean @default(false)
+  /// string[] of the other reporting persons named on the same filing.
+  additionalOwners     Json    @default("[]")
+
+  /// TRUE for a line in the derivative table (options, RSUs, warrants).
+  derivative    Boolean @default(false)
+  securityTitle String?
+
+  /// The single-letter code as filed. Never normalized, never merged.
+  transactionCode  String?
+  /// Our descriptive class for that code (open-market-purchase,
+  /// award-or-grant, tax-withholding, ...). Descriptive only: it is never a
+  /// direction, a rating or a recommendation.
+  transactionClass String
+  /// "A" acquired or "D" disposed, as coded on the filing.
+  acquiredDisposed String?
+
+  shares           Float?
+  pricePerShare    Float?
+  /// shares x pricePerShare, and NULL whenever either is missing or zero. A
+  /// grant priced at $0 has no value rather than a value of zero.
+  valueUsd         Float?
+  sharesOwnedAfter Float?
+  /// "D" direct or "I" indirect beneficial ownership.
+  directOrIndirect String?
+  /// TRUE when a reported amount on the line carries a footnote, so a reader
+  /// knows the number has a qualification on the filing itself.
+  footnoted        Boolean @default(false)
+
+  /// Publisher, the filing index page, and the machine-readable document.
+  source      String
+  sourceUrl   String
+  documentUrl String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// One row per line per filing; re-reading a document updates in place.
+  @@unique([accessionNumber, lineKey])
+  @@index([companyId, transactionDate])
+  @@index([transactionDate])
+  @@index([issuerCik, filingDate])
+  @@index([transactionClass, transactionDate])
+  @@index([ownerName])
+}
+
+/// One reporting person on one Schedule 13D or 13G — a holder of 5% or more
+/// of a tracked company's class of securities.
+///
+/// Structured XML submissions only. Schedule 13D/G became a structured filing
+/// on 2024-12-18; earlier ones are free-text cover pages that we index in
+/// IssuerFiling and never scrape for share counts.
+///
+/// A group files one document naming several reporting persons, each with its
+/// own count, so the grain is (accession, holderKey).
+model InstitutionalPosition {
+  id String @id @default(cuid())
+
+  companyId   String
+  companySlug String
+  companyName String
+  ticker      String?
+  issuerCik   String
+
+  accessionNumber String
+  /// The reporting person's stable position in the filing ("rp-0").
+  holderKey       String
+
+  /// "SCHEDULE 13G" | "SCHEDULE 13G/A" | "SCHEDULE 13D" | "SCHEDULE 13D/A".
+  formType String
+  isAmendment Boolean @default(false)
+  /// TRUE for the 13D family. 13D is the long form filed by holders who do
+  /// not certify passive intent; 13G is the short form for passive holders
+  /// and qualified institutions. That is a description of the FORM, not a
+  /// prediction about what the holder will do.
+  isActivistForm Boolean @default(false)
+
+  filingDate DateTime
+  /// The event that required the filing, as stated on the cover page.
+  eventDate  DateTime?
+
+  holderName        String
+  /// The holder's own CIK when the filing states one. Schedule 13D always
+  /// does; 13G often does not, so this is nullable rather than backfilled.
+  holderCik         String?
+  /// SEC "type of reporting person" code as filed: IA, BD, IN, HC, ...
+  holderType        String?
+  holderCitizenship String?
+
+  securitiesClass String?
+  cusip           String?
+
+  sharesBeneficiallyOwned Float?
+  /// Percent of the class, as the filer stated it. Not recomputed by us.
+  percentOfClass          Float?
+  soleVoting              Float?
+  sharedVoting            Float?
+  soleDispositive         Float?
+  sharedDispositive       Float?
+
+  source      String
+  sourceUrl   String
+  documentUrl String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([accessionNumber, holderKey])
+  @@index([companyId, filingDate])
+  @@index([filingDate])
+  @@index([issuerCik, filingDate])
+  @@index([holderName])
+}
+
+/// One filing from a tracked issuer's EDGAR submissions index.
+///
+/// The index alone answers a genuinely useful question — how often, and of
+/// what, a company files — without fetching a single document. An 8-K burst,
+/// a first S-1, an NT 10-Q late-filing notification and the lag between a
+/// quarter end and its 10-Q are all arithmetic over these rows.
+///
+/// Costs one request per company, so it is refreshed on every sweep.
+model IssuerFiling {
+  id String @id @default(cuid())
+
+  companyId   String
+  companySlug String
+  companyName String
+  ticker      String?
+  issuerCik   String
+
+  accessionNumber String
+
+  /// The form type exactly as EDGAR spells it ("10-Q", "8-K", "SCHEDULE 13G").
+  form       String
+  filingDate DateTime
+  /// The period the filing COVERS: a 10-Q's quarter end, an 8-K's event date.
+  /// Null when EDGAR records none.
+  reportDate DateTime?
+  acceptedAt DateTime?
+
+  /// 8-K item codes exactly as filed, e.g. "7.01,8.01,9.01". Null elsewhere.
+  items           String?
+  fileNumber      String?
+  primaryDocument String?
+  sizeBytes       Int?
+  isXBRL          Boolean @default(false)
+
+  /// The filing index page on sec.gov.
+  sourceUrl String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// An accession is unique within a filer's index; the issuer is part of the
+  /// key because the same document appears in the subject company's index too.
+  @@unique([issuerCik, accessionNumber])
+  @@index([companyId, filingDate])
+  @@index([filingDate])
+  @@index([form, filingDate])
+}
+
+/// UK Companies House: the link between one CompanyProfile and one company on
+/// the UK register, plus the current state of that register entry.
+///
+/// WHY IT IS ITS OWN TABLE RATHER THAN COLUMNS ON CompanyProfile
+/// A company number is not just another identifier to stamp on a profile. It
+/// is a claim - "this profile and this register entry are the same business" -
+/// and a wrong claim would attribute another company's directors, owners and
+/// insolvency to ours. So the claim is stored WITH the evidence that supports
+/// it: how the name matched, what score it cleared, and what corroborated it.
+/// An auditor can re-check any link without re-running the resolver. Rows
+/// pinned by a person (src/lib/uk-registry/manual-registrations.ts) carry
+/// matchMethod "manual" and are listable as such.
+///
+/// Register data is Crown copyright, reused under the Open Government Licence
+/// v3.0, which requires attribution wherever it is shown. See
+/// src/lib/uk-registry/attribution.ts.
+///
+/// Relation-free by design, in the house style: joins are by companyId.
+model UkCompanyRegistration {
+  id String @id @default(cuid())
+
+  /// CompanyProfile.id and .slug, denormalised so a read needs no join.
+  companyId   String
+  companySlug String
+  /// Our name for the company at the time the link was made.
+  companyName String
+
+  /// The UK company number exactly as the register spells it. Scottish and
+  /// Northern Irish numbers carry a letter prefix ("SC569511"), so this is a
+  /// string and must never be coerced to a number.
+  companyNumber String
+  /// The registered name the number resolved to - NOT our name for it.
+  registeredName String
+
+  /// "exact" | "industry-tail" | "generic-lead" | "manual".
+  matchQuality String
+  /// "search" for a resolved match, "manual" for a human-verified pin.
+  matchMethod String
+  /// The resolver score this link cleared. Null for manual pins.
+  matchScore Int?
+  /// Every component that moved the score, or the human's evidence and
+  /// sources for a manual pin. The audit trail for the claim above.
+  matchEvidence Json?
+
+  /// Current register state.
+  companyStatus       String
+  /// e.g. "active-proposal-to-strike-off". Usually null.
+  companyStatusDetail String?
+  companyType         String?
+  jurisdiction        String?
+  dateOfCreation      DateTime?
+  dateOfCessation     DateTime?
+  sicCodes            String[]
+  registeredOffice    String?
+  /// Former registered names, newest first, as [{ name, effectiveFrom, ceasedOn }].
+  previousNames       Json?
+
+  hasInsolvencyHistory Boolean @default(false)
+  hasCharges           Boolean @default(false)
+  canFile              Boolean @default(true)
+
+  /// Filing punctuality. Overdue accounts or an overdue confirmation
+  /// statement are an early distress signal the press does not report.
+  accountsNextDue              DateTime?
+  accountsLastMadeUpTo         DateTime?
+  accountsOverdue              Boolean   @default(false)
+  confirmationStatementNextDue DateTime?
+  confirmationStatementOverdue Boolean   @default(false)
+
+  /// The public register page for this company.
+  sourceUrl String
+
+  /// When the register last changed in a way we noticed, and when we last
+  /// looked. A stale lastCheckedAt is what the freshness alarm watches.
+  observedAt    DateTime
+  lastCheckedAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// One register entry may back only one profile, and one profile only one
+  /// register entry. Both directions are enforced.
+  @@unique([companyNumber])
+  @@unique([companyId])
+  @@index([companySlug])
+  @@index([companyStatus])
+  @@index([lastCheckedAt])
+}
+
+/// A DATED change in a UK register entry.
+///
+/// The current status of a company is a fact; the moment it CHANGED is the
+/// story. "Reaction Engines is in administration" is a row on a profile;
+/// "Reaction Engines entered administration on this date, and here is the
+/// filing that says so" is what a Research buyer is paying for, and it beats
+/// press coverage by weeks or months. Statuses, names and registered offices
+/// all produce rows here, each carrying the register document that dates it
+/// where the register publishes one.
+model UkCompanyStatusEvent {
+  id String @id @default(cuid())
+
+  companyNumber String
+  companyId     String?
+  companySlug   String?
+
+  /// What changed: "company_status" | "company_name" | "registered_office" |
+  /// "insolvency_filing" | "accounts_overdue".
+  field String
+
+  /// The value before and after. previousValue is null for the first
+  /// observation of a field, which is recorded as a baseline, not a change.
+  previousValue String?
+  newValue      String?
+
+  /// TRUE for the first observation of a field (a baseline, not a change).
+  isBaseline Boolean @default(false)
+
+  /// When the register says it happened - a filing date where one exists.
+  /// Null when the register dates nothing and only our observation does.
+  effectiveOn DateTime?
+  /// effectiveOn as YYYY-MM-DD, or "undated" when the register dates nothing.
+  /// Exists ONLY so the dedupe key below can be a non-null column: Postgres
+  /// treats NULLs as distinct in a unique index, so an undated change would
+  /// otherwise be re-inserted on every sweep. Never displayed.
+  effectiveOnKey String
+  /// When WE saw it. Always set; never presented as the event date.
+  detectedAt  DateTime
+
+  /// The filing that evidences the change, where one does.
+  filingTransactionId String?
+  filingDescription   String?
+
+  sourceUrl String
+
+  createdAt DateTime @default(now())
+
+  /// One row per (company, field, value, effective date): re-running the
+  /// sweep must not manufacture a second copy of the same change.
+  @@unique([companyNumber, field, newValue, effectiveOnKey])
+  @@index([companyId, detectedAt])
+  @@index([companyNumber, field])
+  @@index([detectedAt])
+}
+
+/// A director, secretary or corporate officer as named on the UK register.
+///
+/// PERSONAL DATA
+/// The API also returns each officer's month-and-year date of birth and their
+/// service address. Neither is stored. Both are personal data, both sit
+/// outside the Open Government Licence, and neither is needed to answer who
+/// runs the company. See PERSONAL_DATA_POLICY in
+/// src/lib/uk-registry/attribution.ts.
+model UkCompanyOfficer {
+  id String @id @default(cuid())
+
+  companyNumber String
+  companyId     String?
+  companySlug   String?
+
+  /// Stable appointment identifier from the register (links.self).
+  appointmentId String
+
+  name        String
+  officerRole String?
+  appointedOn DateTime?
+  resignedOn  DateTime?
+  /// TRUE while the appointment has no resignation date.
+  isCurrent   Boolean   @default(true)
+
+  nationality        String?
+  countryOfResidence String?
+  occupation         String?
+  isCorporate        Boolean @default(false)
+
+  sourceUrl  String
+  observedAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyNumber, appointmentId])
+  @@index([companyId])
+  @@index([companyNumber, isCurrent])
+  @@index([name])
+}
+
+/// A person or entity with significant control of a UK company.
+///
+/// This is the closest thing the UK publishes to a free beneficial-ownership
+/// register, and nothing else aggregates it for the space sector. It answers
+/// "who actually owns this" for private companies that file nothing with the
+/// SEC - the exact gap the UK pipeline exists to close.
+///
+/// Same personal-data limits as UkCompanyOfficer: no date of birth, no address.
+model UkCompanyPsc {
+  id String @id @default(cuid())
+
+  companyNumber String
+  companyId     String?
+  companySlug   String?
+
+  /// Stable PSC identifier from the register (links.self).
+  pscId String
+
+  name String
+  /// e.g. "individual-person-with-significant-control",
+  /// "corporate-entity-person-with-significant-control".
+  kind String?
+
+  /// The register's own controlled vocabulary, e.g.
+  /// "ownership-of-shares-25-to-50-percent". Stored verbatim: translating it
+  /// into a percentage would be an inference the register did not make.
+  naturesOfControl String[]
+
+  notifiedOn DateTime?
+  ceasedOn   DateTime?
+  ceased     Boolean   @default(false)
+
+  nationality        String?
+  countryOfResidence String?
+  isCorporate        Boolean @default(false)
+
+  sourceUrl  String
+  observedAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyNumber, pscId])
+  @@index([companyId])
+  @@index([companyNumber, ceased])
+}
+
+/// One entry from a company's UK filing history.
+///
+/// The index alone answers useful questions without fetching a document: when
+/// accounts were last filed, whether a confirmation statement is late, and -
+/// the one that matters most - the exact dates of every insolvency filing. The
+/// administration of Orbital Express Launch Limited is legible here as AM01 on
+/// 2026-03-06, AM03 on 2026-04-24, AM06 on 2026-05-07 and AM02 on 2026-07-02.
+model UkCompanyFiling {
+  id String @id @default(cuid())
+
+  companyNumber String
+  companyId     String?
+  companySlug   String?
+
+  /// The register's own transaction id for the filing.
+  transactionId String
+
+  /// Category exactly as the register spells it: "accounts", "insolvency",
+  /// "confirmation-statement", "officers", "address", "capital", "gazette".
+  category    String?
+  subcategory String?
+  /// The form code, e.g. "AM02", "AA", "CS01".
+  type        String?
+  /// The register's description key, stored verbatim.
+  description String?
+
+  filingDate DateTime?
+  paperFiled Boolean   @default(false)
+
+  /// TRUE when this filing evidences a change of corporate status rather than
+  /// routine housekeeping. Drives UkCompanyStatusEvent.
+  isStatusFiling Boolean @default(false)
+
+  sourceUrl  String
+  observedAt DateTime
+
+  createdAt DateTime @default(now())
+
+  @@unique([companyNumber, transactionId])
+  @@index([companyId, filingDate])
+  @@index([companyNumber, isStatusFiling])
+  @@index([category, filingDate])
+}

@@ -123,6 +123,20 @@ const CRON_JOBS: CronJobDef[] = [
   // round about weekly and a new private placement lands within a lap.
   // Watched by `funding-feeds-alive` in content-accuracy.ts.
   { schedule: '20 4 * * *',    path: '/api/cron/funding-sync',              label: 'funding-sync',               maxStaleMinutes: 2880 },
+  // USAspending prime federal awards -> FederalAward (2026-09-15). Resumable
+  // by CompanyProfile.slug with the cursor in DataSourceRun, so this walks a
+  // slice of the roster each night and comes round on its own. Watched by
+  // funding-feeds-alive and federal-awards-usable in content-accuracy.ts.
+  { schedule: '45 4 * * *',    path: '/api/cron/gov-awards-sync',           label: 'gov-awards-sync',            maxStaleMinutes: 2880 },
+  // SEC insider (Form 4/5), 5%-holder (Schedule 13D/G) and issuer filing index
+  // -> InsiderTransaction / InstitutionalPosition / IssuerFiling (2026-09-15).
+  // Resumable by CompanyProfile.slug with the cursor in DataSourceRun, 15
+  // tickered companies a night. 03:50: clear of funding-sync at 04:20, because
+  // both SEC sweeps draw on the same fair-access budget and the pacing in each
+  // fetcher is per-process; and ahead of the release cron at 05:10, so the
+  // edition it publishes reflects the night's filings rather than yesterday's.
+  // Watched by insider-feeds-alive in content-accuracy.ts.
+  { schedule: '50 3 * * *',    path: '/api/cron/insider-sync',              label: 'insider-sync',               maxStaleMinutes: 2880 },
   // Three years of annual revenue for public CompanyProfile rows, pulled
   // from SEC EDGAR 10-K XBRL companyfacts (SYNTHESIS.md item 35). Roughly
   // quarterly — 10-Ks trickle in year-round but nothing in this dataset
@@ -386,6 +400,19 @@ const CRON_JOBS: CronJobDef[] = [
   // so a quiet week is a successful run, not a missed one. maxStaleMinutes
   // spans a full week plus a day of grace.
   { schedule: '0 13 * * 1',   path: '/api/cron/research-screens',                  label: 'research-screen-alerts',         maxStaleMinutes: 11520 },
+  // UK Companies House -> UkCompanyRegistration / officers / PSC / filings
+  // (2026-09-15). The non-US half of the roster files nothing with the SEC, so
+  // this is the UK equivalent of the Form D sweep. Resumable by
+  // CompanyProfile.slug with the cursor in DataSourceRun, a dozen companies a
+  // night. 05:20: after the SEC sweeps (03:50, 04:20, 04:45) so it is never
+  // competing for the function slot, and ahead of the 05:10 release cron only
+  // by a lap - the UK data feeds profiles and exports, not a dated edition, so
+  // it does not need to beat it. Companies House allows 600 requests per five
+  // minutes and suspends keys that push at it; the pacing lives in
+  // src/lib/uk-registry/client.ts. Watched by `uk-registry-alive` in
+  // content-accuracy.ts, which also catches the case this feed is uniquely
+  // prone to: a container deployed before COMPANIES_HOUSE_API_KEY was set.
+  { schedule: '20 5 * * *',   path: '/api/cron/uk-registry-sync',                  label: 'uk-registry-sync',               maxStaleMinutes: 2880 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

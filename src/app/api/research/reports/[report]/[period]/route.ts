@@ -99,6 +99,10 @@ export async function GET(
         // forgotten the moment it lands in a spreadsheet.
         methodology: release.methodology,
         coverage: edition.coverage,
+        // A standing legal notice, when the release carries one, travels with
+        // the file. A disclaimer that lives only on a web page is a disclaimer
+        // that gets forgotten the moment the export lands in a spreadsheet.
+        notice: edition.notice ?? null,
         empty: edition.empty,
         emptyReason: edition.emptyReason ?? null,
         headline: edition.headline,
@@ -151,7 +155,9 @@ export async function GET(
       'Content-Type': 'text/csv; charset=utf-8',
       'Content-Disposition': `attachment; filename="${filename}"`,
       'X-SpaceNexus-Citation': encodeURIComponent(citation),
-      'X-SpaceNexus-Coverage': encodeURIComponent(edition.coverage.join(' ')),
+      'X-SpaceNexus-Coverage': encodeURIComponent(
+        [edition.notice, ...edition.coverage].filter(Boolean).join(' ')
+      ),
       'Cache-Control': 'private, no-store',
     },
   });
