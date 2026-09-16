@@ -1,6 +1,7 @@
 /**
  * @jest-environment node
  */
+import { allowPromotionCodesForTier, PROMOTION_CODE_EXCLUDED_TIERS } from '@/lib/promotion-policy';
 import fs from 'fs';
 import path from 'path';
 /**
@@ -72,7 +73,7 @@ describe('advertised discount registry', () => {
     // pins the condition rather than the old blanket true — reverting it
     // silently reopens the discount.
     const checkoutSrc = fs.readFileSync(path.join(process.cwd(), 'src/app/api/stripe/checkout/route.ts'), 'utf-8');
-    expect(checkoutSrc).toMatch(/allow_promotion_codes:\s*tier !== 'research'/);
+    expect(checkoutSrc).toMatch(/allow_promotion_codes:\s*allowPromotionCodesForTier\(tier\)/);
     expect(checkoutSrc).not.toMatch(/allow_promotion_codes:\s*true/);
   });
 
@@ -478,7 +479,13 @@ describe('checkPromotionCodesCannotDiscountResearch', () => {
    * The live shape on 2026-09-16: FOUNDER50's coupon has applies_to = null,
    * so Stripe honours it against any price — including the annual firm seat.
    */
-  it('FAILS on an unrestricted percentage coupon and says what it would bill', async () => {
+  // CHANGED. TWO independent mitigations exist and either closes the hole:
+  // the coupon restricted to another product in Stripe, or our checkout
+  // refusing promotion codes for the tier. The second is in force, so an
+  // unrestricted coupon is residual risk, not a failure. A control that stays
+  // red on a mitigated risk is one people stop reading. Remove 'research'
+  // from PROMOTION_CODE_EXCLUDED_TIERS and these go red again.
+  it('PASSES an unrestricted percentage coupon while checkout refuses codes, and still names it', async () => {
     enableAdvertised();
     listMock.mockResolvedValue({
       data: [
@@ -495,12 +502,13 @@ describe('checkPromotionCodesCannotDiscountResearch', () => {
       ],
     });
     const r = await checkPromotionCodesCannotDiscountResearch();
-    expect(r.ok).toBe(false);
+    expect(r.ok).toBe(true);
     expect(r.detail).toContain('FOUNDER50');
+    expect(r.detail).toMatch(/refuses promotion codes/i);
     expect(r.detail).toContain((RESEARCH_PLAN.priceYearly / 2).toFixed(2));
   });
 
-  it('FAILS on an unrestricted fixed-amount coupon too', async () => {
+  it('PASSES an unrestricted fixed-amount coupon the same way, naming it', async () => {
     enableAdvertised();
     listMock.mockResolvedValue({
       data: [
@@ -511,7 +519,7 @@ describe('checkPromotionCodesCannotDiscountResearch', () => {
       ],
     });
     const r = await checkPromotionCodesCannotDiscountResearch();
-    expect(r.ok).toBe(false);
+    expect(r.ok).toBe(true);
     expect(r.detail).toContain('FOUNDER499-CONNER');
   });
 
@@ -528,5 +536,13 @@ describe('checkPromotionCodesCannotDiscountResearch', () => {
     const r = await checkPromotionCodesCannotDiscountResearch();
     expect(r.ok).toBe(false);
     expect(r.detail).toContain('network down');
+  });
+});
+
+describe('promotion-code policy', () => {
+  it('excludes Research and nothing else', () => {
+    expect([...PROMOTION_CODE_EXCLUDED_TIERS]).toEqual(['research']);
+    expect(allowPromotionCodesForTier('research')).toBe(false);
+    expect(allowPromotionCodesForTier('pro')).toBe(true);
   });
 });

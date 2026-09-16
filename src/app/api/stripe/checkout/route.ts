@@ -1,3 +1,4 @@
+import { allowPromotionCodesForTier } from '@/lib/promotion-policy';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
@@ -198,7 +199,7 @@ export async function POST(req: Request) {
       // discount working untouched. If the coupons are later restricted to the
       // Pro product in Stripe, this can be revisited — `pricing-integrity.ts`
       // checkPromotionCodesCannotDiscountResearch() watches for exactly that.
-      allow_promotion_codes: tier !== 'research',
+      allow_promotion_codes: allowPromotionCodesForTier(tier),
       metadata: {
         userId: user.id,
         tier,

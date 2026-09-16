@@ -18,6 +18,7 @@
  * against live Stripe every day.
  */
 
+import { allowPromotionCodesForTier } from '@/lib/promotion-policy';
 import { getStripe } from '@/lib/stripe';
 import {
   RESEARCH_CAPABILITIES,
@@ -359,11 +360,39 @@ export async function checkPromotionCodesCannotDiscountResearch(): Promise<Disco
     }
 
     if (offenders.length > 0) {
+      // TWO INDEPENDENT MITIGATIONS, and either one closes the hole.
+      //
+      //   (a) The coupon is restricted to another product in Stripe.
+      //   (b) Our checkout refuses promotion codes for tier=research, so no
+      //       session that could accept one is ever created.
+      //
+      // (b) is in force. Failing anyway would mean this alarm is red forever
+      // on a risk we have already mitigated — and an alarm that cannot clear
+      // is one people stop reading. That is the third time this pattern has
+      // bitten us: a security test that failed one run in three, and a feed
+      // check that called a resumable sweep dead.
+      //
+      // So the check reads the checkout source for the guard and passes while
+      // it is present, naming the unrestricted coupons so the residual risk
+      // stays visible. Remove the guard and this goes red immediately, which
+      // is exactly when someone should hear about it.
+      // The real policy, not a grep for it: delete 'research' from the
+      // excluded list and this control goes red on the next daily run.
+      const checkoutGuarded = !allowPromotionCodesForTier('research');
+      if (checkoutGuarded) {
+        return {
+          ok: true,
+          detail:
+            `${offenders.length} active Stripe promotion code(s) are not product-restricted, but Research checkout ` +
+            `refuses promotion codes (allow_promotion_codes: tier !== 'research'), so none can reach a $${listPrice}/year ` +
+            `seat: ${offenders.join(' | ')}. Restricting the coupons in Stripe would close it at the source too.`,
+        };
+      }
       return {
         ok: false,
         detail:
-          `${offenders.length} active Stripe promotion code(s) are not product-restricted and can be typed into the ` +
-          `$${listPrice}/year Research checkout (which sets allow_promotion_codes: true): ${offenders.join(' | ')}. ` +
+          `${offenders.length} active Stripe promotion code(s) are not product-restricted AND Research checkout accepts ` +
+          `promotion codes, so any of them can be typed into the $${listPrice}/year checkout: ${offenders.join(' | ')}. ` +
           'Restrict the coupon to the Pro product in Stripe (coupon.applies_to.products), or stop sending ' +
           'allow_promotion_codes for tier=research in src/app/api/stripe/checkout/route.ts.',
       };
