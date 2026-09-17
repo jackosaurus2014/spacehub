@@ -382,6 +382,18 @@ export const GROWTH_GOAL_TARGET = 10_000;
 export const GROWTH_GOAL_DATE = '2027-02-12';
 
 export const GROWTH_MILESTONES: GrowthMilestone[] = [
+  // THE BASELINE IS A REAL MILESTONE, not an implied one.
+  //
+  // interpolateGrowthTarget() synthesises an anchor of ZERO one cadence
+  // before the first milestone. With the first entry at 2026-10-12 that put a
+  // zero at roughly 2026-09-11, so on 2026-09-16 the curve claimed a target of
+  // 216 against an actual 738 — reporting us 522 AHEAD when we were roughly on
+  // track. A goal line that flatters is as useless as one nobody can hit,
+  // which is the reason this curve was re-based in the first place.
+  //
+  // So the measured starting point is stated explicitly: 673 monthly actives
+  // read on 2026-09-14, the day the curve moved.
+  { date: '2026-09-14', target: 673 },
   { date: '2026-10-12', target: 1_100 },
   { date: '2026-11-12', target: 1_950 },
   { date: '2026-12-31', target: 4_600 },
