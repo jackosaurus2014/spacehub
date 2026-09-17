@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resolveMothball } from '@/lib/mothballed-routes';
 import { isResearchTierEnabled } from '@/lib/research-flag';
+import { isLaunchDaySurface } from '@/lib/launch-day-surface';
 import { registryRouteMissing } from '@/lib/registry-routes';
 import { CSP_REPORT_PATH, REPORTING_ENDPOINTS_HEADER, documentCspHeaders } from '@/lib/csp';
 
@@ -1045,11 +1046,23 @@ export async function middleware(req: NextRequest) {
   }
 
   // Anonymous visitor id (2026-09-01): lets logged-out visitors react and
-  // vote on launch-day pages with one-vote-per-visitor semantics. httpOnly —
+  // vote on launch-day pages with one-vote-per-visitor semantics. httpOnly --
   // page scripts never see it; API routes read it via cookies().get('sn_vid').
-  // Set once, only on page navigations (API and static paths are excluded
-  // by the branches above / the matcher).
-  if (!req.cookies.get('sn_vid')?.value) {
+  //
+  // SCOPED TO /launch ON 2026-09-17. This used to be set on every page
+  // navigation, which meant every visitor to any page carried a persistent
+  // one-year unique identifier that was written before the cookie banner had
+  // asked them anything. A per-visitor id that outlives the session is not
+  // strictly necessary to deliver a launch guide, so setting it site-wide was
+  // the kind of thing the banner exists to ask about -- and asking for consent
+  // while having already set the identifier is worse than either alone.
+  //
+  // Only /launch and /launch/[eventId] render the reactions, polls and chat
+  // that consume it, and the /api/launch-day/* routes are always reached from
+  // one of those pages, so the feature is unchanged for the people using it
+  // and nobody else is marked. If another surface starts using
+  // resolveLaunchDayActor(), widen isLaunchDaySurface() in the same commit.
+  if (isLaunchDaySurface(pathname) && !req.cookies.get('sn_vid')?.value) {
     response.cookies.set('sn_vid', crypto.randomUUID(), {
       maxAge: 365 * 24 * 3600,
       path: '/',

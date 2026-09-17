@@ -21,6 +21,8 @@ import { getServerSession } from 'next-auth';
 import { cookies } from 'next/headers';
 import { authOptions } from '@/lib/auth';
 
+export { isLaunchDaySurface } from './launch-day-surface';
+
 export const VISITOR_COOKIE = 'sn_vid';
 export const ANONYMOUS_PREFIX = 'anon:';
 export const COOKIES_REQUIRED_MESSAGE = 'Enable cookies to participate';
