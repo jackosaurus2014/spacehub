@@ -50,6 +50,34 @@ export function expectedCtr(position: number): number {
 }
 
 async function main() {
+  // DRILL MODE: one page, many queries.
+  //
+  // The site-wide view hid the real shape. /guide/space-launch-cost-comparison
+  // carries 59,792 impressions but its top ten queries are barely 1% of them —
+  // the page ranks for a long tail of thousands of distinct questions at an
+  // average position of 6 and converts 0.76%. Meanwhile the narrow
+  // /guide/cost-to-launch/* pages convert at 1.33%, and the cubesat one at
+  // 2.38% from position 3.9. Splitting the tail into intent-matched pages is
+  // therefore the play, and this mode is how we find which clusters deserve
+  // one. Pass a page path as the third argument.
+  const drill = process.argv[4];
+  if (drill) {
+    const days = Number(process.argv[2] || 28);
+    const url = drill.startsWith('http') ? drill : `https://spacenexus.us${drill}`;
+    const rows = await fetchSearchConsoleRows(['query'], days, 500, [
+      { dimension: 'page', operator: 'equals', expression: url },
+    ]);
+    const total = rows.reduce((a, r) => a + r.impressions, 0);
+    const clicks = rows.reduce((a, r) => a + r.clicks, 0);
+    console.log('HEX ' + Buffer.from(JSON.stringify({
+      page: url, days, queries: rows.length, impressions: total, clicks,
+      rows: rows.map((r) => ({
+        q: r.keys[0] || '', i: Math.round(r.impressions), c: Math.round(r.clicks),
+        p: Number(r.position.toFixed(1)),
+      })).sort((a, b) => b.i - a.i),
+    })).toString('hex'));
+    return;
+  }
   const days = Number(process.argv[2] || 28);
   const minImpressions = Number(process.argv[3] || 300);
 
