@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import { isLaunchDaySurface } from '../launch-day-surface';
+import { isDocumentNavigation, isLaunchDaySurface } from '../launch-day-surface';
 
 /**
  * Guards a privacy scope, not a feature.
@@ -40,5 +40,47 @@ describe('isLaunchDaySurface', () => {
     // the bug this helper exists to avoid.
     expect(isLaunchDaySurface('/launchpad')).toBe(false);
     expect(isLaunchDaySurface('/launches/anything')).toBe(false);
+  });
+});
+
+/**
+ * The path test alone was not enough, and this is the case that proved it:
+ * /guide/space-launch-cost-comparison links to a launch page, Next.js
+ * prefetches links that enter the viewport, and that prefetch set `sn_vid`
+ * for a reader who never opened a launch page.
+ */
+describe('isDocumentNavigation', () => {
+  const headers = (h: Record<string, string>) => ({
+    get: (name: string) => h[name.toLowerCase()] ?? null,
+  });
+
+  it('accepts a person opening the page', () => {
+    expect(
+      isDocumentNavigation(headers({ 'sec-fetch-dest': 'document', 'sec-fetch-mode': 'navigate' }))
+    ).toBe(true);
+  });
+
+  it('rejects the Next.js link prefetch that caused the leak', () => {
+    expect(
+      isDocumentNavigation(
+        headers({ rsc: '1', 'next-router-prefetch': '1', 'sec-fetch-dest': 'empty' })
+      )
+    ).toBe(false);
+  });
+
+  it('rejects a plain RSC payload fetch on client-side navigation', () => {
+    expect(isDocumentNavigation(headers({ rsc: '1', 'sec-fetch-dest': 'empty' }))).toBe(false);
+  });
+
+  it('rejects a subresource fetch', () => {
+    expect(isDocumentNavigation(headers({ 'sec-fetch-dest': 'empty' }))).toBe(false);
+    expect(isDocumentNavigation(headers({ 'sec-fetch-dest': 'image' }))).toBe(false);
+  });
+
+  it('does not break a client too old to send Sec-Fetch-Dest', () => {
+    // Refusing here would break the feature for a real visitor, which is a
+    // worse outcome than marking one; an RSC header still disqualifies it.
+    expect(isDocumentNavigation(headers({}))).toBe(true);
+    expect(isDocumentNavigation(headers({ rsc: '1' }))).toBe(false);
   });
 });

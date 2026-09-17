@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resolveMothball } from '@/lib/mothballed-routes';
 import { isResearchTierEnabled } from '@/lib/research-flag';
-import { isLaunchDaySurface } from '@/lib/launch-day-surface';
+import { isLaunchDaySurface, isDocumentNavigation } from '@/lib/launch-day-surface';
 import { registryRouteMissing } from '@/lib/registry-routes';
 import { CSP_REPORT_PATH, REPORTING_ENDPOINTS_HEADER, documentCspHeaders } from '@/lib/csp';
 
@@ -1062,7 +1062,14 @@ export async function middleware(req: NextRequest) {
   // one of those pages, so the feature is unchanged for the people using it
   // and nobody else is marked. If another surface starts using
   // resolveLaunchDayActor(), widen isLaunchDaySurface() in the same commit.
-  if (isLaunchDaySurface(pathname) && !req.cookies.get('sn_vid')?.value) {
+  // The navigation test is not redundant with the path test: the cost guide
+  // links to a launch page, Next.js prefetches links in the viewport, and that
+  // prefetch was setting the cookie for readers who never opened one.
+  if (
+    isLaunchDaySurface(pathname) &&
+    isDocumentNavigation(req.headers) &&
+    !req.cookies.get('sn_vid')?.value
+  ) {
     response.cookies.set('sn_vid', crypto.randomUUID(), {
       maxAge: 365 * 24 * 3600,
       path: '/',

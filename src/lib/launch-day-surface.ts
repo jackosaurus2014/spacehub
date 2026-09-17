@@ -26,3 +26,30 @@
 export function isLaunchDaySurface(pathname: string): boolean {
   return pathname === '/launch' || pathname.startsWith('/launch/');
 }
+
+/**
+ * Whether this request is a person actually opening the page, as opposed to
+ * the router fetching it in the background.
+ *
+ * FOUND 2026-09-17, after scoping `sn_vid` to /launch did not stop it being
+ * set on a cost guide. `/guide/space-launch-cost-comparison` links to a launch
+ * page, Next.js prefetches links that enter the viewport, and that prefetch is
+ * a real request through middleware — so a reader who never visited a launch
+ * page still came away carrying the identifier. Scoping the path was necessary
+ * and not sufficient.
+ *
+ * A navigation carries `Sec-Fetch-Dest: document`. A prefetch or an RSC
+ * payload fetch carries `RSC: 1` (and usually `Next-Router-Prefetch: 1`) with
+ * `Sec-Fetch-Dest: empty`. A client too old to send Sec-Fetch-Dest at all is
+ * treated as a navigation, because refusing there would break the feature for
+ * a real visitor; an `RSC` header still disqualifies it.
+ */
+export function isDocumentNavigation(headers: {
+  get(name: string): string | null;
+}): boolean {
+  if (headers.get('rsc')) return false;
+  if (headers.get('next-router-prefetch')) return false;
+  const dest = headers.get('sec-fetch-dest');
+  if (dest === null) return true;
+  return dest === 'document';
+}

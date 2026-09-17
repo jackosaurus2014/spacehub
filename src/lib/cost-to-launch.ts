@@ -1,4 +1,4 @@
-import { FALCON9_DEDICATED_PER_KG, FALCON9_LIST_PRICE_USD, FALCON_HEAVY_LIST_PRICE_USD, RIDESHARE_MIN_PRICE_USD, RIDESHARE_MIN_KG, RIDESHARE_PER_KG, ELECTRON_LIST_PRICE_USD, ELECTRON_LEO_KG, ELECTRON_DEDICATED_PER_KG, STARSHIP_TARGET_PER_KG, fmtUsd, fmtUsdM, fmtUsdK, fmtPerKg } from '@/lib/launch-cost-constants';
+import { LAUNCH_COST_AS_OF, FALCON9_DEDICATED_PER_KG, FALCON9_LIST_PRICE_USD, FALCON_HEAVY_LIST_PRICE_USD, RIDESHARE_MIN_PRICE_USD, RIDESHARE_MIN_KG, RIDESHARE_PER_KG, ELECTRON_LIST_PRICE_USD, ELECTRON_LEO_KG, ELECTRON_DEDICATED_PER_KG, STARSHIP_TARGET_PER_KG, fmtUsd, fmtUsdM, fmtUsdK, fmtPerKg } from '@/lib/launch-cost-constants';
 import { LAUNCH_VEHICLES } from '@/lib/launch-vehicles-data';
 
 // Catalogue lookups for the entries that do arithmetic on vehicle payload
@@ -46,6 +46,53 @@ export interface CostToLaunchEntry {
 }
 
 export const COST_TO_LAUNCH: readonly CostToLaunchEntry[] = [
+  // ADDED 2026-09-17, from the search drill rather than a guess. Falcon 9 /
+  // SpaceX cost is the ONLY coherent cluster in the parent guide's long tail:
+  // 151 distinct queries, 1,895 impressions, 26 clicks in 28 days. (The tail
+  // as a whole is unfarmable -- the guide's top 500 queries are just 7.6% of
+  // its impressions and the rest is thousands of one-impression phrasings.)
+  // /rockets/falcon-9 is not catching any of it: 10 impressions in the same
+  // window. The narrow pages in this collection convert at 1.33% against the
+  // parent guide's 0.76%, which is why this belongs here and not there.
+  //
+  // Unlike its neighbours this entry is priced per VEHICLE, not per payload,
+  // because that is what people type: 'falcon 9 launch cost', 'how much does
+  // a falcon 9 cost'. Every figure is read from launch-cost-constants.ts, so
+  // a price audit moves this page with the rest of the site.
+  {
+    slug: 'falcon-9',
+    thing: 'a Falcon 9',
+    title: 'How Much Does a Falcon 9 Launch Cost?',
+    metaTitle: 'How Much Does a Falcon 9 Launch Cost? (2026 Prices)',
+    description: `A dedicated Falcon 9 lists at ${fmtUsdM(FALCON9_LIST_PRICE_USD)} in 2026 - about ${fmtPerKg(FALCON9_DEDICATED_PER_KG)} to low Earth orbit. Rideshare on the same rocket starts at ${fmtUsdK(RIDESHARE_MIN_PRICE_USD)}. Every option priced, plus what the list price leaves out.`,
+    shortAnswer: `A dedicated Falcon 9 launch lists at ${fmtUsdM(FALCON9_LIST_PRICE_USD)} as of ${LAUNCH_COST_AS_OF}, which is roughly ${fmtPerKg(FALCON9_DEDICATED_PER_KG)} if you fill its ${F9.payloadLeoKg.toLocaleString('en-US')} kg low-Earth-orbit capacity - and almost nobody does. Most customers never buy a whole rocket: a Transporter or Bandwagon rideshare slot costs ${fmtUsd(RIDESHARE_PER_KG)} per kilogram with a ${RIDESHARE_MIN_KG} kg minimum, so ${fmtUsdK(RIDESHARE_MIN_PRICE_USD)} buys a place on the same vehicle. The list price is also not what the flight costs SpaceX, which reflies boosters many times over; it is what the market pays, and it has held near this level because nothing else flies at this cadence.`,
+    rows: [
+      { option: 'Dedicated Falcon 9, list price', price: fmtUsdM(FALCON9_LIST_PRICE_USD), notes: `The whole rocket, your orbit, your schedule. ${F9.payloadLeoKg.toLocaleString('en-US')} kg to LEO, ${F9.payloadGtoKg!.toLocaleString('en-US')} kg to GTO.`, rocket: 'falcon-9' },
+      { option: 'Dedicated, per kilogram at full payload', price: fmtPerKg(FALCON9_DEDICATED_PER_KG), notes: 'The figure usually quoted as the Falcon 9 cost per kilogram. It assumes a payload that fills the rocket, which is rare.', rocket: 'falcon-9' },
+      { option: 'Rideshare (Transporter / Bandwagon)', price: `${fmtUsd(RIDESHARE_PER_KG)}/kg, ${fmtUsdK(RIDESHARE_MIN_PRICE_USD)} minimum`, notes: `${RIDESHARE_MIN_KG} kg minimum to a standard sun-synchronous drop-off. Fixed orbit and fixed date - you fly when the mission flies.`, rocket: 'falcon-9' },
+      { option: 'Falcon Heavy, dedicated', price: fmtUsdM(FALCON_HEAVY_LIST_PRICE_USD), notes: `Three cores. Worth it only past Falcon 9's ${F9.payloadGtoKg!.toLocaleString('en-US')} kg to GTO, or for high-energy trajectories.`, rocket: 'falcon-heavy' },
+      { option: 'NASA and US government missions', price: '$100M-$300M+', notes: 'Well above list: mission assurance, range requirements, extended reviews and schedule guarantees are all priced in. A NASA science launch is not a commercial launch.', rocket: 'falcon-9' },
+    ],
+    hiddenCosts: [
+      'Payload integration and mission management beyond the standard interface the list price covers.',
+      'Launch insurance, typically 3-8% of the insured value - a rate that reflects Falcon 9 record, not the rocket being cheap to insure.',
+      'FCC or NOAA licensing and ITU coordination for the spacecraft itself: months of lead time, not just fees.',
+      'Schedule. A dedicated slot books 12-24 months out, and SpaceX has stopped taking new commercial Falcon bookings beyond 2028.',
+      'On rideshare the orbit is fixed. Reaching your operational orbit from the drop-off means propulsion or an orbital transfer vehicle, and that is a separate contract.',
+    ],
+    faq: [
+      { q: 'How much does a Falcon 9 launch cost in 2026?', a: `${fmtUsdM(FALCON9_LIST_PRICE_USD)} for a dedicated launch at list price, as of ${LAUNCH_COST_AS_OF}. A rideshare slot on the same vehicle starts at ${fmtUsdK(RIDESHARE_MIN_PRICE_USD)} for ${RIDESHARE_MIN_KG} kg.` },
+      { q: 'Why is Falcon 9 cheaper than other rockets?', a: 'Booster reuse and flight rate. A first stage flies many times over, and fixed costs are spread across a cadence no other provider matches - SpaceX flew 109 orbital missions in 2026 by mid-September, while the next-busiest Western provider flew 16.' },
+      { q: 'What does a Falcon 9 flight actually cost SpaceX?', a: 'SpaceX has never published a per-flight internal cost, and any figure you see quoted is an estimate. What is knowable is the list price, which is set by what the market will bear rather than by what the flight costs - which is why it has not fallen as reuse improved.' },
+      { q: 'Is Falcon Heavy three times the price of Falcon 9?', a: `No. Falcon Heavy lists at ${fmtUsdM(FALCON_HEAVY_LIST_PRICE_USD)} against Falcon 9 at ${fmtUsdM(FALCON9_LIST_PRICE_USD)} - roughly a third more for substantially more performance, because two of the three cores are recovered and the upper stage is the same.` },
+      { q: 'Should a small company buy a whole Falcon 9?', a: `Rarely. If your satellite is under a few hundred kilograms, a ${fmtUsdK(RIDESHARE_MIN_PRICE_USD)} rideshare slot or a dedicated Electron at ${fmtUsdM1(ELECTRON_LIST_PRICE_USD)} serves you better than ${fmtUsdM(FALCON9_LIST_PRICE_USD)} of capacity you cannot fill.` },
+    ],
+    related: [
+      { label: 'Launch cost guide: every rocket compared', href: '/guide/space-launch-cost-comparison' },
+      { label: 'Falcon 9 vehicle profile', href: '/rockets/falcon-9' },
+      { label: 'Launch Cadence Index: who is actually flying', href: '/launch-cadence' },
+    ],
+  },
   {
     slug: 'cubesat',
     thing: 'a CubeSat',
