@@ -32,6 +32,12 @@ async function main() {
     wau: snap.wau,
     searchClicks: snap.searchClicks,
     searchImpressions: snap.searchImpressions,
+    // Our own cookieless count, which does not depend on the cookie banner.
+    // GA4's MAU only sees visitors who accepted it; on 2026-09-17 that was
+    // 748 against 2,916 Search Console clicks from Google alone.
+    measuredUniques30d: snap.measured ? snap.measured.uniques : null,
+    measuredPageViews30d: snap.measured ? snap.measured.pageViews : null,
+    measuredDaysCovered: snap.measured ? snap.measured.daysCovered : null,
     curveTarget: snap.goal.currentTarget,
     // Negative means behind the curve.
     gapToCurve: mau === null ? null : mau - snap.goal.currentTarget,

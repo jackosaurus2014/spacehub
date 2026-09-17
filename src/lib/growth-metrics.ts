@@ -446,12 +446,53 @@ export function interpolateGrowthTarget(
   return finalTarget;
 }
 
+export interface MeasuredTraffic {
+  /** Distinct cookieless visitor hashes over the window. */
+  uniques: number;
+  pageViews: number;
+  /** Days of data actually present, so a partial history is not read as a dip. */
+  daysCovered: number;
+}
+
+/**
+ * Our own count of visitors, from the cookieless beacon.
+ *
+ * GA4 is gated on the cookie banner and effectively only reports users who
+ * accepted it, which is why it showed 748 monthly active users in a month
+ * when Search Console counted 2,916 clicks from Google alone. This is the
+ * unconditional count -- see src/lib/traffic-truth.ts for how it stays
+ * anonymous and why it needs no consent.
+ *
+ * `uniques` sums per-day uniques, so a visitor returning on three days counts
+ * three times. That is deliberately NOT GA4's MAU definition and the two must
+ * never be presented as the same number.
+ */
+export async function fetchMeasuredTraffic(days = 30): Promise<MeasuredTraffic> {
+  const { default: prisma } = await import('./db');
+  const since = new Date(Date.now() - days * 86_400_000);
+  const rows = await prisma.siteTrafficDay.findMany({
+    where: { day: { gte: since } },
+    select: { uniques: true, pageViews: true },
+  });
+  return {
+    uniques: rows.reduce((a, r) => a + r.uniques, 0),
+    pageViews: rows.reduce((a, r) => a + r.pageViews, 0),
+    daysCovered: rows.length,
+  };
+}
+
 export interface GrowthSnapshot {
   generatedAt: string;
   mau: number | null;
   wau: number | null;
   searchClicks: number | null;
   searchImpressions: number | null;
+  /**
+   * Our own cookieless count. Present from 2026-09-17 onward, null before
+   * that and null if the query fails. Sums per-day uniques, so it is NOT
+   * directly comparable to `mau` -- see fetchMeasuredTraffic.
+   */
+  measured: MeasuredTraffic | null;
   goal: {
     target: number;
     milestones: GrowthMilestone[];
@@ -480,6 +521,7 @@ export async function getGrowthSnapshot(): Promise<GrowthSnapshot> {
       wau: null,
       searchClicks: null,
       searchImpressions: null,
+      measured: null,
       goal: {
         target: GROWTH_GOAL_TARGET,
         milestones: GROWTH_MILESTONES,
@@ -515,6 +557,16 @@ export async function getGrowthSnapshot(): Promise<GrowthSnapshot> {
     logger.warn('Growth metrics: Search Console fetch failed', { error: message });
   }
 
+  // Our own count never depends on Google: a GA4 outage must not hide it.
+  let measured: MeasuredTraffic | null = null;
+  try {
+    measured = await fetchMeasuredTraffic(30);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    errors.push(`Measured traffic: ${message}`);
+    logger.warn('Growth metrics: measured traffic query failed', { error: message });
+  }
+
   const onTrack = mau !== null ? mau >= currentTarget : null;
 
   return {
@@ -523,6 +575,7 @@ export async function getGrowthSnapshot(): Promise<GrowthSnapshot> {
     wau,
     searchClicks,
     searchImpressions,
+    measured,
     goal: {
       target: GROWTH_GOAL_TARGET,
       milestones: GROWTH_MILESTONES,

@@ -133,6 +133,13 @@ function getRateLimitConfig(pathname: string, method: string): RateLimitConfig {
     return { maxRequests: 10, windowMs: 60 * 1000 }; // 10 req/minute
   }
   // Blog view tracking — lightweight but frequent
+  // Cookieless page-view beacon: one POST per page view from every visitor,
+  // so the ceiling has to clear a reader browsing quickly on a shared NAT
+  // while still bounding a flood. Each call is one upsert plus one
+  // skipDuplicates insert.
+  if (pathname === '/api/beacon') {
+    return { maxRequests: 120, windowMs: 60 * 1000 };
+  }
   if (pathname.startsWith('/api/blog/views')) {
     return { maxRequests: 60, windowMs: 60 * 1000 }; // 60 req/minute
   }

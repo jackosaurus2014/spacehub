@@ -30,7 +30,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { APP_URL, FOUNDER_EMAIL } from '@/lib/constants';
 import { getWeekStart } from '@/lib/launch-week-email';
-import { getGrowthSnapshot, type GrowthSnapshot } from '@/lib/growth-metrics';
+import { getGrowthSnapshot, GROWTH_GOAL_DATE, type GrowthSnapshot } from '@/lib/growth-metrics';
 import { runContentAccuracyChecks, type AccuracyCheckResult } from '@/lib/content-accuracy';
 import {
   escapeHtml,
@@ -192,6 +192,7 @@ export async function collectCeoBriefData(now: Date = new Date()): Promise<CeoBr
       wau: null,
       searchClicks: null,
       searchImpressions: null,
+      measured: null,
       goal: { target: 10_000, milestones: [], currentTarget: 0, onTrack: null },
       errors: [message],
     };
@@ -382,11 +383,18 @@ export function composeCeoBriefEmail(data: CeoBriefData): CeoBriefEmail {
   const growthHtml = `
     <p style="margin: 0 0 10px 0; font-size: 14px; color: ${styles.textWhite};">
       MAU <strong>${fmt(growth.mau)}</strong> vs curve target <strong>${fmt(growth.goal.currentTarget)}</strong>
-      (goal: ${fmt(growth.goal.target)} by Nov 12) —
+      (goal: ${fmt(growth.goal.target)} by ${GROWTH_GOAL_DATE}) &mdash;
       <span style="color: ${onTrackColor}; font-weight: 700;">${onTrackLabel}</span>
     </p>
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
       ${metricTableRow('MAU (30d active users)', fmt(growth.mau), fmtDelta(deltas.mau))}
+      ${growth.measured && growth.measured.daysCovered > 0
+        ? metricTableRow(
+            'Measured visitors (30d, cookieless)',
+            `${fmt(growth.measured.uniques)} over ${growth.measured.daysCovered}d`,
+            ''
+          )
+        : ''}
       ${metricTableRow('WAU (7d active users)', fmt(growth.wau), fmtDelta(deltas.wau))}
       ${metricTableRow('Search clicks (28d)', fmt(growth.searchClicks), fmtDelta(deltas.searchClicks))}
       ${metricTableRow('Search impressions (28d)', fmt(growth.searchImpressions), fmtDelta(deltas.searchImpressions))}

@@ -42,6 +42,7 @@ import { SITE_STATS } from '@/lib/site-stats';
 import { INLINE_SCRIPTS } from '@/lib/csp';
 // Starfield removed in V2 redesign — true black background needs no decoration
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
+import TrafficBeacon from '@/components/analytics/TrafficBeacon';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import ToastContainer from '@/components/ui/Toast';
 import NavigationProgress from '@/components/ui/NavigationProgress';
@@ -305,6 +306,9 @@ export default function RootLayout({
               <PageTracker />
               <KeyboardShortcutsModal />
               <WebVitals />
+              {/* Cookieless page-view count. Not consent-gated on purpose --
+                  it stores no identifier; see src/lib/traffic-truth.ts. */}
+              <TrafficBeacon />
               <InstallPrompt />
               <IOSInstallPrompt />
               <AndroidInstallBanner />

@@ -9880,3 +9880,59 @@ model UkCompanyFiling {
   @@index([companyNumber, isStatusFiling])
   @@index([category, filingDate])
 }
+
+/// Server-side, cookieless traffic truth (2026-09-17).
+///
+/// GA4 is our only measure of audience and it is gated on the cookie banner:
+/// a visitor who ignores the banner gets `analytics_storage: denied`, no `_ga`
+/// cookie, and a fresh client id on every page load. Those pings reach Google
+/// but do not become `activeUsers` at our volume, which is why GA4 reported
+/// 748 monthly users in a month when Search Console counted 2,916 clicks from
+/// Google alone. Every growth decision we have made — the 10k goal, "673
+/// against a curve target of 3,275", "not reachable organically" — was
+/// computed on roughly a quarter of the real audience.
+///
+/// This counts visits without storing anything personal. The visitor is
+/// identified by a truncated SHA-256 of (a salt that rotates every UTC day,
+/// the IP, the user agent). The salt is generated in memory and never
+/// persisted, so once the day turns the hashes cannot be linked back to
+/// anyone even by us — the same construction Plausible and Fathom use, and
+/// the reason it needs no consent banner. Rows are purged after 2 days.
+model SiteTrafficDay {
+  id   String   @id @default(cuid())
+  /// UTC midnight of the day being counted.
+  day  DateTime @unique
+
+  /// Every counted page view, including repeat views by the same visitor.
+  pageViews Int @default(0)
+  /// Distinct visitor hashes seen on this day.
+  uniques   Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([day])
+}
+
+/// One row per (day, visitor hash). Exists only to make SiteTrafficDay.uniques
+/// countable; purged after 2 days by the same cron that rotates it. No IP, no
+/// user agent, no user id is stored — only the unlinkable digest.
+model SiteTrafficVisitor {
+  id   String   @id @default(cuid())
+  day  DateTime
+  /// Truncated SHA-256 of (daily salt + ip + user agent). Not reversible, and
+  /// not linkable across days because the salt is discarded with the day.
+  hash String
+
+  /// Coarse entry point, for channel attribution without identifying anyone.
+  /// Path only — query strings are stripped before this is written.
+  path     String?
+  /// Referrer host only, never the full URL.
+  referrer String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([day, hash])
+  @@index([day, path])
+  @@index([createdAt])
+}

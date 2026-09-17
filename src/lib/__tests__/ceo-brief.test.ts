@@ -83,6 +83,7 @@ const GROWTH = {
   wau: 600,
   searchClicks: 250,
   searchImpressions: 9000,
+  measured: null,
   goal: { target: 10_000, milestones: [], currentTarget: 900, onTrack: true },
   errors: [] as string[],
 };
@@ -150,6 +151,7 @@ describe('collectCeoBriefData', () => {
           wau: 650,
           searchClicks: 200,
           searchImpressions: 8000,
+          measured: null,
           newsletterSubscribers: 170,
         }),
       },
