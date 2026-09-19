@@ -389,11 +389,17 @@ export function composeCeoBriefEmail(data: CeoBriefData): CeoBriefEmail {
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
       ${metricTableRow('MAU (30d active users)', fmt(growth.mau), fmtDelta(deltas.mau))}
       ${growth.measured && growth.measured.daysCovered > 0
-        ? metricTableRow(
-            'Measured visitors (30d, cookieless)',
-            `${fmt(growth.measured.uniques)} over ${growth.measured.daysCovered}d`,
-            ''
-          )
+        ? (growth.measured.engagedDaysCovered > 0
+            ? metricTableRow(
+                'Engaged visitors (cookieless, real input)',
+                `${fmt(growth.measured.engagedUniques)} of ${fmt(growth.measured.engagedWindowUniques)} raw, ${growth.measured.engagedDaysCovered}d`,
+                ''
+              )
+            : metricTableRow(
+                'Raw page loads (cookieless, includes crawlers)',
+                `${fmt(growth.measured.uniques)} over ${growth.measured.daysCovered}d`,
+                ''
+              ))
         : ''}
       ${metricTableRow('WAU (7d active users)', fmt(growth.wau), fmtDelta(deltas.wau))}
       ${metricTableRow('Search clicks (28d)', fmt(growth.searchClicks), fmtDelta(deltas.searchClicks))}

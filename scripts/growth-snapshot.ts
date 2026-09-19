@@ -38,6 +38,12 @@ async function main() {
     measuredUniques30d: snap.measured ? snap.measured.uniques : null,
     measuredPageViews30d: snap.measured ? snap.measured.pageViews : null,
     measuredDaysCovered: snap.measured ? snap.measured.daysCovered : null,
+    // The raw count includes a JS-executing crawler; these two are the ones
+    // to reason from. Engaged is over its own, shorter, window.
+    measuredReferredUniques: snap.measured ? snap.measured.referredUniques : null,
+    measuredEngagedUniques: snap.measured ? snap.measured.engagedUniques : null,
+    measuredEngagedOfRaw: snap.measured ? snap.measured.engagedWindowUniques : null,
+    measuredEngagedDaysCovered: snap.measured ? snap.measured.engagedDaysCovered : null,
     curveTarget: snap.goal.currentTarget,
     // Negative means behind the curve.
     gapToCurve: mau === null ? null : mau - snap.goal.currentTarget,

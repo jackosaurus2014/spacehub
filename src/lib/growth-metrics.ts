@@ -452,6 +452,16 @@ export interface MeasuredTraffic {
   pageViews: number;
   /** Days of data actually present, so a partial history is not read as a dip. */
   daysCovered: number;
+  /** Of `uniques`, those that arrived with an external referrer. */
+  referredUniques: number;
+  /**
+   * Visitors who produced real input, and the raw uniques over the SAME days.
+   * Engaged counting began later than the beacon, so the share is only honest
+   * over `engagedDaysCovered`, never over `daysCovered`.
+   */
+  engagedUniques: number;
+  engagedWindowUniques: number;
+  engagedDaysCovered: number;
 }
 
 /**
@@ -466,18 +476,29 @@ export interface MeasuredTraffic {
  * `uniques` sums per-day uniques, so a visitor returning on three days counts
  * three times. That is deliberately NOT GA4's MAU definition and the two must
  * never be presented as the same number.
+ *
+ * `uniques` is also NOT an audience. On 2026-09-18 it was mostly a crawler
+ * that runs JavaScript (see ENGAGEMENT_EVENTS in traffic-truth.ts). The
+ * numbers to reason from are `engagedUniques` and `referredUniques`.
  */
 export async function fetchMeasuredTraffic(days = 30): Promise<MeasuredTraffic> {
   const { default: prisma } = await import('./db');
   const since = new Date(Date.now() - days * 86_400_000);
   const rows = await prisma.siteTrafficDay.findMany({
     where: { day: { gte: since } },
-    select: { uniques: true, pageViews: true },
+    select: { day: true, uniques: true, pageViews: true, referredUniques: true, engagedUniques: true },
   });
+  const { ENGAGED_COUNTING_SINCE } = await import('./traffic-truth');
+  const engagedFrom = new Date(`${ENGAGED_COUNTING_SINCE}T00:00:00Z`).getTime();
+  const engagedRows = rows.filter((r) => r.day.getTime() >= engagedFrom);
   return {
     uniques: rows.reduce((a, r) => a + r.uniques, 0),
     pageViews: rows.reduce((a, r) => a + r.pageViews, 0),
     daysCovered: rows.length,
+    referredUniques: rows.reduce((a, r) => a + r.referredUniques, 0),
+    engagedUniques: engagedRows.reduce((a, r) => a + r.engagedUniques, 0),
+    engagedWindowUniques: engagedRows.reduce((a, r) => a + r.uniques, 0),
+    engagedDaysCovered: engagedRows.length,
   };
 }
 

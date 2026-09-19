@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
+import { ENGAGEMENT_EVENTS } from '@/lib/engagement-events';
 
 /**
  * Counts one page view, server-side and cookielessly, on every route.
@@ -51,6 +52,36 @@ export default function TrafficBeacon() {
       // A blocked request is a lost count, never a broken page.
     }
   }, [pathname]);
+
+  // One `engaged` ping per document load, on the first real input. The raw
+  // count above includes a crawler that runs JavaScript and looks like a
+  // browser; it loads pages but never moves a pointer or presses a key. This
+  // writes nothing to the device either, so it needs no consent for the same
+  // reason the view ping does not.
+  useEffect(() => {
+    let sent = false;
+    const opts = { passive: true, capture: true } as const;
+    const stop = () => ENGAGEMENT_EVENTS.forEach((e) => window.removeEventListener(e, onInput, opts));
+    function onInput(event: Event) {
+      // Synthetic events dispatched by a script are not input.
+      if (sent || !event.isTrusted) return;
+      sent = true;
+      stop();
+      try {
+        void fetch('/api/beacon', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: window.location.pathname, engaged: true }),
+          keepalive: true,
+          cache: 'no-store',
+        }).catch(() => {});
+      } catch {
+        // A blocked request is a lost count, never a broken page.
+      }
+    }
+    ENGAGEMENT_EVENTS.forEach((e) => window.addEventListener(e, onInput, opts));
+    return stop;
+  }, []);
 
   return null;
 }

@@ -106,3 +106,26 @@ const NON_HUMAN = /bot|crawler|spider|slurp|headless|puppeteer|playwright|lighth
 export function looksAutomated(userAgent: string): boolean {
   return NON_HUMAN.test(userAgent);
 }
+
+/**
+ * THE RAW COUNT IS NOT PEOPLE. The first full day of data (2026-09-18) read
+ * 3,004 uniques, and it was not an audience: new uniques arrived at a flat
+ * ~100 an hour around the clock with no day/night shape, 93% carried no
+ * referrer, and the top entry page was /feedback. That is a crawler that runs
+ * JavaScript, sends an ordinary browser user agent and rotates addresses, so
+ * the regex above cannot see it. The referred slice, by contrast, was sound --
+ * google.com sent 143 that day against Search Console's ~131 clicks a day.
+ *
+ * So a visit is also marked `engaged` the first time it produces real input.
+ * These are input events only. `scroll` is deliberately absent: a crawler
+ * that calls scrollTo() to trigger lazy loading fires it, whereas a person
+ * scrolling fires wheel, touchstart or keydown first.
+ */
+export { ENGAGEMENT_EVENTS } from './engagement-events';
+
+/**
+ * First full UTC day with engaged counting deployed. Days before it have
+ * engagedUniques = 0 because nothing was measuring, not because nobody was
+ * there -- any engaged share must be computed over days on or after this.
+ */
+export const ENGAGED_COUNTING_SINCE = '2026-09-20';

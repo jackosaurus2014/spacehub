@@ -19,6 +19,10 @@ export const dynamic = 'force-dynamic';
  * Console counted 2,916 clicks from Google alone — see `traffic-truth.ts` for
  * the full reasoning and the privacy construction.
  *
+ * A second ping (`engaged: true`) arrives at most once per page load, on the
+ * first real input event, and counts no view. It exists because the raw
+ * count turned out to be mostly a JS-executing crawler; see ENGAGEMENT_EVENTS.
+ *
  * The response is deliberately empty and always 204, even on failure. A
  * counting endpoint must never surface an error to a reader, and must never
  * give a caller a way to probe whether a particular hash already exists.
@@ -45,21 +49,58 @@ export async function POST(req: NextRequest) {
     // Neither `ip` nor `userAgent` is used again after this line.
     const hash = visitorHash(ip, userAgent);
 
+    // The second kind of ping: the page saw real input. It carries no view, so
+    // it moves `engagedUniques` and nothing else. If the view ping was lost or
+    // has not landed yet, the visitor row is created here so the visit is not
+    // counted as engaged-but-never-arrived.
+    if (body?.engaged === true) {
+      const created = await prisma.siteTrafficVisitor.createMany({
+        data: [{ day, hash, path, referrer: null, engaged: true }],
+        skipDuplicates: true,
+      });
+      // The `engaged: false` filter makes the flip happen once however many
+      // tabs or pages report it, so the counter cannot run ahead of the rows.
+      const flipped = created.count > 0
+        ? 0
+        : (await prisma.siteTrafficVisitor.updateMany({
+            where: { day, hash, engaged: false },
+            data: { engaged: true },
+          })).count;
+      if (created.count > 0 || flipped > 0) {
+        await prisma.siteTrafficDay.upsert({
+          where: { day },
+          create: { day, uniques: created.count, engagedUniques: 1 },
+          update: {
+            engagedUniques: { increment: 1 },
+            ...(created.count > 0 ? { uniques: { increment: 1 } } : {}),
+          },
+        });
+      }
+      return new NextResponse(null, { status: 204 });
+    }
+
     // A new visitor row means a new unique; a duplicate means a repeat view.
     // `createMany` with skipDuplicates reports which it was in one round trip,
-    // so the two counters stay consistent without a transaction.
+    // so the counters stay consistent without a transaction.
     const inserted = await prisma.siteTrafficVisitor.createMany({
       data: [{ day, hash, path, referrer }],
       skipDuplicates: true,
     });
     const isNewVisitor = inserted.count > 0;
+    const isReferred = isNewVisitor && referrer !== null;
 
     const dayRow = await prisma.siteTrafficDay.upsert({
       where: { day },
-      create: { day, pageViews: 1, uniques: isNewVisitor ? 1 : 0 },
+      create: {
+        day,
+        pageViews: 1,
+        uniques: isNewVisitor ? 1 : 0,
+        referredUniques: isReferred ? 1 : 0,
+      },
       update: {
         pageViews: { increment: 1 },
         ...(isNewVisitor ? { uniques: { increment: 1 } } : {}),
+        ...(isReferred ? { referredUniques: { increment: 1 } } : {}),
       },
     });
 

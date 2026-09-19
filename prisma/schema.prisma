@@ -9907,6 +9907,13 @@ model SiteTrafficDay {
   pageViews Int @default(0)
   /// Distinct visitor hashes seen on this day.
   uniques   Int @default(0)
+  /// Of `uniques`, those whose first view carried an external referrer.
+  referredUniques Int @default(0)
+  /// Of `uniques`, those that produced real input (pointer, touch, wheel or
+  /// key). A JS-executing crawler loads pages but does not do this, which is
+  /// what made the raw count unusable on 2026-09-18. Counted from
+  /// ENGAGED_COUNTING_SINCE in traffic-truth.ts; zero before it means unmeasured.
+  engagedUniques  Int @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -9929,6 +9936,9 @@ model SiteTrafficVisitor {
   path     String?
   /// Referrer host only, never the full URL.
   referrer String?
+  /// Set once, by the first real input event. A fact about the visit, not an
+  /// identifier — it is purged with the row.
+  engaged  Boolean @default(false)
 
   createdAt DateTime @default(now())
 
