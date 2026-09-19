@@ -124,7 +124,8 @@ export default function CommandPalette() {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const isShortcut =
-        event.key.toLowerCase() === 'k' && (event.metaKey || event.ctrlKey) && !event.shiftKey && !event.altKey;
+        // Chrome's autofill dispatches keydown with no `key`.
+        event.key?.toLowerCase() === 'k' && (event.metaKey || event.ctrlKey) && !event.shiftKey && !event.altKey;
       if (!isShortcut) return;
       event.stopPropagation();
       if (open) {

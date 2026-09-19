@@ -40,7 +40,8 @@ export function useKeyboardShortcut(
           preventDefault = true,
         } = shortcut;
 
-        const keyMatch = event.key.toLowerCase() === key.toLowerCase();
+        // Chrome's autofill dispatches keydown with no `key`.
+        const keyMatch = event.key?.toLowerCase() === key.toLowerCase();
         const ctrlMatch = ctrlKey ? event.ctrlKey : !event.ctrlKey;
         const metaMatch = metaKey ? event.metaKey : !event.metaKey;
         const shiftMatch = shiftKey ? event.shiftKey : !event.shiftKey;
